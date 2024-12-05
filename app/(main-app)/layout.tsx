@@ -8,9 +8,7 @@ export default async function Layout({
   return (
     <>
       <Navigation />
-      <main className="max-w-7xl flex flex-col gap-12 justify-center items-center">
-        {children}
-      </main>
+      <div>{children}</div>;
     </>
   );
 }
