@@ -1,5 +1,3 @@
-import NextLogo from "./next-logo";
-
 export default function Header() {
   return (
     <section className="flex flex-col items-center">
