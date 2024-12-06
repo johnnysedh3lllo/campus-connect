@@ -1,12 +1,11 @@
 import Hero from "@/components/hero";
-import Navigation from "@/components/ui/navigation";
+// import Navigation from "@/components/ui/navigation";
 
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default async function Index() {
   return (
     <>
-      <Navigation />
       <Hero />
       <main className="p-12">
         <p>landing page body</p>

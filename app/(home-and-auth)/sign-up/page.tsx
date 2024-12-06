@@ -6,6 +6,18 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
 
+import { Metadata } from "next";
+
+// const defaultUrl = process.env.VERCEL_URL
+//   ? `https://${process.env.VERCEL_URL}`
+//   : "http://localhost:3000";
+
+export const metadata: Metadata = {
+  // metadataBase: new URL(defaultUrl),
+  title: "Sign Up | Campus Connect",
+  // description: "Your rental paradise",
+};
+
 export default async function Signup(props: {
   searchParams: Promise<Message>;
 }) {

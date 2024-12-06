@@ -1,7 +1,5 @@
 import Link from "next/link";
-// import { EnvVarWarning } from "@/components/env-var-warning";
 import HeaderAuth from "@/components/header-auth";
-// import { hasEnvVars } from "@/utils/supabase/check-env-vars";
 
 export default async function Navigation() {
   return (
@@ -11,7 +9,6 @@ export default async function Navigation() {
           <Link href={"/"}>Campus Connect Home</Link>
         </div>
         <HeaderAuth />
-        {/* {!hasEnvVars ? <EnvVarWarning /> : <HeaderAuth />} */}
       </div>
     </nav>
   );
