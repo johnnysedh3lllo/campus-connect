@@ -4,12 +4,18 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+// import { UserResponse } from "@supabase/supabase-js";
+
+// auth functions
 
 export const signUpAction = async (formData: FormData) => {
-  const email = formData.get("email")?.toString();
-  const password = formData.get("password")?.toString();
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
+
+  const email = formData.get("email")?.toString();
+  const password = formData.get("password")?.toString();
+  const roleId = Number(formData.get("role_id"));
+  // const phone = "1234-234-13431";
 
   if (!email || !password) {
     return encodedRedirect(
@@ -24,6 +30,13 @@ export const signUpAction = async (formData: FormData) => {
     password,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
+
+      // NOTE: the test data below is to be replaced with variables containing user-generated data.
+      data: {
+        first_name: "John", // Additional user metadata
+        last_name: "Doe",
+        role_id: roleId,
+      },
     },
   });
 
@@ -123,4 +136,28 @@ export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
   return redirect("/sign-in");
+};
+
+// CRUD functions
+export const insertProperty = async (userId: string) => {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("properties")
+    .insert([
+      {
+        landlord_id: userId,
+        title: "Strange House",
+        description: "Spooky house on the hill",
+        location: "On the hill, duh!",
+        price: 200.0,
+      },
+    ])
+    .select();
+
+  if (error) {
+    console.error("Error inserting property:", error);
+  } else {
+    console.log("Property inserted:", data);
+  }
 };

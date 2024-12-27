@@ -7,6 +7,7 @@ import { Metadata } from "next";
 import "@/app/globals.css";
 
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { UserResponse } from "@supabase/supabase-js";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -30,7 +31,7 @@ export default async function Layout({
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  }: UserResponse = await supabase.auth.getUser();
 
   if (!user) {
     return redirect("/sign-in");
