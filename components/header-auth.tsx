@@ -4,6 +4,7 @@ import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { userRoles, UserRoles } from "@/lib/testData";
+import { ThemeSwitcher } from "./theme-switcher";
 
 interface UserMetadata {
   first_name: string;
@@ -32,6 +33,7 @@ export default async function AuthButton(): Promise<JSX.Element> {
             Sign out
           </Button>
         </form>
+        <ThemeSwitcher />
       </div>
     );
   } else {
@@ -43,6 +45,8 @@ export default async function AuthButton(): Promise<JSX.Element> {
         <Button asChild size="sm" variant={"default"}>
           <Link href="/sign-up">Sign up</Link>
         </Button>
+
+        <ThemeSwitcher />
       </div>
     );
   }

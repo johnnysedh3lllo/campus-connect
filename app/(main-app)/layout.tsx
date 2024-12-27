@@ -8,6 +8,7 @@ import "@/app/globals.css";
 
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { UserResponse } from "@supabase/supabase-js";
+import React from "react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -38,12 +39,9 @@ export default async function Layout({
   }
 
   return (
-    <main
-      className={`${GeistSans.className} min-h-screen bg-background text-foreground`}
-    >
+    <>
       <Navigation />
-      <div>{children}</div>
-      <ThemeSwitcher />
-    </main>
+      <div className="flex-1">{children}</div>
+    </>
   );
 }
