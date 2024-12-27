@@ -14,7 +14,7 @@ export default async function Index() {
     error: getUserError,
   }: UserResponse = await supabase.auth.getUser();
 
-  const insertPropertyWithUserId = insertProperty.bind(null, user?.id);
+  const insertPropertyWithUserId = user?.id ? insertProperty.bind(null, user.id) : undefined;
 
   return (
     <>
