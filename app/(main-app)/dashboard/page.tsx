@@ -15,8 +15,8 @@ export default async function Page() {
     error: getUserError,
   }: UserResponse = await supabase.auth.getUser();
 
-  let { data: profiles } = user?.id
-    ? await supabase.from("profiles").select("*").eq("id", user.id)
+  let { data: profile } = user?.id
+    ? await supabase.from("profiles").select("*").eq("id", user.id).single()
     : { data: null };
   let { data: roles } = await supabase.from("roles").select("*").single();
 
@@ -26,9 +26,7 @@ export default async function Page() {
   //     : await supabase.from("properties").select("*");
 
   console.log("from the roles table:", roles);
-  console.log("profiles table:", profiles);
-
-  const convertJSONToString = (jsonObj: {}) => JSON.stringify(jsonObj);
+  console.log("profiles table:", profile);
 
   return (
     <>
@@ -37,14 +35,38 @@ export default async function Page() {
       <Link href="/dashboard/properties">properties</Link>
 
       <div className="p-4">
-        <p>{JSON.stringify(roles)}</p>
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      </div>
+      <div className="p-4">
+        <pre>{JSON.stringify(roles, null, 2)}</pre>
       </div>
 
       <div className="grid gap-8 p-4">
-        {profiles &&
-          profiles.map((profile) => {
-            return <p key={profile.id}>{convertJSONToString(profile)}</p>;
-          })}
+        {profile && <pre>{JSON.stringify(profile, null, 2)}</pre>}
       </div>
     </>
   );
