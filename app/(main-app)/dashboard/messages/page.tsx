@@ -21,33 +21,118 @@ export default async function Page() {
 
   return (
     <>
-      <div className="flex h-full gap-4 border-solid border-black border">
-        <section className="flex-1 p-4">
+      <div className="flex h-full gap-4">
+        <section className="flex gap-2 flex-col border border-solid border-black flex-[0.325] p-4">
           <h1 className="font-bold">Messages</h1>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
-          <p>chat</p>
+          <div>
+            <p>Add Chat</p>
+          </div>
+          <div className="flex-1 overflow-y-auto  border border-solid border-black">
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+            <p>chat</p>
+          </div>
         </section>
-        <main className="flex p-4 gap-4 w-full">
-          <section className="flex-[2]">
-            <p>messages body</p>
+        <main className="border border-solid border-black flex-[2] flex pt-4 pl-4 pr-4 gap-4 w-full">
+          <section className="flex-[2] flex justify-between flex-col gap-4 pl-8 pr-8">
+            <div>
+              <h2 className="font-bold">John Doe</h2>
+              <p>Online</p>
+            </div>
+            <div className="overflow-y-auto h-full">
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+              <p className="self-start">messages body</p>
+            </div>
 
-            <section className=" border-solid border-black border">
-              <input type="text" name="" id="" />
-            </section>
+            <form className="p-4 flex gap-2 rounded-t-md border-solid border-black border">
+              <input
+                placeholder="Type a message..."
+                className="p-2 w-full border-solid border-black border rounded-md"
+                type="text"
+                name=""
+                id=""
+              />
+              <button
+                type="submit"
+                className="p-2 bg-black text-white rounded-md"
+              >
+                Send
+              </button>
+            </form>
           </section>
-          <section className="flex-1">
+          {/* <section className="flex-1">
             <p>details menu</p>
-          </section>
+          </section> */}
         </main>
       </div>
     </>
