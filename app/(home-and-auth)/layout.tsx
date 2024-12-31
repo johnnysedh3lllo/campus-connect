@@ -8,9 +8,9 @@ export const metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <div className="border border-black border-solid">
+      {/* <div className="border border-black border-solid"> */}
         <Navigation />
-      </div>
+      {/* </div> */}
       <main>{children}</main>
     </>
   );
