@@ -1,13 +1,14 @@
-import Navigation from "@/components/ui/navigation";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { UserResponse } from "@supabase/supabase-js";
+import { Metadata } from "next";
 
 import { GeistSans } from "geist/font/sans";
-import { Metadata } from "next";
 import "@/app/globals.css";
 
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { UserResponse } from "@supabase/supabase-js";
+import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
+import Navigation from "@/components/ui/navigation";
+
 import React from "react";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
   description: "Campus Connect Application",
 };
 
-export default async function Layout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -39,9 +40,13 @@ export default async function Layout({
   }
 
   return (
-    <>
-      <Navigation />
-      <div className="flex-1 min-h-0">{children}</div>
-    </>
+    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
+      <body className="h-screen flex flex-col bg-background text-foreground">
+        <ThemeProviderWrapper>
+          <Navigation route="/dashboard" />
+          <div className="flex-1 min-h-0">{children}</div>
+        </ThemeProviderWrapper>
+      </body>
+    </html>
   );
 }

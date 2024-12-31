@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-
-import { Metadata } from "next";
 import { UserResponse } from "@supabase/supabase-js";
+import { Metadata } from "next";
+
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -34,40 +34,43 @@ export default async function Page() {
       <Link href="/dashboard/settings">settings</Link>
       <Link href="/dashboard/properties">properties</Link>
 
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
-      </div>
-      <div className="p-4">
-        <pre>{JSON.stringify(roles, null, 2)}</pre>
+      <div className="h-[50vh] border border-solid border-black overflow-y-auto">
+        <div className="p-4 ">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+        <div className="p-4">
+          <pre>{JSON.stringify(roles, null, 2)}</pre>
+        </div>
+
+        <div className="grid gap-8 p-4">
+          {profile && <pre>{JSON.stringify(profile, null, 2)}</pre>}
+        </div>
       </div>
 
-      <div className="grid gap-8 p-4">
-        {profile && <pre>{JSON.stringify(profile, null, 2)}</pre>}
-      </div>
     </>
   );
 }
