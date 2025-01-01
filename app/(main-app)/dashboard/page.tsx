@@ -15,6 +15,10 @@ export default async function Page() {
     error: getUserError,
   }: UserResponse = await supabase.auth.getUser();
 
+  // if (!user) {
+  //   return redirect("/sign-in");
+  // }
+
   let { data: profile } = user?.id
     ? await supabase.from("profiles").select("*").eq("id", user.id).single()
     : { data: null };
@@ -31,8 +35,11 @@ export default async function Page() {
   return (
     <>
       <h1 className="font-bold">dashboard</h1>
-      <Link href="/dashboard/settings">settings</Link>
-      <Link href="/dashboard/properties">properties</Link>
+      <div className="grid gap-2 p-4">
+        <Link href="/dashboard/settings">settings</Link>
+        <Link href="/dashboard/properties">properties</Link>
+        <Link href="/dashboard/messages">messages</Link>
+      </div>
 
       <div className="h-[50vh] border border-solid border-black overflow-y-auto">
         <div className="p-4 ">
@@ -70,7 +77,6 @@ export default async function Page() {
           {profile && <pre>{JSON.stringify(profile, null, 2)}</pre>}
         </div>
       </div>
-
     </>
   );
 }

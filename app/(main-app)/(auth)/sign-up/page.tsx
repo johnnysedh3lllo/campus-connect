@@ -51,11 +51,22 @@ export default async function Signup(props: {
 
             <div className="flex gap-4">
               <label className="flex gap-2" htmlFor="option-landlord">
-                <input required type="radio" value='2' id="option-landlord" name="role_id" />
+                <input
+                  required
+                  type="radio"
+                  value="2"
+                  id="option-landlord"
+                  name="role_id"
+                />
                 Landlord
               </label>
               <label className="flex gap-2" htmlFor="option-tenant">
-                <input type="radio" value='3' id="option-tenant" name="role_id" />
+                <input
+                  type="radio"
+                  value="3"
+                  id="option-tenant"
+                  name="role_id"
+                />
                 Tenant
               </label>
             </div>

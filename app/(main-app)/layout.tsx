@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { Metadata } from "next";
@@ -9,7 +8,8 @@ import "@/app/globals.css";
 import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
 import Navigation from "@/components/ui/navigation";
 
-import React from "react";
+import React, { Suspense } from "react";
+import Loading from "./dashboard/loading";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -30,21 +30,20 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const supabase = await createClient();
-
   const {
     data: { user },
+    error: getUserError,
   }: UserResponse = await supabase.auth.getUser();
-
-  if (!user) {
-    return redirect("/sign-in");
-  }
 
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className="h-screen flex flex-col bg-background text-foreground">
         <ThemeProviderWrapper>
-          <Navigation route="/dashboard" />
-          <div className="flex-1 min-h-0">{children}</div>
+          <Navigation route={!user ? "/" : "/dashboard"} />
+
+          <div className="flex-1 min-h-0">
+            <Suspense fallback={<Loading />}>{children}</Suspense>
+          </div>
         </ThemeProviderWrapper>
       </body>
     </html>

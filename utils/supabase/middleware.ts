@@ -46,7 +46,7 @@ export const updateSession = async (request: NextRequest) => {
 
     // redirects when user is logged in
     if (request.nextUrl.pathname === "/sign-in" && !user.error) {
-      return NextResponse.redirect(new URL("/", request.url));
+      return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
     if (request.nextUrl.pathname === "/sign-up" && !user.error) {
@@ -64,4 +64,8 @@ export const updateSession = async (request: NextRequest) => {
       },
     });
   }
+};
+
+export const config = {
+  matcher: ["/sign-in", "/dashboard"],
 };

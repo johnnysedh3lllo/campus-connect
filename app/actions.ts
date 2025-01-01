@@ -7,7 +7,6 @@ import { redirect } from "next/navigation";
 // import { UserResponse } from "@supabase/supabase-js";
 
 // auth functions
-
 export const signUpAction = async (formData: FormData) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
@@ -135,10 +134,11 @@ export const resetPasswordAction = async (formData: FormData) => {
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
+
   return redirect("/sign-in");
 };
 
-// CRUD functions
+// C.R.U.D functions
 export const insertProperty = async (userId: string) => {
   const supabase = await createClient();
 
