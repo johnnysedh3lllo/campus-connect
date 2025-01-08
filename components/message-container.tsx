@@ -1,6 +1,5 @@
 "use client";
 import { v4 as uuidv4 } from "uuid";
-
 import React, { useEffect, useState } from "react";
 import { SubmitButton } from "./submit-button";
 import { Button } from "./ui/button";
@@ -15,55 +14,55 @@ interface Message {
   text: string;
 }
 
-let storedMessages = [] as Message[];
-
 const MessageContainer: React.FC<MessageContainerProps> = ({ userId }) => {
   interface FormEvent extends React.FormEvent<HTMLFormElement> {}
 
   // Removed incorrect InputEvent interface
-  const [messageText, setMessageText] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
   const chatId = "68cd17e8-315f-4f1b-a650-0bec87572cf6";
+  const [messageText, setMessageText] = useState("");
+  const [chatMessages, setChatMessages] = useState(() => {
+
+    // the window obj may not be mounted when the page loads
+    // so this checks 
+    if (typeof window !== "undefined") {
+      const storedMsgs = localStorage.getItem(chatId);
+      return storedMsgs ? JSON.parse(storedMsgs) : [];
+    }
+    return [];
+  });
+  const [isTyping, setIsTyping] = useState(false);
 
   const senderId = userId;
   const receiverId = "b38596d9-48d6-4e29-81aa-036d4f4ae987";
 
-  storedMessages = JSON.parse(localStorage.getItem(chatId) as string) || []; // first checking for previous messages. if none, return empty array
-  // console.log(userId);
-  console.log("uuid:", uuidv4());
+  useEffect(() => {
+    if (chatMessages.length > 0) {
+      localStorage.setItem(chatId, JSON.stringify(chatMessages));
+    }
+  }, [chatMessages, chatId]);
 
   const handleSubmit = (e: FormEvent): void => {
     e.preventDefault();
 
-    // // TODO: GET SENT MESSAGE
-    const formData = new FormData(e.target as HTMLFormElement);
-    const message = formData.get("message");
+    if (!messageText) return; // to prevent sending empty text
 
-    // // TODO: STORE MESSAGE SOMEWHERE OR LOG TO CONSOLE
-    // ?: HOW DO YOU STORE MESSAGES IN LOCAL STORAGE
-    storedMessages.push({ sender: senderId, text: message } as Message);
-    localStorage.setItem(chatId, JSON.stringify(storedMessages));
+    const newMessage = { sender: senderId, text: messageText } as Message;
 
-    // // TODO: SET TYPING TO FALSE AND CLEAR TEXT INPUT FIELD
+    setChatMessages((prevMessage: Message[]) => [...prevMessage, newMessage]);
     setIsTyping(false);
     setMessageText("");
-
-    // TODO: GET AND DISPLAY MESSAGES IN CHAT
-
-    // Retrieve messages
-    storedMessages = JSON.parse(localStorage.getItem(chatId) as string) || [];
-    console.log("Retrieved Messages for Chat ID:", storedMessages);
   };
 
   // to handle the "Typing..." mechanism
   useEffect(() => {
-    if (messageText === "") return; // Skip the effect if input is empty
+    if (!messageText) {
+      setIsTyping(false);
+      return;
+    } // Skip the effect if input is empty
 
     setIsTyping(true);
-
     const timeout = setTimeout(() => {
       setIsTyping(false);
-      setMessageText(messageText);
     }, 500); // Delay to simulate the user "stopping typing" after 2 seconds of inactivity
 
     // This cleanup function will run at the beginning of every render (except the first one),
@@ -74,7 +73,6 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ userId }) => {
   }, [messageText]); // The effect re-runs every time messageText changes
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsTyping(true);
     setMessageText(e.target.value);
   };
 
@@ -101,16 +99,17 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ userId }) => {
           </div>
           <div className="overflow-y-auto h-full flex flex-col gap-2">
             <div className="overflow-y-auto scroll-smooth h-full flex flex-col gap-2 [scrollbar-width:_none]">
-              {storedMessages.map((message: Message, index) => {
-                return (
-                  <div
-                    className={`p-2 rounded w-fit bg-primary ${message.sender !== userId ? "self-start" : "self-end"} text-white`}
-                    key={index}
-                  >
-                    <p>{message.text}</p>
-                  </div>
-                );
-              })}
+              {chatMessages &&
+                chatMessages.map((message: Message, index: number) => {
+                  return (
+                    <div
+                      className={`p-2 rounded w-fit bg-primary ${message.sender !== userId ? "self-start" : "self-end"} text-white`}
+                      key={index}
+                    >
+                      <p>{message.text}</p>
+                    </div>
+                  );
+                })}
             </div>
             {isTyping ? (
               <p
@@ -134,10 +133,13 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ userId }) => {
               onChange={handleChange}
               value={messageText}
               name="message"
+              autoComplete="off"
               id="message"
             />
 
-            <SubmitButton pendingText="Sending...">Send</SubmitButton>
+            <SubmitButton disabled={!messageText} pendingText="Sending...">
+              Send
+            </SubmitButton>
           </form>
         </section>
         {/* <section className="flex-1">
