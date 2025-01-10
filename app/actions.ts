@@ -163,17 +163,9 @@ export const insertProperty = async (userId: string) => {
 };
 
 export const addMessage = async (formData: FormData) => {
+  const supabase = await createClient();
+
   const message = formData.get("message") as string;
 
-  localStorage.setItem("message", message);
-
-
-  // if (localStorage.getItem("message")) {
-  //   console.log(
-  //     "here is your message in local storage:",
-  //     localStorage.getItem("message")
-  //   );
-  // } else {
-  //   console.log("message does not exist");
-  // }
+  console.log(message);
 };

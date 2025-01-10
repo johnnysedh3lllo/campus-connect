@@ -9,6 +9,61 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          conversation_uuid: string | null
+          country_id: number | null
+          created_at: string
+          id: number
+          last_message_id: number | null
+          updated_at: string
+          user1_id: string
+          user2_id: string
+        }
+        Insert: {
+          conversation_uuid?: string | null
+          country_id?: number | null
+          created_at?: string
+          id?: never
+          last_message_id?: number | null
+          updated_at?: string
+          user1_id: string
+          user2_id: string
+        }
+        Update: {
+          conversation_uuid?: string | null
+          country_id?: number | null
+          created_at?: string
+          id?: never
+          last_message_id?: number | null
+          updated_at?: string
+          user1_id?: string
+          user2_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_country_id_fkey"
+            columns: ["country_id"]
+            isOneToOne: false
+            referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_user1_id_fkey"
+            columns: ["user1_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_user2_id_fkey"
+            columns: ["user2_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       countries: {
         Row: {
           id: number
@@ -23,6 +78,47 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: number
+          created_at: string
+          edited_at: string | null
+          id: number
+          message_uuid: string | null
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: number
+          created_at?: string
+          edited_at?: string | null
+          id?: never
+          message_uuid?: string | null
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: number
+          created_at?: string
+          edited_at?: string | null
+          id?: never
+          message_uuid?: string | null
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_conversation"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -57,7 +153,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_role"
+            foreignKeyName: "profiles_role_id_fkey"
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
@@ -73,6 +169,7 @@ export type Database = {
           landlord_id: string | null
           location: string | null
           price: number | null
+          property_uuid: string | null
           title: string | null
           updated_at: string | null
         }
@@ -83,6 +180,7 @@ export type Database = {
           landlord_id?: string | null
           location?: string | null
           price?: number | null
+          property_uuid?: string | null
           title?: string | null
           updated_at?: string | null
         }
@@ -93,6 +191,7 @@ export type Database = {
           landlord_id?: string | null
           location?: string | null
           price?: number | null
+          property_uuid?: string | null
           title?: string | null
           updated_at?: string | null
         }
