@@ -22,6 +22,7 @@ export default async function Page() {
   let { data: profile } = user?.id
     ? await supabase.from("profiles").select("*").eq("id", user.id).single()
     : { data: null };
+    
   let { data: roles } = await supabase.from("roles").select("*").single();
 
   // let { data: properties } =

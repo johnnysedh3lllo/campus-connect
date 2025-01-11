@@ -1,22 +1,17 @@
-// interface Message {
-//   content: string;
-//   conversation_id: number;
-//   created_at: string;
-//   edited_at: string | null;
-//   id: number;
-//   message_uuid: string | null;
-//   read_at: string | null;
-//   sender_id: string;
-// }
+import { Message } from "@/lib/types";
 
 export default function MessageBubble({
-  messageText,
+  userId,
+  message,
 }: {
-  messageText: string;
+  userId: string | undefined;
+  message: Message;
 }) {
   return (
-    <div className={`p-2 rounded w-fit bg-primary self-end text-white`}>
-      <p>{messageText}</p>
+    <div
+      className={`p-2 rounded w-fit bg-primary max-w-[49%]  ${userId === message.sender_id ? "self-end" : "self-start"} text-white`}
+    >
+      <p>{message.content}</p>
     </div>
   );
 }

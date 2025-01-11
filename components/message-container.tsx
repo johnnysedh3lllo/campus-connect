@@ -5,29 +5,69 @@ import MessageBubble from "./message-bubble";
 import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
 import { User } from "@supabase/supabase-js";
+// import { useQuery } from "@tanstack/react-query";
+// import { getMessages } from "@/app/actions";
+
+// import supabaseClient from "@/utils/supabase/client";
+
+import { createClient } from "@/utils/supabase/client";
+
+import { Message } from "@/lib/types";
 
 interface MessageContainerProps {
-  conversationId: string | undefined;
+  conversationUUID: string | undefined;
+  ssrConversationMessages: Message[];
+  user: User | null;
 }
 
-// interface Message {
-//   content: string;
-//   conversation_id: number;
-//   created_at: string;
-//   edited_at: string | null;
-//   id: number;
-//   message_uuid: string | null;
-//   read_at: string | null;
-//   sender_id: string;
-// }
-
-const MessageContainer = ({ conversationId }: MessageContainerProps) => {
+const MessageContainer = ({
+  conversationUUID,
+  ssrConversationMessages,
+  user,
+}: MessageContainerProps) => {
   const [messageInputValue, setMessageInputValue] = useState("");
 
+  const [messages, setMessages] = useState(ssrConversationMessages);
+
+  const supabase = createClient();
+
   useEffect(() => {
-    const timeout = setTimeout(() => {}, 500);
-    return () => clearTimeout(timeout);
-  }, [messageInputValue]);
+    const channel = supabase
+      .channel("realtime-messages")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          // filter: `conversations.conversation_uuid=eq.${conversationUUID}`,
+        },
+        (payload) => {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            payload.new as Message,
+          ]);
+        }
+      )
+      .subscribe((status) => {
+        console.log(status);
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase]); // Remove messages from dependency array
+
+  // const { data, error, isFetched } = useQuery({
+  //   queryKey: ["messages"],
+  //   queryFn: getMessagesOnClient,
+  //   initialData: ssrConversationMessages,
+  // });
+
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {}, 500);
+  //   return () => clearTimeout(timeout);
+  // }, [messageInputValue]);
 
   return (
     <>
@@ -36,10 +76,16 @@ const MessageContainer = ({ conversationId }: MessageContainerProps) => {
 
         <div className="overflow-y-auto h-full flex flex-col gap-2">
           <div className="overflow-y-auto scroll-smooth h-full flex flex-col gap-2 [scrollbar-width:_none]">
-            <MessageBubble messageText="Hey there!" />
-            <MessageBubble messageText="Hey there!" />
-            <MessageBubble messageText="Hey there!" />
-            <MessageBubble messageText="Hey there!" />
+            {messages &&
+              messages.map((message) => {
+                return (
+                  <MessageBubble
+                    userId={user?.id}
+                    key={message.message_uuid}
+                    message={message}
+                  />
+                );
+              })}
           </div>
         </div>
 

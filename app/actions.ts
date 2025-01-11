@@ -4,6 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { UserResponse } from "@supabase/supabase-js";
 // import { UserResponse } from "@supabase/supabase-js";
 
 // auth functions
@@ -139,6 +140,29 @@ export const signOutAction = async () => {
 };
 
 // C.R.U.D functions
+
+// : USER
+export const getUser = async () => {
+  const supabase = await createClient();
+
+  try {
+    const {
+      data: { user },
+      error,
+    }: UserResponse = await supabase.auth.getUser();
+    if (error) {
+      throw error;
+    }
+    return user;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("Could not get user");
+  }
+};
+
+// : PROPERTIES
 export const insertProperty = async (userId: string) => {
   const supabase = await createClient();
 
@@ -162,10 +186,26 @@ export const insertProperty = async (userId: string) => {
   }
 };
 
-export const addMessage = async (formData: FormData) => {
+// : MESSAGES
+export const getMessages = async (conversationUUID: string) => {
   const supabase = await createClient();
 
-  const message = formData.get("message") as string;
+  // USING ONE QUERY
+  try {
+    const { data, error } = await supabase
+      .from("messages")
+      .select("*, conversations!inner(id, conversation_uuid)")
+      .eq("conversations.conversation_uuid", conversationUUID)
+      .order("created_at", { ascending: true });
+    if (error) {
+      throw error;
+    }
 
-  console.log(message);
+    return data;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch conversation: ${error.message}`);
+    }
+    throw new Error("Could not get messages");
+  }
 };

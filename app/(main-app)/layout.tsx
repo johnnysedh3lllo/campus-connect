@@ -1,15 +1,20 @@
+// Utilities
 import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { Metadata } from "next";
 
+// Assets
 import { GeistSans } from "geist/font/sans";
 import "@/app/globals.css";
 
+// Components
 import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
 import Navigation from "@/components/ui/navigation";
-
 import React, { Suspense } from "react";
 import Loading from "./dashboard/loading";
+
+// Setup
+import TanstackQueryProvider from "@/utils/TanstackQueryProvider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -42,7 +47,7 @@ export default async function RootLayout({
           <Navigation route={!user ? "/" : "/dashboard"} />
 
           <div className="flex-1 min-h-0">
-            <Suspense fallback={<Loading />}>{children}</Suspense>
+            <TanstackQueryProvider>{children}</TanstackQueryProvider>
           </div>
         </ThemeProviderWrapper>
       </body>

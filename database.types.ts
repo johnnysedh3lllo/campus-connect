@@ -12,7 +12,6 @@ export type Database = {
       conversations: {
         Row: {
           conversation_uuid: string | null
-          country_id: number | null
           created_at: string
           id: number
           last_message_id: number | null
@@ -22,7 +21,6 @@ export type Database = {
         }
         Insert: {
           conversation_uuid?: string | null
-          country_id?: number | null
           created_at?: string
           id?: never
           last_message_id?: number | null
@@ -32,7 +30,6 @@ export type Database = {
         }
         Update: {
           conversation_uuid?: string | null
-          country_id?: number | null
           created_at?: string
           id?: never
           last_message_id?: number | null
@@ -41,13 +38,6 @@ export type Database = {
           user2_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "conversations_country_id_fkey"
-            columns: ["country_id"]
-            isOneToOne: false
-            referencedRelation: "countries"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "conversations_user1_id_fkey"
             columns: ["user1_id"]

@@ -582,6 +582,3 @@ CREATE POLICY "Users can delete their own media" ON public.media FOR DELETE TO a
 ----rls for profiles table
 ----(( SELECT auth.uid() AS uid) = id)
 ---- rls for roles table
-----   (id = ( SELECT profiles.role_id
-----  FROM profiles
----- WHERE (profiles.id = auth.uid())))

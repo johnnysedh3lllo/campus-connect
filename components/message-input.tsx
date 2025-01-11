@@ -1,6 +1,6 @@
 import React from "react";
 import { SubmitButton } from "./submit-button";
-import { addMessage } from "@/app/actions";
+// import { addMessage } from "@/app/actions";
 
 interface MessageInputProps {
   messageInputValue: string;
@@ -23,7 +23,7 @@ export default function MessageInput({
 
   return (
     <form
-      action={addMessage}
+      // action={addMessage}
       onSubmit={handleSubmit}
       className="p-4 flex gap-2 rounded-t-md border-solid border-black border"
     >
