@@ -10,19 +10,6 @@ export const metadata: Metadata = {
   title: "Messages",
 };
 
-interface Conversation {
-  conversation_uuid: string | null;
-  country_id: number | null;
-  created_at: string;
-  id: number;
-  last_message_id: number | null;
-  updated_at: string;
-  user1_id: string;
-  user2_id: string;
-  user1: User | null;
-  user2: User | null;
-}
-
 export default async function MessagesLayout({
   children,
 }: {
@@ -41,10 +28,7 @@ export default async function MessagesLayout({
     user1:profiles!conversations_user1_id_fkey(*),
     user2:profiles!conversations_user2_id_fkey(*)`
     )
-    .or(`user1_id.eq.${user && user.id},user2_id.eq.${user && user.id})`)) as {
-    data: Conversation[];
-    error: any;
-  };
+    .or(`user1_id.eq.${user && user.id},user2_id.eq.${user && user.id})`)) 
 
   return (
     <div className="flex h-full gap-4">
