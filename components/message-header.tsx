@@ -1,4 +1,4 @@
-export default function MessageHeader({ userFullName: string }) {
+export default function MessageHeader({ userFullName }: {userFullName: string}) {
   return (
     <div>
       <h2 className="font-bold">{userFullName}</h2>
