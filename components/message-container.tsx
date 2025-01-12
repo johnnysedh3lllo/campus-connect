@@ -12,6 +12,8 @@ import { User } from "@supabase/supabase-js";
 
 import { createClient } from "@/utils/supabase/client";
 
+const supabase = createClient();
+
 import { Message } from "@/lib/types";
 
 interface MessageContainerProps {
@@ -28,8 +30,6 @@ const MessageContainer = ({
   const [messageInputValue, setMessageInputValue] = useState("");
 
   const [messages, setMessages] = useState(ssrConversationMessages);
-
-  const supabase = createClient();
 
   useEffect(() => {
     const channel = supabase
