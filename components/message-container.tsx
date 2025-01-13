@@ -1,29 +1,35 @@
 "use client";
+
+// Utilities
 import { v4 as uuidv4 } from "uuid";
 import React, { useEffect, useState } from "react";
+// import { useQuery } from "@tanstack/react-query";
+// import { getMessages } from "@/app/actions";
+import { Database } from "@/database.types";
+import { Message } from "@/lib/types";
+
+// Components
 import MessageBubble from "./message-bubble";
 import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
-import { User } from "@supabase/supabase-js";
-// import { useQuery } from "@tanstack/react-query";
-// import { getMessages } from "@/app/actions";
+import { createClient, User } from "@supabase/supabase-js";
 
-// import supabaseClient from "@/utils/supabase/client";
+const supabase = createClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-import { createClient } from "@/utils/supabase/client";
-
-const supabase = createClient();
-
-import { Message } from "@/lib/types";
+// import { createClient } from "@/utils/supabase/client";
+// const supabase = createClient();
 
 interface MessageContainerProps {
-  conversationUUID: string | undefined;
+  conversationId: string | undefined;
   ssrConversationMessages: Message[];
   user: User | null;
 }
 
 const MessageContainer = ({
-  conversationUUID,
+  conversationId,
   ssrConversationMessages,
   user,
 }: MessageContainerProps) => {
@@ -31,32 +37,32 @@ const MessageContainer = ({
 
   const [messages, setMessages] = useState(ssrConversationMessages);
 
-  useEffect(() => {
-    const channel = supabase
-      .channel("realtime-messages")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          // filter: `conversations.conversation_uuid=eq.${conversationUUID}`,
-        },
-        (payload) => {
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            payload.new as Message,
-          ]);
-        }
-      )
-      .subscribe((status) => {
-        console.log(status);
-      });
+  // useEffect(() => {
+  //   const channel = supabase
+  //     .channel("realtime-messages")
+  //     .on(
+  //       "postgres_changes",
+  //       {
+  //         event: "INSERT",
+  //         schema: "public",
+  //         table: "messages",
+  //         // filter: `conversations.conversation_uuid=eq.${conversationId}`,
+  //       },
+  //       (payload) => {
+  //         setMessages((prevMessages) => [
+  //           ...prevMessages,
+  //           payload.new as Message,
+  //         ]);
+  //       }
+  //     )
+  //     .subscribe((status) => {
+  //       console.log(status);
+  //     });
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [supabase]); // Remove messages from dependency array
+  //   return () => {
+  //     supabase.removeChannel(channel);
+  //   };
+  // }, [supabase]); // Remove messages from dependency array
 
   // const { data, error, isFetched } = useQuery({
   //   queryKey: ["messages"],
@@ -64,10 +70,10 @@ const MessageContainer = ({
   //   initialData: ssrConversationMessages,
   // });
 
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {}, 500);
-  //   return () => clearTimeout(timeout);
-  // }, [messageInputValue]);
+  useEffect(() => {
+    const timeout = setTimeout(() => {}, 500);
+    return () => clearTimeout(timeout);
+  }, [messageInputValue]);
 
   return (
     <>

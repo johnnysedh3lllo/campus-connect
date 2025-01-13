@@ -582,3 +582,35 @@ CREATE POLICY "Users can delete their own media" ON public.media FOR DELETE TO a
 ----rls for profiles table
 ----(( SELECT auth.uid() AS uid) = id)
 ---- rls for roles table
+-- messages rls in regards to users viewing messages in their conversations
+(
+    (
+        (
+            SELECT
+                auth.uid() AS uid
+        ) = sender_id
+    )
+    OR (
+        conversation_id IN (
+            SELECT
+                conversations.id
+            FROM
+                conversations
+            WHERE
+                (
+                    (
+                        conversations.user1_id = (
+                            SELECT
+                                auth.uid() AS uid
+                        )
+                    )
+                    OR (
+                        conversations.user2_id = (
+                            SELECT
+                                auth.uid() AS uid
+                        )
+                    )
+                )
+        )
+    )
+)

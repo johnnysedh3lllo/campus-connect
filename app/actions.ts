@@ -187,15 +187,15 @@ export const insertProperty = async (userId: string) => {
 };
 
 // : MESSAGES
-export const getMessages = async (conversationUUID: string) => {
+export const getMessages = async (conversationId: string) => {
   const supabase = await createClient();
 
   // USING ONE QUERY
   try {
     const { data, error } = await supabase
       .from("messages")
-      .select("*, conversations!inner(id, conversation_uuid)")
-      .eq("conversations.conversation_uuid", conversationUUID)
+      .select("*")
+      .eq("conversation_id", conversationId)
       .order("created_at", { ascending: true });
     if (error) {
       throw error;
@@ -208,4 +208,47 @@ export const getMessages = async (conversationUUID: string) => {
     }
     throw new Error("Could not get messages");
   }
+};
+
+// : CONVERSATIONS & PARTICIPANTS
+export const getUserConversationsWithParticipants = async (userId: string) => {
+  const supabase = await createClient();
+
+  // .is("deleted_at", null)
+  // .order("created_at", { ascending: false });
+
+  const { data: conversations, error } = await supabase
+    .from("conversations")
+    .select(
+      `
+      id, 
+      created_at,
+      last_message_id,
+      participants:conversation_participants!inner(
+        profile_id,
+        profile:profiles(id, first_name, last_name, role_id)
+      )
+      `
+    )
+    .filter("participants.profile_id", "eq", userId);
+
+  console.log(conversations);
+
+  ///////////////
+  // if (error) {
+  //   console.error("Error fetching conversations:", error);
+  //   return [];
+  // }
+  // console.log(data);
+
+  // Transform the data to a more usable format
+  // return data.map((conversation) => {
+  //   return {
+  //     id: conversation.id,
+  //     created_at: conversation.created_at,
+  //     participants: conversation.conversation_participants
+  //       .map((cp) => cp.profiles)
+  //       .filter((participant) => participant.id !== userId), // Exclude the current user
+  //   };
+  // });
 };

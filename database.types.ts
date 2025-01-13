@@ -9,50 +9,59 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      conversations: {
+      conversation_participants: {
         Row: {
-          conversation_uuid: string | null
-          created_at: string
-          id: number
-          last_message_id: number | null
-          updated_at: string
-          user1_id: string
-          user2_id: string
+          conversation_id: string
+          created_at: string | null
+          profile_id: string
         }
         Insert: {
-          conversation_uuid?: string | null
-          created_at?: string
-          id?: never
-          last_message_id?: number | null
-          updated_at?: string
-          user1_id: string
-          user2_id: string
+          conversation_id: string
+          created_at?: string | null
+          profile_id: string
         }
         Update: {
-          conversation_uuid?: string | null
-          created_at?: string
-          id?: never
-          last_message_id?: number | null
-          updated_at?: string
-          user1_id?: string
-          user2_id?: string
+          conversation_id?: string
+          created_at?: string | null
+          profile_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "conversations_user1_id_fkey"
-            columns: ["user1_id"]
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "conversations_user2_id_fkey"
-            columns: ["user2_id"]
+            foreignKeyName: "conversation_participants_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
+      }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_id?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       countries: {
         Row: {
@@ -72,7 +81,7 @@ export type Database = {
       messages: {
         Row: {
           content: string
-          conversation_id: number
+          conversation_id: string | null
           created_at: string
           edited_at: string | null
           id: number
@@ -82,7 +91,7 @@ export type Database = {
         }
         Insert: {
           content: string
-          conversation_id: number
+          conversation_id?: string | null
           created_at?: string
           edited_at?: string | null
           id?: never
@@ -92,7 +101,7 @@ export type Database = {
         }
         Update: {
           content?: string
-          conversation_id?: number
+          conversation_id?: string | null
           created_at?: string
           edited_at?: string | null
           id?: never
@@ -100,15 +109,7 @@ export type Database = {
           read_at?: string | null
           sender_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "fk_conversation"
-            columns: ["conversation_id"]
-            isOneToOne: false
-            referencedRelation: "conversations"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -216,7 +217,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_conversation: {
+        Args: {
+          user1_id: string
+          user2_id: string
+        }
+        Returns: string
+      }
+      soft_delete_conversation: {
+        Args: {
+          conversation_id_param: string
+          user_id_param: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

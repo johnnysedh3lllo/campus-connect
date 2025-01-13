@@ -8,22 +8,19 @@ import { Suspense } from "react";
 export default async function MessagesBodyPage({
   params,
 }: {
-  params: Promise<{ conversationUUID: string }>;
+  params: Promise<{ id: string }>;
 }) {
-  const { conversationUUID } = await params;
+  const { id } = await params;
   const user = await getUser();
 
-  const getMessagesByConversationUUID = getMessages.bind(
-    null,
-    conversationUUID
-  );
+  const getMessagesByConversationId = getMessages.bind(null, id);
 
-  const ssrMessages = await getMessagesByConversationUUID();
+  const ssrMessages = await getMessagesByConversationId();
 
   return (
     <Suspense fallback={<p>Loading....</p>}>
       <MessageContainer
-        conversationUUID={conversationUUID}
+        conversationId={id}
         ssrConversationMessages={ssrMessages}
         user={user}
       />
