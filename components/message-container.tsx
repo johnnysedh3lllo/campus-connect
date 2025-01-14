@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Message } from "@/lib/types";
 import MessageBubble from "./message-bubble";
 import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
@@ -33,12 +32,13 @@ const MessageContainer = ({
       .on(
         "postgres_changes",
         {
-          event: "INSERT",
+          event: "*",
           schema: "public",
           table: "messages",
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
+          console.log(payload);
           setMessages((prevMessages) => [
             ...prevMessages,
             payload.new as Message,
@@ -55,10 +55,10 @@ const MessageContainer = ({
     };
   }, [conversationId]); // Only depend on conversationId
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {}, 500);
-    return () => clearTimeout(timeout);
-  }, [messageInputValue]);
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {}, 500);
+  //   return () => clearTimeout(timeout);
+  // }, [messageInputValue]);
 
   return (
     <section className="flex-[2] flex justify-between flex-col gap-4 pl-8 pr-8">
