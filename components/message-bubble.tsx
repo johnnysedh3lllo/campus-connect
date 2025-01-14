@@ -1,5 +1,3 @@
-import { Message } from "@/lib/types";
-
 export default function MessageBubble({
   userId,
   message,

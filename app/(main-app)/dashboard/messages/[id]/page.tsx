@@ -30,6 +30,7 @@ export default async function MessagesBodyPage({
   return (
     <Suspense fallback={<p>Loading....</p>}>
       <MessageContainer
+        conversationId={id}
         ssrConversationMessages={ssrMessages}
         user={user}
         participants={participants}

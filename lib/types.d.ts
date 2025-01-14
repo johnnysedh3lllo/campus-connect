@@ -2,7 +2,7 @@ import { Database as DB } from "@/database.types";
 
 declare global {
   interface Database extends DB {}
-  interface Message extends DB["public"]["Tables"]["messages"]["Row"] {}
+  type Message = DB["public"]["Tables"]["messages"]["Row"];
   type Participant = Pick<
     DB["public"]["Tables"]["profiles"]["Row"],
     "id" | "first_name" | "last_name" | "role_id" | "email"

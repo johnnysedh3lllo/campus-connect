@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default async function Login(props: { searchParams: Promise<Message> }) {
   const searchParams = await props.searchParams;
 
-  console.log("you've need to sign in to view this page");
+  console.log("you'll need to sign in to view this page");
   return (
     <form className="flex flex-col min-w-64 max-w-64 mx-auto">
       <h1 className="text-2xl font-medium">Sign in</h1>
