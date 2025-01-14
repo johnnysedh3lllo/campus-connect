@@ -45,18 +45,21 @@ export type Database = {
       conversations: {
         Row: {
           created_at: string
+          deleted_at: string | null
           id: string
           last_message_id: number | null
           updated_at: string
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           id?: string
           last_message_id?: number | null
           updated_at?: string
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           id?: string
           last_message_id?: number | null
           updated_at?: string
@@ -223,6 +226,18 @@ export type Database = {
           user2_id: string
         }
         Returns: string
+      }
+      get_conversations_for_profile: {
+        Args: {
+          pid: string
+        }
+        Returns: {
+          conversation_id: string
+          created_at: string
+          deleted_at: string
+          updated_at: string
+          participants: Json
+        }[]
       }
       soft_delete_conversation: {
         Args: {

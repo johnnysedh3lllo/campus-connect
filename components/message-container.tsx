@@ -5,64 +5,58 @@ import { v4 as uuidv4 } from "uuid";
 import React, { useEffect, useState } from "react";
 // import { useQuery } from "@tanstack/react-query";
 // import { getMessages } from "@/app/actions";
-import { Database } from "@/database.types";
 import { Message } from "@/lib/types";
 
 // Components
 import MessageBubble from "./message-bubble";
 import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
-import { createClient, User } from "@supabase/supabase-js";
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-// import { createClient } from "@/utils/supabase/client";
-// const supabase = createClient();
+import { User } from "@supabase/supabase-js";
+import { supabase } from "@/utils/supabase/client";
 
 interface MessageContainerProps {
-  conversationId: string | undefined;
   ssrConversationMessages: Message[];
   user: User | null;
+  participants: ConvoParticipant[] | undefined;
 }
 
+// console.log(supabase)
+
 const MessageContainer = ({
-  conversationId,
   ssrConversationMessages,
   user,
+  participants,
 }: MessageContainerProps) => {
   const [messageInputValue, setMessageInputValue] = useState("");
 
   const [messages, setMessages] = useState(ssrConversationMessages);
 
-  // useEffect(() => {
-  //   const channel = supabase
-  //     .channel("realtime-messages")
-  //     .on(
-  //       "postgres_changes",
-  //       {
-  //         event: "INSERT",
-  //         schema: "public",
-  //         table: "messages",
-  //         // filter: `conversations.conversation_uuid=eq.${conversationId}`,
-  //       },
-  //       (payload) => {
-  //         setMessages((prevMessages) => [
-  //           ...prevMessages,
-  //           payload.new as Message,
-  //         ]);
-  //       }
-  //     )
-  //     .subscribe((status) => {
-  //       console.log(status);
-  //     });
+  useEffect(() => {
+    const channel = supabase
+      .channel("realtime-messages")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          // filter: `conversations.conversation_uuid=eq.${conversationId}`,
+        },
+        (payload) => {
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            payload.new as Message,
+          ]);
+        }
+      )
+      .subscribe((status) => {
+        console.log(status);
+      });
 
-  //   return () => {
-  //     supabase.removeChannel(channel);
-  //   };
-  // }, [supabase]); // Remove messages from dependency array
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase]); // Remove messages from dependency array
 
   // const { data, error, isFetched } = useQuery({
   //   queryKey: ["messages"],
@@ -78,7 +72,7 @@ const MessageContainer = ({
   return (
     <>
       <section className="flex-[2] flex justify-between flex-col gap-4 pl-8 pr-8">
-        <MessageHeader userFullName={"John Doe"} />
+        <MessageHeader chatParticipants={participants} />
 
         <div className="overflow-y-auto h-full flex flex-col gap-2">
           <div className="overflow-y-auto scroll-smooth h-full flex flex-col gap-2 [scrollbar-width:_none]">

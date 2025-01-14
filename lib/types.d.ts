@@ -1,24 +1,28 @@
-export interface Conversation {
-  id: number;
-  conversation_uuid: string | null;
-  // country_id: number | null;
-  // created_at: string;
-  // last_message_id: number | null;
-  // updated_at: string;
-  // user1_id: string;
-  // user2_id: string;
-  // user1: User | null;
-  // user2: User | null;
-}
+import { Database as DB } from "@/database.types";
 
-export interface Message {
-  content: string;
-  conversation_id: number;
-  created_at: string;
-  edited_at: string | null;
-  id: number;
-  message_uuid: string | null;
-  read_at: string | null;
-  sender_id: string;
-  conversations: Conversation;
+declare global {
+  interface Database extends DB {}
+  interface Message extends DB["public"]["Tables"]["messages"]["Row"] {}
+  type Participant = Pick<
+    DB["public"]["Tables"]["profiles"]["Row"],
+    "id" | "first_name" | "last_name" | "role_id" | "email"
+  >;
+  interface Conversations {
+    conversation_id: DB["public"]["Tables"]["conversations"]["Row"]["id"];
+    created_at: DB["public"]["Tables"]["conversations"]["Row"]["created_at"];
+    deleted_at: DB["public"]["Tables"]["conversations"]["Row"]["deleted_at"];
+    updated_at: DB["public"]["Tables"]["conversations"]["Row"]["updated_at"];
+    participants: Participant[];
+  }
+
+  interface ConvoParticipant {
+    conversation_id: string;
+    created_at: string | null;
+    profile_id: string;
+    profiles: {
+      first_name: string | null;
+      last_name: string | null;
+      email: string;
+    } | null;
+  }
 }

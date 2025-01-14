@@ -141,7 +141,7 @@ export const signOutAction = async () => {
 
 // C.R.U.D functions
 
-// : USER
+// USER
 export const getUser = async () => {
   const supabase = await createClient();
 
@@ -162,7 +162,7 @@ export const getUser = async () => {
   }
 };
 
-// : PROPERTIES
+// PROPERTIES
 export const insertProperty = async (userId: string) => {
   const supabase = await createClient();
 
@@ -186,7 +186,9 @@ export const insertProperty = async (userId: string) => {
   }
 };
 
-// : MESSAGES
+// MESSAGES
+
+// Get Messages
 export const getMessages = async (conversationId: string) => {
   const supabase = await createClient();
 
@@ -198,10 +200,11 @@ export const getMessages = async (conversationId: string) => {
       .eq("conversation_id", conversationId)
       .order("created_at", { ascending: true });
     if (error) {
+      console.log("Error during fetching", error);
       throw error;
     }
 
-    return data;
+    return data as Message[];
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch conversation: ${error.message}`);
@@ -210,45 +213,53 @@ export const getMessages = async (conversationId: string) => {
   }
 };
 
-// : CONVERSATIONS & PARTICIPANTS
+// Insert Message
+
+// CONVERSATIONS
 export const getUserConversationsWithParticipants = async (userId: string) => {
   const supabase = await createClient();
 
-  // .is("deleted_at", null)
-  // .order("created_at", { ascending: false });
+  try {
+    const { data: conversations, error } = await supabase
+      .rpc("get_conversations_for_profile", { pid: userId })
+      .is("deleted_at", null);
 
-  const { data: conversations, error } = await supabase
-    .from("conversations")
-    .select(
-      `
-      id, 
-      created_at,
-      last_message_id,
-      participants:conversation_participants!inner(
-        profile_id,
-        profile:profiles(id, first_name, last_name, role_id)
-      )
-      `
-    )
-    .filter("participants.profile_id", "eq", userId);
+    if (error) {
+      console.error("Error fetching conversations:", error);
+      throw error;
+    }
 
-  console.log(conversations);
+    return conversations as Conversations[];
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to get conversations ${error.message}`);
+    }
+  }
+};
 
-  ///////////////
-  // if (error) {
-  //   console.error("Error fetching conversations:", error);
-  //   return [];
-  // }
-  // console.log(data);
+// PARTICIPANTS
+export const getParticipants = async (
+  conversationId: string,
+  userId: string
+) => {
+  const supabase = await createClient();
 
-  // Transform the data to a more usable format
-  // return data.map((conversation) => {
-  //   return {
-  //     id: conversation.id,
-  //     created_at: conversation.created_at,
-  //     participants: conversation.conversation_participants
-  //       .map((cp) => cp.profiles)
-  //       .filter((participant) => participant.id !== userId), // Exclude the current user
-  //   };
-  // });
+  try {
+    const { data: participants, error } = await supabase
+      .from("conversation_participants")
+      .select("*, profiles(first_name, last_name, email)")
+      .eq("conversation_id", conversationId)
+      .neq("profile_id", userId);
+
+    if (error) {
+      console.error("Error fetching participants:", error);
+      throw error;
+    }
+
+    return participants;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to get participants ${error.message}`);
+    }
+  }
 };
