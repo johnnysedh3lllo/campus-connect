@@ -2,7 +2,12 @@ import { Database as DB } from "@/database.types";
 
 declare global {
   interface Database extends DB {}
-  type Message = DB["public"]["Tables"]["messages"]["Row"];
+  type Message = DB["public"]["Tables"]["messages"]["Row"] & {
+    // Add this to track optimistic updates
+    optimisticId?: string; // Temporary client-side ID for tracking
+    status?: "optimistic" | "confirmed" | "failed";
+  };
+
   type Participant = Pick<
     DB["public"]["Tables"]["profiles"]["Row"],
     "id" | "first_name" | "last_name" | "role_id" | "email"

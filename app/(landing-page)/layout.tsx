@@ -1,4 +1,4 @@
-import Navigation from "@/components/ui/navigation";
+import Navigation from "@/components/navigation";
 
 import { GeistSans } from "geist/font/sans";
 import "@/app/globals.css";

@@ -1,0 +1,314 @@
+// types.ts
+interface Message {
+  id?: string;
+  message_uuid?: string;
+  conversation_id: string;
+  content: string;
+  sender_id: string;
+  created_at: string;
+  edited_at: string | null;
+  read_at: string | null;
+  optimisticId?: string;
+  status?: 'optimistic' | 'confirmed' | 'failed';
+}
+
+interface ConvoParticipant {
+  id: string;
+  profiles?: {
+    first_name: string;
+    last_name: string;
+  };
+}
+
+// message-container.tsx
+"use client";
+import React, { useEffect, useState } from "react";
+import MessageBubble from "./message-bubble";
+import MessageInput from "./message-input";
+import MessageHeader from "./message-header";
+import { User } from "@supabase/supabase-js";
+import { supabase } from "@/utils/supabase/client";
+
+interface MessageContainerProps {
+  conversationId: string;
+  ssrConversationMessages: Message[];
+  user: User | null;
+  participants: ConvoParticipant[] | undefined;
+}
+
+const MessageContainer = ({
+  conversationId,
+  ssrConversationMessages,
+  user,
+  participants,
+}: MessageContainerProps) => {
+  const [messageInputValue, setMessageInputValue] = useState("");
+  const [messages, setMessages] = useState(ssrConversationMessages);
+
+  useEffect(() => {
+    const channelName = `messages-${conversationId.slice(0, 8)}`;
+    const channel = supabase
+      .channel(channelName)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          setMessages((prevMessages) => {
+            const optimisticIndex = prevMessages.findIndex(
+              (msg) => 
+                msg.status === 'optimistic' && 
+                msg.content === payload.new.content &&
+                msg.sender_id === payload.new.sender_id
+            );
+            
+            if (optimisticIndex !== -1) {
+              const updatedMessages = [...prevMessages];
+              updatedMessages[optimisticIndex] = {
+                ...payload.new,
+                status: 'confirmed',
+                optimisticId: prevMessages[optimisticIndex].optimisticId
+              };
+              return updatedMessages;
+            }
+            
+            return [...prevMessages, { ...payload.new, status: 'confirmed' }];
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          setMessages((prevMessages) => 
+            prevMessages.filter((msg) => msg.id !== payload.old.id)
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId]);
+
+  return (
+    <section className="flex-[2] flex justify-between flex-col gap-4 pl-8 pr-8">
+      <MessageHeader chatParticipants={participants} />
+
+      <div className="overflow-y-auto h-full flex flex-col gap-2">
+        <div className="overflow-y-auto scroll-smooth h-full flex flex-col gap-2 [scrollbar-width:_none] p-2 border-solid border-black border rounded">
+          {messages?.map((message) => (
+            <MessageBubble
+              userId={user?.id}
+              key={message.optimisticId || message.id}
+              message={message}
+            />
+          ))}
+        </div>
+      </div>
+
+      <MessageInput
+        userId={user?.id}
+        conversationId={conversationId}
+        messageInputValue={messageInputValue}
+        setMessageInputValue={setMessageInputValue}
+        setMessages={setMessages}
+      />
+    </section>
+  );
+};
+
+export default MessageContainer;
+
+// message-bubble.tsx
+"use client";
+import { useState } from "react";
+import { supabase } from "@/utils/supabase/client";
+import { CircleX, SquarePen } from "lucide-react";
+
+interface MessageBubbleProps {
+  userId: string | undefined;
+  message: Message;
+}
+
+export default function MessageBubble({
+  userId,
+  message,
+}: MessageBubbleProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (message.status === 'optimistic') {
+      return;
+    }
+    
+    setIsDeleting(true);
+    
+    try {
+      const { error } = await supabase
+        .from("messages")
+        .delete()
+        .eq("id", message.id);
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      setIsDeleting(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    // Implement update functionality
+  };
+
+  const messageStyles = `p-2 rounded w-fit bg-primary max-w-[49%] ${
+    userId === message.sender_id ? "self-end" : "self-start"
+  } text-white ${message.status === 'optimistic' ? 'opacity-70' : ''} 
+  ${isDeleting ? 'opacity-50' : ''}`;
+
+  return (
+    <div className={messageStyles}>
+      <p>{message.content}</p>
+
+      {message.id && (
+        <div className="text-white w-full flex justify-between">
+          <button 
+            onClick={handleDelete}
+            disabled={isDeleting || message.status === 'optimistic'}
+          >
+            <CircleX />
+          </button>
+          <button onClick={handleUpdate}>
+            <SquarePen />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// message-input.tsx
+"use client";
+import React from "react";
+import { v4 as uuidv4 } from "uuid";
+import { SubmitButton } from "./submit-button";
+import { supabase } from "@/utils/supabase/client";
+
+interface MessageInputProps {
+  userId: string | undefined;
+  conversationId: string;
+  messageInputValue: string;
+  setMessageInputValue: (value: string) => void;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+}
+
+export default function MessageInput({
+  userId,
+  conversationId,
+  messageInputValue,
+  setMessageInputValue,
+  setMessages,
+}: MessageInputProps) {
+  const sendMessage = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    e.preventDefault();
+    if (!messageInputValue.trim() || !userId) return;
+
+    const optimisticId = uuidv4();
+    const optimisticMessage: Message = {
+      optimisticId,
+      conversation_id: conversationId,
+      content: messageInputValue.trim(),
+      sender_id: userId,
+      created_at: new Date().toISOString(),
+      edited_at: null,
+      read_at: null,
+      status: 'optimistic'
+    };
+
+    setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
+    setMessageInputValue("");
+
+    try {
+      const { error } = await supabase
+        .from("messages")
+        .insert([
+          {
+            conversation_id: conversationId,
+            sender_id: userId,
+            content: messageInputValue.trim(),
+          },
+        ])
+        .single();
+
+      if (error) {
+        setMessages((prevMessages) => 
+          prevMessages.filter(msg => msg.optimisticId !== optimisticId)
+        );
+        console.error('Failed to send message:', error);
+      }
+    } catch (error) {
+      setMessages((prevMessages) => 
+        prevMessages.filter(msg => msg.optimisticId !== optimisticId)
+      );
+      console.error('Failed to send message:', error);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessageInputValue(e.target.value);
+  };
+
+  return (
+    <form
+      onSubmit={sendMessage}
+      className="p-4 flex gap-2 rounded-t-md border-solid border-black border"
+    >
+      <input
+        placeholder="Type a message..."
+        className="p-2 w-full border-solid border-black border rounded-md"
+        type="text"
+        name="message"
+        autoComplete="off"
+        id="message"
+        value={messageInputValue}
+        onChange={handleChange}
+      />
+
+      <SubmitButton disabled={!messageInputValue.trim()}>Send</SubmitButton>
+    </form>
+  );
+}
+
+// message-header.tsx
+"use client";
+interface MessageHeaderProps {
+  chatParticipants: ConvoParticipant[] | undefined;
+}
+
+export default function MessageHeader({
+  chatParticipants,
+}: MessageHeaderProps) {
+  const chatName =
+    chatParticipants && chatParticipants.length === 1
+      ? `${chatParticipants[0].profiles?.first_name} ${chatParticipants[0].profiles?.last_name}`
+      : "";
+
+  return (
+    <div className="flex flex-col p-4 border-b">
+      <h2 className="font-bold text-lg">{chatName}</h2>
+      <p className="text-sm text-gray-500">Online</p>
+    </div>
+  );
+}

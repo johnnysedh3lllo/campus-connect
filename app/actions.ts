@@ -142,6 +142,8 @@ export const signOutAction = async () => {
 // C.R.U.D functions
 
 // USER
+
+// Get User
 export const getUser = async () => {
   const supabase = await createClient();
 
@@ -160,6 +162,17 @@ export const getUser = async () => {
     }
     throw new Error("Could not get user");
   }
+};
+
+// Update User
+export const updateUser = async () => {
+  // const supabase = await createClient();
+
+  // const { data, error } = await supabase.auth.updateUser({
+  //   data: {},
+  // });
+
+  console.log(data);
 };
 
 // PROPERTIES

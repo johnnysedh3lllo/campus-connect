@@ -1,10 +1,11 @@
-import { signOutAction } from "@/app/actions";
+import { signOutAction, updateUser } from "@/app/actions";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { userRoles, UserRoles } from "@/lib/testData";
 import { ThemeSwitcher } from "./theme-switcher";
+import { revalidatePath } from "next/cache";
 
 interface UserMetadata {
   first_name: string;
@@ -21,10 +22,14 @@ export default async function AuthButton(): Promise<JSX.Element> {
 
   const userMetaData = user?.user_metadata as UserMetadata;
 
+
+  // revalidatePath("/dashboard");
+
   if (user) {
     return (
       <div className="flex items-center gap-4">
-        Hey, {userMetaData.first_name}!<p>{userRoles[userMetaData?.role_id]}</p>
+        Hey, {`${userMetaData.first_name} ${userMetaData.last_name}`}!
+        <p>{userRoles[userMetaData?.role_id]}</p>
         <Button asChild size="sm" variant={"outline"}>
           <Link href="/dashboard">Dashboard</Link>
         </Button>

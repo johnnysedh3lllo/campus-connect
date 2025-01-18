@@ -9,7 +9,7 @@ import "@/app/globals.css";
 
 // Components
 import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
-import Navigation from "@/components/ui/navigation";
+import Navigation from "@/components/navigation";
 import React, { Suspense } from "react";
 import Loading from "./dashboard/loading";
 

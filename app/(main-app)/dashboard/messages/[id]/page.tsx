@@ -13,6 +13,8 @@ export default async function MessagesBodyPage({
   const { id } = await params;
   const user = await getUser();
 
+  console.log(user)
+
   if (!user) {
     throw new Error("User not found");
   }
