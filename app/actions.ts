@@ -167,12 +167,9 @@ export const getUser = async () => {
 // Update User
 export const updateUser = async () => {
   // const supabase = await createClient();
-
   // const { data, error } = await supabase.auth.updateUser({
   //   data: {},
   // });
-
-  console.log(data);
 };
 
 // PROPERTIES

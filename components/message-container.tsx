@@ -45,7 +45,7 @@ const MessageContainer = ({
         },
         (payload) => {
           const newMessage = payload.new as Message;
-          console.log(newMessage);
+          // console.log(newMessage);
 
           setMessages((prevMessages) => {
             const optimisticIndex = prevMessages.findIndex(
@@ -93,7 +93,7 @@ const MessageContainer = ({
               return msg;
             });
 
-            console.log("edited messages", updatedMessages);
+            // console.log("edited messages", updatedMessages);
             return updatedMessages;
           });
         }

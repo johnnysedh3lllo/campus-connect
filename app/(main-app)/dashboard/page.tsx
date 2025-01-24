@@ -30,8 +30,8 @@ export default async function Page() {
   //     ? await supabase.from("properties").select("*").eq("landlord_id", user.id)
   //     : await supabase.from("properties").select("*");
 
-  console.log("from the roles table:", roles);
-  console.log("profiles table:", profile);
+  // console.log("from the roles table:", roles);
+  // console.log("profiles table:", profile);
 
   return (
     <>
