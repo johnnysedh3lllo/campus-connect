@@ -22,7 +22,7 @@ export default async function Page() {
   let { data: profile } = user?.id
     ? await supabase.from("profiles").select("*").eq("id", user.id).single()
     : { data: null };
-    
+
   let { data: roles } = await supabase.from("roles").select("*").single();
 
   // let { data: properties } =
@@ -41,6 +41,7 @@ export default async function Page() {
         <Link href="/dashboard/properties">properties</Link>
         <Link href="/dashboard/messages">messages</Link>
       </div>
+
 
       <div className="h-[50vh] border border-solid border-black overflow-y-auto">
         <div className="p-4 ">

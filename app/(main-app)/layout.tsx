@@ -11,7 +11,6 @@ import "@/app/globals.css";
 import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
 import Navigation from "@/components/navigation";
 import React, { Suspense } from "react";
-import Loading from "./dashboard/loading";
 
 // Setup
 import TanstackQueryProvider from "@/utils/TanstackQueryProvider";
