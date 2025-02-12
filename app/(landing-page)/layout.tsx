@@ -1,6 +1,7 @@
 import Navigation from "@/components/navigation";
 
-import { GeistSans } from "geist/font/sans";
+import { figtree } from "@/lib/fonts";
+
 import "@/app/globals.css";
 import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
 
@@ -20,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
+    <html lang="en" className={figtree.variable} suppressHydrationWarning>
       <body className="min-h-screen h-full flex flex-col bg-background text-foreground">
         <ThemeProviderWrapper>
           <Navigation route="/" />

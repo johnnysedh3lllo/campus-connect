@@ -3,10 +3,8 @@ import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import Link from "next/link";
-import { SmtpMessage } from "../smtp-message";
 
 import { Metadata } from "next";
 
@@ -26,7 +24,7 @@ export default async function Signup(props: {
   const searchParams = await props.searchParams;
   if ("message" in searchParams) {
     return (
-      <div className="w-full flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
+      <div className="flex h-screen w-full flex-1 items-center justify-center gap-2 p-4 sm:max-w-md">
         <FormMessage message={searchParams} />
       </div>
     );
@@ -34,15 +32,16 @@ export default async function Signup(props: {
 
   return (
     <>
-      <form className="flex flex-col min-w-64 max-w-64 mx-auto">
-        <h1 className="text-2xl font-medium">Sign up</h1>
-        <p className="text-sm text text-foreground">
-          Already have an account?{" "}
-          <Link className="text-primary font-medium underline" href="/sign-in">
-            Sign in
-          </Link>
-        </p>
-        <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
+      <form className="mx-auto flex max-w-64 min-w-64 flex-col">
+        <section className="flex flex-col gap-2">
+          <h1 className="text-xl leading-7 font-semibold">Sign up as:</h1>
+
+          <p className="text text-secondary-foreground text-sm">
+            What brings you to Campus Connect?
+          </p>
+        </section>
+
+        <div className="mt-8 flex flex-col gap-2 [&>input]:mb-3">
           <Label htmlFor="email">Email</Label>
           <Input name="email" placeholder="you@example.com" required />
 
@@ -98,7 +97,6 @@ export default async function Signup(props: {
           <FormMessage message={searchParams} />
         </div>
       </form>
-      <SmtpMessage />
     </>
   );
 }

@@ -1,10 +1,9 @@
 // Utilities
-import { createClient } from "@/utils/supabase/server";
-import { UserResponse } from "@supabase/supabase-js";
 import { Metadata } from "next";
 
 // Assets
-import { GeistSans } from "geist/font/sans";
+import { figtree } from "@/lib/fonts";
+
 import "@/app/globals.css";
 
 // Components
@@ -33,18 +32,11 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error: getUserError,
-  }: UserResponse = await supabase.auth.getUser();
-
   return (
-    <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-      <body className="h-screen flex flex-col bg-background text-foreground">
+    <html lang="en" className={figtree.variable} suppressHydrationWarning>
+      <body className="h-screen font-serif flex flex-col bg-background text-foreground">
         <ThemeProviderWrapper>
-          <Navigation route={!user ? "/" : "/dashboard"} />
-
+          <Navigation route={true ? "/" : "/dashboard"} />
           <div className="flex-1 min-h-0">
             <TanstackQueryProvider>{children}</TanstackQueryProvider>
           </div>
