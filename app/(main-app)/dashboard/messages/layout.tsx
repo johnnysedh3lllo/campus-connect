@@ -57,7 +57,7 @@ export default async function MessagesLayout({
           )}
         </div>
       </section>
-      <main className="border border-solid border-black flex-[2] flex pt-4 pl-4 pr-4 gap-4 w-full">
+      <main className="border border-solid border-black flex-2 flex pt-4 pl-4 pr-4 gap-4 w-full">
         {children}
       </main>
     </div>

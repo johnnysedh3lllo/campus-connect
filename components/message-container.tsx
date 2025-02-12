@@ -138,7 +138,7 @@ const MessageContainer = ({
   }, [messages]);
 
   return (
-    <section className="flex-[2] flex justify-between flex-col gap-4 pl-8 pr-8">
+    <section className="flex-2 flex justify-between flex-col gap-4 pl-8 pr-8">
       <MessageHeader chatParticipants={participants} />
 
       <div className="overflow-y-auto h-full flex flex-col gap-2 border-solid border-black border rounded">
