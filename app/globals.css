@@ -74,8 +74,8 @@
   --color-blue-800: hsla(226, 71%, 40%, 1);
   --color-blue-900: hsla(224, 64%, 33%, 1);
 
-  --color-white: hsl(0, 0, 100%);
-  
+  --color-white: hsla(0, 0, 100%, 1);
+
   /*others*/
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
