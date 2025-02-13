@@ -181,7 +181,7 @@
   --radius: 0.5rem;
 }
 
-.dark {
+/* .dark {
   --background: hsl(0 0% 3.9%);
   --foreground: hsl(0 0% 98%);
   --card: hsl(0 0% 3.9%);
@@ -206,7 +206,7 @@
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
-}
+} */
 
 @layer base {
   * {
@@ -218,7 +218,7 @@
 
   [data-radix-collection-item] {
     span[data-state="checked"] {
-      @apply border-primary rounded-full border-4 border-solid sm:border-6;
+      @apply border-primary rounded-full border-5 border-solid sm:border-6;
     }
     .lucide.lucide-circle {
       circle {
