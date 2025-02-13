@@ -2,6 +2,7 @@ import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
 import { figtree } from "@/lib/fonts";
 import "@/app/globals.css";
 import Logo from "@/components/logo";
+import Link from "next/link";
 
 export const metadata = {
   title: "Next.js",
@@ -15,13 +16,16 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
-      <body className="bg-background text-foreground flex min-h-screen flex-col font-serif">
+      <body className="bg-primary text-foreground flex min-h-screen flex-col font-serif">
         <ThemeProviderWrapper>
-          <section className="bg-primary flex h-screen flex-col items-center gap-6 pt-6 pr-4 pb-20 pl-4 sm:pt-12 sm:pr-10 sm:pb-12 sm:pl-10 lg:flex-row lg:p-6">
+          <section className="flex flex-col gap-6 pt-6 pr-4 pb-20 pl-4 sm:items-start sm:pt-12 sm:pr-10 sm:pb-12 sm:pl-10 lg:h-screen lg:flex-row lg:items-center lg:p-6">
             <div className="text-background flex w-full justify-start sm:flex-1 lg:h-full lg:items-center lg:justify-center">
-              <Logo />
+              <Link href="/">
+                <Logo />
+              </Link>
             </div>
-            <div className="bg-background grid h-full w-full place-content-center rounded-md sm:rounded-xl lg:flex-1">
+
+            <div className="bg-background w-full rounded-md sm:rounded-xl lg:flex lg:h-full lg:flex-1 lg:items-center lg:justify-center">
               {children}
             </div>
           </section>

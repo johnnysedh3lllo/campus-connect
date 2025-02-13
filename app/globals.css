@@ -129,6 +129,9 @@
   --radius-lg: calc(var(--radius) * 3);
   --radius-xl: calc(var(--radius) * 4);
 
+  /* BORDER WIDTH */
+  --border-1: 1px;
+
   /* SPACING */
   --spacing-30: 7.5rem;
   --spacing-30.5: 7.75rem;
@@ -211,5 +214,16 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  [data-radix-collection-item] {
+    span[data-state="checked"] {
+      @apply border-primary rounded-full border-4 border-solid sm:border-6;
+    }
+    .lucide.lucide-circle {
+      circle {
+        display: none;
+      }
+    }
   }
 }
