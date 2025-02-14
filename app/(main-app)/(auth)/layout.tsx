@@ -1,7 +1,7 @@
-import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
+import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
 import { figtree } from "@/lib/fonts";
 import "@/app/globals.css";
-import Logo from "@/components/logo";
+import Logo from "@/components/app/logo";
 import Link from "next/link";
 
 export const metadata = {
@@ -25,7 +25,7 @@ export default async function RootLayout({
               </Link>
             </div>
 
-            <div className="bg-background w-full rounded-md sm:rounded-xl lg:flex lg:h-full lg:flex-1 lg:items-center lg:justify-center">
+            <div className="onboarding-form bg-background w-full rounded-md px-6 py-4 sm:rounded-xl sm:px-12 sm:py-10 lg:flex lg:h-full lg:flex-1 lg:justify-center">
               {children}
             </div>
           </section>

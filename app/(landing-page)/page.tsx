@@ -1,7 +1,7 @@
-import Hero from "@/components/hero";
+import Hero from "@/components/app/hero";
 // import Navigation from "@/components/ui/navigation";
 
-import { ThemeSwitcher } from "@/components/theme-switcher";
+import { ThemeSwitcher } from "@/components/app/theme-switcher";
 import { createClient } from "@/utils/supabase/server";
 import { insertProperty } from "../actions";
 import { UserResponse } from "@supabase/supabase-js";
@@ -21,12 +21,12 @@ export default async function Index() {
   return (
     <>
       {user?.user_metadata.role_id === 2 && (
-        <button className="p-4 bg-amber-200" onClick={insertPropertyWithUserId}>
+        <button className="bg-amber-200 p-4" onClick={insertPropertyWithUserId}>
           click me!
         </button>
       )}
       <Hero />
-      <main className="p-12 gap-8">
+      <main className="gap-8 p-12">
         <div className="flex flex-col gap-8">
           <p>
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Expedita
@@ -123,7 +123,7 @@ export default async function Index() {
           </p>
         </div>
       </main>
-      <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
+      <footer className="mx-auto flex w-full items-center justify-center gap-8 border-t py-16 text-center text-xs">
         <ThemeSwitcher />
       </footer>
     </>

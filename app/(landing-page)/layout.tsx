@@ -1,9 +1,9 @@
-import Navigation from "@/components/navigation";
+import Navigation from "@/components/app/navigation";
 
 import { figtree } from "@/lib/fonts";
 
 import "@/app/globals.css";
-import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
+import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
-      <body className="min-h-screen h-full flex flex-col bg-background text-foreground">
+      <body className="bg-background text-foreground flex h-full min-h-screen flex-col">
         <ThemeProviderWrapper>
           <Navigation route="/" />
           <main>{children}</main>

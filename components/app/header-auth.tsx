@@ -1,6 +1,6 @@
 import { signOutAction, updateUser } from "@/app/actions";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { userRoles, UserRoles } from "@/lib/testData";
@@ -21,7 +21,6 @@ export default async function AuthButton(): Promise<JSX.Element> {
   }: UserResponse = await supabase.auth.getUser();
 
   const userMetaData = user?.user_metadata as UserMetadata;
-
 
   // revalidatePath("/dashboard");
 

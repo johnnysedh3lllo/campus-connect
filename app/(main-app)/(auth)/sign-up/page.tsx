@@ -1,43 +1,60 @@
-import { signUpAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client";
 
-import Link from "next/link";
-
-import { SelectRole } from "./form-steps";
+import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
 import { Metadata } from "next";
+import { useMultiStepForm, type FormData } from "@/hooks/useMultiStepForm";
+import { useEffect } from "react";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
 //   : "http://localhost:3000";
 
-export const metadata: Metadata = {
-  // metadataBase: new URL(defaultUrl),
-  title: "Sign Up | Campus Connect",
-  // description: "Your rental paradise",
+const initialData: FormData = {
+  role: "",
+  firstName: "",
+  lastName: "",
+  email: "",
+  otp: "",
+  password: "",
 };
 
-export default async function Signup(props: {
-  searchParams: Promise<Message>;
-}) {
-  const searchParams = await props.searchParams;
-  if ("message" in searchParams) {
-    return (
-      <div className="flex h-screen w-full flex-1 items-center justify-center gap-2 p-4 sm:max-w-md">
-        <FormMessage message={searchParams} />
-      </div>
-    );
-  }
+export default function Signup(props: { searchParams: Promise<Message> }) {
+  const { step, setStep, formData, updateFields, nextStep, prevStep } =
+    useMultiStepForm(initialData);
+
+  useEffect(() => {
+    console.log(step);
+    console.log(formData);
+  }, [step, formData]);
+
+  // const searchParams = await props.searchParams;
+  // if ("message" in searchParams) {
+  //   return (
+  //     <div className="flex h-screen w-full flex-1 items-center justify-center gap-2 p-4 sm:max-w-md">
+  //       <FormMessage message={searchParams} />
+  //     </div>
+  //   );
+  // }
+
+  const steps = [
+    <SelectRole
+      selectedRole={formData.role}
+      updateFields={updateFields}
+      nextStep={nextStep}
+    />,
+    <GetUserInfo
+      updateFields={updateFields}
+      prevStep={prevStep}
+      nextStep={nextStep}
+    />,
+    <VerifyOtp />,
+    <SetPassword />,
+  ];
 
   return (
-    <div className="flex flex-col gap-6 pt-6 pr-4 pb-6 pl-4 sm:p-16 lg:w-full">
-      <div>1/4</div>
-
-      <SelectRole />
-      {/* forms */}
-      {/* forms */}
+    <div className="flex flex-col gap-6 lg:w-full lg:overflow-auto scrollbar-hidden">
+      <div className="bg-background sticky top-0">{`${step + 1}/${steps.length}`}</div>
+      {steps[step]}
     </div>
   );
 }

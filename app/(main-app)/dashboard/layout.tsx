@@ -7,8 +7,8 @@ import { figtree } from "@/lib/fonts";
 import "@/app/globals.css";
 
 // Components
-import ThemeProviderWrapper from "@/components/theme-provider-wrapper";
-import Navigation from "@/components/navigation";
+import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
+import Navigation from "@/components/app/navigation";
 import React, { Suspense } from "react";
 
 // Setup
@@ -34,10 +34,10 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
-      <body className="h-screen font-serif flex flex-col bg-background text-foreground">
+      <body className="bg-background text-foreground flex h-screen flex-col font-serif">
         <ThemeProviderWrapper>
           <Navigation route={true ? "/" : "/dashboard"} />
-          <div className="flex-1 min-h-0">
+          <div className="min-h-0 flex-1">
             <TanstackQueryProvider>{children}</TanstackQueryProvider>
           </div>
         </ThemeProviderWrapper>

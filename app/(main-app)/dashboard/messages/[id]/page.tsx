@@ -1,5 +1,5 @@
 // Utilities
-import MessageContainer from "@/components/message-container";
+import MessageContainer from "@/components/app/message-container";
 import { getMessages, getParticipants, getUser } from "@/app/actions";
 
 // Components
@@ -22,7 +22,7 @@ export default async function MessagesBodyPage({
   const getParticipantsByConversationId = getParticipants.bind(
     null,
     id,
-    user?.id
+    user?.id,
   );
 
   const getMessagesByConversationId = getMessages.bind(null, id);

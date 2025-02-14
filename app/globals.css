@@ -9,6 +9,7 @@
 
   /* BREAKPOINTS */
   --breakpoint-2xl: 90rem;
+  --breakpoint-3xl: 96rem;
 
   /* COLORS */
   --color-*: initial;
@@ -109,7 +110,7 @@
   --color-destructive-foreground: var(--destructive-foreground);
 
   --color-border: var(--border);
-
+  --color-line: var(--line);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
@@ -124,16 +125,18 @@
 
   /* BORDER RADIUS */
   --radius-*: initial;
+  --radius-xs: calc(var(--radius) / 2);
   --radius-sm: var(--radius);
   --radius-md: calc(var(--radius) * 2);
   --radius-lg: calc(var(--radius) * 3);
   --radius-xl: calc(var(--radius) * 4);
 
   /* BORDER WIDTH */
-  --border-1: 1px;
+  --border-width-0.6: 0.6px;
+  /* --border-1: 1px; */
 
   /* SPACING */
-  --spacing-30: 7.5rem;
+  --spacing-0.6: 0.6px --spacing-30: 7.5rem;
   --spacing-30.5: 7.75rem;
 }
 
@@ -157,10 +160,12 @@
   --muted: var(--color-red-200);
   --muted-foreground: var(--color-white);
 
-  /* for accent and destructive */
+  --placeholder: var(--color-gray-600);
 
+  /* for accent and destructive */
   --border: var(--color-gray-600);
   --input: var(--color-gray-600);
+  --line: var(--color-gray-600);
   --ring: var(--color-gray-950);
 
   /* for chart */
@@ -208,6 +213,18 @@
   --chart-5: hsl(340 75% 55%);
 } */
 
+@utility scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility scrollbar-w-1 {
+  &::-webkit-scrollbar {
+    width: 1rem;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -224,6 +241,12 @@
       circle {
         display: none;
       }
+    }
+  }
+
+  @media (min-height: 720px) {
+    .onboarding-form {
+      @apply items-center;
     }
   }
 }
