@@ -52,7 +52,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   ];
 
   return (
-    <div className="onboarding-form--wrapper flex flex-col gap-6 lg:w-full lg:overflow-auto lg:p-2">
+    <div className="onboarding-form--wrapper flex flex-col gap-6 lg:w-full lg:overflow-auto lg:px-2">
       <div className="bg-background sticky top-0">{`${step + 1}/${steps.length}`}</div>
       {steps[step]}
     </div>
