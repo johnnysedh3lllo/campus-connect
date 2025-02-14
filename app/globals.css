@@ -244,6 +244,20 @@
     }
   }
 
+  .onboarding-form--wrapper::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /* Track */
+  .onboarding-form--wrapper::-webkit-scrollbar-track {
+    @apply bg-gray-600;
+  }
+
+  /* Handle */
+  .onboarding-form--wrapper::-webkit-scrollbar-thumb {
+    @apply bg-gray-950;
+  }
+
   @media (min-height: 720px) {
     .onboarding-form {
       @apply items-center;

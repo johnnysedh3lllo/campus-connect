@@ -73,7 +73,7 @@ export function SelectRole({
   }
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-12">
+    <div className="flex flex-col gap-6 sm:gap-12 ">
       <section className="flex flex-col gap-2">
         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
           Sign up as:
