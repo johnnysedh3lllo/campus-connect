@@ -245,17 +245,17 @@
   }
 
   .onboarding-form--wrapper::-webkit-scrollbar {
-    width: 10px;
+    @apply w-1.5;
   }
 
   /* Track */
   .onboarding-form--wrapper::-webkit-scrollbar-track {
-    @apply bg-gray-600;
+    @apply rounded-lg bg-gray-600;
   }
 
-  /* Handle */
+  /* Thumb */
   .onboarding-form--wrapper::-webkit-scrollbar-thumb {
-    @apply bg-gray-950;
+    @apply rounded-lg bg-gray-950;
   }
 
   @media (min-height: 720px) {
