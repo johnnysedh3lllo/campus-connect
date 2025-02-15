@@ -1,21 +1,13 @@
 "use client";
 
+import { MultiStepFormData } from "@/lib/formTypes";
 import { useState } from "react";
 
-export type FormData = {
-  role: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  otp: string;
-  password: string;
-};
-
-export function useMultiStepForm(initialData: FormData) {
+export function useMultiStepForm(initialData: MultiStepFormData) {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>(initialData);
+  const [formData, setFormData] = useState<MultiStepFormData>(initialData);
 
-  const updateFields = (fields: Partial<FormData>) => {
+  const updateFields = (fields: Partial<MultiStepFormData>) => {
     setFormData((prev) => ({ ...prev, ...fields }));
   };
 

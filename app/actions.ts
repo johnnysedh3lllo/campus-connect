@@ -5,7 +5,23 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserResponse } from "@supabase/supabase-js";
+import { MultiStepFormData } from "@/lib/formTypes";
 // import { UserResponse } from "@supabase/supabase-js";
+
+//TEST ACTIONS
+export async function generateOtp(userInfo: MultiStepFormData) {
+  // Simulate API call delay
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
+  // Generate a random 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  userInfo.otp = otp;
+
+  console.log(`OTP for ${userInfo.emailAddress}: ${userInfo.otp}`);
+
+  const updatedUserInfo = { ...userInfo, otp };
+  return { success: true, updatedUserInfo };
+}
 
 // auth functions
 export const signUpAction = async (formData: FormData) => {
@@ -21,7 +37,7 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/sign-up",
-      "Email and password are required"
+      "Email and password are required",
     );
   }
 
@@ -47,7 +63,7 @@ export const signUpAction = async (formData: FormData) => {
     return encodedRedirect(
       "success",
       "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link."
+      "Thanks for signing up! Please check your email for a verification link.",
     );
   }
 };
@@ -88,7 +104,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
     return encodedRedirect(
       "error",
       "/forgot-password",
-      "Could not reset password"
+      "Could not reset password",
     );
   }
 
@@ -99,7 +115,7 @@ export const forgotPasswordAction = async (formData: FormData) => {
   return encodedRedirect(
     "success",
     "/forgot-password",
-    "Check your email for a link to reset your password."
+    "Check your email for a link to reset your password.",
   );
 };
 
@@ -113,7 +129,7 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect(
       "error",
       "/reset-password",
-      "Password and confirm password are required"
+      "Password and confirm password are required",
     );
   }
 
@@ -250,7 +266,7 @@ export const getUserConversationsWithParticipants = async (userId: string) => {
 // PARTICIPANTS
 export const getParticipants = async (
   conversationId: string,
-  userId: string
+  userId: string,
 ) => {
   const supabase = await createClient();
 

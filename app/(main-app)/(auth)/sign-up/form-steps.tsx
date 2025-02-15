@@ -1,8 +1,8 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { string, z } from "zod";
 import { Button } from "@/components/ui/button";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -27,11 +27,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-
-// FORM SCHEMAS
-const roleSchema = z.object({
-  role: z.string(),
-});
+import { roleSchema, userDetailsFormsSchema } from "@/lib/formSchemas";
+import { Loader2 } from "lucide-react";
 
 const roleDetails = [
   {
@@ -50,30 +47,23 @@ const roleDetails = [
 
 type SelectRoleProps = {
   selectedRole: string;
-  updateFields: (fields: { role: string }) => void;
-  nextStep: () => void;
+  handleRoleSubmit: (values: z.infer<typeof roleSchema>) => void;
 };
 
 export function SelectRole({
   selectedRole,
-  updateFields,
-  nextStep,
+  handleRoleSubmit,
 }: SelectRoleProps) {
   const form = useForm<z.infer<typeof roleSchema>>({
     resolver: zodResolver(roleSchema),
   });
 
-  const { formState } = form;
-
-  const { isValid } = formState;
-
-  function onSubmit(values: z.infer<typeof roleSchema>) {
-    updateFields(values);
-    nextStep();
-  }
+  const {
+    formState: { isValid },
+  } = form;
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-12">
+    <div className="flex flex-col gap-6 px-2 sm:gap-12">
       <section className="flex flex-col gap-2">
         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
           Sign up as:
@@ -86,7 +76,7 @@ export function SelectRole({
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleRoleSubmit)}
           className="flex flex-col gap-6 sm:gap-12"
         >
           <FormField
@@ -156,7 +146,7 @@ export function SelectRole({
           <Button
             disabled={!isValid}
             type="submit"
-            className="w-full p-6 text-base leading-6 font-semibold"
+            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-300"
           >
             Continue
           </Button>
@@ -168,34 +158,13 @@ export function SelectRole({
   );
 }
 
-const userSchema = z.object({
-  firstName: z
-    .string()
-    .min(2, { message: "First name must be at least 2 characters." })
-    .nonempty({ message: "This field is required" }),
-  lastName: z
-    .string()
-    .min(2, { message: "Last name must be at least 2 characters." })
-    .nonempty({ message: "This field is required" }),
-  emailAddress: z
-    .string()
-    .email({ message: "Please enter a valid email address." }),
-  newsletter: z.boolean().default(true).optional(),
-});
-
-type GetUserInfo = {
-  updateFields: (fields: {
-    firstName: string;
-    lastName: string;
-    emailAddress: string;
-  }) => void;
-  nextStep: () => void;
-  prevStep: () => void;
+type GetUserInfoProps = {
+  handleEmailSubmit: (values: z.infer<typeof userDetailsFormsSchema>) => void;
 };
 
-export function GetUserInfo({ updateFields, nextStep, prevStep }: GetUserInfo) {
-  const form = useForm<z.infer<typeof userSchema>>({
-    resolver: zodResolver(userSchema),
+export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
+  const form = useForm<z.infer<typeof userDetailsFormsSchema>>({
+    resolver: zodResolver(userDetailsFormsSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -204,15 +173,12 @@ export function GetUserInfo({ updateFields, nextStep, prevStep }: GetUserInfo) {
     },
   });
 
-  const { formState } = form;
-  const { isValid } = formState;
-
-  function onSubmit(values: z.infer<typeof userSchema>) {
-    console.log(values);
-  }
+  const {
+    formState: { isValid, isSubmitting },
+  } = form;
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-12">
+    <div className="flex flex-col gap-6 px-2 sm:gap-12">
       <section className="flex flex-col gap-2">
         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
           Create an Account
@@ -225,7 +191,7 @@ export function GetUserInfo({ updateFields, nextStep, prevStep }: GetUserInfo) {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleEmailSubmit)}
           className="flex flex-col gap-6 sm:gap-12"
         >
           <div className="flex flex-col gap-6">
@@ -233,11 +199,16 @@ export function GetUserInfo({ updateFields, nextStep, prevStep }: GetUserInfo) {
               control={form.control}
               name="firstName"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
                     First Name
                     <FormControl>
-                      <Input placeholder="Enter your first name" {...field} />
+                      <Input
+                        disabled={isSubmitting}
+                        required
+                        placeholder="Enter your first name"
+                        {...field}
+                      />
                     </FormControl>
                   </FormLabel>
                   <FormMessage />
@@ -249,11 +220,16 @@ export function GetUserInfo({ updateFields, nextStep, prevStep }: GetUserInfo) {
               control={form.control}
               name="lastName"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
                     Last Name
                     <FormControl>
-                      <Input placeholder="Enter your last name" {...field} />
+                      <Input
+                        disabled={isSubmitting}
+                        required
+                        placeholder="Enter your last name"
+                        {...field}
+                      />
                     </FormControl>
                   </FormLabel>
                   <FormMessage />
@@ -265,11 +241,16 @@ export function GetUserInfo({ updateFields, nextStep, prevStep }: GetUserInfo) {
               control={form.control}
               name="emailAddress"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
                     Email address
                     <FormControl>
-                      <Input placeholder="Your email address" {...field} />
+                      <Input
+                        disabled={isSubmitting}
+                        required
+                        placeholder="Your email address"
+                        {...field}
+                      />
                     </FormControl>
                   </FormLabel>
                   <FormMessage />
@@ -281,7 +262,7 @@ export function GetUserInfo({ updateFields, nextStep, prevStep }: GetUserInfo) {
               control={form.control}
               name="newsletter"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-secondary-foreground flex gap-2 text-sm leading-6">
                     <FormControl>
                       <Checkbox
@@ -297,10 +278,11 @@ export function GetUserInfo({ updateFields, nextStep, prevStep }: GetUserInfo) {
           </div>
 
           <Button
-            // disabled={!isValid}
+            disabled={!isValid || isSubmitting}
             type="submit"
-            className="w-full p-6 text-base leading-6 font-semibold"
+            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-300"
           >
+            {isSubmitting && <Loader2 className="animate-spin" />}
             Sign up
           </Button>
         </form>
