@@ -8,6 +8,7 @@ import { roleSchema, userDetailsFormsSchema } from "@/lib/formSchemas";
 import { z } from "zod";
 import { generateOtp } from "@/app/actions";
 import { MultiStepFormData } from "@/lib/formTypes";
+import { Badge } from "@/components/ui/badge";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
@@ -66,16 +67,26 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       setUser(result.updatedUserInfo);
       console.log(result);
 
-      result.success
-        ? nextStep()
-        : (() => {
-            throw new Error();
-          })();
+      if (result.success) {
+        nextStep();
+      } else {
+        throw new Error();
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.log("Failed to generate OTP");
       }
     }
+  }
+
+  async function handleVerifyOtp(
+    values: z.infer<typeof userDetailsFormsSchema>,
+  ) {
+
+    // if the otp is incorrect it should throw an error
+    // if correct, go to the next step
+    updateFields(values);
+    nextStep();
   }
 
   const steps = [
@@ -84,16 +95,28 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       handleRoleSubmit={handleRoleSubmit}
     />,
     <GetUserInfo handleEmailSubmit={handleEmailSubmit} />,
-    <VerifyOtp />,
+    <VerifyOtp handleVerifyOtp={handleVerifyOtp} />,
     <SetPassword />,
   ];
 
   return (
     <div
-      className="onboarding-form--wrapper flex flex-col gap-6 lg:w-full lg:overflow-auto"
+      className="onboarding-form--wrapper flex flex-col gap-6 px-2 sm:gap-12 lg:w-full lg:overflow-auto"
       ref={onboardingFormWrapperRef}
     >
-      <div className="bg-background sticky top-0">{`${step + 1}/${steps.length}`}</div>
+      <div className="bg-background sticky top-0 flex gap-1 py-4 lg:pe-4">
+        <Badge variant="outline">{`${step + 1}/${steps.length}`}</Badge>
+
+        <div className="grid w-full grid-flow-row grid-cols-4 items-center gap-1">
+          {steps.map((_, index) => (
+            <div className="bg-accent-secondary h-0.5" key={`step-${index}`}>
+              <div
+                className={`h-full transition-all duration-500 ${index <= step ? "bg-primary w-full" : "w-0"}`}
+              ></div>
+            </div>
+          ))}
+        </div>
+      </div>
       {steps[step]}
     </div>
   );

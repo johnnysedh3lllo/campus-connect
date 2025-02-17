@@ -104,6 +104,7 @@
   --color-muted-foreground: var(--muted-foreground);
 
   --color-accent: var(--accent);
+  --color-accent-secondary: var(--accent-secondary);
   --color-accent-foreground: var(--accent-foreground);
 
   --color-destructive: var(--destructive);
@@ -128,8 +129,9 @@
   --radius-xs: calc(var(--radius) / 2);
   --radius-sm: var(--radius);
   --radius-md: calc(var(--radius) * 2);
-  --radius-lg: calc(var(--radius) * 3);
-  --radius-xl: calc(var(--radius) * 4);
+  --radius-2xl: calc(var(--radius) * 3);
+  --radius-xl: calc(var(--radius) * 3.5);
+  --radius-2xl: calc(var(--radius) * 4);
 
   /* BORDER WIDTH */
   --border-width-0.6: 0.6px;
@@ -168,6 +170,7 @@
   --line: var(--color-gray-600);
   --ring: var(--color-gray-950);
 
+  --accent-secondary: var(--color-red-50);
   /* for chart */
 
   /* undone */
@@ -258,7 +261,7 @@
     @apply rounded-lg bg-gray-950;
   }
 
-  @media (min-height: 720px) {
+  @media (min-height: 900px) {
     .onboarding-form {
       @apply items-center;
     }

@@ -1,13 +1,12 @@
 "use strict";
 import { z } from "zod";
 
-
 // FORM SCHEMAS
 export const roleSchema = z.object({
   role: z.string(),
 });
 
-export const userDetailsFormsSchema = z.object({
+export const userDetailsFormSchema = z.object({
   firstName: z
     .string()
     .nonempty({ message: "This is a required field" })
@@ -21,4 +20,11 @@ export const userDetailsFormsSchema = z.object({
     .nonempty({ message: "This is a required field" })
     .email({ message: "Please enter a valid email address." }),
   newsletter: z.boolean().default(true).optional(),
+});
+
+export const otpFormSchema = z.object({
+  otp: z
+    .string()
+    .length(6, "OTP must be exactly 6 digits")
+    .regex(/^\d+$/, "OTP must contain only numbers"),
 });

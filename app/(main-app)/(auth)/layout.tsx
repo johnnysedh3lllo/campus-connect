@@ -25,7 +25,7 @@ export default async function RootLayout({
               </Link>
             </div>
 
-            <div className="onboarding-form bg-background w-full rounded-md px-6 py-4 sm:rounded-xl sm:px-12 sm:py-10 lg:flex lg:h-full lg:flex-1 lg:justify-center">
+            <div className="onboarding-form bg-background w-full rounded-md p-4 sm:rounded-xl sm:px-12 sm:py-10 lg:flex lg:h-full lg:flex-1 lg:justify-center">
               {children}
             </div>
           </section>

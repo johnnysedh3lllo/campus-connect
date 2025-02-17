@@ -27,8 +27,20 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { roleSchema, userDetailsFormsSchema } from "@/lib/formSchemas";
+import {
+  otpFormSchema,
+  roleSchema,
+  userDetailsFormSchema,
+} from "@/lib/formSchemas";
 import { Loader2 } from "lucide-react";
+import { OnboardingFooter } from "@/components/app/onboarding-footer";
+
+import lockIcon from "@/public/icons/icon-lock.svg";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 const roleDetails = [
   {
@@ -63,7 +75,7 @@ export function SelectRole({
   } = form;
 
   return (
-    <div className="flex flex-col gap-6 px-2 sm:gap-12">
+    <div className="flex flex-col gap-6 sm:gap-12 sm:px-2">
       <section className="flex flex-col gap-2">
         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
           Sign up as:
@@ -146,7 +158,7 @@ export function SelectRole({
           <Button
             disabled={!isValid}
             type="submit"
-            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-300"
+            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
             Continue
           </Button>
@@ -159,12 +171,12 @@ export function SelectRole({
 }
 
 type GetUserInfoProps = {
-  handleEmailSubmit: (values: z.infer<typeof userDetailsFormsSchema>) => void;
+  handleEmailSubmit: (values: z.infer<typeof userDetailsFormSchema>) => void;
 };
 
 export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
-  const form = useForm<z.infer<typeof userDetailsFormsSchema>>({
-    resolver: zodResolver(userDetailsFormsSchema),
+  const form = useForm<z.infer<typeof userDetailsFormSchema>>({
+    resolver: zodResolver(userDetailsFormSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -178,7 +190,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
   } = form;
 
   return (
-    <div className="flex flex-col gap-6 px-2 sm:gap-12">
+    <div className="flex flex-col gap-6 sm:gap-12 sm:px-2">
       <section className="flex flex-col gap-2">
         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
           Create an Account
@@ -280,7 +292,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
           <Button
             disabled={!isValid || isSubmitting}
             type="submit"
-            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-300"
+            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
             {isSubmitting && <Loader2 className="animate-spin" />}
             Sign up
@@ -288,38 +300,99 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
         </form>
       </Form>
 
-      <footer>
-        <LoginPrompt />
-
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center justify-center gap-2">
-          <Separator className="bg-line" />
-          <p>or</p>
-          <Separator />
-        </div>
-      </footer>
+      <OnboardingFooter />
     </div>
   );
 }
 
-export function VerifyOtp() {
+type VerifyOtpProps = {
+  handleVerifyOtp: (values: z.infer<typeof otpFormSchema>) => void;
+};
+
+export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
+  const form = useForm<z.infer<typeof otpFormSchema>>({
+    resolver: zodResolver(otpFormSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
+
+  const {
+    formState: { isValid },
+  } = form;
+
+  const phone: string = "8056858243";
+
   return (
-    <>
-      <div>get the users first, last name and email</div>
+    <div>
+      <div className="flex flex-col gap-6 sm:gap-12">
+        <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
+          <div className="bg-accent-secondary flex w-fit items-center justify-center rounded-full p-14">
+            <Image src={lockIcon} alt="lock icon" />
+          </div>
+        </div>
 
-      <Button
-        type="button"
-        className="w-full p-6 text-base leading-6 font-semibold"
-      >
-        Go Back
-      </Button>
+        <section className="flex flex-col gap-2">
+          <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+            OTP Verification
+          </h1>
 
-      <Button
-        type="submit"
-        className="w-full p-6 text-base leading-6 font-semibold"
-      >
-        Continue
-      </Button>
-    </>
+          <p className="text text-secondary-foreground text-sm">
+            Enter the code we sent over SMS to your number{" "}
+            <span className="text-primary font-semibold">
+              ***{phone.slice(-4)}:
+            </span>
+          </p>
+        </section>
+      </div>
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleVerifyOtp)}
+          className="flex flex-col gap-6"
+        >
+          <FormField
+            control={form.control}
+            name="otp"
+            render={({ field }) => (
+              <FormItem className="flex max-w-[304px] flex-col gap-3 pt-10 sm:pt-12">
+                <FormControl>
+                  <InputOTP maxLength={6} {...field}>
+                    <InputOTPGroup className="flex w-full justify-between">
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </FormControl>
+
+                <FormDescription>
+                  <Button
+                    className="text-primary p-1 font-medium"
+                    variant={"link"}
+                  >
+                    <Link href="/log-in">Resend Code</Link>
+                  </Button>
+                  in 00:59s
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            disabled={!isValid}
+            type="submit"
+            className="w-full p-6 text-base leading-6 font-semibold"
+          >
+            Continue
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }
 
