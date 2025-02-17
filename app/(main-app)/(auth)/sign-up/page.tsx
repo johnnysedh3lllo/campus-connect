@@ -6,7 +6,7 @@ import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { useEffect, useRef, useState } from "react";
 import { roleSchema, userDetailsFormsSchema } from "@/lib/formSchemas";
 import { z } from "zod";
-import { generateOtp } from "@/app/actions";
+import { generateOtp, verifyOtp } from "@/app/actions";
 import { MultiStepFormData } from "@/lib/formTypes";
 import { Badge } from "@/components/ui/badge";
 
@@ -82,11 +82,23 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   async function handleVerifyOtp(
     values: z.infer<typeof userDetailsFormsSchema>,
   ) {
+    const userInfo = { ...formData, ...values };
+    console.log(userInfo);
 
-    // if the otp is incorrect it should throw an error
-    // if correct, go to the next step
-    updateFields(values);
-    nextStep();
+    try {
+      // if the otp is incorrect it should throw an error
+      // if correct, go to the next step
+
+      const result = await verifyOtp(userInfo.emailAddress, userInfo.otp);
+      if (result.success) {
+        nextStep();
+        console.log(null);
+      } else {
+        console.log(result.error || "Invalid OTP. Please try again.");
+      }
+    } catch {
+      console.log("An unexpected error occurred. Please try again.");
+    }
   }
 
   const steps = [

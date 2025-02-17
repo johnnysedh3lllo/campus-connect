@@ -190,7 +190,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
   } = form;
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-12 sm:px-2">
+    <div className="flex flex-col gap-6 sm:gap-12">
       <section className="flex flex-col gap-2">
         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
           Create an Account
@@ -206,7 +206,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
           onSubmit={form.handleSubmit(handleEmailSubmit)}
           className="flex flex-col gap-6 sm:gap-12"
         >
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 sm:px-2">
             <FormField
               control={form.control}
               name="firstName"
@@ -318,7 +318,7 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
   });
 
   const {
-    formState: { isValid },
+    formState: { isValid, isSubmitting },
   } = form;
 
   const phone: string = "8056858243";
@@ -384,10 +384,11 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
           />
 
           <Button
-            disabled={!isValid}
+            disabled={!isValid || isSubmitting}
             type="submit"
-            className="w-full p-6 text-base leading-6 font-semibold"
+            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
+            {isSubmitting && <Loader2 className="animate-spin" />}
             Continue
           </Button>
         </form>
