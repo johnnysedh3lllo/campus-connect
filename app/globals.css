@@ -129,7 +129,7 @@
   --radius-xs: calc(var(--radius) / 2);
   --radius-sm: var(--radius);
   --radius-md: calc(var(--radius) * 2);
-  --radius-2xl: calc(var(--radius) * 3);
+  --radius-lg: calc(var(--radius) * 3);
   --radius-xl: calc(var(--radius) * 3.5);
   --radius-2xl: calc(var(--radius) * 4);
 

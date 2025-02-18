@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, type UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import {
@@ -12,6 +12,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
+import { Eye, EyeOff } from "lucide-react";
 
 import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -25,11 +27,12 @@ import { Label } from "@/components/ui/label";
 import { LoginPrompt } from "@/components/app/log-in-prompt";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   otpFormSchema,
   roleSchema,
+  setPasswordSchema,
   userDetailsFormSchema,
 } from "@/lib/formSchemas";
 import { Loader2 } from "lucide-react";
@@ -158,7 +161,7 @@ export function SelectRole({
           <Button
             disabled={!isValid}
             type="submit"
-            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-500"
+            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
             Continue
           </Button>
@@ -292,7 +295,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
           <Button
             disabled={!isValid || isSubmitting}
             type="submit"
-            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-500"
+            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
             {isSubmitting && <Loader2 className="animate-spin" />}
             Sign up
@@ -306,22 +309,31 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
 }
 
 type VerifyOtpProps = {
+  form: UseFormReturn<z.infer<typeof otpFormSchema>>;
   handleVerifyOtp: (values: z.infer<typeof otpFormSchema>) => void;
 };
 
-export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
-  const form = useForm<z.infer<typeof otpFormSchema>>({
-    resolver: zodResolver(otpFormSchema),
-    defaultValues: {
-      otp: "",
-    },
-  });
+export function VerifyOtp({ form, handleVerifyOtp }: VerifyOtpProps) {
+  let [timeLeft, setTimeLeft] = useState(60);
 
   const {
     formState: { isValid, isSubmitting },
   } = form;
 
-  const phone: string = "8056858243";
+  const phone: string = "helenabrownthethird@gmail.com";
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  function handleResendOtp() {
+    setTimeLeft(60);
+  }
 
   return (
     <div>
@@ -340,7 +352,7 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
           <p className="text text-secondary-foreground text-sm">
             Enter the code we sent over SMS to your number{" "}
             <span className="text-primary font-semibold">
-              ***{phone.slice(-4)}:
+              ***{phone.slice(-14)}:
             </span>
           </p>
         </section>
@@ -371,13 +383,17 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
 
                 <FormDescription>
                   <Button
+                    disabled={timeLeft !== 0}
                     className="text-primary p-1 font-medium"
                     variant={"link"}
+                    onClick={handleResendOtp}
                   >
-                    <Link href="/log-in">Resend Code</Link>
+                    Resend Code
                   </Button>
-                  in 00:59s
+                  in {timeLeft < 60 ? "00" : "01"}:
+                  {timeLeft < 60 ? timeLeft.toString().padStart(2, "0") : "00"}
                 </FormDescription>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -386,7 +402,7 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
           <Button
             disabled={!isValid || isSubmitting}
             type="submit"
-            className="w-full p-6 text-base leading-6 font-semibold transition-all duration-500"
+            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
             {isSubmitting && <Loader2 className="animate-spin" />}
             Continue
@@ -397,6 +413,123 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
   );
 }
 
-export function SetPassword() {
-  return <div>set password</div>;
+type SetPasswordProps = {
+  handleCreatePassword: (values: z.infer<typeof setPasswordSchema>) => void;
+};
+
+interface PasswordInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  field: any;
+}
+
+function PasswordInput({ field, ...props }: PasswordInputProps) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? "text" : "password"}
+        required
+        {...field}
+        {...props}
+      />
+      <button
+        type="button"
+        className="text-primary hover:text-muted absolute inset-y-0 right-0 flex items-center pr-3"
+        onClick={() => setShowPassword(!showPassword)}
+      >
+        {showPassword ? (
+          <EyeOff className="h-4 w-4" />
+        ) : (
+          <Eye className="h-4 w-4" />
+        )}
+      </button>
+    </div>
+  );
+}
+export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
+  const form = useForm<z.infer<typeof setPasswordSchema>>({
+    resolver: zodResolver(setPasswordSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+  const {
+    formState: { isValid, isSubmitting },
+  } = form;
+
+  return (
+    <div className="flex flex-col gap-6 sm:gap-12">
+      <section className="flex flex-col gap-2">
+        <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+          Create Password
+        </h1>
+
+        <p className="text text-secondary-foreground text-sm">
+          Enter a password you can remember, to secure your account
+        </p>
+      </section>
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleCreatePassword)}
+          className="flex flex-col gap-6 sm:gap-12"
+        >
+          <div className="flex flex-col gap-6 sm:px-2">
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-1">
+                  <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                    Password
+                    <FormControl>
+                      <PasswordInput
+                        disabled={isSubmitting}
+                        required
+                        placeholder="Enter password"
+                        field={field}
+                      />
+                    </FormControl>
+                  </FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-1">
+                  <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                    Confirm Password
+                    <FormControl>
+                      <PasswordInput
+                        disabled={isSubmitting}
+                        required
+                        placeholder="Confirm password"
+                        field={field}
+                      />
+                    </FormControl>
+                  </FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <Button
+            disabled={!isValid || isSubmitting}
+            type="submit"
+            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
+          >
+            {isSubmitting && <Loader2 className="animate-spin" />}
+            Create Password
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
 }

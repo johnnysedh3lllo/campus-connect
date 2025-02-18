@@ -1,12 +1,19 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, type UseFormReturn } from "react-hook-form";
 
 import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
 import { Metadata } from "next";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { useEffect, useRef, useState } from "react";
-import { roleSchema, userDetailsFormsSchema } from "@/lib/formSchemas";
+import {
+  otpFormSchema,
+  roleSchema,
+  setPasswordSchema,
+  userDetailsFormSchema,
+} from "@/lib/formSchemas";
 import { z } from "zod";
-import { generateOtp, verifyOtp } from "@/app/actions";
+import { signUpWithOtp, verifyOtp } from "@/app/actions";
 import { MultiStepFormData } from "@/lib/formTypes";
 import { Badge } from "@/components/ui/badge";
 
@@ -27,7 +34,6 @@ const initialData: MultiStepFormData = {
 export default function Signup(props: { searchParams: Promise<Message> }) {
   const { step, formData, updateFields, nextStep, prevStep } =
     useMultiStepForm(initialData);
-  const [user, setUser] = useState({});
   const onboardingFormWrapperRef = useRef<HTMLDivElement>(null);
 
   // const searchParams = await props.searchParams;
@@ -41,13 +47,12 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
 
   useEffect(() => {
     const formContainer = onboardingFormWrapperRef.current;
-    console.log(user);
 
     if (formContainer) {
       formContainer.scrollTo({ top: 0, behavior: "smooth" });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [step, user]);
+  }, [step]);
 
   // Submit handlers for form steps
   function handleRoleSubmit(values: z.infer<typeof roleSchema>) {
@@ -56,15 +61,14 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   }
 
   async function handleEmailSubmit(
-    values: z.infer<typeof userDetailsFormsSchema>,
+    values: z.infer<typeof userDetailsFormSchema>,
   ) {
     const userInfo = { ...formData, ...values };
     updateFields(values);
 
     try {
-      const result = await generateOtp(userInfo);
+      const result = await signUpWithOtp(userInfo);
 
-      setUser(result.updatedUserInfo);
       console.log(result);
 
       if (result.success) {
@@ -79,26 +83,46 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     }
   }
 
-  async function handleVerifyOtp(
-    values: z.infer<typeof userDetailsFormsSchema>,
-  ) {
-    const userInfo = { ...formData, ...values };
-    console.log(userInfo);
+  const form = useForm<z.infer<typeof otpFormSchema>>({
+    resolver: zodResolver(otpFormSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
 
+  async function handleVerifyOtp(values: z.infer<typeof otpFormSchema>) {
     try {
       // if the otp is incorrect it should throw an error
       // if correct, go to the next step
 
-      const result = await verifyOtp(userInfo.emailAddress, userInfo.otp);
-      if (result.success) {
+      const { success, error } = await verifyOtp(
+        formData.emailAddress,
+        values.otp,
+      );
+
+      if (success) {
         nextStep();
-        console.log(null);
       } else {
-        console.log(result.error || "Invalid OTP. Please try again.");
+        throw new Error(error.message);
       }
-    } catch {
+    } catch (error) {
+      form.setError("otp", {
+        type: "manual",
+        message:
+          (error instanceof Error ? error.message : "Unknown error") ||
+          "An error occurred during verification. Please try again.",
+      });
+
       console.log("An unexpected error occurred. Please try again.");
     }
+  }
+
+  async function handleCreatePassword(
+    values: z.infer<typeof setPasswordSchema>,
+  ) {
+    console.log(values);
+
+    // update user with supabase
   }
 
   const steps = [
@@ -107,8 +131,8 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       handleRoleSubmit={handleRoleSubmit}
     />,
     <GetUserInfo handleEmailSubmit={handleEmailSubmit} />,
-    <VerifyOtp handleVerifyOtp={handleVerifyOtp} />,
-    <SetPassword />,
+    <VerifyOtp form={form} handleVerifyOtp={handleVerifyOtp} />,
+    <SetPassword handleCreatePassword={handleCreatePassword} />,
   ];
 
   return (

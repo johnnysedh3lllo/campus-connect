@@ -8,8 +8,8 @@ import { UserResponse } from "@supabase/supabase-js";
 import { MultiStepFormData } from "@/lib/formTypes";
 // import { UserResponse } from "@supabase/supabase-js";
 
-//TEST ACTIONS
-export async function generateOtp(userInfo: MultiStepFormData) {
+// ONBOARDING ACTIONS
+export async function signUpWithOtp(userInfo: MultiStepFormData) {
   // Simulate API call delay
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
@@ -23,34 +23,26 @@ export async function generateOtp(userInfo: MultiStepFormData) {
   return { success: true, updatedUserInfo };
 }
 
-// In-memory storage for OTPs (in a real application, use a database)
-const otpStorage = new Map<string, { otp: string; expiresAt: number }>();
-// Verify OTP
 export async function verifyOtp(email: string, otp: string) {
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  const storedOtp = otpStorage.get(email);
+  // initialize supabase client
 
-  if (!storedOtp) {
-    return { success: false, error: "No OTP found for this email" };
-  }
+  try {
+    // setup supabase verify otp function
+    // if (error) {
+    // throw error
+    // }
+    // return result;
+  } catch (error) {}
 
-  if (Date.now() > storedOtp.expiresAt) {
-    otpStorage.delete(email);
-    return { success: false, error: "OTP has expired" };
-  }
-
-  if (otp !== storedOtp.otp) {
-    return { success: false, error: "Invalid OTP" };
-  }
-
-  // OTP is valid, remove it from storage
-  otpStorage.delete(email);
-
-  return { success: true };
+  return {
+    success: true,
+    error: { message: "Invalid OTP, Please try again." },
+  };
 }
 
-// auth functions
+// AUTH ACTIONS
 export const signUpAction = async (formData: FormData) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
