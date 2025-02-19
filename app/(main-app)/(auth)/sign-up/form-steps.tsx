@@ -447,6 +447,25 @@ function PasswordInput({ field, ...props }: PasswordInputProps) {
     </div>
   );
 }
+
+// function getPasswordStrength(password: string): string {
+//   if (password.length === 0) return "None";
+//   if (password.length < 8) return "Weak";
+//   const hasUppercase = /[A-Z]/.test(password);
+//   const hasLowercase = /[a-z]/.test(password);
+//   const hasNumbers = /\d/.test(password);
+//   const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+//   const strength = [
+//     hasUppercase,
+//     hasLowercase,
+//     hasNumbers,
+//     hasSpecialChars,
+//   ].filter(Boolean).length;
+//   if (strength < 3) return "Medium";
+//   if (strength === 3) return "Strong";
+//   return "Very Strong";
+// }
+
 export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
   const form = useForm<z.infer<typeof setPasswordSchema>>({
     resolver: zodResolver(setPasswordSchema),
@@ -455,6 +474,7 @@ export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
       confirmPassword: "",
     },
   });
+
   const {
     formState: { isValid, isSubmitting },
   } = form;
@@ -477,26 +497,31 @@ export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
           className="flex flex-col gap-6 sm:gap-12"
         >
           <div className="flex flex-col gap-6 sm:px-2">
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-1">
-                  <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
-                    Password
-                    <FormControl>
-                      <PasswordInput
-                        disabled={isSubmitting}
-                        required
-                        placeholder="Enter password"
-                        field={field}
-                      />
-                    </FormControl>
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-col gap-2">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                      Password
+                      <FormControl>
+                        <PasswordInput
+                          disabled={isSubmitting}
+                          required
+                          placeholder="Enter password"
+                          field={field}
+                        />
+                      </FormControl>
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* <div className="text-sm">
+                Password strength: {getPasswordStrength(form.watch("password"))}
+              </div> */}
+            </div>
 
             <FormField
               control={form.control}
@@ -523,7 +548,7 @@ export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
           <Button
             disabled={!isValid || isSubmitting}
             type="submit"
-            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
+            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-300"
           >
             {isSubmitting && <Loader2 className="animate-spin" />}
             Create Password

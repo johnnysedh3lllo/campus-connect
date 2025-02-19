@@ -9,7 +9,7 @@ declare global {
   };
 
   type Participant = Pick<
-    DB["public"]["Tables"]["profiles"]["Row"],
+    DB["public"]["Tables"]["users"]["Row"],
     "id" | "first_name" | "last_name" | "role_id" | "email"
   >;
   interface Conversations {
@@ -23,8 +23,8 @@ declare global {
   interface ConvoParticipant {
     conversation_id: string;
     created_at: string | null;
-    profile_id: string;
-    profiles: {
+    user_id: string;
+    users: {
       first_name: string | null;
       last_name: string | null;
       email: string;

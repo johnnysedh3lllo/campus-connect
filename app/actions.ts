@@ -98,7 +98,7 @@ export const signInAction = async (formData: FormData) => {
   });
 
   if (error) {
-    return encodedRedirect("error", "/sign-in", error.message);
+    return encodedRedirect("error", "/log-in", error.message);
   }
 
   return redirect("/dashboard");
@@ -164,14 +164,14 @@ export const resetPasswordAction = async (formData: FormData) => {
     encodedRedirect("error", "/reset-password", "Password update failed");
   }
 
-  encodedRedirect("success", "/sign-in", "Password updated");
+  encodedRedirect("success", "/log-in", "Password updated");
 };
 
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
 
-  return redirect("/sign-in");
+  return redirect("/log-in");
 };
 
 // C.R.U.D functions
@@ -266,7 +266,7 @@ export const getUserConversationsWithParticipants = async (userId: string) => {
 
   try {
     const { data: conversations, error } = await supabase
-      .rpc("get_conversations_for_profile", { pid: userId })
+      .rpc("get_conversations_for_user", { pid: userId })
       .is("deleted_at", null);
 
     if (error) {
@@ -292,9 +292,9 @@ export const getParticipants = async (
   try {
     const { data: participants, error } = await supabase
       .from("conversation_participants")
-      .select("*, profiles(first_name, last_name, email)")
+      .select("*, users(first_name, last_name, email)")
       .eq("conversation_id", conversationId)
-      .neq("profile_id", userId);
+      .neq("user_id", userId);
 
     if (error) {
       console.error("Error fetching participants:", error);

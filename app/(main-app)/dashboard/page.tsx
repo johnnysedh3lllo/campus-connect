@@ -20,7 +20,7 @@ export default async function Page() {
   // }
 
   let { data: profile } = user?.id
-    ? await supabase.from("profiles").select("*").eq("id", user.id).single()
+    ? await supabase.from("users").select("*").eq("id", user.id).single()
     : { data: null };
 
   let { data: roles } = await supabase.from("roles").select("*").single();
@@ -31,7 +31,7 @@ export default async function Page() {
   //     : await supabase.from("properties").select("*");
 
   // console.log("from the roles table:", roles);
-  // console.log("profiles table:", profile);
+  // console.log("users table:", profile);
 
   return (
     <>

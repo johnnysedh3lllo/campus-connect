@@ -64,12 +64,11 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     values: z.infer<typeof userDetailsFormSchema>,
   ) {
     const userInfo = { ...formData, ...values };
-    updateFields(values);
 
     try {
       const result = await signUpWithOtp(userInfo);
 
-      console.log(result);
+      updateFields(result.updatedUserInfo);
 
       if (result.success) {
         nextStep();
@@ -120,7 +119,16 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   async function handleCreatePassword(
     values: z.infer<typeof setPasswordSchema>,
   ) {
-    console.log(values);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
+    if (values.password === values.confirmPassword) {
+      console.log("passwords match");
+      console.log(values);
+
+      const userInfo = { ...formData, password: values.confirmPassword };
+
+      console.log(userInfo);
+    }
 
     // update user with supabase
   }

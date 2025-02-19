@@ -8,7 +8,7 @@ export default function MessageHeader({
 }: MessageHeaderProps) {
   const chatName =
     chatParticipants && chatParticipants.length === 1
-      ? `${chatParticipants[0].profiles?.first_name} ${chatParticipants[0].profiles?.last_name}`
+      ? `${chatParticipants[0].users?.first_name} ${chatParticipants[0].users?.last_name}`
       : "";
 
   return (

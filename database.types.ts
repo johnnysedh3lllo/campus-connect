@@ -13,17 +13,17 @@ export type Database = {
         Row: {
           conversation_id: string
           created_at: string | null
-          profile_id: string
+          user_id: string
         }
         Insert: {
           conversation_id: string
           created_at?: string | null
-          profile_id: string
+          user_id: string
         }
         Update: {
           conversation_id?: string
           created_at?: string | null
-          profile_id?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -34,10 +34,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "conversation_participants_profile_id_fkey"
-            columns: ["profile_id"]
+            foreignKeyName: "conversation_participants_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -84,7 +84,7 @@ export type Database = {
       messages: {
         Row: {
           content: string
-          conversation_id: string | null
+          conversation_id: string
           created_at: string
           edited_at: string | null
           id: number
@@ -94,7 +94,7 @@ export type Database = {
         }
         Insert: {
           content: string
-          conversation_id?: string | null
+          conversation_id?: string
           created_at?: string
           edited_at?: string | null
           id?: never
@@ -104,7 +104,7 @@ export type Database = {
         }
         Update: {
           content?: string
-          conversation_id?: string | null
+          conversation_id?: string
           created_at?: string
           edited_at?: string | null
           id?: never
@@ -112,45 +112,12 @@ export type Database = {
           read_at?: string | null
           sender_id?: string
         }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          created_at: string | null
-          email: string
-          first_name: string | null
-          id: string
-          last_name: string | null
-          phone: string | null
-          role_id: number
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          email: string
-          first_name?: string | null
-          id: string
-          last_name?: string | null
-          phone?: string | null
-          role_id: number
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string
-          first_name?: string | null
-          id?: string
-          last_name?: string | null
-          phone?: string | null
-          role_id?: number
-          updated_at?: string | null
-        }
         Relationships: [
           {
-            foreignKeyName: "profiles_role_id_fkey"
-            columns: ["role_id"]
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
             isOneToOne: false
-            referencedRelation: "roles"
+            referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
         ]
@@ -215,11 +182,59 @@ export type Database = {
         }
         Relationships: []
       }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          role_id: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          phone?: string | null
+          role_id: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          role_id?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      check_participant_access: {
+        Args: {
+          convo_id: string
+          pid: string
+        }
+        Returns: boolean
+      }
       create_conversation: {
         Args: {
           user1_id: string
@@ -227,7 +242,7 @@ export type Database = {
         }
         Returns: string
       }
-      get_conversations_for_profile: {
+      get_conversations_for_user: {
         Args: {
           pid: string
         }
