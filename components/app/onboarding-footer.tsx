@@ -5,7 +5,7 @@ import { Apple, Facebook, Google } from "./social-logos";
 export function OnboardingFooter() {
   return (
     <footer className="flex flex-col items-center gap-6">
-      <LoginPrompt />
+      <LoginPrompt callToAction="Already have an account?" route="/log-in" />
 
       <SeparatorMain />
 

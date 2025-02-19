@@ -3,12 +3,17 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function LoginPrompt() {
+type LoginPromptProps = {
+  callToAction: string;
+  route: string;
+};
+
+export function LoginPrompt({ callToAction, route }: LoginPromptProps) {
   return (
     <p className="text-center text-sm">
-      Already have an account?{" "}
+      {callToAction}{" "}
       <Button className="text-primary p-1 font-medium" variant={"link"}>
-        <Link href="/log-in">Log in</Link>
+        <Link href={route}>Log in</Link>
       </Button>
     </p>
   );

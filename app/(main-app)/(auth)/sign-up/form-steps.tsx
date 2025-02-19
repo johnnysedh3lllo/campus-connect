@@ -15,16 +15,21 @@ import {
 
 import { Eye, EyeOff } from "lucide-react";
 
+import { useToast } from "@/hooks/use-toast";
+
 import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from "next/image";
+
+import { LoginPrompt } from "@/components/app/log-in-prompt";
+import { SeparatorMain } from "@/components/app/separator-main";
+import { Apple, Facebook, Google } from "@/components/app/social-logos";
 
 import { DevTool } from "@hookform/devtools";
 
 import houseIcon from "@/public/icons/icon-house.svg";
 import tenantIcon from "@/public/icons/icon-tenant.svg";
 import { Label } from "@/components/ui/label";
-import { LoginPrompt } from "@/components/app/log-in-prompt";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import React, { useEffect, useState } from "react";
@@ -36,7 +41,6 @@ import {
   userDetailsFormSchema,
 } from "@/lib/formSchemas";
 import { Loader2 } from "lucide-react";
-import { OnboardingFooter } from "@/components/app/onboarding-footer";
 
 import lockIcon from "@/public/icons/icon-lock.svg";
 import {
@@ -168,7 +172,7 @@ export function SelectRole({
         </form>
       </Form>
 
-      <LoginPrompt />
+      <LoginPrompt callToAction="Already have an account?" route="/log-in" />
     </div>
   );
 }
@@ -303,18 +307,34 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
         </form>
       </Form>
 
-      <OnboardingFooter />
+      <footer className="flex flex-col items-center gap-6">
+        <LoginPrompt callToAction="Already have an account?" route="/log-in" />
+
+        <SeparatorMain />
+
+        <div className="flex gap-3">
+          <Google />
+          <Facebook />
+          <Apple />
+        </div>
+      </footer>
     </div>
   );
 }
 
 type VerifyOtpProps = {
-  form: UseFormReturn<z.infer<typeof otpFormSchema>>;
   handleVerifyOtp: (values: z.infer<typeof otpFormSchema>) => void;
 };
 
-export function VerifyOtp({ form, handleVerifyOtp }: VerifyOtpProps) {
+export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
   let [timeLeft, setTimeLeft] = useState(60);
+
+  const form = useForm<z.infer<typeof otpFormSchema>>({
+    resolver: zodResolver(otpFormSchema),
+    defaultValues: {
+      otp: "",
+    },
+  });
 
   const {
     formState: { isValid, isSubmitting },
@@ -546,7 +566,7 @@ export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
           </div>
 
           <Button
-            disabled={!isValid || isSubmitting}
+            disabled={isSubmitting}
             type="submit"
             className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-300"
           >

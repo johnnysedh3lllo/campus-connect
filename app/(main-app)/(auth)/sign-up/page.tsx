@@ -2,6 +2,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type UseFormReturn } from "react-hook-form";
 
+import { motion, AnimatePresence } from "framer-motion";
+
 import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
 import { Metadata } from "next";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
@@ -20,6 +22,14 @@ import { Badge } from "@/components/ui/badge";
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
 //   : "http://localhost:3000";
+
+const formVariants = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -50 },
+};
+
+const animationConfig = { duration: 0.3 };
 
 const initialData: MultiStepFormData = {
   role: "",
@@ -82,12 +92,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     }
   }
 
-  const form = useForm<z.infer<typeof otpFormSchema>>({
-    resolver: zodResolver(otpFormSchema),
-    defaultValues: {
-      otp: "",
-    },
-  });
+
 
   async function handleVerifyOtp(values: z.infer<typeof otpFormSchema>) {
     try {
@@ -139,7 +144,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       handleRoleSubmit={handleRoleSubmit}
     />,
     <GetUserInfo handleEmailSubmit={handleEmailSubmit} />,
-    <VerifyOtp form={form} handleVerifyOtp={handleVerifyOtp} />,
+    <VerifyOtp handleVerifyOtp={handleVerifyOtp} />,
     <SetPassword handleCreatePassword={handleCreatePassword} />,
   ];
 
@@ -161,7 +166,19 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
           ))}
         </div>
       </div>
+
+      {/* <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          variants={formVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          transition={animationConfig}
+        > */}
       {steps[step]}
+      {/* </motion.div>
+      </AnimatePresence> */}
     </div>
   );
 }
