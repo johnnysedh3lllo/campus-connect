@@ -1,57 +1,142 @@
+"use client";
 import { signInAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/app/form-message";
-import { SubmitButton } from "@/components/app/submit-button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { Metadata } from "next";
+import { useRouter } from "next/navigation";
+import { SeparatorMain } from "@/components/app/separator-main";
+import { LoginPrompt } from "@/components/app/log-in-prompt";
+import { Apple, Facebook, Google } from "@/components/app/social-logos";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { loginSchema } from "@/lib/formSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
-// const defaultUrl = process.env.VERCEL_URL
-//   ? `https://${process.env.VERCEL_URL}`
-//   : "http://localhost:3000";
+export default function Login(props: { searchParams: Promise<Message> }) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      emailAddress: "",
+      password: "",
+    },
+  });
 
-export const metadata: Metadata = {
-  // metadataBase: new URL(defaultUrl),
-  title: "Sign In | Campus Connect",
-  // description: "Your rental paradise",
-};
+  const searchParams = props.searchParams;
 
-export default async function Login(props: { searchParams: Promise<Message> }) {
-  const searchParams = await props.searchParams;
+  // Custom submit handler to manage loading state
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+    setIsLoading(true);
+    try {
+      const result = await signInAction(data);
+      // If we're here and there's no error, manually navigate
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      setIsLoading(false);
+    }
+  };
 
-  console.log("you'll need to sign in to view this page");
   return (
-    <form className="mx-auto flex max-w-64 min-w-64 flex-col">
-      <h1 className="text-2xl font-medium">Sign in</h1>
-      <p className="text-foreground text-sm">
-        Don't have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
-          Sign up
-        </Link>
-      </p>
-      <div className="mt-8 flex flex-col gap-2 [&>input]:mb-3">
-        <Label htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required />
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
-          <Link
-            className="text-foreground text-xs underline"
-            href="/forgot-password"
+    <section className="mx-auto flex w-full max-w-120 flex-col justify-center">
+      <div className="flex h-full flex-col items-start justify-center gap-4">
+        <section className="flex flex-col items-start pb-10">
+          <h1 className="text-left text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+            Welcome Back!
+          </h1>
+        </section>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex w-full flex-col items-start gap-3"
           >
-            Forgot Password?
-          </Link>
-        </div>
-        <Input
-          type="password"
-          name="password"
-          placeholder="Your password"
-          required
-        />
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
-          Sign in
-        </SubmitButton>
-        <FormMessage message={searchParams} />
+            <div className="flex w-full flex-col items-start gap-5.5 px-2 sm:px-0">
+              <FormField
+                control={form.control}
+                name="emailAddress"
+                render={({ field }) => (
+                  <FormItem className="flex w-full flex-col items-start gap-1">
+                    <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
+                      Email Address
+                      <FormControl>
+                        <Input
+                          disabled={isLoading}
+                          required
+                          placeholder="your@example.com"
+                          className="text-left"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormLabel>
+                    <FormMessage className="text-left" />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex w-full flex-col items-start gap-2">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="flex w-full flex-col items-start gap-1">
+                      <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
+                        Password
+                        <FormControl>
+                          <Input
+                            disabled={isLoading}
+                            required
+                            type="password"
+                            placeholder="Enter your password"
+                            className="text-left"
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormLabel>
+                      <FormMessage className="text-left" />
+                    </FormItem>
+                  )}
+                />
+                <Link
+                  href={"/forgot-password"}
+                  className="text-left text-red-600 text-sm"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+              <Button
+                disabled={isLoading}
+                type="submit"
+                className="w-full cursor-pointer p-6 text-center text-base leading-6 font-semibold transition-all duration-500"
+              >
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Log in
+              </Button>
+            </div>
+          </form>
+        </Form>
+
+        <footer className="flex w-full flex-col items-center gap-3">
+          <LoginPrompt callToAction="Don't have an account?" route="/sign-up" />
+          <SeparatorMain />
+          <div className="flex gap-3">
+            <Google />
+            <Facebook />
+            <Apple />
+          </div>
+        </footer>
       </div>
-    </form>
+    </section>
   );
 }

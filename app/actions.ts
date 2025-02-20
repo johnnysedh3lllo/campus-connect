@@ -6,6 +6,9 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserResponse } from "@supabase/supabase-js";
 import { MultiStepFormData } from "@/lib/formTypes";
+import { SubmitHandler } from "react-hook-form";
+import {z} from "zod"
+import { loginSchema } from "@/lib/formSchemas";
 // import { UserResponse } from "@supabase/supabase-js";
 
 // ONBOARDING ACTIONS
@@ -87,21 +90,20 @@ export const signUpAction = async (formData: FormData) => {
   }
 };
 
-export const signInAction = async (formData: FormData) => {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+type SignInFormInputs = z.infer<typeof loginSchema>;
+export const signInAction = async (data: SignInFormInputs) => {
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+  const { error, data: authData } = await supabase.auth.signInWithPassword({
+    email: data.emailAddress,
+    password: data.password,
   });
 
   if (error) {
-    return encodedRedirect("error", "/log-in", error.message);
+    throw new Error(error.message);
   }
 
-  return redirect("/dashboard");
+  return authData;
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {

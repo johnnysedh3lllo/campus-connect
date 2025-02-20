@@ -49,3 +49,13 @@ export const setPasswordSchema = z
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+
+export const loginSchema = z.object({
+  emailAddress: z
+    .string()
+    .nonempty({ message: "Email is required" })
+    .email({ message: "Please enter a valid email address" }),
+  password: z
+    .string()
+    .nonempty({ message: "Password is required" })
+});
