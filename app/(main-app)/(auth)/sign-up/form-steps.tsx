@@ -1,8 +1,23 @@
 "use client";
+
+// UTILITIES
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type UseFormReturn } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import {
+  otpFormSchema,
+  OtpFormSchema,
+  roleSchema,
+  RoleSchema,
+  setPasswordFormSchema,
+  SetPasswordFormSchema,
+  userDetailsFormSchema,
+  UserDetailsFormSchema,
+} from "@/lib/formSchemas";
+
+// COMPONENTS
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -12,43 +27,27 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-import { Eye, EyeOff } from "lucide-react";
-
-import { useToast } from "@/hooks/use-toast";
-
-import Link from "next/link";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import Image from "next/image";
-
 import { LoginPrompt } from "@/components/app/log-in-prompt";
 import { SeparatorMain } from "@/components/app/separator-main";
-import { Apple, Facebook, Google } from "@/components/app/social-logos";
-
-import { DevTool } from "@hookform/devtools";
-
-import houseIcon from "@/public/icons/icon-house.svg";
-import tenantIcon from "@/public/icons/icon-tenant.svg";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import React, { useEffect, useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  otpFormSchema,
-  roleSchema,
-  setPasswordSchema,
-  userDetailsFormSchema,
-} from "@/lib/formSchemas";
-import { Loader2 } from "lucide-react";
-
-import lockIcon from "@/public/icons/icon-lock.svg";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 
+// ASSETS
+import { Eye, EyeOff } from "lucide-react";
+import { Apple, Facebook, Google } from "@/components/app/social-logos";
+import houseIcon from "@/public/icons/icon-house.svg";
+import tenantIcon from "@/public/icons/icon-tenant.svg";
+import { Loader2 } from "lucide-react";
+import lockIcon from "@/public/icons/icon-lock.svg";
+
+//
 const roleDetails = [
   {
     title: "Landlord",
@@ -65,11 +64,11 @@ const roleDetails = [
 ];
 
 type SelectRoleProps = {
-  handleRoleSubmit: (values: z.infer<typeof roleSchema>) => void;
+  handleRoleSubmit: (values: RoleSchema) => void;
 };
 
 export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
-  const form = useForm<z.infer<typeof roleSchema>>({
+  const form = useForm<RoleSchema>({
     resolver: zodResolver(roleSchema),
   });
 
@@ -170,11 +169,11 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
 }
 
 type GetUserInfoProps = {
-  handleEmailSubmit: (values: z.infer<typeof userDetailsFormSchema>) => void;
+  handleEmailSubmit: (values: UserDetailsFormSchema) => void;
 };
 
 export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
-  const form = useForm<z.infer<typeof userDetailsFormSchema>>({
+  const form = useForm<UserDetailsFormSchema>({
     resolver: zodResolver(userDetailsFormSchema),
     defaultValues: {
       firstName: "",
@@ -315,16 +314,14 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
 }
 
 type VerifyOtpProps = {
-  handleVerifyOtp: (values: z.infer<typeof otpFormSchema>) => void;
+  handleVerifyOtp: (values: OtpFormSchema) => void;
   userEmail: string;
 };
 
 export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
-  const { toast } = useToast();
-
   let [timeLeft, setTimeLeft] = useState(60);
 
-  const form = useForm<z.infer<typeof otpFormSchema>>({
+  const form = useForm<OtpFormSchema>({
     resolver: zodResolver(otpFormSchema),
     defaultValues: {
       otp: "",
@@ -427,7 +424,7 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
 }
 
 type SetPasswordProps = {
-  handleCreatePassword: (values: z.infer<typeof setPasswordSchema>) => void;
+  handleCreatePassword: (values: SetPasswordFormSchema) => void;
 };
 
 interface PasswordInputProps
@@ -480,8 +477,8 @@ function PasswordInput({ field, ...props }: PasswordInputProps) {
 // }
 
 export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
-  const form = useForm<z.infer<typeof setPasswordSchema>>({
-    resolver: zodResolver(setPasswordSchema),
+  const form = useForm<SetPasswordFormSchema>({
+    resolver: zodResolver(setPasswordFormSchema),
     defaultValues: {
       password: "",
       confirmPassword: "",

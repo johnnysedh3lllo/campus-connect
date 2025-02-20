@@ -6,7 +6,7 @@ import { z } from "zod";
 const RoleEnum = z.enum(["1", "2", "3"]);
 export type RoleType = z.infer<typeof RoleEnum>;
 
-export const multiStepFormSchema = z.object({
+export const userValidationSchema = z.object({
   roleId: RoleEnum.describe("User role selection"),
   firstName: z
     .string()
@@ -40,9 +40,34 @@ export const multiStepFormSchema = z.object({
   confirmPassword: z.string().min(8),
 });
 
-export type MultiStepFormSchema = z.infer<typeof multiStepFormSchema>;
+export type UserValidationSchema = z.infer<typeof userValidationSchema>;
 
-export const setPasswordSchema = multiStepFormSchema
+// SIGN UP ACTION
+export const signUpDataSchema = userValidationSchema.pick({
+  firstName: true,
+  lastName: true,
+  emailAddress: true,
+  roleId: true,
+  newsletter: true,
+});
+
+// SIGN UP FORM STEPS
+export const roleSchema = userValidationSchema.pick({
+  roleId: true,
+});
+export type RoleSchema = z.infer<typeof roleSchema>;
+
+export const userDetailsFormSchema = signUpDataSchema.omit({
+  roleId: true,
+});
+export type UserDetailsFormSchema = z.infer<typeof userDetailsFormSchema>;
+
+export const otpFormSchema = userValidationSchema.pick({
+  otp: true,
+});
+export type OtpFormSchema = z.infer<typeof otpFormSchema>;
+
+export const setPasswordFormSchema = userValidationSchema
   .pick({
     password: true,
     confirmPassword: true,
@@ -57,23 +82,10 @@ export const setPasswordSchema = multiStepFormSchema
       path: ["confirmPassword"],
     },
   );
+export type SetPasswordFormSchema = z.infer<typeof setPasswordFormSchema>;
 
-export const loginSchema = multiStepFormSchema.pick({
+// LOGIN FORM
+export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
   password: true,
-});
-
-export const roleSchema = multiStepFormSchema.pick({
-  roleId: true,
-});
-
-export const userDetailsFormSchema = multiStepFormSchema.pick({
-  firstName: true,
-  lastName: true,
-  emailAddress: true,
-  newsletter: true,
-});
-
-export const otpFormSchema = multiStepFormSchema.pick({
-  otp: true,
 });

@@ -1,8 +1,11 @@
+// COMPONENTS
+import Link from "next/link";
 import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
+import Logo from "@/components/app/logo";
+
+//ASSETS
 import { figtree } from "@/lib/fonts";
 import "@/app/globals.css";
-import Logo from "@/components/app/logo";
-import Link from "next/link";
 
 export const metadata = {
   title: "Next.js",

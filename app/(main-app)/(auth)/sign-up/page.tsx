@@ -1,26 +1,26 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type UseFormReturn } from "react-hook-form";
 
+// UTILITIES
+import { Metadata } from "next";  
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
-import { Toaster } from "@/components/ui/toaster";
-
-import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
-import { Metadata } from "next";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
-import { useEffect, useRef, useState } from "react";
-import {
-  otpFormSchema,
-  roleSchema,
-  setPasswordSchema,
-  userDetailsFormSchema,
-} from "@/lib/formSchemas";
-import { z } from "zod";
-import { createPassword, signUpWithOtp, verifyOtp } from "@/app/actions";
+import { useEffect, useRef } from "react";
 import { MultiStepFormData } from "@/lib/formTypes";
+import { createPassword, signUpWithOtp, verifyOtp } from "@/app/actions";
+import {
+  OtpFormSchema,
+  RoleSchema,
+  SetPasswordFormSchema,
+  UserDetailsFormSchema,
+} from "@/lib/formSchemas";
+
+// COMPONENTS
+import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
+import { Toaster } from "@/components/ui/toaster";
 import { Badge } from "@/components/ui/badge";
 
+//
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
 //   : "http://localhost:3000";
@@ -38,7 +38,6 @@ const initialData: MultiStepFormData = {
   firstName: "",
   lastName: "",
   emailAddress: "",
-  otp: "",
   password: "",
   newsletter: true,
 };
@@ -67,14 +66,12 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   }, [step]);
 
   // Submit handlers for form steps
-  function handleRoleSubmit(values: z.infer<typeof roleSchema>) {
+  function handleRoleSubmit(values: RoleSchema) {
     updateFields(values);
     nextStep();
   }
 
-  async function handleEmailSubmit(
-    values: z.infer<typeof userDetailsFormSchema>,
-  ) {
+  async function handleEmailSubmit(values: UserDetailsFormSchema) {
     const userInfo = { ...formData, ...values };
 
     try {
@@ -98,7 +95,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     }
   }
 
-  async function handleVerifyOtp(values: z.infer<typeof otpFormSchema>) {
+  async function handleVerifyOtp(values: OtpFormSchema) {
     try {
       // if the otp is incorrect it should throw an error
       // if correct, go to the next step
@@ -120,9 +117,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     }
   }
 
-  async function handleCreatePassword(
-    values: z.infer<typeof setPasswordSchema>,
-  ) {
+  async function handleCreatePassword(values: SetPasswordFormSchema) {
     try {
       await createPassword(values.password);
 

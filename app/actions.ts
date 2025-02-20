@@ -6,26 +6,21 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserResponse } from "@supabase/supabase-js";
 import { MultiStepFormData } from "@/lib/formTypes";
-import { SubmitHandler } from "react-hook-form";
-import { multiStepFormSchema, loginSchema, setPasswordSchema } from "@/lib/formSchemas";
+import {
+  userValidationSchema,
+  loginSchema,
+  signUpDataSchema,
+} from "@/lib/formSchemas";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
-
-const fullUserDetailsFormSchema = multiStepFormSchema.pick({
-  firstName: true,
-  lastName: true,
-  emailAddress: true,
-  roleId: true,
-  newsletter: true,
-});
 
 // ONBOARDING ACTIONS
 export async function signUpWithOtp(userInfo: MultiStepFormData) {
   const supabase = await createClient();
 
   // validate form fields first
-  const validatedFields = fullUserDetailsFormSchema.safeParse(userInfo);
+  const validatedFields = signUpDataSchema.safeParse(userInfo);
 
   if (!validatedFields.success) {
     return {
@@ -101,71 +96,9 @@ export async function verifyOtp(email: string, token: string) {
   }
 }
 
-// export async function createPassword(password: string) {
-//   const supabase = await createClient();
-
-//   const { data, error } = await supabase.auth.updateUser({
-//     password: password,
-//   });
-//   0;
-//   if (error) {
-//     throw error;
-//   }
-
-//   console.log("data", data);
-//   return redirect("/dashboard");
-// }
-
-// AUTH ACTIONS
-// export const signUpAction = async (formData: FormData) => {
-//   const supabase = await createClient();
-//   const origin = (await headers()).get("origin");
-
-//   const email = formData.get("email")?.toString();
-//   const password = formData.get("password")?.toString();
-//   const roleId = Number(formData.get("role_id"));
-
-//   if (!email || !password) {
-//     return encodedRedirect(
-//       "error",
-//       "/sign-up",
-//       "Email and password are required",
-//     );
-//   }
-
-//   const { error } = await supabase.auth.signUp({
-//     email,
-//     password,
-//     options: {
-//       emailRedirectTo: `${origin}/auth/callback`,
-
-//       // NOTE: the test data below is to be replaced with variables containing user-generated data.
-//       data: {
-//         first_name: "John", // Additional user metadata
-//         last_name: "Doe",
-//         role_id: roleId,
-//       },
-//     },
-//   });
-
-//   if (error) {
-//     console.error(error.code + " " + error.message);
-//     return encodedRedirect("error", "/sign-up", error.message);
-//   } else {
-//     return encodedRedirect(
-//       "success",
-//       "/sign-up",
-//       "Thanks for signing up! Please check your email for a verification link.",
-//     );
-//   }
-// };
-
-const passwordSchema = z
-  .string()
-  .min(8, "Password must be at least 8 characters")
-  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-  .regex(/[0-9]/, "Password must contain at least one number");
+const passwordSchema = userValidationSchema.pick({
+  password: true,
+});
 
 export async function createPassword(password: string) {
   try {
@@ -177,7 +110,7 @@ export async function createPassword(password: string) {
 
     // Update user password
     const { error } = await supabase.auth.updateUser({
-      password: validatedPassword,
+      password: validatedPassword.password,
     });
 
     if (error) {

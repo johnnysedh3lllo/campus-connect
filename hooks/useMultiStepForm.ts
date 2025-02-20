@@ -12,7 +12,7 @@ export function useMultiStepForm(initialData: MultiStepFormData) {
   };
 
   const nextStep = () => setStep((curr: number) => curr + 1);
-  const prevStep = () => setStep((prev: number) => prev - 1);
+  // const prevStep = () => setStep((prev: number) => prev - 1);
 
   return {
     step,
@@ -20,6 +20,6 @@ export function useMultiStepForm(initialData: MultiStepFormData) {
     formData,
     updateFields,
     nextStep,
-    prevStep,
+    // prevStep,
   };
 }

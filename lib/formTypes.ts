@@ -4,7 +4,6 @@ export type MultiStepFormData = {
   firstName: string;
   lastName: string;
   emailAddress: string;
-  otp: string;
   password: string;
   newsletter: boolean;
 };
