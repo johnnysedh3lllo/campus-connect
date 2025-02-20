@@ -13,7 +13,7 @@ export function LoginPrompt({ callToAction, route }: LoginPromptProps) {
     <p className="text-center text-sm">
       {callToAction}{" "}
       <Button className="text-primary p-1 font-medium" variant={"link"}>
-        <Link href={route}>Log in</Link>
+        <Link href={route}>{route.includes("log") ? "Log in" : "Sign up"}</Link>
       </Button>
     </p>
   );

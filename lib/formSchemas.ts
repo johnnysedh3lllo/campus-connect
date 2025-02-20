@@ -25,6 +25,8 @@ export const multiStepFormSchema = z.object({
 
 export type multiStepFormSchema = z.infer<typeof multiStepFormSchema>;
 
+// to be incorporated into the multiStepFormSchema so as to enable the
+// [schema].pick({}) pattern in order to reduce redundancy.
 export const setPasswordSchema = z
   .object({
     password: z
@@ -46,7 +48,17 @@ export const setPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export const roleSchema = multiStepFormSchema.pick({
+// to use the [schema].pick({}) pattern
+export const loginSchema = z.object({
+  emailAddress: z
+    .string()
+    .nonempty({ message: "Email is required" })
+    .email({ message: "Please enter a valid email address" }),
+  password: z
+    .string()
+    .nonempty({ message: "Password is required" })
+
+  export const roleSchema = multiStepFormSchema.pick({
   roleId: true,
 });
 
