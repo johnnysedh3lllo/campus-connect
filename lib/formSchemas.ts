@@ -1,9 +1,13 @@
 "use strict";
+
 import { z } from "zod";
 
 // FORM SCHEMAS
+const RoleEnum = z.enum(["1", "2", "3"]);
+export type RoleType = z.infer<typeof RoleEnum>;
+
 export const multiStepFormSchema = z.object({
-  roleId: z.string(),
+  roleId: RoleEnum.describe("User role selection"),
   firstName: z
     .string()
     .nonempty({ message: "This is a required field" })
@@ -21,44 +25,45 @@ export const multiStepFormSchema = z.object({
     .string()
     .length(6, "OTP must be exactly 6 digits")
     .regex(/^\d+$/, "OTP must contain only numbers"),
-});
-
-export type multiStepFormSchema = z.infer<typeof multiStepFormSchema>;
-
-// to be incorporated into the multiStepFormSchema so as to enable the
-// [schema].pick({}) pattern in order to reduce redundancy.
-export const setPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(8, {
-        message: "Password must be at least 8 characters.",
-      })
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        {
-          message:
-            "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-        },
-      ),
-    confirmPassword: z.string().min(8),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-// to use the [schema].pick({}) pattern
-export const loginSchema = z.object({
-  emailAddress: z
-    .string()
-    .nonempty({ message: "Email is required" })
-    .email({ message: "Please enter a valid email address" }),
   password: z
     .string()
-    .nonempty({ message: "Password is required" })
+    .min(8, {
+      message: "Password must be at least 8 characters.",
+    })
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      {
+        message:
+          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      },
+    ),
+  confirmPassword: z.string().min(8),
+});
 
-  export const roleSchema = multiStepFormSchema.pick({
+export type MultiStepFormSchema = z.infer<typeof multiStepFormSchema>;
+
+export const setPasswordSchema = multiStepFormSchema
+  .pick({
+    password: true,
+    confirmPassword: true,
+  })
+  .refine(
+    (data) =>
+      !data.password ||
+      !data.confirmPassword ||
+      data.password === data.confirmPassword,
+    {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    },
+  );
+
+export const loginSchema = multiStepFormSchema.pick({
+  emailAddress: true,
+  password: true,
+});
+
+export const roleSchema = multiStepFormSchema.pick({
   roleId: true,
 });
 
