@@ -3,6 +3,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type UseFormReturn } from "react-hook-form";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
 import { Metadata } from "next";
@@ -15,7 +17,7 @@ import {
   userDetailsFormSchema,
 } from "@/lib/formSchemas";
 import { z } from "zod";
-import { signUpWithOtp, verifyOtp } from "@/app/actions";
+import { createPassword, signUpWithOtp, verifyOtp } from "@/app/actions";
 import { MultiStepFormData } from "@/lib/formTypes";
 import { Badge } from "@/components/ui/badge";
 
@@ -32,7 +34,7 @@ const formVariants = {
 const animationConfig = { duration: 0.3 };
 
 const initialData: MultiStepFormData = {
-  role: "",
+  roleId: "",
   firstName: "",
   lastName: "",
   emailAddress: "",
@@ -42,7 +44,7 @@ const initialData: MultiStepFormData = {
 };
 
 export default function Signup(props: { searchParams: Promise<Message> }) {
-  const { step, formData, updateFields, nextStep, prevStep } =
+  const { step, formData, updateFields, nextStep } =
     useMultiStepForm(initialData);
   const onboardingFormWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -78,43 +80,40 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     try {
       const result = await signUpWithOtp(userInfo);
 
-      updateFields(result.updatedUserInfo);
+      if (result && result?.success) {
+        console.log(result);
 
-      if (result.success) {
+        updateFields({ emailAddress: result.userEmail });
         nextStep();
       } else {
-        throw new Error();
+        console.log(result);
+        throw new Error(result?.error?.message || "An error occurred");
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.log("Failed to generate OTP");
+        toast({
+          description: error.message,
+        });
       }
     }
   }
-
-
 
   async function handleVerifyOtp(values: z.infer<typeof otpFormSchema>) {
     try {
       // if the otp is incorrect it should throw an error
       // if correct, go to the next step
+      const result = await verifyOtp(formData.emailAddress, values.otp);
 
-      const { success, error } = await verifyOtp(
-        formData.emailAddress,
-        values.otp,
-      );
-
-      if (success) {
+      if (result.success) {
+        console.log(result.data);
         nextStep();
       } else {
-        throw new Error(error.message);
+        throw result.error;
       }
     } catch (error) {
-      form.setError("otp", {
-        type: "manual",
-        message:
-          (error instanceof Error ? error.message : "Unknown error") ||
-          "An error occurred during verification. Please try again.",
+      toast({
+        title: "Invalid Otp",
+        description: "Please enter correct otp",
       });
 
       console.log("An unexpected error occurred. Please try again.");
@@ -124,27 +123,30 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   async function handleCreatePassword(
     values: z.infer<typeof setPasswordSchema>,
   ) {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+      await createPassword(values.password);
 
-    if (values.password === values.confirmPassword) {
-      console.log("passwords match");
-      console.log(values);
-
-      const userInfo = { ...formData, password: values.confirmPassword };
-
-      console.log(userInfo);
+      toast({
+        title: "Success",
+        description: "Password created successfully",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error updating password",
+        description:
+          error instanceof Error ? error.message : "Please try again",
+      });
     }
-
-    // update user with supabase
   }
 
   const steps = [
-    <SelectRole
-      selectedRole={formData.role}
-      handleRoleSubmit={handleRoleSubmit}
-    />,
+    <SelectRole handleRoleSubmit={handleRoleSubmit} />,
     <GetUserInfo handleEmailSubmit={handleEmailSubmit} />,
-    <VerifyOtp handleVerifyOtp={handleVerifyOtp} />,
+    <VerifyOtp
+      handleVerifyOtp={handleVerifyOtp}
+      userEmail={formData?.emailAddress}
+    />,
     <SetPassword handleCreatePassword={handleCreatePassword} />,
   ];
 
@@ -166,8 +168,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
           ))}
         </div>
       </div>
-
-      {/* <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait">
         <motion.div
           key={step}
           variants={formVariants}
@@ -175,10 +176,11 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
           animate="visible"
           exit="exit"
           transition={animationConfig}
-        > */}
-      {steps[step]}
-      {/* </motion.div>
-      </AnimatePresence> */}
+        >
+          {steps[step]}
+          <Toaster />
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

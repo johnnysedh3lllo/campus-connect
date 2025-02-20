@@ -53,26 +53,22 @@ const roleDetails = [
   {
     title: "Landlord",
     description: "I want to list apartments for rent",
-    value: "1",
+    value: "2",
     icon: houseIcon,
   },
   {
     title: "Student",
     description: "I'd like to find great places to live",
-    value: "2",
+    value: "3",
     icon: tenantIcon,
   },
 ];
 
 type SelectRoleProps = {
-  selectedRole: string;
   handleRoleSubmit: (values: z.infer<typeof roleSchema>) => void;
 };
 
-export function SelectRole({
-  selectedRole,
-  handleRoleSubmit,
-}: SelectRoleProps) {
+export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
   const form = useForm<z.infer<typeof roleSchema>>({
     resolver: zodResolver(roleSchema),
   });
@@ -100,7 +96,7 @@ export function SelectRole({
         >
           <FormField
             control={form.control}
-            name="role"
+            name="roleId"
             render={({ field }) => (
               <FormItem>
                 <FormControl>
@@ -139,10 +135,6 @@ export function SelectRole({
                                 <RadioGroupItem
                                   className="h-5 w-5 sm:h-6 sm:w-6"
                                   value={role.value}
-                                  defaultChecked={
-                                    role && role.value === selectedRole
-                                  }
-                                  id={`role-${role.value}`}
                                 />
                               </FormControl>
                             </FormItem>
@@ -324,9 +316,12 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
 
 type VerifyOtpProps = {
   handleVerifyOtp: (values: z.infer<typeof otpFormSchema>) => void;
+  userEmail: string;
 };
 
-export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
+export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
+  const { toast } = useToast();
+
   let [timeLeft, setTimeLeft] = useState(60);
 
   const form = useForm<z.infer<typeof otpFormSchema>>({
@@ -339,8 +334,6 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
   const {
     formState: { isValid, isSubmitting },
   } = form;
-
-  const phone: string = "helenabrownthethird@gmail.com";
 
   useEffect(() => {
     if (timeLeft <= 0) return;
@@ -370,9 +363,9 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
           </h1>
 
           <p className="text text-secondary-foreground text-sm">
-            Enter the code we sent over SMS to your number{" "}
+            Enter the code we sent over SMS to your email address{" "}
             <span className="text-primary font-semibold">
-              ***{phone.slice(-14)}:
+              ***{userEmail.slice(-14)}:
             </span>
           </p>
         </section>
@@ -380,7 +373,7 @@ export function VerifyOtp({ handleVerifyOtp }: VerifyOtpProps) {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleVerifyOtp)}
+          onSubmit={form.handleSubmit((data) => handleVerifyOtp(data))}
           className="flex flex-col gap-6"
         >
           <FormField

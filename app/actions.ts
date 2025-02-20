@@ -6,86 +6,194 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserResponse } from "@supabase/supabase-js";
 import { MultiStepFormData } from "@/lib/formTypes";
+import { multiStepFormSchema, setPasswordSchema } from "@/lib/formSchemas";
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
+
+const fullUserDetailsFormSchema = multiStepFormSchema.pick({
+  firstName: true,
+  lastName: true,
+  emailAddress: true,
+  roleId: true,
+  newsletter: true,
+});
 
 // ONBOARDING ACTIONS
 export async function signUpWithOtp(userInfo: MultiStepFormData) {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  // Generate a random 6-digit OTP
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  userInfo.otp = otp;
-
-  console.log(`OTP for ${userInfo.emailAddress}: ${userInfo.otp}`);
-
-  const updatedUserInfo = { ...userInfo, otp };
-  return { success: true, updatedUserInfo };
-}
-
-export async function verifyOtp(email: string, otp: string) {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-
-  // initialize supabase client
-
-  try {
-    // setup supabase verify otp function
-    // if (error) {
-    // throw error
-    // }
-    // return result;
-  } catch (error) {}
-
-  return {
-    success: true,
-    error: { message: "Invalid OTP, Please try again." },
-  };
-}
-
-// AUTH ACTIONS
-export const signUpAction = async (formData: FormData) => {
   const supabase = await createClient();
-  const origin = (await headers()).get("origin");
 
-  const email = formData.get("email")?.toString();
-  const password = formData.get("password")?.toString();
-  const roleId = Number(formData.get("role_id"));
-  // const phone = "1234-234-13431";
+  // validate form fields first
+  const validatedFields = fullUserDetailsFormSchema.safeParse(userInfo);
 
-  if (!email || !password) {
-    return encodedRedirect(
-      "error",
-      "/sign-up",
-      "Email and password are required",
-    );
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      error: {
+        message: "Validation failed",
+        errors: validatedFields.error.format(),
+      },
+    };
   }
 
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+  const validFields = validatedFields.data;
 
-      // NOTE: the test data below is to be replaced with variables containing user-generated data.
+  // check if a user already exists
+  const { data: existingUser } = await supabase.rpc("check_user_existence", {
+    user_email_address: validFields.emailAddress,
+  });
+
+  if (existingUser && existingUser.length > 0) {
+    return {
+      success: false,
+      error: { message: "User with this email already exists" },
+    };
+  }
+
+  // sign up user with otp to supabase
+  let { error } = await supabase.auth.signInWithOtp({
+    email: validFields.emailAddress,
+
+    options: {
       data: {
-        first_name: "John", // Additional user metadata
-        last_name: "Doe",
-        role_id: roleId,
+        first_name: validFields.firstName,
+        last_name: validFields.lastName,
+        role_id: validFields.roleId,
+        newsletter: validFields.newsletter,
       },
     },
   });
 
   if (error) {
-    console.error(error.code + " " + error.message);
-    return encodedRedirect("error", "/sign-up", error.message);
+    console.log(error);
+    return { success: false, error };
   } else {
-    return encodedRedirect(
-      "success",
-      "/sign-up",
-      "Thanks for signing up! Please check your email for a verification link.",
-    );
+    return { success: true, userEmail: validFields.emailAddress };
   }
-};
+}
+
+export async function verifyOtp(email: string, token: string) {
+  // initialize supabase client
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: "email",
+    });
+
+    // setup supabase verify otp function
+    if (error) {
+      throw error;
+    }
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error,
+    };
+  }
+}
+
+// export async function createPassword(password: string) {
+//   const supabase = await createClient();
+
+//   const { data, error } = await supabase.auth.updateUser({
+//     password: password,
+//   });
+//   0;
+//   if (error) {
+//     throw error;
+//   }
+
+//   console.log("data", data);
+//   return redirect("/dashboard");
+// }
+
+// AUTH ACTIONS
+// export const signUpAction = async (formData: FormData) => {
+//   const supabase = await createClient();
+//   const origin = (await headers()).get("origin");
+
+//   const email = formData.get("email")?.toString();
+//   const password = formData.get("password")?.toString();
+//   const roleId = Number(formData.get("role_id"));
+
+//   if (!email || !password) {
+//     return encodedRedirect(
+//       "error",
+//       "/sign-up",
+//       "Email and password are required",
+//     );
+//   }
+
+//   const { error } = await supabase.auth.signUp({
+//     email,
+//     password,
+//     options: {
+//       emailRedirectTo: `${origin}/auth/callback`,
+
+//       // NOTE: the test data below is to be replaced with variables containing user-generated data.
+//       data: {
+//         first_name: "John", // Additional user metadata
+//         last_name: "Doe",
+//         role_id: roleId,
+//       },
+//     },
+//   });
+
+//   if (error) {
+//     console.error(error.code + " " + error.message);
+//     return encodedRedirect("error", "/sign-up", error.message);
+//   } else {
+//     return encodedRedirect(
+//       "success",
+//       "/sign-up",
+//       "Thanks for signing up! Please check your email for a verification link.",
+//     );
+//   }
+// };
+
+const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number");
+
+export async function createPassword(password: string) {
+  try {
+    // Validate password
+    const validatedPassword = passwordSchema.parse(password);
+
+    // Create Supabase client
+    const supabase = await createClient();
+
+    // Update user password
+    const { error } = await supabase.auth.updateUser({
+      password: validatedPassword,
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    // Revalidate auth data
+    revalidatePath("/dashboard");
+
+    // Redirect to dashboard
+    redirect("/dashboard");
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      throw new Error(error.errors[0].message);
+    }
+  }
+}
 
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
