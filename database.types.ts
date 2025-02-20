@@ -189,6 +189,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          newsletter: boolean | null
           phone: string | null
           role_id: number
           updated_at: string | null
@@ -199,6 +200,7 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          newsletter?: boolean | null
           phone?: string | null
           role_id: number
           updated_at?: string | null
@@ -209,13 +211,14 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          newsletter?: boolean | null
           phone?: string | null
           role_id?: number
           updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "profiles_role_id_fkey"
+            foreignKeyName: "users_role_id_fkey"
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
@@ -234,6 +237,15 @@ export type Database = {
           pid: string
         }
         Returns: boolean
+      }
+      check_user_existence: {
+        Args: {
+          user_email_address: string
+        }
+        Returns: {
+          user_id: string
+          user_email: string
+        }[]
       }
       create_conversation: {
         Args: {

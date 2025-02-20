@@ -2,11 +2,8 @@
 import { z } from "zod";
 
 // FORM SCHEMAS
-export const roleSchema = z.object({
-  role: z.string(),
-});
-
-export const userDetailsFormSchema = z.object({
+export const multiStepFormSchema = z.object({
+  roleId: z.string(),
   firstName: z
     .string()
     .nonempty({ message: "This is a required field" })
@@ -19,16 +16,17 @@ export const userDetailsFormSchema = z.object({
     .string()
     .nonempty({ message: "This is a required field" })
     .email({ message: "Please enter a valid email address." }),
-  newsletter: z.boolean().default(true).optional(),
-});
-
-export const otpFormSchema = z.object({
+  newsletter: z.boolean().default(false).optional(),
   otp: z
     .string()
     .length(6, "OTP must be exactly 6 digits")
     .regex(/^\d+$/, "OTP must contain only numbers"),
 });
 
+export type multiStepFormSchema = z.infer<typeof multiStepFormSchema>;
+
+// to be incorporated into the multiStepFormSchema so as to enable the
+// [schema].pick({}) pattern in order to reduce redundancy.
 export const setPasswordSchema = z
   .object({
     password: z
@@ -50,6 +48,7 @@ export const setPasswordSchema = z
     path: ["confirmPassword"],
   });
 
+// to use the [schema].pick({}) pattern
 export const loginSchema = z.object({
   emailAddress: z
     .string()
@@ -58,4 +57,18 @@ export const loginSchema = z.object({
   password: z
     .string()
     .nonempty({ message: "Password is required" })
+
+  export const roleSchema = multiStepFormSchema.pick({
+  roleId: true,
+});
+
+export const userDetailsFormSchema = multiStepFormSchema.pick({
+  firstName: true,
+  lastName: true,
+  emailAddress: true,
+  newsletter: true,
+});
+
+export const otpFormSchema = multiStepFormSchema.pick({
+  otp: true,
 });
