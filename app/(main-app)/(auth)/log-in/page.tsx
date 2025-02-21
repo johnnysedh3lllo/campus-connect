@@ -55,9 +55,9 @@ export default function Login(props: { searchParams: Promise<Message> }) {
 
   return (
     <section className="mx-auto flex w-full flex-col justify-center lg:max-w-120">
-      <div className="flex h-full flex-col items-start justify-center gap-4">
-        <section className="flex flex-col items-start pb-10">
-          <h1 className="text-left text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+      <div className="flex h-full flex-col items-start justify-center">
+        <section className="flex flex-col items-start">
+          <h1 className="text-left text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
             Welcome Back!
           </h1>
         </section>
@@ -65,7 +65,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex w-full flex-col items-start gap-3"
+            className="flex w-full flex-col items-start gap-3 pt-10 pb-6 sm:pt-12"
           >
             <div className="flex w-full flex-col items-start gap-5.5 px-2 sm:px-0">
               <FormField
