@@ -423,10 +423,6 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
   );
 }
 
-type SetPasswordProps = {
-  handleCreatePassword: (values: SetPasswordFormSchema) => void;
-};
-
 interface PasswordInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   field: any;
@@ -476,7 +472,15 @@ function PasswordInput({ field, ...props }: PasswordInputProps) {
 //   return "Very Strong";
 // }
 
-export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
+type SetPasswordProps = {
+  isLoading: boolean;
+  handleCreatePassword: (values: SetPasswordFormSchema) => void;
+};
+
+export function SetPassword({
+  handleCreatePassword,
+  isLoading,
+}: SetPasswordProps) {
   const form = useForm<SetPasswordFormSchema>({
     resolver: zodResolver(setPasswordFormSchema),
     defaultValues: {
@@ -485,9 +489,9 @@ export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
     },
   });
 
-  const {
-    formState: { isValid, isSubmitting },
-  } = form;
+  // const {
+  //   formState: {  isSubmitting },
+  // } = form;
 
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
@@ -517,7 +521,7 @@ export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
                       Password
                       <FormControl>
                         <PasswordInput
-                          disabled={isSubmitting}
+                          disabled={isLoading}
                           required
                           placeholder="Enter password"
                           field={field}
@@ -542,7 +546,7 @@ export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
                     Confirm Password
                     <FormControl>
                       <PasswordInput
-                        disabled={isSubmitting}
+                        disabled={isLoading}
                         required
                         placeholder="Confirm password"
                         field={field}
@@ -556,11 +560,11 @@ export function SetPassword({ handleCreatePassword }: SetPasswordProps) {
           </div>
 
           <Button
-            disabled={isSubmitting}
+            disabled={isLoading}
             type="submit"
             className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-300"
           >
-            {isSubmitting && <Loader2 className="animate-spin" />}
+            {isLoading && <Loader2 className="animate-spin" />}
             Create Password
           </Button>
         </form>

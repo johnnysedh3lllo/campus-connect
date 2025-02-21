@@ -103,7 +103,7 @@ const passwordSchema = userValidationSchema.pick({
 export async function createPassword(password: string) {
   try {
     // Validate password
-    const validatedPassword = passwordSchema.parse(password);
+    const validatedPassword = passwordSchema.parse({ password });
 
     // Create Supabase client
     const supabase = await createClient();
@@ -114,18 +114,15 @@ export async function createPassword(password: string) {
     });
 
     if (error) {
-      throw new Error(error.message);
+      return { error: error.message };
     }
-
-    // Revalidate auth data
-    revalidatePath("/dashboard");
-
-    // Redirect to dashboard
-    redirect("/dashboard");
+    return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(error.errors[0].message);
+      return { error: error.errors[0].message };
     }
+
+    return { error: "An unexpected error occurred" };
   }
 }
 

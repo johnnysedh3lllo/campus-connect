@@ -41,7 +41,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
     try {
       const result = await signInAction(data);
       // If we're here and there's no error, manually navigate
-      router.push("/dashboard");
+      router.replace("/dashboard"); 
     } catch (error) {
       console.error("Login error:", error);
       setIsLoading(false);
@@ -49,7 +49,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
   };
 
   return (
-    <section className="mx-auto flex w-full max-w-120 flex-col justify-center">
+    <section className="mx-auto flex w-full flex-col justify-center lg:max-w-120">
       <div className="flex h-full flex-col items-start justify-center gap-4">
         <section className="flex flex-col items-start pb-10">
           <h1 className="text-left text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
@@ -110,7 +110,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                 />
                 <Link
                   href={"/forgot-password"}
-                  className="text-left text-red-600 text-sm"
+                  className="text-left text-sm text-red-600"
                 >
                   Forgot Password?
                 </Link>
