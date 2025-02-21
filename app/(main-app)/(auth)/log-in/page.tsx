@@ -41,7 +41,12 @@ export default function Login(props: { searchParams: Promise<Message> }) {
     try {
       const result = await signInAction(data);
       // If we're here and there's no error, manually navigate
-      router.replace("/dashboard"); 
+
+      if (result?.success) {
+        router.replace("/dashboard");
+      } else {
+        throw result?.error;
+      }
     } catch (error) {
       console.error("Login error:", error);
       setIsLoading(false);

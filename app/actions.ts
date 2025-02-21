@@ -127,19 +127,26 @@ export async function createPassword(password: string) {
 }
 
 type SignInFormInputs = z.infer<typeof loginSchema>;
+
 export const signInAction = async (data: SignInFormInputs) => {
   const supabase = await createClient();
 
-  const { error, data: authData } = await supabase.auth.signInWithPassword({
-    email: data.emailAddress,
-    password: data.password,
-  });
+  try {
+    const { error, data: authData } = await supabase.auth.signInWithPassword({
+      email: data.emailAddress,
+      password: data.password,
+    });
 
-  if (error) {
-    throw new Error(error.message);
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { success: true, authData };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return { success: false, error };
+    }
   }
-
-  return authData;
 };
 
 export const forgotPasswordAction = async (formData: FormData) => {
