@@ -46,7 +46,7 @@ import houseIcon from "@/public/icons/icon-house.svg";
 import tenantIcon from "@/public/icons/icon-tenant.svg";
 import { Loader2 } from "lucide-react";
 import lockIcon from "@/public/icons/icon-lock.svg";
-import { resendOtp, resendSignUpOtp } from "@/app/actions";
+import { resendSignUpOtp } from "@/app/actions";
 
 //
 const roleDetails = [
