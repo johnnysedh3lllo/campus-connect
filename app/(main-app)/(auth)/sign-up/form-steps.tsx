@@ -46,6 +46,7 @@ import houseIcon from "@/public/icons/icon-house.svg";
 import tenantIcon from "@/public/icons/icon-tenant.svg";
 import { Loader2 } from "lucide-react";
 import lockIcon from "@/public/icons/icon-lock.svg";
+import { resendOtp, resendSignUpOtp } from "@/app/actions";
 
 //
 const roleDetails = [
@@ -341,8 +342,24 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  function handleResendOtp() {
-    setTimeLeft(60);
+  async function handleResendOtp() {
+    if (!userEmail) {
+      console.error("the user's email is undefined");
+      return;
+    }
+    try {
+      console.log("Resending OTP for: ", userEmail);
+      const result = await resendSignUpOtp(userEmail);
+
+      if (result.success) {
+        console.log("OTP resent successfully");
+      } else {
+        throw result.error;
+      }
+      setTimeLeft(60);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

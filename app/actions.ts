@@ -11,7 +11,6 @@ import {
   loginSchema,
   signUpDataSchema,
 } from "@/lib/formSchemas";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
 
@@ -93,6 +92,26 @@ export async function verifyOtp(email: string, token: string) {
       success: false,
       error,
     };
+  }
+}
+
+export async function resendSignUpOtp(userEmail: string) {
+  const supabase = await createClient();
+
+  try {
+    console.log("before request");
+    const { error } = await supabase.auth.signInWithOtp({
+      email: userEmail,
+    });
+    console.log("after request");
+
+    if (error) {
+      throw error;
+    }
+    return { success: true };
+  } catch (error) {
+    console.log(error);
+    return { success: false, error };
   }
 }
 

@@ -131,7 +131,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
         //   description: "Password created successfully",
         // });
 
-        router.replace("/dashboard");
+        router.replace("/dashboard?welcome=true");
       } else {
         throw result.error;
       }
