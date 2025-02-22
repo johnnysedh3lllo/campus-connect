@@ -83,6 +83,7 @@
   --color-blue-800: hsla(226, 71%, 40%, 1);
   --color-blue-900: hsla(224, 64%, 33%, 1);
 
+
   --color-white: hsla(0, 0%, 100%, 1);
 
   --color-background: var(--background);
@@ -254,6 +255,8 @@
   /* Track */
   .onboarding-form--wrapper::-webkit-scrollbar-track {
     @apply rounded-lg bg-gray-600;
+    background:   hsl(3, 76%, 95%)
+;
   }
 
   /* Thumb */

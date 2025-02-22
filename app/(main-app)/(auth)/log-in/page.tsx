@@ -1,11 +1,20 @@
 "use client";
+
+// UTILITIES
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { signInAction } from "@/app/actions";
+import { useRouter } from "next/navigation";
+import { loginSchema } from "@/lib/formSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "@/hooks/use-toast";
+
+// COMPONENTS
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { SeparatorMain } from "@/components/app/separator-main";
 import { LoginPrompt } from "@/components/app/log-in-prompt";
-import { Apple, Facebook, Google } from "@/components/app/social-logos";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,13 +24,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { loginSchema } from "@/lib/formSchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
 import { PasswordInput } from "@/components/app/password-input";
+
+// ASSETS
+import { Apple, Facebook, Google } from "@/components/app/social-logos";
+import { Loader2 } from "lucide-react";
 
 export default function Login(props: { searchParams: Promise<Message> }) {
   const router = useRouter();
@@ -49,7 +56,12 @@ export default function Login(props: { searchParams: Promise<Message> }) {
         throw result?.error;
       }
     } catch (error) {
-      console.error("Login error:", error);
+      toast({
+        variant: "destructive",
+        title: "Please confirm email and password",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+      });
       setIsLoading(false);
     }
   };

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
 import Logo from "@/components/app/logo";
+import { Toaster } from "@/components/ui/toaster";
 
 //ASSETS
 import { figtree } from "@/lib/fonts";
@@ -30,6 +31,7 @@ export default async function RootLayout({
 
             <div className="onboarding-form bg-background w-full rounded-md p-4 sm:rounded-xl sm:px-12 sm:py-12 lg:flex lg:h-full lg:flex-1 lg:justify-center">
               {children}
+              <Toaster />
             </div>
           </section>
         </ThemeProviderWrapper>

@@ -18,7 +18,6 @@ import { useRouter } from "next/navigation";
 
 // COMPONENTS
 import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
-import { Toaster } from "@/components/ui/toaster";
 import { Badge } from "@/components/ui/badge";
 
 //
@@ -187,7 +186,6 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
           transition={animationConfig}
         >
           {steps[step]}
-          <Toaster />
         </motion.div>
       </AnimatePresence>
     </div>

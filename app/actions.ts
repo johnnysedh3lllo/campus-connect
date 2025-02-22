@@ -156,13 +156,15 @@ export const signInAction = async (data: SignInFormInputs) => {
       password: data.password,
     });
 
+    console.log(error?.message);
+
     if (error) {
-      throw new Error(error.message);
+      throw error;
     }
 
     return { success: true, authData };
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error instanceof Error) {
       return { success: false, error };
     }
   }
