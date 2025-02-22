@@ -47,6 +47,7 @@ import tenantIcon from "@/public/icons/icon-tenant.svg";
 import { Loader2 } from "lucide-react";
 import lockIcon from "@/public/icons/icon-lock.svg";
 import { resendSignUpOtp } from "@/app/actions";
+import { PasswordInput } from "@/components/app/password-input";
 
 //
 const roleDetails = [
@@ -436,37 +437,6 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
           </Button>
         </form>
       </Form>
-    </div>
-  );
-}
-
-interface PasswordInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  field: any;
-}
-
-function PasswordInput({ field, ...props }: PasswordInputProps) {
-  const [showPassword, setShowPassword] = useState(false);
-
-  return (
-    <div className="relative">
-      <Input
-        type={showPassword ? "text" : "password"}
-        required
-        {...field}
-        {...props}
-      />
-      <button
-        type="button"
-        className="text-primary hover:text-muted absolute inset-y-0 right-0 flex items-center pr-3"
-        onClick={() => setShowPassword(!showPassword)}
-      >
-        {showPassword ? (
-          <EyeOff className="h-4 w-4" />
-        ) : (
-          <Eye className="h-4 w-4" />
-        )}
-      </button>
     </div>
   );
 }

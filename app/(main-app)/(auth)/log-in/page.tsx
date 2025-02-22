@@ -21,6 +21,7 @@ import { loginSchema } from "@/lib/formSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import { PasswordInput } from "@/components/app/password-input";
 
 export default function Login(props: { searchParams: Promise<Message> }) {
   const router = useRouter();
@@ -99,13 +100,11 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                       <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
                         Password
                         <FormControl>
-                          <Input
+                          <PasswordInput
                             disabled={isLoading}
                             required
-                            type="password"
-                            placeholder="Enter your password"
-                            className="text-left"
-                            {...field}
+                            placeholder="Enter password"
+                            field={field}
                           />
                         </FormControl>
                       </FormLabel>
