@@ -91,6 +91,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     } catch (error) {
       if (error instanceof Error) {
         toast({
+          variant: "destructive",
           description: error.message,
         });
       }
@@ -111,6 +112,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       }
     } catch (error) {
       toast({
+        variant: "destructive",
         title: "Invalid Otp",
         description: "Please enter correct otp",
       });
