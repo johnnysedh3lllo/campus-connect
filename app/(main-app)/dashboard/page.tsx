@@ -9,10 +9,10 @@ export const metadata: Metadata = {
   title: "Dashboard",
 };
 
-export default async function Page({ params }: { params: { query: string } }) {
+export default async function Page() {
   // const searchParams = useSearchParams();
 
-  console.log(await params);
+  // console.log(await params);
 
   // console.log(searchParams.get("welcome"));
 
