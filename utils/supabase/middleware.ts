@@ -41,11 +41,11 @@ export const updateSession = async (request: NextRequest) => {
 
     // protected routes
     if (request.nextUrl.pathname.startsWith("/dashboard") && user.error) {
-      return NextResponse.redirect(new URL("/sign-in", request.url));
+      return NextResponse.redirect(new URL("/log-in", request.url));
     }
 
     // redirects when user is logged in
-    if (request.nextUrl.pathname === "/sign-in" && !user.error) {
+    if (request.nextUrl.pathname === "/log-in" && !user.error) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
@@ -67,5 +67,5 @@ export const updateSession = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/sign-in", "/dashboard"],
+  matcher: ["/log-in", "/dashboard"],
 };

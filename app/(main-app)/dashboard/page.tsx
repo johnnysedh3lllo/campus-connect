@@ -3,12 +3,19 @@ import { UserResponse } from "@supabase/supabase-js";
 import { Metadata } from "next";
 
 import Link from "next/link";
+// import { useSearchParams } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "Dashboard",
 };
 
-export default async function Page() {
+export default async function Page({ params }: { params: { query: string } }) {
+  // const searchParams = useSearchParams();
+
+  console.log(await params);
+
+  // console.log(searchParams.get("welcome"));
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -42,9 +49,8 @@ export default async function Page() {
         <Link href="/dashboard/messages">messages</Link>
       </div>
 
-
-      <div className="h-[50vh] border border-solid border-black overflow-y-auto">
-        <div className="p-4 ">
+      <div className="h-[50vh] overflow-y-auto border border-solid border-black">
+        <div className="p-4">
           <pre>{JSON.stringify(roles, null, 2)}</pre>
         </div>
         <div className="p-4">
