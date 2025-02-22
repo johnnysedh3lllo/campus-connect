@@ -85,7 +85,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                 control={form.control}
                 name="emailAddress"
                 render={({ field }) => (
-                  <FormItem className="flex w-full flex-col items-start gap-1">
+                  <FormItem className="flex w-full flex-col items-start gap-1 text-gray-950">
                     <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
                       Email Address
                       <FormControl>
@@ -93,7 +93,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                           disabled={isLoading}
                           required
                           placeholder="your@example.com"
-                          className="text-left"
+                          className="text-left [&:autofill]:bg-white [&:autofill]:text-gray-900"
                           {...field}
                         />
                       </FormControl>
@@ -116,6 +116,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                             disabled={isLoading}
                             required
                             placeholder="Enter password"
+                            className="[&:autofill]:bg-white [&:autofill]:text-gray-900"
                             field={field}
                           />
                         </FormControl>
@@ -126,7 +127,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                 />
                 <Link
                   href={"/reset-password"}
-                  className="text-left text-red-600 text-sm"
+                  className="text-left text-sm text-red-600"
                 >
                   Forgot Password?
                 </Link>

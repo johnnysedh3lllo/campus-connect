@@ -28,11 +28,11 @@ import { MultiStepFormData } from "@/lib/formTypes";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { PasswordInput, SetPasswordProps } from "../sign-up/form-steps";
+import { PasswordInput } from "@/components/app/password-input";
 
-export default function SetPassword({
-  handleCreatePassword,
-}: SetPasswordProps) {
+import { SetPasswordProps } from "../sign-up/form-steps";
+
+export default function SetPassword() {
   const form = useForm<SetPasswordFormSchema>({
     resolver: zodResolver(setPasswordFormSchema),
     defaultValues: {
@@ -44,6 +44,26 @@ export default function SetPassword({
   const {
     formState: { isValid, isSubmitting },
   } = form;
+
+  const handleCreatePassword = async (data: SetPasswordFormSchema) => {
+    try {
+      const response = await resetPasswordAction({
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+      });
+
+      console.log(response);
+      // Password was successfully updated
+      // The resetPasswordAction will handle the redirect, so we don't need
+      // to do anything else here
+    } catch (error) {
+      // Handle any unexpected errors
+      form.setError("root", {
+        type: "server",
+        message: "An unexpected error occurred",
+      });
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
@@ -80,7 +100,7 @@ export default function SetPassword({
                         />
                       </FormControl>
                     </FormLabel>
-                    <FormMessage  />
+                    <FormErrorMessage />
                   </FormItem>
                 )}
               />
@@ -105,7 +125,7 @@ export default function SetPassword({
                       />
                     </FormControl>
                   </FormLabel>
-                  <FormMessage />
+                  <FormErrorMessage />
                 </FormItem>
               )}
             />

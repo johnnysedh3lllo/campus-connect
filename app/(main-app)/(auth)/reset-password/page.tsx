@@ -185,7 +185,7 @@ export default function ResetPassword() {
   const onSubmit = async (data: z.infer<typeof resetPasswordEmailSchema>) => {
     if (step === 0) {
       setIsSubmitting(true);
-      // await forgotPasswordAction({ emailAddress: data.emailAddress });
+      await forgotPasswordAction({ emailAddress: data.emailAddress });
       nextStep();
       setIsSubmitting(false);
       return;
@@ -193,7 +193,7 @@ export default function ResetPassword() {
 
     setIsSubmitting(true);
     try {
-      // await resetPasswordAction(data);
+      // await resetPasswordAction({ emailAddress: data.emailAddress });
     } catch (error) {
       console.error(error);
     } finally {

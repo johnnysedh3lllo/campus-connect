@@ -11,6 +11,7 @@ import {
   loginSchema,
   signUpDataSchema,
   resetPasswordEmailSchema,
+  createPasswordSchema,
 } from "@/lib/formSchemas";
 import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
@@ -175,7 +176,6 @@ type forgotPasswordActionInput = z.infer<typeof resetPasswordEmailSchema>;
 export const forgotPasswordAction = async (
   formData: forgotPasswordActionInput,
 ) => {
-  console.log("huzzah!")
   try {
     const validatedFields = resetPasswordEmailSchema.safeParse(formData);
     console.log("Validating fields", validatedFields);
@@ -229,11 +229,26 @@ export const forgotPasswordAction = async (
   }
 };
 
-export const resetPasswordAction = async (formData: FormData) => {
+type resetPasswordActionInput = z.infer<typeof createPasswordSchema>;
+export const resetPasswordAction = async (
+  formData: resetPasswordActionInput,
+) => {
+  const validatedFields = createPasswordSchema.safeParse(formData);
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      error: {
+        message: "Validation failed",
+        errors: validatedFields.error.format(),
+      },
+    };
+  }
+  const validFields = validatedFields.data;
   const supabase = await createClient();
 
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
+  const password = validFields.password;
+  const confirmPassword = validFields.confirmPassword;
 
   if (!password || !confirmPassword) {
     encodedRedirect(
