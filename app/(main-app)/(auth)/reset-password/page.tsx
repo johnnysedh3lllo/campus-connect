@@ -162,7 +162,7 @@ const StepTwo = ({
 };
 
 export default function ResetPassword() {
-  const searchParams = useSearchParams() as unknown as Message;
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const initialData: MultiStepFormData = {
     roleId: "",
@@ -215,7 +215,7 @@ export default function ResetPassword() {
         </div>
       </Form>
 
-      <FormMessage message={searchParams} />
+      <FormErrorMessage />
     </div>
   );
 }
