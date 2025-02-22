@@ -1,11 +1,11 @@
 "use client";
 
 // UTILITIES
-import { Metadata } from "next";  
+import { Metadata } from "next";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MultiStepFormData } from "@/lib/formTypes";
 import { createPassword, signUpWithOtp, verifyOtp } from "@/app/actions";
 import {
@@ -14,10 +14,10 @@ import {
   SetPasswordFormSchema,
   UserDetailsFormSchema,
 } from "@/lib/formSchemas";
+import { useRouter } from "next/navigation";
 
 // COMPONENTS
 import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
-import { Toaster } from "@/components/ui/toaster";
 import { Badge } from "@/components/ui/badge";
 
 //
@@ -46,6 +46,8 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   const { step, formData, updateFields, nextStep } =
     useMultiStepForm(initialData);
   const onboardingFormWrapperRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   // const searchParams = await props.searchParams;
   // if ("message" in searchParams) {
@@ -89,6 +91,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     } catch (error) {
       if (error instanceof Error) {
         toast({
+          variant: "destructive",
           description: error.message,
         });
       }
@@ -109,6 +112,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       }
     } catch (error) {
       toast({
+        variant: "destructive",
         title: "Invalid Otp",
         description: "Please enter correct otp",
       });
@@ -118,14 +122,22 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   }
 
   async function handleCreatePassword(values: SetPasswordFormSchema) {
+    setIsLoading(true);
     try {
-      await createPassword(values.password);
+      const result = await createPassword(values.password);
 
-      toast({
-        title: "Success",
-        description: "Password created successfully",
-      });
+      if (result.success) {
+        // toast({
+        //   title: "Success",
+        //   description: "Password created successfully",
+        // });
+
+        router.replace("/dashboard?welcome=true");
+      } else {
+        throw result.error;
+      }
     } catch (error) {
+      setIsLoading(false);
       toast({
         variant: "destructive",
         title: "Error updating password",
@@ -142,7 +154,10 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       handleVerifyOtp={handleVerifyOtp}
       userEmail={formData?.emailAddress}
     />,
-    <SetPassword handleCreatePassword={handleCreatePassword} />,
+    <SetPassword
+      isLoading={isLoading}
+      handleCreatePassword={handleCreatePassword}
+    />,
   ];
 
   return (
@@ -173,7 +188,6 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
           transition={animationConfig}
         >
           {steps[step]}
-          <Toaster />
         </motion.div>
       </AnimatePresence>
     </div>

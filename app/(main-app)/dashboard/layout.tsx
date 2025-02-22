@@ -12,7 +12,7 @@ import Navigation from "@/components/app/navigation";
 import React, { Suspense } from "react";
 
 // Setup
-import TanstackQueryProvider from "@/utils/TanstackQueryProvider";
+import TanstackQueryProvider from "@/lib/TanstackQueryProvider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

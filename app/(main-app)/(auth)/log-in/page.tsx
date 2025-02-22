@@ -1,11 +1,20 @@
 "use client";
+
+// UTILITIES
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { signInAction } from "@/app/actions";
+import { useRouter } from "next/navigation";
+import { loginSchema } from "@/lib/formSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "@/hooks/use-toast";
+
+// COMPONENTS
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { SeparatorMain } from "@/components/app/separator-main";
 import { LoginPrompt } from "@/components/app/log-in-prompt";
-import { Apple, Facebook, Google } from "@/components/app/social-logos";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,12 +24,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { loginSchema } from "@/lib/formSchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { PasswordInput } from "@/components/app/password-input";
+
+// ASSETS
+import { Apple, Facebook, Google } from "@/components/app/social-logos";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
 
 export default function Login(props: { searchParams: Promise<Message> }) {
   const router = useRouter();
@@ -41,18 +49,28 @@ export default function Login(props: { searchParams: Promise<Message> }) {
     try {
       const result = await signInAction(data);
       // If we're here and there's no error, manually navigate
-      router.push("/dashboard");
+
+      if (result?.success) {
+        router.replace("/dashboard");
+      } else {
+        throw result?.error;
+      }
     } catch (error) {
-      console.error("Login error:", error);
+      toast({
+        variant: "destructive",
+        title: "Please confirm email and password",
+        description:
+          error instanceof Error ? error.message : "An error occurred",
+      });
       setIsLoading(false);
     }
   };
 
   return (
-    <section className="mx-auto flex w-full max-w-120 flex-col justify-center">
-      <div className="flex h-full flex-col items-start justify-center gap-4">
-        <section className="flex flex-col items-start pb-10">
-          <h1 className="text-left text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+    <section className="mx-auto flex w-full flex-col justify-center lg:max-w-120">
+      <div className="flex h-full flex-col items-start justify-center">
+        <section className="flex flex-col items-start">
+          <h1 className="text-left text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
             Welcome Back!
           </h1>
         </section>
@@ -60,7 +78,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex w-full flex-col items-start gap-3"
+            className="flex w-full flex-col items-start gap-3 pt-10 pb-6 sm:pt-12"
           >
             <div className="flex w-full flex-col items-start gap-5.5 px-2 sm:px-0">
               <FormField
@@ -94,13 +112,11 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                       <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
                         Password
                         <FormControl>
-                          <Input
+                          <PasswordInput
                             disabled={isLoading}
                             required
-                            type="password"
-                            placeholder="Enter your password"
-                            className="text-left"
-                            {...field}
+                            placeholder="Enter password"
+                            field={field}
                           />
                         </FormControl>
                       </FormLabel>
