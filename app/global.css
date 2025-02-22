@@ -86,6 +86,8 @@
   --color-white: hsla(0, 0%, 100%, 1);
 
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+
   --color-foreground: var(--foreground);
 
   --color-card: var(--card);
@@ -145,6 +147,8 @@
 :root {
   /* done */
   --background: var(--color-white);
+  --background-secondary: var(--color-gray-50);
+
   --foreground: var(--color-gray-950);
 
   --card: var(--color-white);
@@ -246,14 +250,13 @@
   }
 
   input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active {
-  background-color: transparent !important;
-  color: inherit !important;
-  box-shadow: 0 0 0px 1000px white inset !important; /* Ensures background remains white */
-}
-
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    background-color: transparent !important;
+    color: inherit !important;
+    box-shadow: 0 0 0px 1000px white inset !important; /* Ensures background remains white */
+  }
 
   [data-radix-collection-item] {
     span[data-state="checked"] {

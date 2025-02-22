@@ -2,7 +2,7 @@ import Navigation from "@/components/app/navigation";
 
 import { figtree } from "@/lib/fonts";
 
-import "@/app/globals.css";
+import "@/app/global.css";
 import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
 
 const defaultUrl = process.env.VERCEL_URL

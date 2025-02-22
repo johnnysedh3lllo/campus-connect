@@ -7,7 +7,7 @@ import Image from "next/image";
 
 //ASSETS
 import { figtree } from "@/lib/fonts";
-import "@/app/globals.css";
+import "@/app/global.css";
 import onboardingPattern from "@/public/patterns/pattern-onboarding.svg";
 
 export const metadata = {

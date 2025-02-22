@@ -4,7 +4,7 @@ import { Metadata } from "next";
 // Assets
 import { figtree } from "@/lib/fonts";
 
-import "@/app/globals.css";
+import "@/app/global.css";
 
 // Components
 import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
