@@ -290,7 +290,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
           </div>
 
           <Button
-            disabled={!isValid || isSubmitting}
+            disabled={isSubmitting}
             type="submit"
             className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
