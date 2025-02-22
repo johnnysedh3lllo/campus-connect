@@ -10,6 +10,7 @@ import {
   userValidationSchema,
   loginSchema,
   signUpDataSchema,
+  resetPasswordEmailSchema,
 } from "@/lib/formSchemas";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -145,38 +146,62 @@ export const signInAction = async (data: SignInFormInputs) => {
   return authData;
 };
 
-export const forgotPasswordAction = async (formData: FormData) => {
-  const email = formData.get("email")?.toString();
-  const supabase = await createClient();
-  const origin = (await headers()).get("origin");
-  const callbackUrl = formData.get("callbackUrl")?.toString();
+type forgotPasswordActionInput = z.infer<typeof resetPasswordEmailSchema>;
+export const forgotPasswordAction = async (
+  formData: forgotPasswordActionInput,
+) => {
+  console.log("huzzah!")
+  try {
+    const validatedFields = resetPasswordEmailSchema.safeParse(formData);
+    console.log("Validating fields", validatedFields);
 
-  if (!email) {
-    return encodedRedirect("error", "/forgot-password", "Email is required");
-  }
+    if (!validatedFields.success) {
+      return {
+        success: false,
+        error: {
+          message: "Validation failed",
+          errors: validatedFields.error.format(),
+        },
+      };
+    }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=/reset-password`,
-  });
+    const validFields = validatedFields.data;
+    console.log("Validated fields", validFields);
+    const email = validFields.emailAddress;
+    const supabase = await createClient();
+    const origin = (await headers()).get("origin");
+    // const callbackUrl = formData.get("callbackUrl")?.toString();
+    // const callbackUrl = formData.get("callbackUrl")?.toString();
 
-  if (error) {
-    console.error(error.message);
+    if (!email) {
+      return encodedRedirect("error", "/forgot-password", "Email is required");
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/auth/callback?redirect_to=/create-password`,
+    });
+
+    if (error) {
+      console.error(error.message);
+      return encodedRedirect(
+        "error",
+        "/forgot-password",
+        "Could not reset password",
+      );
+    }
+
+    // if (callbackUrl) {
+    //   return redirect(callbackUrl);
+    // }
+
     return encodedRedirect(
-      "error",
+      "success",
       "/forgot-password",
-      "Could not reset password",
+      "Check your email for a link to reset your password.",
     );
+  } catch (error: any) {
+    console.error(error, error.message);
   }
-
-  if (callbackUrl) {
-    return redirect(callbackUrl);
-  }
-
-  return encodedRedirect(
-    "success",
-    "/forgot-password",
-    "Check your email for a link to reset your password.",
-  );
 };
 
 export const resetPasswordAction = async (formData: FormData) => {

@@ -423,7 +423,7 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
   );
 }
 
-type SetPasswordProps = {
+export type SetPasswordProps = {
   handleCreatePassword: (values: SetPasswordFormSchema) => void;
 };
 
@@ -432,7 +432,7 @@ interface PasswordInputProps
   field: any;
 }
 
-function PasswordInput({ field, ...props }: PasswordInputProps) {
+export function PasswordInput({ field, ...props }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (

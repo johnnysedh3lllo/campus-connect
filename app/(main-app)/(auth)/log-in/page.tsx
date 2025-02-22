@@ -109,7 +109,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                   )}
                 />
                 <Link
-                  href={"/forgot-password"}
+                  href={"/reset-password"}
                   className="text-left text-red-600 text-sm"
                 >
                   Forgot Password?
