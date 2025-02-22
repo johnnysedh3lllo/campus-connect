@@ -89,3 +89,12 @@ export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
   password: true,
 });
+
+export const resetPasswordEmailSchema = userValidationSchema.pick({
+  emailAddress: true,
+});
+
+export const createPasswordSchema = userValidationSchema.pick({
+  password: true,
+  confirmPassword: true,
+});
