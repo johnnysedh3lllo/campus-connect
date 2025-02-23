@@ -1,5 +1,7 @@
 // Utilities
 import { Metadata } from "next";
+import { createClient } from "@/utils/supabase/server";
+import { UserResponse } from "@supabase/supabase-js";
 
 // Assets
 import { figtree } from "@/lib/fonts";
@@ -32,11 +34,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  }: UserResponse = await supabase.auth.getUser();
+
   return (
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
       <body className="bg-background text-foreground flex h-screen flex-col font-serif">
         <ThemeProviderWrapper>
-          <Navigation route={true ? "/" : "/dashboard"} />
+          <Navigation user={user} />
           <div className="min-h-0 flex-1">
             <TanstackQueryProvider>{children}</TanstackQueryProvider>
           </div>
