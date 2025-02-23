@@ -162,7 +162,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
 
   return (
     <div
-      className="onboarding-form--wrapper flex flex-col gap-6 px-2 sm:gap-12 lg:w-full lg:overflow-auto"
+      className="onboarding-form--wrapper flex flex-col gap-6 px-2 sm:gap-12 lg:w-full lg:overflow-x-hidden lg:overflow-y-auto"
       ref={onboardingFormWrapperRef}
     >
       <div className="bg-background sticky top-0 flex gap-1 py-4 lg:pe-4">

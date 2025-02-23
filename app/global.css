@@ -86,6 +86,15 @@
   --color-white: hsla(0, 0%, 100%, 1);
 
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-placeholder: var(--text-placeholder);
+  --color-text-disabled: var(--text-disabled);
+  --color-text-inverse: var(--text-inverse);
+  --color-text-accent: var(--text-accent);
+
   --color-foreground: var(--foreground);
 
   --color-card: var(--card);
@@ -135,7 +144,9 @@
 
   /* BORDER WIDTH */
   --border-width-0.6: 0.6px;
-  /* --border-1: 1px; */
+
+  /* BOX SHADOW */
+  --shadow-lg-1: 0px 10px 15px 0px hsla(0, 0%, 0%, 0.05);
 
   /* SPACING */
   --spacing-0.6: 0.6px --spacing-30: 7.5rem;
@@ -145,6 +156,16 @@
 :root {
   /* done */
   --background: var(--color-white);
+  --background-secondary: var(--color-gray-50);
+
+  /* TEXT COLORS */
+  --text-primary: var(--color-gray-950);
+  --text-secondary: var(--color-gray-800);
+  --text-placeholder: var(--color-gray-600);
+  --text-disabled: var(--color-red-200);
+  --text-inverse: var(--color-white-900);
+  --text-accent: var(--color-red-500);
+
   --foreground: var(--color-gray-950);
 
   --card: var(--color-white);
@@ -246,14 +267,13 @@
   }
 
   input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
-input:-webkit-autofill:active {
-  background-color: transparent !important;
-  color: inherit !important;
-  box-shadow: 0 0 0px 1000px white inset !important; /* Ensures background remains white */
-}
-
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    background-color: transparent !important;
+    color: inherit !important;
+    box-shadow: 0 0 0px 1000px white inset !important; /* Ensures background remains white */
+  }
 
   [data-radix-collection-item] {
     span[data-state="checked"] {

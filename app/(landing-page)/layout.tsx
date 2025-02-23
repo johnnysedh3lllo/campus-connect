@@ -1,8 +1,6 @@
-import Navigation from "@/components/app/navigation";
-
 import { figtree } from "@/lib/fonts";
 
-import "@/app/globals.css";
+import "@/app/global.css";
 import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -24,7 +22,6 @@ export default function RootLayout({
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
       <body className="bg-background text-foreground flex h-full min-h-screen flex-col">
         <ThemeProviderWrapper>
-          <Navigation route="/" />
           <main>{children}</main>
         </ThemeProviderWrapper>
       </body>

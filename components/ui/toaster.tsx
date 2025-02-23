@@ -21,7 +21,7 @@ export function Toaster() {
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
-            <div className="flex gap-3 items-center">
+            <div className="flex gap-3 items-start">
               <Image width={24} height={24} src={errorIcon} alt="" />
               <section className="grid gap-1">
                 {title && <ToastTitle>{title}</ToastTitle>}
