@@ -1,5 +1,3 @@
-import Navigation from "@/components/app/navigation";
-
 import { figtree } from "@/lib/fonts";
 
 import "@/app/global.css";
@@ -24,7 +22,6 @@ export default function RootLayout({
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
       <body className="bg-background text-foreground flex h-full min-h-screen flex-col">
         <ThemeProviderWrapper>
-          <Navigation route="/" />
           <main>{children}</main>
         </ThemeProviderWrapper>
       </body>
