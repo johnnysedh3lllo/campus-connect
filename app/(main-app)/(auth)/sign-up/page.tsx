@@ -178,6 +178,8 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
           ))}
         </div>
       </div>
+
+      
       <AnimatePresence mode="wait">
         <motion.div
           key={step}

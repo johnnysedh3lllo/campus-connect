@@ -66,6 +66,9 @@ const roleDetails = [
   },
 ];
 
+// SIGN UP FORM
+
+// SIGN UP - SELECT ROLE
 type SelectRoleProps = {
   handleRoleSubmit: (values: RoleSchema) => void;
 };
@@ -171,6 +174,7 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
   );
 }
 
+// SIGN UP - GET USER INFO
 type GetUserInfoProps = {
   handleEmailSubmit: (values: UserDetailsFormSchema) => void;
 };
@@ -316,6 +320,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
   );
 }
 
+// SIGN UP - VERIFY OTP
 type VerifyOtpProps = {
   handleVerifyOtp: (values: OtpFormSchema) => void;
   userEmail: string;
@@ -445,6 +450,7 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
   );
 }
 
+// SIGN UP - SET PASSWORD
 type SetPasswordProps = {
   isLoading: boolean;
   handleCreatePassword: (values: SetPasswordFormSchema) => void;
