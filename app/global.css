@@ -84,7 +84,9 @@
   --color-blue-900: hsla(224, 64%, 33%, 1);
 
   --color-white: hsla(0, 0%, 100%, 1);
+  --color-black: hsla(0, 0%, 0%);
 
+  /* COLOR TOKENS */
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
 

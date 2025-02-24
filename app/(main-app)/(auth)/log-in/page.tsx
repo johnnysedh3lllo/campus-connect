@@ -60,7 +60,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
         variant: "destructive",
         title: "Please confirm email and password",
         description:
-          error instanceof Error ? error.message : "An error occurred",
+          error instanceof Error ? error.message : "An error occurred, please try again later.",
       });
       setIsLoading(false);
     }
