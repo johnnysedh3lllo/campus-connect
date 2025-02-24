@@ -89,6 +89,7 @@
   /* COLOR TOKENS */
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
+  --color-background-accent-secondary: var(--background-accent-secondary);
 
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
@@ -159,6 +160,7 @@
   /* done */
   --background: var(--color-white);
   --background-secondary: var(--color-gray-50);
+  --background-accent-secondary: var(--color-red-50);
 
   /* TEXT COLORS */
   --text-primary: var(--color-gray-950);
