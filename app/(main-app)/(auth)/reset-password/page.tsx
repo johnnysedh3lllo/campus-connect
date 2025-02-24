@@ -1,10 +1,17 @@
 "use client";
-import Image from "next/image";
+
+// Utils/Hooks/Actions
 import { forgotPasswordAction, resetPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/app/form-message";
-import { SubmitButton } from "@/components/app/submit-button";
+import { useMultiStepForm } from "@/hooks/useMultiStepForm";
+import { resetPasswordEmailSchema } from "@/lib/formSchemas";
+import { MultiStepFormData } from "@/lib/formTypes";
+import { useForm, UseFormReturn } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { useState } from "react";
+
+// Components
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,16 +21,11 @@ import {
   FormLabel,
   FormMessage as FormErrorMessage,
 } from "@/components/ui/form";
-import { useForm, UseFormReturn } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useState } from "react";
-import { resetPasswordEmailSchema } from "@/lib/formSchemas";
-import { useMultiStepForm } from "@/hooks/useMultiStepForm";
-import { MultiStepFormData } from "@/lib/formTypes";
-import { useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { Loader2 } from "lucide-react";
+
+// Assets
+import Image from "next/image";
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
 //   : "http://localhost:3000";
@@ -52,7 +54,7 @@ const StepOne = ({
     <div className="mx-auto flex h-full w-[80%] flex-col items-center justify-start md:w-[70%]">
       <div className="flex flex-col gap-12">
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Reset password</h1>
+          <h1 className="text-4xl font-semibold">Reset Password</h1>
           <p className="text-foreground/60 text-sm">
             Enter the email address associated with your account and we will
             send you a link to reset your password
@@ -65,7 +67,7 @@ const StepOne = ({
             name="emailAddress"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email address</FormLabel>
+                <FormLabel className="text-sm">Email address</FormLabel>
                 <FormControl>
                   <Input
                     type="email"
@@ -120,7 +122,7 @@ const StepTwo = ({
       </div>
       <div className="flex w-full flex-col items-start gap-5">
         <div>
-          <h2 className="text-2xl font-bold">Check your inbox</h2>
+          <h2 className="text-2xl font-semibold">Check your inbox</h2>
           <span className="text-sm text-gray-800">
             Click on the link we sent to{" "}
             <span className="font-bold text-[#000]">
@@ -144,7 +146,7 @@ const StepTwo = ({
           <span className="font-semibold">Open Email</span>
         </Link>
       </div>
-      <span className="flex flex-wrap items-center gap-2 text-sm text-gray-900 sm:gap-4 sm:text-base">
+      <span className="flex flex-wrap items-center gap-2 text-sm text-gray-900 sm:gap-4">
         No email in your inbox or spam folder?{" "}
         <span
           className="cursor-pointer font-medium text-red-500 underline"
@@ -162,7 +164,6 @@ const StepTwo = ({
 };
 
 export default function ResetPassword() {
-  
   const [isSubmitting, setIsSubmitting] = useState(false);
   const initialData: MultiStepFormData = {
     roleId: "",

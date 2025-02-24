@@ -230,9 +230,17 @@ export const forgotPasswordAction = async (
 };
 
 type resetPasswordActionInput = z.infer<typeof createPasswordSchema>;
+type ResetPasswordResponse = {
+  success: boolean;
+  error?: {
+    message: string;
+    field?: string;
+  };
+};
+
 export const resetPasswordAction = async (
   formData: resetPasswordActionInput,
-) => {
+): Promise<ResetPasswordResponse> => {
   const validatedFields = createPasswordSchema.safeParse(formData);
 
   if (!validatedFields.success) {
@@ -240,26 +248,34 @@ export const resetPasswordAction = async (
       success: false,
       error: {
         message: "Validation failed",
-        errors: validatedFields.error.format(),
+        // field: validatedFields.error.format() || "",
       },
     };
   }
+
   const validFields = validatedFields.data;
   const supabase = await createClient();
 
-  const password = validFields.password;
-  const confirmPassword = validFields.confirmPassword;
+  const { password, confirmPassword } = validFields;
 
   if (!password || !confirmPassword) {
-    encodedRedirect(
-      "error",
-      "/reset-password",
-      "Password and confirm password are required",
-    );
+    return {
+      success: false,
+      error: {
+        message: "Password and confirm password are required",
+        field: "password",
+      },
+    };
   }
 
   if (password !== confirmPassword) {
-    encodedRedirect("error", "/reset-password", "Passwords do not match");
+    return {
+      success: false,
+      error: {
+        message: "Passwords do not match",
+        field: "confirmPassword",
+      },
+    };
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -267,11 +283,61 @@ export const resetPasswordAction = async (
   });
 
   if (error) {
-    encodedRedirect("error", "/reset-password", "Password update failed");
+    return {
+      success: false,
+      error: {
+        message:
+          "Failed to update password. Please try again. Or Go back to /reset-password",
+      },
+    };
   }
 
-  encodedRedirect("success", "/log-in", "Password updated");
+  return {
+    success: true,
+  };
 };
+// export const resetPasswordAction = async (
+//   formData: resetPasswordActionInput,
+// ) => {
+//   const validatedFields = createPasswordSchema.safeParse(formData);
+
+//   if (!validatedFields.success) {
+//     return {
+//       success: false,
+//       error: {
+//         message: "Validation failed",
+//         errors: validatedFields.error.format(),
+//       },
+//     };
+//   }
+//   const validFields = validatedFields.data;
+//   const supabase = await createClient();
+
+//   const password = validFields.password;
+//   const confirmPassword = validFields.confirmPassword;
+
+//   if (!password || !confirmPassword) {
+//     encodedRedirect(
+//       "error",
+//       "/reset-password",
+//       "Password and confirm password are required",
+//     );
+//   }
+
+//   if (password !== confirmPassword) {
+//     encodedRedirect("error", "/reset-password", "Passwords do not match");
+//   }
+
+//   const { error } = await supabase.auth.updateUser({
+//     password: password,
+//   });
+
+//   if (error) {
+//     encodedRedirect("error", "/reset-password", "Password update failed");
+//   }
+
+//   encodedRedirect("success", "/log-in", "Password updated");
+// };
 
 export const signOutAction = async () => {
   const supabase = await createClient();
