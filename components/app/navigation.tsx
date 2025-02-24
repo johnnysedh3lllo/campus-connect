@@ -151,7 +151,7 @@ export default function Navigation({ user }: { user: User | null }) {
                   />
                   <Separator />
 
-                  <ul className="flex flex-col overflow-y-auto h-[70%] gap-4">
+                  <ul className="flex flex-col overflow-y-auto h-7/10 gap-4">
                     {navLinksMobile.map((link, index) => {
                       return (
                         <li key={index}>
