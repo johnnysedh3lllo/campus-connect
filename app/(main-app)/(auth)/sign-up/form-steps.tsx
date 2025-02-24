@@ -445,7 +445,7 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
   );
 }
 
-type SetPasswordProps = {
+export type SetPasswordProps = {
   isLoading: boolean;
   handleCreatePassword: (values: SetPasswordFormSchema) => void;
 };
