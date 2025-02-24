@@ -4,7 +4,7 @@
 import { Metadata } from "next";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
-import { useMultiStepForm } from "@/hooks/useMultiStepForm";
+import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { useEffect, useRef, useState } from "react";
 import { MultiStepFormData } from "@/lib/formTypes";
 import { createPassword, signUpWithOtp, verifyOtp } from "@/app/actions";

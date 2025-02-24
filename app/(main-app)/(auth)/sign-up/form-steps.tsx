@@ -48,6 +48,7 @@ import { Loader2 } from "lucide-react";
 import lockIcon from "@/public/icons/icon-lock.svg";
 import { resendSignUpOtp } from "@/app/actions";
 import { PasswordInput } from "@/components/app/password-input";
+import { useCountdownTimer } from "@/hooks/use-countdown-timer";
 
 //
 const roleDetails = [
@@ -321,7 +322,7 @@ type VerifyOtpProps = {
 };
 
 export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
-  let [timeLeft, setTimeLeft] = useState(60);
+  let { timeLeft, resetTimer } = useCountdownTimer(60);
 
   const form = useForm<OtpFormSchema>({
     resolver: zodResolver(otpFormSchema),
@@ -333,15 +334,6 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
   const {
     formState: { isValid, isSubmitting },
   } = form;
-
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [timeLeft]);
 
   async function handleResendOtp() {
     if (!userEmail) {
@@ -357,11 +349,23 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
       } else {
         throw result.error;
       }
-      setTimeLeft(60);
+      resetTimer();
     } catch (error) {
       console.error(error);
     }
   }
+
+  const formatTime = (time: number) => {
+    const minute = Math.floor(time / 60)
+      .toString()
+      .padStart(2, "0");
+
+    const seconds = Math.floor(time % 60)
+      .toString()
+      .padStart(2, "0");
+
+    return `${minute}:${seconds}`;
+  };
 
   return (
     <div>
@@ -379,9 +383,7 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
 
           <p className="text text-secondary-foreground text-sm">
             Enter the code we sent over SMS to your email address{" "}
-            <span className="text-primary font-semibold">
-              ***{userEmail.slice(-14)}:
-            </span>
+            <span className="text-primary font-semibold">{userEmail}:</span>
           </p>
         </section>
       </div>
@@ -399,27 +401,23 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
                 <FormControl>
                   <InputOTP maxLength={6} {...field}>
                     <InputOTPGroup className="flex w-full justify-between">
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
+                      {[...Array(6)].map((_, i) => {
+                        return <InputOTPSlot key={i} index={i} />;
+                      })}
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>
 
                 <FormDescription>
                   <Button
-                    disabled={timeLeft !== 0}
+                    disabled={timeLeft > 0}
                     className="text-primary p-1 font-medium"
                     variant={"link"}
                     onClick={handleResendOtp}
                   >
                     Resend Code
                   </Button>
-                  in {timeLeft < 60 ? "00" : "01"}:
-                  {timeLeft < 60 ? timeLeft.toString().padStart(2, "0") : "00"}
+                  in {formatTime(timeLeft)}
                 </FormDescription>
 
                 <FormMessage />
@@ -432,8 +430,14 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
             type="submit"
             className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
-            {isSubmitting && <Loader2 className="animate-spin" />}
-            Continue
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Verifying...
+              </>
+            ) : (
+              "Continue"
+            )}
           </Button>
         </form>
       </Form>
