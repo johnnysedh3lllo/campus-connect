@@ -93,7 +93,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                           disabled={isLoading}
                           required
                           placeholder="your@example.com"
-                          className="text-left [&:autofill]:bg-white [&:autofill]:text-gray-900"
+                          className="text-left"
                           {...field}
                         />
                       </FormControl>
@@ -116,7 +116,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
                             disabled={isLoading}
                             required
                             placeholder="Enter password"
-                            className="[&:autofill]:bg-white [&:autofill]:text-gray-900"
+                            className=""
                             field={field}
                           />
                         </FormControl>

@@ -17,7 +17,7 @@ const CreatePasswordStep: React.FC<CreatePasswordStepProps> = ({
   isSubmitting,
   onSubmit,
 }) => (
-  <div className="flex flex-col justify-center gap-6 sm:gap-12">
+  <div className="flex flex-col justify-center gap-6 sm:gap-12 lg:max-w-120">
     <section className="flex flex-col gap-2">
       <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
         Create Password

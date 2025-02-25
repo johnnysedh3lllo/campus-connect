@@ -1,16 +1,13 @@
 "use client";
 
-// Utils/Hooks/Actions
-import { forgotPasswordAction, resetPasswordAction } from "@/app/actions";
+import { forgotPasswordAction } from "@/app/actions";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
 import { resetPasswordEmailSchema } from "@/lib/formSchemas";
-import { MultiStepFormData } from "@/lib/formTypes";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { Control, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import type * as z from "zod";
 import { useState } from "react";
-
-// Components
+import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,13 +16,22 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage as FormErrorMessage,
+  FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
 import { Loader2 } from "lucide-react";
-
-// Assets
 import Image from "next/image";
+
+const formVariants = {
+  hidden: { opacity: 0, x: 50 },
+  visible: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -50 },
+};
+const animationConfig = { duration: 0.3 };
+
+const initialData = {
+  emailAddress: "",
+};
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
 //   : "http://localhost:3000";
@@ -37,25 +43,78 @@ import Image from "next/image";
 //   // description: "Your rental paradise",
 // };
 
+export default function ResetPassword() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { step, nextStep } = useMultiStepForm(initialData);
+
+  const form = useForm<z.infer<typeof resetPasswordEmailSchema>>({
+    resolver: zodResolver(resetPasswordEmailSchema),
+    defaultValues: {
+      emailAddress: "",
+    },
+  });
+
+  const onSubmit = async (data: z.infer<typeof resetPasswordEmailSchema>) => {
+    if (step === 0) {
+      setIsSubmitting(true);
+      await forgotPasswordAction({ emailAddress: data.emailAddress });
+      nextStep();
+      setIsSubmitting(false);
+      return;
+    }
+  };
+
+  const resetPasswordSteps = [
+    <StepOne
+      key="step-one"
+      isSubmitting={isSubmitting}
+      formControl={form.control}
+    />,
+    <StepTwo key="step-two" emailAddress={form.getValues().emailAddress} />,
+  ];
+
+  return (
+    <Form {...form}>
+      <div className="flex h-full w-full flex-col justify-center">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={step}
+              variants={formVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={animationConfig}
+            >
+              {resetPasswordSteps[step]}
+            </motion.div>
+          </AnimatePresence>
+        </form>
+      </div>
+    </Form>
+  );
+}
+
 const StepOne = ({
-  form,
+  formControl,
   isSubmitting,
 }: {
-  form: UseFormReturn<
+  formControl: Control<
     {
       emailAddress: string;
     },
-    any,
-    undefined
+    any
   >;
   isSubmitting: boolean;
 }) => {
   return (
-    <div className="mx-auto flex h-full w-[80%] flex-col items-center justify-start md:w-[70%]">
-      <div className="flex flex-col gap-12">
+    <div className="mx-auto flex h-full w-full max-w-120 flex-col items-center justify-start">
+      <div className="flex flex-col gap-10 md:gap-12">
         <div className="flex flex-col gap-2">
-          <h1 className="text-4xl font-semibold">Reset Password</h1>
-          <p className="text-foreground/60 text-sm">
+          <h1 className="text-2xl leading-10 font-semibold md:text-4xl md:leading-11">
+            Reset Password
+          </h1>
+          <p className="text-secondary-foreground text-sm leading-6">
             Enter the email address associated with your account and we will
             send you a link to reset your password
           </p>
@@ -63,7 +122,7 @@ const StepOne = ({
 
         <div className="flex flex-col gap-6">
           <FormField
-            control={form.control}
+            control={formControl}
             name="emailAddress"
             render={({ field }) => (
               <FormItem>
@@ -75,7 +134,7 @@ const StepOne = ({
                     {...field}
                   />
                 </FormControl>
-                <FormErrorMessage />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -94,17 +153,7 @@ const StepOne = ({
   );
 };
 
-const StepTwo = ({
-  form,
-}: {
-  form: UseFormReturn<
-    {
-      emailAddress: string;
-    },
-    any,
-    undefined
-  >;
-}) => {
+const StepTwo = ({ emailAddress }: { emailAddress: string }) => {
   return (
     <div className="mx-auto flex w-[70%] translate-y-0 transform flex-col items-start justify-center gap-7 md:-translate-y-5">
       <div className="self-center">
@@ -125,10 +174,8 @@ const StepTwo = ({
           <h2 className="text-2xl font-semibold">Check your inbox</h2>
           <span className="text-sm text-gray-800">
             Click on the link we sent to{" "}
-            <span className="font-bold text-[#000]">
-              {form.getValues().emailAddress}
-            </span>{" "}
-            to finish your account set-up.
+            <span className="font-bold text-[#000]">{emailAddress}</span> to
+            finish your account set-up.
           </span>
         </div>
         <Link
@@ -152,7 +199,7 @@ const StepTwo = ({
           className="cursor-pointer font-medium text-red-500 underline"
           onClick={async () => {
             await forgotPasswordAction({
-              emailAddress: form.getValues().emailAddress,
+              emailAddress,
             });
           }}
         >
@@ -162,61 +209,3 @@ const StepTwo = ({
     </div>
   );
 };
-
-export default function ResetPassword() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const initialData: MultiStepFormData = {
-    roleId: "",
-    firstName: "",
-    lastName: "",
-    emailAddress: "",
-    password: "",
-    newsletter: true,
-  };
-
-  const form = useForm<z.infer<typeof resetPasswordEmailSchema>>({
-    resolver: zodResolver(resetPasswordEmailSchema),
-    defaultValues: {
-      emailAddress: "",
-    },
-  });
-
-  const { step, nextStep } = useMultiStepForm(initialData);
-
-  const onSubmit = async (data: z.infer<typeof resetPasswordEmailSchema>) => {
-    if (step === 0) {
-      setIsSubmitting(true);
-      await forgotPasswordAction({ emailAddress: data.emailAddress });
-      nextStep();
-      setIsSubmitting(false);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      // await resetPasswordAction({ emailAddress: data.emailAddress });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="w-full">
-      <Form {...form}>
-        <div className="flex h-full flex-col justify-center">
-          <form onSubmit={form.handleSubmit(onSubmit)} className="">
-            {step === 0 ? (
-              <StepOne form={form} isSubmitting={isSubmitting} />
-            ) : (
-              <StepTwo form={form} />
-            )}
-          </form>
-        </div>
-      </Form>
-
-      <FormErrorMessage />
-    </div>
-  );
-}

@@ -1,13 +1,15 @@
 "use client";
 
-import { MultiStepFormData } from "@/lib/formTypes";
 import { useState } from "react";
 
-export function useMultiStepForm(initialData: MultiStepFormData) {
+// Make the hook generic with type parameter T
+export function useMultiStepForm<T extends Record<string, any>>(
+  initialData: T,
+) {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState<MultiStepFormData>(initialData);
+  const [formData, setFormData] = useState<T>(initialData);
 
-  const updateFields = (fields: Partial<MultiStepFormData>) => {
+  const updateFields = (fields: Partial<T>) => {
     setFormData((prev) => ({ ...prev, ...fields }));
   };
 
