@@ -33,7 +33,10 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="h-full w-full p-4 pt-0 sm:w-1/2">
         <SheetHeader className="flex flex-row justify-end gap-4">
-          <SheetTitle className="sr-only">navigation menu</SheetTitle>
+          <SheetTitle className="sr-only">mobile navigation menu</SheetTitle>
+          <SheetDescription className="sr-only">
+            this is the navigation for mobile and tablet
+          </SheetDescription>
           <Button
             variant={"ghost"}
             className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0"
@@ -68,6 +71,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
                     <Link
                       className={`hover:bg-background-secondary flex items-center ${pathName.includes(link.href) ? "bg-background-accent-secondary border-primary text-primary border-b-1" : ""} gap-2 px-2 py-3`}
                       href={link.href}
+                      onClick={onClose}
                     >
                       <Image
                         src={link.icon}

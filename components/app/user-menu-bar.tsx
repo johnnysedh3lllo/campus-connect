@@ -22,8 +22,9 @@ import {
 import { MenubarItem } from "@radix-ui/react-menubar";
 import { useState } from "react";
 import { UserPill } from "./user-pill";
+import { UserMenuBarProps } from "@/lib/component-prop-types";
 
-export function UserMenuBar({ user }: { user: User | null }) {
+export function UserMenuBar({ user }: UserMenuBarProps) {
   const [clicked, setClicked] = useState(false);
 
   const userMetaData = user?.user_metadata as UserMetadata;
@@ -34,65 +35,63 @@ export function UserMenuBar({ user }: { user: User | null }) {
 
   if (user) {
     return (
-      <div className="hidden lg:flex lg:items-center lg:gap-2">
-        <Menubar className="p-0">
-          <MenubarMenu>
-            <MenubarTrigger
-              onClick={handleMenuClick}
-              className="flex cursor-pointer items-center gap-2 p-0"
-            >
-              <UserPill userMetaData={userMetaData} />
+      <Menubar className="hidden p-0 lg:flex lg:items-center lg:gap-2">
+        <MenubarMenu>
+          <MenubarTrigger
+            onClick={handleMenuClick}
+            className="flex cursor-pointer items-center gap-2 p-0"
+          >
+            <UserPill userMetaData={userMetaData} />
 
-              <Image
-                className={`${clicked ? "-rotate-180" : ""} transition-all duration-150`}
-                src={iconDown}
-                width={24}
-                height={24}
-                alt="chevon icon down"
-              />
-            </MenubarTrigger>
+            <Image
+              className={`${clicked ? "-rotate-180" : ""} transition-all duration-150`}
+              src={iconDown}
+              width={24}
+              height={24}
+              alt="chevon icon down"
+            />
+          </MenubarTrigger>
 
-            <MenubarContent className="flex max-w-40 flex-col items-start gap-1">
-              <MenubarItem className="w-full outline-0">
-                <Button
-                  variant={"ghost"}
-                  className="flex w-full justify-start p-2"
-                >
-                  <Link
-                    className="flex items-start gap-2"
-                    href="/dashboard/settings"
-                    type="submit"
-                  >
-                    <Image
-                      src={settingsIcon}
-                      width={24}
-                      height={24}
-                      alt="settings icon"
-                    />
-                    <p className="text-sm leading-6">Settings</p>
-                  </Link>
-                </Button>
-              </MenubarItem>
-
-              <form className="w-full" action={signOutAction}>
-                <Button
-                  variant={"ghost"}
-                  className="flex w-full cursor-pointer justify-start gap-2 p-2"
+          <MenubarContent className="flex max-w-40 flex-col items-start gap-1">
+            <MenubarItem className="w-full outline-0">
+              <Button
+                variant={"ghost"}
+                className="flex w-full justify-start p-2"
+              >
+                <Link
+                  className="flex items-start gap-2"
+                  href="/dashboard/settings"
                   type="submit"
                 >
                   <Image
-                    src={logOutIcon}
+                    src={settingsIcon}
                     width={24}
                     height={24}
-                    alt="log out icon"
+                    alt="settings icon"
                   />
-                  <p className="text-sm leading-6">Log Out</p>
-                </Button>
-              </form>
-            </MenubarContent>
-          </MenubarMenu>
-        </Menubar>
-      </div>
+                  <p className="text-sm leading-6">Settings</p>
+                </Link>
+              </Button>
+            </MenubarItem>
+
+            <form className="w-full" action={signOutAction}>
+              <Button
+                variant={"ghost"}
+                className="flex w-full cursor-pointer justify-start gap-2 p-2"
+                type="submit"
+              >
+                <Image
+                  src={logOutIcon}
+                  width={24}
+                  height={24}
+                  alt="log out icon"
+                />
+                <p className="text-sm leading-6">Log Out</p>
+              </Button>
+            </form>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
     );
   } else {
     return (
