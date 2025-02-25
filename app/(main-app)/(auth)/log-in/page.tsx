@@ -6,7 +6,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { signInAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
-import { loginSchema } from "@/lib/formSchemas";
+import { loginSchema } from "@/lib/form-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 
@@ -60,7 +60,9 @@ export default function Login(props: { searchParams: Promise<Message> }) {
         variant: "destructive",
         title: "Please confirm email and password",
         description:
-          error instanceof Error ? error.message : "An error occurred, please try again later.",
+          error instanceof Error
+            ? error.message
+            : "An error occurred, please try again later.",
       });
       setIsLoading(false);
     }

@@ -13,7 +13,7 @@ import {
   SetPasswordFormSchema,
   userDetailsFormSchema,
   UserDetailsFormSchema,
-} from "@/lib/formSchemas";
+} from "@/lib/form-schemas";
 
 // COMPONENTS
 import Image from "next/image";

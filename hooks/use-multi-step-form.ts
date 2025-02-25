@@ -1,6 +1,6 @@
 "use client";
 
-import { MultiStepFormData } from "@/lib/formTypes";
+import { MultiStepFormData } from "@/lib/form-types";
 import { useState } from "react";
 
 export function useMultiStepForm(initialData: MultiStepFormData) {
