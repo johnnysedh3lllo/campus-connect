@@ -3,14 +3,17 @@
 // UTILITIES
 import { User, UserMetadata } from "@supabase/supabase-js";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { navLinks } from "@/lib/data-storage";
+import { NavigationProps } from "@/lib/component-prop-types";
 
 // COMPONENTS
 import Link from "next/link";
 import Image from "next/image";
 import { UserMenuBar } from "@/components/app/user-menu-bar";
 import { Button } from "../ui/button";
-
 import { Separator } from "../ui/separator";
+import { MobileNav } from "./mobile-nav";
 
 // ASSETS
 import logoMain from "@/public/logos/logo-primary.svg";
@@ -18,18 +21,11 @@ import notificationIcon from "@/public/icons/icon-notifications.svg";
 import hamburgerIcon from "@/public/icons/icon-hamburger.svg";
 import creditChip from "@/public/icons/icon-credit-chip.svg";
 
-import { UserPill } from "./user-pill";
-import { signOutAction } from "@/app/actions";
-import { NavigationProps } from "@/lib/component-prop-types";
-import { MobileNav } from "./mobile-nav";
-import { useState } from "react";
-import { navLinks } from "@/lib/data-storage";
-
 export default function Navigation({ user }: NavigationProps) {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
-  const pathName = usePathname();
-  console.log(pathName);
+  const [clicked, setIsClicked] = useState(false);
 
+  const pathName = usePathname();
   return (
     <nav className="bg-background border-b-foreground/10 sticky top-0 flex h-16 w-full justify-center border-b">
       <div className="flex w-full max-w-screen-2xl items-center justify-between p-4 text-sm lg:px-6 lg:pt-6 lg:pb-0">
@@ -68,6 +64,7 @@ export default function Navigation({ user }: NavigationProps) {
           <Button
             variant={"ghost"}
             className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0"
+            onClick={() => setIsMobileNavOpen(true)}
           >
             <Image
               src={notificationIcon}
@@ -96,7 +93,7 @@ export default function Navigation({ user }: NavigationProps) {
             isOpen={isMobileNavOpen}
             onClose={() => setIsMobileNavOpen(false)}
           />
-          <UserMenuBar user={user} />
+          <UserMenuBar user={user} isOpen={clicked} onClose={setIsClicked} />
         </div>
       </div>
     </nav>
