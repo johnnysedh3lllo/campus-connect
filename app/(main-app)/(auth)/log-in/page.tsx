@@ -51,7 +51,7 @@ export default function Login(props: { searchParams: Promise<Message> }) {
       // If we're here and there's no error, manually navigate
 
       if (result?.success) {
-        router.replace("/dashboard");
+        router.replace("/listings");
       } else {
         throw result?.error;
       }

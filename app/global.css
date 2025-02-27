@@ -8,6 +8,7 @@
   /* These are the range of all the colors used in the design */
 
   /* BREAKPOINTS */
+  --breakpoint-max-xl: 82rem;
   --breakpoint-2xl: 90rem;
   --breakpoint-3xl: 96rem;
 

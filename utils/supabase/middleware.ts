@@ -40,13 +40,13 @@ export const updateSession = async (request: NextRequest) => {
     const user = await supabase.auth.getUser();
 
     // protected routes
-    if (request.nextUrl.pathname.startsWith("/dashboard") && user.error) {
+    if (request.nextUrl.pathname.startsWith("/listings") && user.error) {
       return NextResponse.redirect(new URL("/log-in", request.url));
     }
 
     // redirects when user is logged in
     if (request.nextUrl.pathname === "/log-in" && !user.error) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/listings", request.url));
     }
 
     if (request.nextUrl.pathname === "/sign-up" && !user.error) {
@@ -67,5 +67,5 @@ export const updateSession = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/log-in", "/dashboard"],
+  matcher: ["/log-in", "/listings"],
 };

@@ -42,7 +42,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
-      <body className="bg-background text-foreground flex h-screen flex-col font-serif">
+      <body className="bg-background text-text-primary flex h-screen flex-col font-serif">
         <ThemeProviderWrapper>
           <Navigation user={user} />
           <div className="min-h-0 flex-1">

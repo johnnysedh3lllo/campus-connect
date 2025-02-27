@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { LogOut } from "@/public/icons/log-out-icon";
 
 export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
   const userMetaData = user?.user_metadata as UserMetadata;
@@ -40,7 +41,7 @@ export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
           <DropdownMenuContent className="w-40">
             <DropdownMenuItem asChild>
               <Link
-                href="/dashboard/settings"
+                href="/settings"
                 className="flex w-full items-center gap-2 p-2"
               >
                 <Image
@@ -56,15 +57,10 @@ export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
             <DropdownMenuItem asChild>
               <form className="w-full" action={signOutAction}>
                 <button
-                  className="flex w-full items-center gap-2 p-2"
+                  className="flex w-full items-center gap-2 p-2 [&_svg]:size-6"
                   type="submit"
                 >
-                  <Image
-                    src={logOutIcon || "/placeholder.svg"}
-                    width={24}
-                    height={24}
-                    alt="log out icon"
-                  />
+                  <LogOut />
                   <span className="text-sm leading-6">Log Out</span>
                 </button>
               </form>

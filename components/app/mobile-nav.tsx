@@ -25,6 +25,8 @@ import { usePathname } from "next/navigation";
 import { signOutAction } from "@/app/actions";
 import { navLinksMobile } from "@/lib/data-storage";
 import Link from "next/link";
+import { ListingIcon } from "@/public/icons/listing-icon";
+import { LogOut } from "@/public/icons/log-out-icon";
 
 export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
   const pathName = usePathname();
@@ -66,6 +68,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
 
             <ul className="flex h-full flex-col flex-wrap justify-between">
               {navLinksMobile.map((link, index) => {
+                const LinkIcon = link.icon;
                 return (
                   <li key={index}>
                     <Link
@@ -73,12 +76,14 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
                       href={link.href}
                       onClick={onClose}
                     >
-                      <Image
+                      {/* <Image
+                        className="text-primary"
                         src={link.icon}
                         width={24}
                         height={24}
                         alt={`${link.text} icon`}
-                      />
+                      /> */}
+                      <LinkIcon />
                       {link.text}
                     </Link>
                   </li>
@@ -88,15 +93,10 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
               <form className="w-full" action={signOutAction}>
                 <Button
                   variant={"ghost"}
-                  className="flex h-full w-full cursor-pointer justify-start gap-2 rounded-none px-2 py-3 font-normal"
+                  className="flex h-full w-full cursor-pointer justify-start gap-2 rounded-none px-2 py-3 font-normal [&_svg]:size-6"
                   type="submit"
                 >
-                  <Image
-                    src={logOutIcon}
-                    width={24}
-                    height={24}
-                    alt="log out icon"
-                  />
+                  <LogOut />
                   <p className="text-sm leading-6">Log Out</p>
                 </Button>
               </form>

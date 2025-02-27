@@ -23,7 +23,7 @@ export default async function MessagesLayout({
   return (
     <div className="flex h-full gap-4">
       <section className="flex gap-2 flex-col border border-solid border-black flex-[0.325] p-4">
-        <Link href="/dashboard/messages/" className="font-bold">
+        <Link href="/messages/" className="font-bold">
           Messages
         </Link>
         <div>
@@ -39,7 +39,7 @@ export default async function MessagesLayout({
 
                 return (
                   <Link
-                    href={`/dashboard/messages/${id}`}
+                    href={`/messages/${id}`}
                     className="py-1 px-2 border border-solid border-black rounded"
                     key={id}
                   >
