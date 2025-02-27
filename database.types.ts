@@ -7,6 +7,31 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       conversation_participants: {
@@ -235,6 +260,13 @@ export type Database = {
         Args: {
           convo_id: string
           pid: string
+        }
+        Returns: boolean
+      }
+      check_password_match: {
+        Args: {
+          user_id: string
+          new_password: string
         }
         Returns: boolean
       }

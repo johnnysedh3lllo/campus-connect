@@ -91,6 +91,7 @@ const SetPassword: React.FC = () => {
           animate="visible"
           exit="exit"
           transition={animationConfig}
+          className="h-full w-full flex flex-col justify-center"
         >
           <ErrorHandler />
           {resolveCurrentStep[step]}

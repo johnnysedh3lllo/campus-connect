@@ -108,7 +108,7 @@ const StepOne = ({
   isSubmitting: boolean;
 }) => {
   return (
-    <div className="mx-auto flex h-full w-full max-w-120 flex-col items-center justify-start">
+    <div className="mx-auto flex h-full w-full flex-col items-center justify-start lg:max-w-120">
       <div className="flex flex-col gap-10 md:gap-12">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl leading-10 font-semibold md:text-4xl md:leading-11">
@@ -155,7 +155,7 @@ const StepOne = ({
 
 const StepTwo = ({ emailAddress }: { emailAddress: string }) => {
   return (
-    <div className="mx-auto flex w-[70%] translate-y-0 transform flex-col items-start justify-center gap-7 md:-translate-y-5">
+    <div className="mx-auto flex w-full flex-col items-start justify-center gap-7 lg:max-w-120">
       <div className="self-center">
         <div className="flex aspect-square h-40 items-center justify-center rounded-full border border-red-400">
           <div className="flex aspect-square h-35 items-center justify-center rounded-full bg-red-100">

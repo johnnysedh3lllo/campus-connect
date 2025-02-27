@@ -253,11 +253,23 @@ export const resetPasswordAction = async (
     };
   }
 
-  const validFields = validatedFields.data;
+  const { password, confirmPassword } = validatedFields.data;
   const supabase = await createClient();
 
-  const { password, confirmPassword } = validFields;
+  // Get the authenticated user's ID
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
+  if (authError || !user) {
+    return {
+      success: false,
+      error: { message: "User not authenticated. Please log in again." },
+    };
+  }
+
+  const userId = user.id; // Extract user ID
   if (!password || !confirmPassword) {
     return {
       success: false,
@@ -274,6 +286,30 @@ export const resetPasswordAction = async (
       error: {
         message: "Passwords do not match",
         field: "confirmPassword",
+      },
+    };
+  }
+
+  const { data, error: checkError } = await supabase.rpc(
+    "check_password_match",
+    {
+      user_id: userId,
+      new_password: password,
+    },
+  );
+
+  if (checkError) {
+    return {
+      success: false,
+      error: { message: "Error checking password. Please try again." },
+    };
+  }
+
+  if (data) {
+    return {
+      success: false,
+      error: {
+        message: "New password must not be the same as the previous password.",
       },
     };
   }
@@ -296,48 +332,6 @@ export const resetPasswordAction = async (
     success: true,
   };
 };
-// export const resetPasswordAction = async (
-//   formData: resetPasswordActionInput,
-// ) => {
-//   const validatedFields = createPasswordSchema.safeParse(formData);
-
-//   if (!validatedFields.success) {
-//     return {
-//       success: false,
-//       error: {
-//         message: "Validation failed",
-//         errors: validatedFields.error.format(),
-//       },
-//     };
-//   }
-//   const validFields = validatedFields.data;
-//   const supabase = await createClient();
-
-//   const password = validFields.password;
-//   const confirmPassword = validFields.confirmPassword;
-
-//   if (!password || !confirmPassword) {
-//     encodedRedirect(
-//       "error",
-//       "/reset-password",
-//       "Password and confirm password are required",
-//     );
-//   }
-
-//   if (password !== confirmPassword) {
-//     encodedRedirect("error", "/reset-password", "Passwords do not match");
-//   }
-
-//   const { error } = await supabase.auth.updateUser({
-//     password: password,
-//   });
-
-//   if (error) {
-//     encodedRedirect("error", "/reset-password", "Password update failed");
-//   }
-
-//   encodedRedirect("success", "/log-in", "Password updated");
-// };
 
 export const signOutAction = async () => {
   const supabase = await createClient();
