@@ -23,7 +23,7 @@ const MessageContainer = ({
   const [messageInputValue, setMessageInputValue] = useState("");
   const [messages, setMessages] = useState(ssrConversationMessages);
   const chatContainerRef = useRef(
-    null
+    null,
   ) as React.MutableRefObject<HTMLDivElement | null>;
 
   useEffect(() => {
@@ -52,7 +52,7 @@ const MessageContainer = ({
               (msg) =>
                 msg.status === "optimistic" &&
                 msg.content === newMessage.content &&
-                msg.sender_id === newMessage.sender_id
+                msg.sender_id === newMessage.sender_id,
             );
 
             if (optimisticIndex !== -1) {
@@ -72,7 +72,7 @@ const MessageContainer = ({
               { ...newMessage, status: "confirmed" } as Message,
             ];
           });
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -96,7 +96,7 @@ const MessageContainer = ({
             // console.log("edited messages", updatedMessages);
             return updatedMessages;
           });
-        }
+        },
       )
       .on(
         "postgres_changes",
@@ -109,7 +109,7 @@ const MessageContainer = ({
         (payload) => {
           if (payload) {
             const newMessages = messages.filter(
-              (msg) => msg.id !== payload.old.id
+              (msg) => msg.id !== payload.old.id,
             );
 
             setMessages(newMessages);
@@ -117,11 +117,9 @@ const MessageContainer = ({
 
           // console.log(payload);
           // console.log(newMessage);
-        }
+        },
       )
-      .subscribe((status) => {
-        console.log(status);
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
@@ -138,14 +136,14 @@ const MessageContainer = ({
   }, [messages]);
 
   return (
-    <section className="flex-2 flex justify-between flex-col gap-4 pl-8 pr-8">
+    <section className="flex flex-2 flex-col justify-between gap-4">
       <MessageHeader chatParticipants={participants} />
 
-      <div className="overflow-y-auto h-full flex flex-col gap-2 border-solid border-black border rounded">
-        <div className="bg-slate-300 flex-1"></div>
+      <div className="flex h-full flex-col gap-2 overflow-y-auto rounded">
+        <div className="flex-1 bg-slate-300"></div>
         <div
           ref={chatContainerRef}
-          className="overflow-y-auto scroll-smooth flex flex-col gap-2 [scrollbar-width:_none] p-2"
+          className="flex flex-col gap-2 overflow-y-auto scroll-smooth p-2 [scrollbar-width:_none]"
         >
           {messages?.map((message) => (
             <MessageBubble

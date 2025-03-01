@@ -1,63 +1,66 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+"use client";
 
 // Utilities
 import { Metadata } from "next";
-import { User } from "@supabase/supabase-js";
-import { getUserConversationsWithParticipants, getUser } from "@/app/actions";
+import { MessagesList } from "@/components/app/messages-list";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
-export const metadata: Metadata = {
-  title: "Messages",
-};
+// export const metadata: Metadata = {
+//   title: "Messages",
+// };
 
-export default async function MessagesLayout({
+export default function MessagesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = (await getUser()) as User;
-  const userConversations = await getUserConversationsWithParticipants(
-    user?.id
-  );
+  const [isRoot, setIsRoot] = useState(true);
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === "/messages") {
+      setIsRoot(true);
+    } else {
+      setIsRoot(false);
+    }
+
+    console.log(pathname);
+  }, [pathname]);
+
+  // useEffect(() => {
+  //   const handleRouteChange = (url: string) => {
+  //     if (url.startsWith("/messages/") && url !== "/messages") {
+  //       // Navigating to a dynamic route (e.g., /messages/[id])
+  //       setIsInDynamicMessage(true);
+  //     } else if (url === "/messages") {
+  //       // Navigating back to the messages list
+  //       setIsInDynamicMessage(false);
+  //     }
+  //   };
+
+  //   // Initial check on mount
+  //   handleRouteChange(router.asPath);
+
+  //   router.events.on("routeChangeComplete", handleRouteChange);
+
+  //   return () => {
+  //     router.events.off("routeChangeComplete", handleRouteChange);
+  //   };
+  // }, [router]);
 
   return (
-    <div className="flex h-full gap-4">
-      <section className="flex gap-2 flex-col border border-solid border-black flex-[0.325] p-4">
-        <Link href="/messages/" className="font-bold">
-          Messages
-        </Link>
-        <div>
-          <Button variant="outline">Add Chat</Button>
-        </div>
+    <div className="relative grid h-full lg:grid-cols-[25%_1fr]">
+      <div
+        className={`absolute inset-0 ${isRoot || isDesktop ? "block" : "hidden"} bg-background z-10 lg:static`}
+      >
+        <MessagesList />
+      </div>
 
-        <div className="flex-1 flex gap-4 flex-col overflow-y-auto  border border-solid border-black p-4 w-full">
-          {userConversations ? (
-            <>
-              {userConversations.map((conversation) => {
-                const { conversation_id: id, participants } =
-                  conversation as Conversations;
-
-                return (
-                  <Link
-                    href={`/messages/${id}`}
-                    className="py-1 px-2 border border-solid border-black rounded"
-                    key={id}
-                  >
-                    <p className="whitespace-nowrap">
-                      {participants && participants.length === 1
-                        ? `${participants[0].first_name} ${participants[0].last_name}`
-                        : ""}
-                    </p>
-                  </Link>
-                );
-              })}
-            </>
-          ) : (
-            <p className="italic">No conversations to display</p>
-          )}
-        </div>
-      </section>
-      <main className="border border-solid border-black flex-2 flex pt-4 pl-4 pr-4 gap-4 w-full">
+      <main className="border-text-secondary flex w-full flex-2 gap-4 pt-4 pr-4 pl-4">
         {children}
       </main>
     </div>

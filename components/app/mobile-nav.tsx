@@ -93,7 +93,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
               <form className="w-full" action={signOutAction}>
                 <Button
                   variant={"ghost"}
-                  className="flex h-full w-full cursor-pointer justify-start gap-2 rounded-none px-2 py-3 font-normal [&_svg]:size-6"
+                  className="flex h-full w-full cursor-pointer justify-start gap-2 rounded-none px-2 py-3 font-normal"
                   type="submit"
                 >
                   <LogOut />

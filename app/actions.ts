@@ -327,13 +327,27 @@ export const getMessages = async (conversationId: string) => {
 // Insert Message
 
 // CONVERSATIONS
-export const getUserConversationsWithParticipants = async (userId: string) => {
+export const getUserConversationsWithParticipants = async () => {
   const supabase = await createClient();
 
   try {
+    // Get the current authenticated user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      throw new Error("User not authenticated");
+    }
+
+    console.log(user.id)
+
     const { data: conversations, error } = await supabase
-      .rpc("get_conversations_for_user", { pid: userId })
+      .rpc("get_conversations_for_user", { pid: user.id })
       .is("deleted_at", null);
+
+      console.log(conversations)
 
     if (error) {
       console.error("Error fetching conversations:", error);
@@ -349,18 +363,24 @@ export const getUserConversationsWithParticipants = async (userId: string) => {
 };
 
 // PARTICIPANTS
-export const getParticipants = async (
-  conversationId: string,
-  userId: string,
-) => {
+export const getParticipants = async (conversationId: string) => {
   const supabase = await createClient();
 
   try {
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      throw new Error("User not authenticated");
+    }
+
     const { data: participants, error } = await supabase
       .from("conversation_participants")
       .select("*, users(first_name, last_name, email)")
       .eq("conversation_id", conversationId)
-      .neq("user_id", userId);
+      .neq("user_id", user.id);
 
     if (error) {
       console.error("Error fetching participants:", error);

@@ -5,6 +5,10 @@ import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/public/icons/plus-icon";
+import { Header } from "@/components/app/header";
+import { EmptyPageState } from "@/components/app/empty-page-state";
+
+import listingIllustration from "@/public/illustrations/illustration-listings.svg";
 
 export const metadata: Metadata = {
   title: "Properties",
@@ -43,23 +47,23 @@ export default async function Page() {
 
   return (
     <>
-      <header className="max-w-screen-max-xl border-border mx-auto flex items-center justify-between border-b-1 p-4 pt-6 sm:px-12 sm:pt-10">
-        <section>
-          <h1 className="text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
-            Listings
-          </h1>
-          <p className="text-text-secondary text-sm leading-6">
-            Here are all the houses you have listed
-          </p>
-        </section>
-
-        <Button className="hidden h-full gap-3 px-7.5 py-3 text-base leading-6 sm:flex [&_svg]:size-6">
-          <p>Create a listing </p>
-          <PlusIcon />
-        </Button>
-      </header>
-
-      <div></div>
+      <Header
+        title="Listings"
+        subTitle="Here are all the houses you have listed"
+        buttonText="Create a listing"
+        buttonIcon={<PlusIcon />}
+        showButton={true}
+      />
+      <div className="flex pt-4 items-center justify-center px-4">
+        <EmptyPageState
+          imageSrc={listingIllustration}
+          title="You have no listings yet"
+          subTitle="Kick start your journey with us by making your first listing. Clicking the button below"
+          buttonText="Create a listing"
+          buttonIcon={<PlusIcon />}
+          showButton={true}
+        />
+      </div>
     </>
   );
 }

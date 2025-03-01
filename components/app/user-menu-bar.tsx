@@ -57,7 +57,7 @@ export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
             <DropdownMenuItem asChild>
               <form className="w-full" action={signOutAction}>
                 <button
-                  className="flex w-full items-center gap-2 p-2 [&_svg]:size-6"
+                  className="flex w-full items-center gap-2 p-2"
                   type="submit"
                 >
                   <LogOut />

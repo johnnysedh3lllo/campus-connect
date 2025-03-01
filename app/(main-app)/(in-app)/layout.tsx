@@ -45,9 +45,9 @@ export default async function RootLayout({
       <body className="bg-background text-text-primary flex h-screen flex-col font-serif">
         <ThemeProviderWrapper>
           <Navigation user={user} />
-          <div className="min-h-0 flex-1">
+          <main className="relative flex-1 overflow-y-auto">
             <TanstackQueryProvider>{children}</TanstackQueryProvider>
-          </div>
+          </main>
         </ThemeProviderWrapper>
       </body>
     </html>

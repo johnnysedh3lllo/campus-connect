@@ -19,24 +19,21 @@ export default async function MessagesBodyPage({
     throw new Error("User not found");
   }
 
-  const getParticipantsByConversationId = getParticipants.bind(
-    null,
-    id,
-    user?.id,
-  );
+  const getParticipantsByConversationId = getParticipants.bind(null, id);
 
   const getMessagesByConversationId = getMessages.bind(null, id);
   const ssrMessages = await getMessagesByConversationId();
   const participants = await getParticipantsByConversationId();
 
   return (
-    <Suspense fallback={<p>Loading....</p>}>
+    <div className="grid w-full grid-cols-1">
       <MessageContainer
         conversationId={id}
         ssrConversationMessages={ssrMessages}
         user={user}
         participants={participants}
       />
-    </Suspense>
+      {/* <div className="hidden lg:block">User Profile</div> */}
+    </div>
   );
 }

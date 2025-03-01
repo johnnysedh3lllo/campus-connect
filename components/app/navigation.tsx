@@ -69,7 +69,19 @@ export default function Navigation({ user }: NavigationProps) {
 
           <Button
             variant={"ghost"}
-            className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0"
+            className="hover:bg-background-secondary hidden h-10 w-10 items-center justify-center rounded-full p-0 lg:flex"
+          >
+            <Image
+              src={notificationIcon}
+              width={24}
+              height={24}
+              alt="notification icon"
+            />
+          </Button>
+
+          <Button
+            variant={"ghost"}
+            className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0 lg:hidden"
             onClick={() => setIsMobileNavOpen(true)}
           >
             <Image

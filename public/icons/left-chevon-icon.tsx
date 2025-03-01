@@ -1,6 +1,6 @@
 import { SVGProps } from "react";
 
-export function PlusIcon(props: SVGProps<SVGSVGElement>) {
+export function LeftChevonIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       width="24"
@@ -11,14 +11,12 @@ export function PlusIcon(props: SVGProps<SVGSVGElement>) {
       {...props}
     >
       <path
-        d="M6 12H18M12 18V6"
-        stroke="white"
+        d="M14 16L10 12L14 8"
+        stroke="#101010"
         strokeWidth="1.5"
-        stroke-miterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
   );
 }
-
