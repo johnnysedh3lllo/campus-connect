@@ -37,7 +37,7 @@ export default function MessageHeader({
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-6">
         <Button
           variant={"ghost"}
           className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-sm lg:hidden"
