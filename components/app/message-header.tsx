@@ -24,6 +24,7 @@ export default function MessageHeader({
 }: MessageHeaderProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenDropDown, setIsOpenDropDown] = useState(false);
 
   const chatParticipant = chatParticipants?.[0]?.users;
   const chatName =
@@ -36,8 +37,8 @@ export default function MessageHeader({
   };
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-col gap-6">
+    <div className="bg-background sticky top-0 z-10 flex items-center justify-between">
+      <div className="flex w-full flex-col gap-6 sm:flex-row">
         <Button
           variant={"ghost"}
           className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-sm lg:hidden"
@@ -46,21 +47,32 @@ export default function MessageHeader({
           <LeftChevonIcon />
         </Button>
 
-        <section className="flex items-center gap-4.5">
-          <Avatar>
-            <AvatarImage src="" alt="avatar" />
-            <AvatarFallback>
-              {chatParticipants && chatParticipants[0]?.users?.first_name?.[0]}
-            </AvatarFallback>
-          </Avatar>
-          <h2 className="text-lg font-bold">{chatName}</h2>
-        </section>
+        <div className="flex w-full items-center justify-between">
+          <section className="flex items-center gap-4.5">
+            <Avatar>
+              <AvatarImage src="" alt="avatar" />
+              <AvatarFallback>
+                {chatParticipants &&
+                  chatParticipants[0]?.users?.first_name?.[0]}
+              </AvatarFallback>
+            </Avatar>
+            <h2 className="text-lg font-bold">{chatName}</h2>
+          </section>
+          <Button
+            variant={"ghost"}
+            className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-sm"
+            onClick={() => setIsOpenDropDown(true)}
+          >
+            <KabobIcon />
+          </Button>
+        </div>
       </div>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none">
-          <KabobIcon />
-        </DropdownMenuTrigger>
+      <DropdownMenu
+        open={isOpenDropDown}
+        onOpenChange={() => setIsOpenDropDown(false)}
+      >
+        <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none"></DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-40">
           <DropdownMenuItem asChild>
