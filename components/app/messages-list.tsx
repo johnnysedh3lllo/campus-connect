@@ -4,6 +4,8 @@ import Link from "next/link";
 import { SearchBar } from "./search-bar";
 import { ScrollArea } from "../ui/scroll-area";
 import { useConversations } from "@/hooks/use-get-conversations";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { MessagesListItem } from "./messages-list-item";
 
 // interface MessagesListProps {
 //   selectedChat: string | null;
@@ -48,19 +50,7 @@ export function MessagesList() {
               const { conversation_id: id, participants } =
                 conversation as Conversations;
 
-              return (
-                <Link
-                  href={`/messages/${id}`}
-                  className="rounded border border-solid border-black px-2 py-1"
-                  key={id}
-                >
-                  <p className="whitespace-nowrap">
-                    {participants && participants.length === 1
-                      ? `${participants[0].first_name} ${participants[0].last_name}`
-                      : ""}
-                  </p>
-                </Link>
-              );
+              return <MessagesListItem id={id} participants={participants} />;
             })}
           </>
         ) : loading ? (

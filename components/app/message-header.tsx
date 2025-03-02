@@ -37,8 +37,8 @@ export default function MessageHeader({
   };
 
   return (
-    <div className="bg-background sticky top-0 z-10 flex items-center justify-between">
-      <div className="flex w-full flex-col gap-6 sm:flex-row">
+    <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-4">
+      <div className="flex w-full flex-col items-start gap-2 sm:flex-row sm:items-center">
         <Button
           variant={"ghost"}
           className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-sm lg:hidden"

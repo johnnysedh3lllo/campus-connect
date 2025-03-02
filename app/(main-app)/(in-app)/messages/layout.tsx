@@ -60,7 +60,7 @@ export default function MessagesLayout({
         <MessagesList />
       </div>
 
-      <main className="border-text-secondary flex w-full flex-2 gap-4 pt-4 pr-4 pl-4">
+      <main className="border-text-secondary flex w-full flex-2 gap-4 px-4">
         {children}
       </main>
     </div>

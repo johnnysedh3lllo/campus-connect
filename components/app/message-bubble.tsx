@@ -3,13 +3,21 @@
 import { useState } from "react";
 import { supabase } from "@/utils/supabase/client";
 import { CircleX, SquarePen } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { User } from "@supabase/supabase-js";
+import { formatDate } from "@/lib/utils";
 
 interface MessageBubbleProps {
-  userId: string | undefined;
+  user: User | null;
+  participants: ConvoParticipant[] | undefined;
   message: Message;
 }
 
-export default function MessageBubble({ userId, message }: MessageBubbleProps) {
+export default function MessageBubble({
+  user,
+  participants,
+  message,
+}: MessageBubbleProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -40,32 +48,60 @@ export default function MessageBubble({ userId, message }: MessageBubbleProps) {
     // Implement update functionality
   };
 
-  const messageStyles = `p-2 rounded w-fit bg-primary max-w-[70%] ${
-    userId === message.sender_id ? "self-end" : "self-start"
-  } text-white ${message.status === "optimistic" ? "opacity-70" : ""} 
+  const isUser = user?.id === message.sender_id;
+  const participant =
+    participants && participants.length > 0 ? participants[0] : null;
+  const isOptimistic = message.status === "optimistic";
+
+  const senderStyles = "rounded-br-sm bg-primary text-white";
+  const receiverStyles = "rounded-bl-sm bg-background-secondary text-text-primary";
+
+  const messageStyles = `py-3 px-4 rounded-md ${
+    isUser ? senderStyles : receiverStyles
+  } ${isOptimistic ? "opacity-70" : ""} 
   ${isDeleting ? "opacity-50" : ""}`;
 
-  return (
-    <div className={messageStyles}>
-      <p>{message.content}</p>
+  const messageCreatedAt = new Date(message.created_at);
 
-      {message.id && (
-        <div className="text-white w-full flex justify-between">
-          {userId === message.sender_id && (
-            <>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting || message.status === "optimistic"}
-              >
-                <CircleX />
-              </button>
-              <button onClick={handleUpdate}>
-                <SquarePen />
-              </button>
-            </>
-          )}
+  return (
+    <div
+      className={`${isUser ? "items-end self-end" : "items-start self-start"} flex w-fit max-w-[70%] flex-col gap-2`}
+    >
+      <div className="flex items-end gap-2">
+        {!isUser && (
+          <Avatar className="size-7.5">
+            <AvatarImage src="" alt="avatar" />
+            <AvatarFallback>
+              {participant?.users?.first_name?.[0]}
+            </AvatarFallback>
+          </Avatar>
+        )}
+
+        <div className={messageStyles}>
+          <p className="">{message.content}</p>
+          {/* {message.id && (
+          <div className="text-white w-full flex justify-between">
+            {isUser && (
+              <>
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting || message.status === "optimistic"}
+                >
+                  <CircleX />
+                </button>
+                <button onClick={handleUpdate}>
+                  <SquarePen />
+                </button>
+              </>
+            )}
+          </div>
+        )} */}
         </div>
-      )}
+      </div>
+
+      <p className="text-text-secondary text-xs leading-4">
+        {formatDate(messageCreatedAt, "en-US")}
+      </p>
     </div>
   );
 }

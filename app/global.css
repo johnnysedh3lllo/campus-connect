@@ -90,6 +90,7 @@
   /* COLOR TOKENS */
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
+  --color-background-accent: var(--background-accent);
   --color-background-accent-secondary: var(--background-accent-secondary);
 
   --color-text-primary: var(--text-primary);
@@ -161,6 +162,7 @@
   /* done */
   --background: var(--color-white);
   --background-secondary: var(--color-gray-50);
+  --background-accent: var(--color-red-500);
   --background-accent-secondary: var(--color-red-50);
 
   /* TEXT COLORS */
@@ -168,7 +170,7 @@
   --text-secondary: var(--color-gray-800);
   --text-placeholder: var(--color-gray-600);
   --text-disabled: var(--color-red-200);
-  --text-inverse: var(--color-white-900);
+  --text-inverse: var(--color-white);
   --text-accent: var(--color-red-500);
 
   --foreground: var(--color-gray-950);
@@ -294,14 +296,24 @@
   .onboarding-form--wrapper::-webkit-scrollbar {
     @apply w-1.5;
   }
+  .messaging-container::-webkit-scrollbar {
+    @apply w-1.5;
+  }
 
   /* Track */
   .onboarding-form--wrapper::-webkit-scrollbar-track {
     @apply rounded-lg bg-gray-600;
   }
+  .messaging-container::-webkit-scrollbar-track {
+    @apply rounded-lg bg-gray-600;
+  }
 
   /* Thumb */
   .onboarding-form--wrapper::-webkit-scrollbar-thumb {
+    @apply rounded-lg bg-gray-950;
+  }
+
+  .messaging-container::-webkit-scrollbar-thumb {
     @apply rounded-lg bg-gray-950;
   }
 

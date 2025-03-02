@@ -4,6 +4,8 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { SubmitButton } from "./submit-button";
 import { supabase } from "@/utils/supabase/client";
+import { SendHorizontalIcon } from "lucide-react";
+import { Button } from "../ui/button";
 
 interface MessageInputProps {
   userId: string | undefined;
@@ -23,7 +25,7 @@ export default function MessageInput({
   setMessages,
 }: MessageInputProps) {
   const sendMessage = async (
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     e.preventDefault();
     if (!messageInputValue.trim() || !userId) return;
@@ -65,13 +67,13 @@ export default function MessageInput({
 
       if (error) {
         setMessages((prevMessages) =>
-          prevMessages.filter((msg) => msg.optimisticId !== optimisticId)
+          prevMessages.filter((msg) => msg.optimisticId !== optimisticId),
         );
         console.error("Failed to send message:", error);
       }
     } catch (error) {
       setMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.optimisticId !== optimisticId)
+        prevMessages.filter((msg) => msg.optimisticId !== optimisticId),
       );
       console.error("Failed to send message:", error);
     }
@@ -84,11 +86,11 @@ export default function MessageInput({
   return (
     <form
       onSubmit={sendMessage}
-      className="p-4 flex gap-2 rounded-t-md border-solid border-black border"
+      className="bg-background-secondary flex gap-2 rounded-xl p-2 pl-15 my-5"
     >
       <input
         placeholder="Type a message..."
-        className="p-2 w-full border-solid border-black border rounded-md"
+        className="w-full focus:outline-0"
         type="text"
         name="message"
         autoComplete="off"
@@ -97,7 +99,12 @@ export default function MessageInput({
         onChange={handleChange}
       />
 
-      <SubmitButton disabled={!messageInputValue.trim()}>Send</SubmitButton>
+      <Button
+        className="flex size-10 items-center justify-center rounded-full"
+        disabled={!messageInputValue.trim()}
+      >
+        <SendHorizontalIcon />
+      </Button>
     </form>
   );
 }
