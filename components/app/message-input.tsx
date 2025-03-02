@@ -20,7 +20,6 @@ export default function MessageInput({
   userId,
   conversationId,
   messageInputValue,
-  chatContainerRef,
   setMessageInputValue,
   setMessages,
 }: MessageInputProps) {
@@ -46,12 +45,6 @@ export default function MessageInput({
 
     setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
     setMessageInputValue("");
-
-    // when a messages is sent, return to bottom of the page
-    // chatContainerRef.current?.scrollHeight =
-    //   chatContainer.scrollHeight -
-    //   chatContainer.clientHeight -
-    //   chatContainer.scrollTop;
 
     try {
       const { error } = await supabase
@@ -86,7 +79,7 @@ export default function MessageInput({
   return (
     <form
       onSubmit={sendMessage}
-      className="bg-background-secondary flex gap-2 rounded-xl p-2 pl-15 my-5"
+      className="bg-background-secondary mt-2 flex gap-2 rounded-xl p-2 pl-15"
     >
       <input
         placeholder="Type a message..."

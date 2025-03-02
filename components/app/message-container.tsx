@@ -147,7 +147,7 @@ const MessageContainer = ({
   });
 
   return (
-    <section className="relative flex h-[89vh] flex-2 flex-col justify-between gap-4">
+    <section className="relative flex h-[89vh] flex-2 flex-col justify-between">
       <MessageHeader chatParticipants={participants} />
 
       {/* <div className="flex h-full flex-col gap-2 overflow-y-auto rounded">
