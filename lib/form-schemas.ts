@@ -89,3 +89,14 @@ export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
   password: true,
 });
+
+export const changePasswordSchema = userValidationSchema
+  .pick({
+    password: true,
+    confirmPassword: true,
+  })
+  .extend({
+    currentPassword: z
+      .string()
+      .min(8, "Current password must be at least 8 characters"),
+  });
