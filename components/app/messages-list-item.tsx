@@ -28,7 +28,7 @@ export function MessagesListItem({ id, participants }: MessagesListItemProps) {
               ? `${participant?.first_name} ${participant?.last_name}`
               : ""}
           </h2>
-          <p className="text-text-secondary max-w-[10ch] truncate text-sm leading-6 sm:line-clamp-2 lg:line-clamp-3">
+          <p className="text-text-secondary max-w-[15ch] truncate text-sm leading-6 sm:line-clamp-2 lg:line-clamp-3">
             supposed last message
           </p>
         </section>

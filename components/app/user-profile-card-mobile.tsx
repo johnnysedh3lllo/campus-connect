@@ -13,19 +13,21 @@ import { UserProfileCard } from "./user-profile-card";
 export function UserProfileCardMobile({
   isOpen,
   onClose,
+  participants,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  participants: ConvoParticipant[] | undefined;
 }) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="h-full w-full p-6 pb-0 sm:w-1/2">
         <SheetHeader className="flex w-full flex-row justify-start p-0 sm:justify-end">
-          <SheetClose className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-sm sm:hidden">
+          <SheetClose className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm sm:hidden">
             <LeftChevonIcon />
           </SheetClose>
 
-          <SheetClose className="hover:bg-background-secondary hidden h-10 w-10 items-center justify-center rounded-sm sm:flex">
+          <SheetClose className="hover:bg-background-secondary hidden size-10 items-center justify-center rounded-sm sm:flex">
             <CloseIconNoBorders />
           </SheetClose>
         </SheetHeader>
@@ -36,7 +38,7 @@ export function UserProfileCardMobile({
             this is the user's profile
           </SheetDescription>
 
-          <UserProfileCard />
+          <UserProfileCard participants={participants} />
         </div>
       </SheetContent>
     </Sheet>

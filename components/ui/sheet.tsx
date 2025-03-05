@@ -25,7 +25,7 @@ function SheetClose({
       data-slot="sheet-close"
       {...props}
       className={cn(
-        "ring-offset-background focus:ring-ring data-[state=open]:bg-secondary rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none",
+        "ring-offset-background focus-visible:ring-ring data-[state=open]:bg-secondary rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible::outline-hidden disabled:pointer-events-none",
         className,
       )}
     >

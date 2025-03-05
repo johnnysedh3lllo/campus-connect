@@ -41,7 +41,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
           </SheetDescription>
           <Button
             variant={"ghost"}
-            className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0"
+            className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0"
           >
             <Image
               src={notificationIcon}
@@ -51,7 +51,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
             />
           </Button>
 
-          <SheetClose className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0">
+          <SheetClose className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0">
             <Image
               src={closeIconNoBorders}
               width={24}

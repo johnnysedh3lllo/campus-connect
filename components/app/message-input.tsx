@@ -79,10 +79,10 @@ export default function MessageInput({
   return (
     <form
       onSubmit={sendMessage}
-      className="bg-background-secondary mt-2 flex gap-2 rounded-xl p-2 pl-15"
+      className="bg-background-secondary mt-6 flex gap-2 rounded-xl p-2 pl-6"
     >
       <input
-        placeholder="Type a message..."
+        placeholder="Type a message.."
         className="w-full focus:outline-0"
         type="text"
         name="message"

@@ -50,7 +50,13 @@ export function MessagesList() {
               const { conversation_id: id, participants } =
                 conversation as Conversations;
 
-              return <MessagesListItem id={id} participants={participants} />;
+              return (
+                <MessagesListItem
+                  key={conversation.conversation_id}
+                  id={id}
+                  participants={participants}
+                />
+              );
             })}
           </>
         ) : loading ? (

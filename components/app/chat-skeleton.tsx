@@ -55,9 +55,9 @@ export default function ChatSkeleton() {
 
       {/* Message input skeleton */}
       <div className="flex items-center gap-2 border-t p-3">
-        <div className="h-10 w-10 rounded-full bg-gray-200"></div>
+        <div className="size-10 rounded-full bg-gray-200"></div>
         <div className="h-10 flex-1 rounded-full bg-gray-200"></div>
-        <div className="h-10 w-10 rounded bg-gray-200"></div>
+        <div className="size-10 rounded bg-gray-200"></div>
       </div>
     </div>
   );
