@@ -4,8 +4,7 @@
 import { useState } from "react"
 import type { z } from "zod"
 import { useForm } from "react-hook-form"
-// import { changePasswordAction } from "@/app/actions"
-import { useRouter } from "next/navigation"
+import { resetPasswordAction } from "@/app/actions"
 import { changePasswordSchema } from "@/lib/form-schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "@/hooks/use-toast"
@@ -18,8 +17,8 @@ import { PasswordInput } from "@/components/app/password-input"
 // ASSETS
 import { Loader2 } from "lucide-react"
 
+
 export default function Security() {
-    const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const form = useForm<z.infer<typeof changePasswordSchema>>({
         resolver: zodResolver(changePasswordSchema),
@@ -34,16 +33,19 @@ export default function Security() {
     const onSubmit = async (data: z.infer<typeof changePasswordSchema>) => {
         setIsLoading(true)
         try {
-            // const result = await changePasswordAction(data)
-            const result = { success: true, error: "An error occurred, please try again later." }
-
+            const result = await resetPasswordAction(data)
+            console.log(result, 'Result')
             if (result?.success) {
                 toast({
                     title: "Password changed successfully",
                     description: "Your password has been updated.",
                 })
-                router.replace("/profile") // Redirect to profile or another appropriate page
+                // router.replace("/profile") // Redirect to profile or another appropriate page
             } else {
+                toast({
+                    title: "Password changed successfully",
+                    description: "Your password has been updated.",
+                })
                 throw result?.error
             }
         } catch (error) {
@@ -139,4 +141,3 @@ export default function Security() {
         </section>
     )
 }
-

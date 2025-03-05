@@ -10,6 +10,8 @@ import {
   userValidationSchema,
   loginSchema,
   signUpDataSchema,
+  resetPasswordEmailSchema,
+  createPasswordSchema,
 } from "@/lib/form-schemas";
 import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
@@ -170,56 +172,146 @@ export const signInAction = async (data: SignInFormInputs) => {
   }
 };
 
-export const forgotPasswordAction = async (formData: FormData) => {
-  const email = formData.get("email")?.toString();
-  const supabase = await createClient();
-  const origin = (await headers()).get("origin");
-  const callbackUrl = formData.get("callbackUrl")?.toString();
+type forgotPasswordActionInput = z.infer<typeof resetPasswordEmailSchema>;
+export const forgotPasswordAction = async (
+  formData: forgotPasswordActionInput,
+) => {
+  try {
+    const validatedFields = resetPasswordEmailSchema.safeParse(formData);
+    console.log("Validating fields", validatedFields);
 
-  if (!email) {
-    return encodedRedirect("error", "/forgot-password", "Email is required");
-  }
+    if (!validatedFields.success) {
+      return {
+        success: false,
+        error: {
+          message: "Validation failed",
+          errors: validatedFields.error.format(),
+        },
+      };
+    }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/auth/callback?redirect_to=/reset-password`,
-  });
+    const validFields = validatedFields.data;
+    console.log("Validated fields", validFields);
+    const email = validFields.emailAddress;
+    const supabase = await createClient();
+    const origin = (await headers()).get("origin");
+    // const callbackUrl = formData.get("callbackUrl")?.toString();
+    // const callbackUrl = formData.get("callbackUrl")?.toString();
 
-  if (error) {
-    console.error(error.message);
+    if (!email) {
+      return encodedRedirect("error", "/forgot-password", "Email is required");
+    }
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/auth/callback?redirect_to=/create-password`,
+    });
+
+    if (error) {
+      console.error(error.message);
+      return encodedRedirect(
+        "error",
+        "/forgot-password",
+        "Could not reset password",
+      );
+    }
+
+    // if (callbackUrl) {
+    //   return redirect(callbackUrl);
+    // }
+
     return encodedRedirect(
-      "error",
+      "success",
       "/forgot-password",
-      "Could not reset password",
+      "Check your email for a link to reset your password.",
     );
+  } catch (error: any) {
+    console.error(error, error.message);
   }
-
-  if (callbackUrl) {
-    return redirect(callbackUrl);
-  }
-
-  return encodedRedirect(
-    "success",
-    "/forgot-password",
-    "Check your email for a link to reset your password.",
-  );
 };
 
-export const resetPasswordAction = async (formData: FormData) => {
+type resetPasswordActionInput = z.infer<typeof createPasswordSchema>;
+type ResetPasswordResponse = {
+  success: boolean;
+  error?: {
+    message: string;
+    field?: string;
+  };
+};
+
+export const resetPasswordAction = async (
+  formData: resetPasswordActionInput,
+): Promise<ResetPasswordResponse> => {
+  const validatedFields = createPasswordSchema.safeParse(formData);
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      error: {
+        message: "Validation failed",
+        // field: validatedFields.error.format() || "",
+      },
+    };
+  }
+
+  const { password, confirmPassword } = validatedFields.data;
   const supabase = await createClient();
 
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
+  // Get the authenticated user's ID
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
 
+  if (authError || !user) {
+    return {
+      success: false,
+      error: { message: "User not authenticated. Please log in again." },
+    };
+  }
+
+  const userId = user.id; // Extract user ID
   if (!password || !confirmPassword) {
-    encodedRedirect(
-      "error",
-      "/reset-password",
-      "Password and confirm password are required",
-    );
+    return {
+      success: false,
+      error: {
+        message: "Password and confirm password are required",
+        field: "password",
+      },
+    };
   }
 
   if (password !== confirmPassword) {
-    encodedRedirect("error", "/reset-password", "Passwords do not match");
+    return {
+      success: false,
+      error: {
+        message: "Passwords do not match",
+        field: "confirmPassword",
+      },
+    };
+  }
+
+  const { data, error: checkError } = await supabase.rpc(
+    "check_password_match",
+    {
+      user_id: userId,
+      new_password: password,
+    },
+  );
+
+  if (checkError) {
+    return {
+      success: false,
+      error: { message: "Error checking password. Please try again." },
+    };
+  }
+
+  if (data) {
+    return {
+      success: false,
+      error: {
+        message: "New password must not be the same as the previous password.",
+      },
+    };
   }
 
   const { error } = await supabase.auth.updateUser({
@@ -227,10 +319,18 @@ export const resetPasswordAction = async (formData: FormData) => {
   });
 
   if (error) {
-    encodedRedirect("error", "/reset-password", "Password update failed");
+    return {
+      success: false,
+      error: {
+        message:
+          "Failed to update password. Please try again. Or Go back to /reset-password",
+      },
+    };
   }
 
-  encodedRedirect("success", "/log-in", "Password updated");
+  return {
+    success: true,
+  };
 };
 
 export const signOutAction = async () => {
@@ -327,27 +427,13 @@ export const getMessages = async (conversationId: string) => {
 // Insert Message
 
 // CONVERSATIONS
-export const getUserConversationsWithParticipants = async () => {
+export const getUserConversationsWithParticipants = async (userId: string) => {
   const supabase = await createClient();
 
   try {
-    // Get the current authenticated user
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      throw new Error("User not authenticated");
-    }
-
-    console.log(user.id)
-
     const { data: conversations, error } = await supabase
-      .rpc("get_conversations_for_user", { pid: user.id })
+      .rpc("get_conversations_for_user", { pid: userId })
       .is("deleted_at", null);
-
-      console.log(conversations)
 
     if (error) {
       console.error("Error fetching conversations:", error);
@@ -363,24 +449,18 @@ export const getUserConversationsWithParticipants = async () => {
 };
 
 // PARTICIPANTS
-export const getParticipants = async (conversationId: string) => {
+export const getParticipants = async (
+  conversationId: string,
+  userId: string,
+) => {
   const supabase = await createClient();
 
   try {
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      throw new Error("User not authenticated");
-    }
-
     const { data: participants, error } = await supabase
       .from("conversation_participants")
       .select("*, users(first_name, last_name, email)")
       .eq("conversation_id", conversationId)
-      .neq("user_id", user.id);
+      .neq("user_id", userId);
 
     if (error) {
       console.error("Error fetching participants:", error);

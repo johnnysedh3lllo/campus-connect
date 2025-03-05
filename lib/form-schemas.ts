@@ -84,6 +84,25 @@ export const setPasswordFormSchema = userValidationSchema
   );
 export type SetPasswordFormSchema = z.infer<typeof setPasswordFormSchema>;
 
+export const resetPasswordEmailSchema = userValidationSchema.pick({
+  emailAddress: true,
+});
+
+export const createPasswordSchema = userValidationSchema
+  .pick({
+    password: true,
+    confirmPassword: true,
+  })
+  .refine(
+    (data) =>
+      !data.password ||
+      !data.confirmPassword ||
+      data.password === data.confirmPassword,
+    {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    },
+  );
 // LOGIN FORM
 export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
@@ -99,4 +118,12 @@ export const changePasswordSchema = userValidationSchema
     currentPassword: z
       .string()
       .min(8, "Current password must be at least 8 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
+  .refine((data) => data.currentPassword !== data.password, {
+    message: "New password must be different from current password",
+    path: ["password"],
   });
