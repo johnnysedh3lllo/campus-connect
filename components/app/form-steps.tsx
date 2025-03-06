@@ -3,10 +3,12 @@
 // UTILITIES
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Control, useForm } from "react-hook-form";
 import {
   otpFormSchema,
   OtpFormSchema,
+  resetPasswordEmailSchema,
+  ResetPasswordFormSchema,
   roleSchema,
   RoleSchema,
   setPasswordFormSchema,
@@ -40,14 +42,18 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 
 // ASSETS
-import { Eye, EyeOff } from "lucide-react";
 import { Apple, Facebook, Google } from "@/components/app/social-logos";
 import houseIcon from "@/public/icons/icon-house.svg";
 import tenantIcon from "@/public/icons/icon-tenant.svg";
 import { Loader2 } from "lucide-react";
 import lockIcon from "@/public/icons/icon-lock.svg";
-import { resendSignUpOtp } from "@/app/actions";
+import { forgotPasswordAction, resendSignUpOtp } from "@/app/actions";
 import { PasswordInput } from "@/components/app/password-input";
+import Link from "next/link";
+import { z } from "zod";
+import { LargeMailIcon } from "@/public/icons/large-mail-icon";
+import { LockIcon } from "@/public/icons/lock-icon";
+import { MessagesIcon } from "@/public/icons/message-icon";
 
 //
 const roleDetails = [
@@ -192,11 +198,11 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
       <section className="flex flex-col gap-2">
-        <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+        <h1 className="text-2xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
           Create an Account
         </h1>
 
-        <p className="text text-secondary-foreground text-sm">
+        <p className="text-secondary-foreground text-sm leading-6">
           Fill the form below to create an account with us
         </p>
       </section>
@@ -295,7 +301,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
             className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
           >
             {isSubmitting && <Loader2 className="animate-spin" />}
-            Sign up
+            {isSubmitting ? "Signing up..." : "Sign up"}
           </Button>
         </form>
       </Form>
@@ -367,9 +373,9 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
     <div>
       <div className="flex flex-col gap-6 sm:gap-12">
         <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
-          <div className="bg-accent-secondary flex w-fit items-center justify-center rounded-full p-14">
-            <Image src={lockIcon} alt="lock icon" />
-          </div>
+          <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
+            <LockIcon />
+          </figure>
         </div>
 
         <section className="flex flex-col gap-2">
@@ -538,6 +544,122 @@ export function SetPassword({
           </Button>
         </form>
       </Form>
+    </div>
+  );
+}
+
+export type ResetPasswordProps = {
+  isSubmitting: boolean;
+  handleResetPassword: (values: ResetPasswordFormSchema) => void;
+};
+
+export function ResetPassword({
+  isSubmitting,
+  handleResetPassword,
+}: ResetPasswordProps) {
+  const form = useForm<ResetPasswordFormSchema>({
+    resolver: zodResolver(resetPasswordEmailSchema),
+    defaultValues: {
+      emailAddress: "",
+    },
+  });
+
+  return (
+    <div className="flex w-full flex-col gap-10 sm:gap-12">
+      <section className="flex flex-col gap-2">
+        <h1 className="text-2xl leading-7.5 font-semibold md:text-4xl md:leading-11">
+          Reset Password
+        </h1>
+        <p className="text-secondary-foreground text-sm leading-6">
+          Enter the email address associated with your account and we will send
+          you a link to reset your password
+        </p>
+      </section>
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleResetPassword)}
+          className="flex flex-col gap-6"
+        >
+          <FormField
+            control={form.control}
+            name="emailAddress"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-1">
+                <FormLabel className="text-sm leading-6 font-semibold">
+                  Email address
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={isSubmitting}
+          >
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting ? "Sending..." : "Send"}
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
+}
+
+export type CheckInboxProps = {
+  emailAddress: string;
+};
+
+export function CheckInbox({ emailAddress }: CheckInboxProps) {
+  return (
+    <div className="flex w-full flex-col gap-10 sm:gap-12">
+      <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
+        <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
+          <LargeMailIcon />
+        </figure>
+      </div>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
+          Check your inbox
+        </h2>
+
+        <p className="text-text-secondary text-sm leading-6">
+          Click on the link we sent to
+          <span className="text-text-primary font-bold">{emailAddress}</span> to
+          finish your account set-up.
+        </p>
+      </section>
+
+      <div className="flex w-full flex-col items-start gap-6 sm:gap-12">
+        <div className="flex w-full justify-center gap-2">
+          <MessagesIcon />
+          <p className="text-base leading-6 font-semibold">Check your mail</p>
+        </div>
+
+        <p className="text-text-accent/80 flex flex-wrap items-center gap-2 text-sm leading-6 sm:gap-4">
+          No email in your inbox or spam folder?{" "}
+          <span
+            className="text-text-accent cursor-pointer font-medium underline"
+            onClick={async () => {
+              await forgotPasswordAction({
+                emailAddress,
+              });
+            }}
+          >
+            Resend email
+          </span>
+        </p>
+      </div>
     </div>
   );
 }

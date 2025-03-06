@@ -93,6 +93,7 @@ export const loginSchema = userValidationSchema.pick({
 export const resetPasswordEmailSchema = userValidationSchema.pick({
   emailAddress: true,
 });
+export type ResetPasswordFormSchema = z.infer<typeof resetPasswordEmailSchema>;
 
 export const createPasswordSchema = userValidationSchema.pick({
   password: true,

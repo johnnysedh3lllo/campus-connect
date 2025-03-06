@@ -173,6 +173,7 @@ export const signInAction = async (data: SignInFormInputs) => {
 };
 
 type forgotPasswordActionInput = z.infer<typeof resetPasswordEmailSchema>;
+
 export const forgotPasswordAction = async (
   formData: forgotPasswordActionInput,
 ) => {
@@ -195,8 +196,6 @@ export const forgotPasswordAction = async (
     const email = validFields.emailAddress;
     const supabase = await createClient();
     const origin = (await headers()).get("origin");
-    // const callbackUrl = formData.get("callbackUrl")?.toString();
-    // const callbackUrl = formData.get("callbackUrl")?.toString();
 
     if (!email) {
       return encodedRedirect("error", "/forgot-password", "Email is required");
@@ -214,10 +213,6 @@ export const forgotPasswordAction = async (
         "Could not reset password",
       );
     }
-
-    // if (callbackUrl) {
-    //   return redirect(callbackUrl);
-    // }
 
     return encodedRedirect(
       "success",

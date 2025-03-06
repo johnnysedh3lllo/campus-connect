@@ -17,7 +17,7 @@ import {
 import { useRouter } from "next/navigation";
 
 // COMPONENTS
-import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
+import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "../../../../components/app/form-steps";
 import { Badge } from "@/components/ui/badge";
 
 //
