@@ -1,6 +1,6 @@
 "use client";
 
-import { signOutAction } from "@/app/actions";
+import { signOut } from "@/app/actions";
 import Image from "next/image";
 
 import type { UserMetadata } from "@supabase/supabase-js";
@@ -50,7 +50,7 @@ export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <form className="w-full" action={signOutAction}>
+              <form className="w-full" action={signOut}>
                 <button
                   className="flex w-full items-center gap-2 p-2"
                   type="submit"

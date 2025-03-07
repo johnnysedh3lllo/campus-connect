@@ -1,49 +1,82 @@
-import { resetPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/app/form-message";
-import { SubmitButton } from "@/components/app/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client";
 
-import { Metadata } from "next";
+import { resetPassword } from "@/app/actions";
+import { useMultiStepForm } from "@/hooks/use-multi-step-form";
+import { ResetPasswordFormType } from "@/lib/form-schemas";
+import { useState } from "react";
+import { CheckInbox, ResetPassword } from "@/components/app/auth-forms";
+import { useEmailState } from "@/lib/store/email-state-store";
+import { toast } from "@/hooks/use-toast";
+import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
+import { animationConfig, formVariants } from "@/hooks/animations";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
 //   : "http://localhost:3000";
 
-export const metadata: Metadata = {
-  // metadataBase: new URL(defaultUrl),
-  title: "Reset Password | Campus Connect",
-  // description: "Your rental paradise",
-};
+// TODO:Add this metadata later
+// export const metadata: Metadata = {
+//   // metadataBase: new URL(defaultUrl),
+//   title: "Reset Password | Campus Connect",
+//   // description: "Your rental paradise",
+// };
 
-export default async function ResetPassword(props: {
-  searchParams: Promise<Message>;
-}) {
-  const searchParams = await props.searchParams;
+export default function ResetPasswordPage() {
+  const { email, setEmail } = useEmailState();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { step, nextStep } = useMultiStepForm({
+    emailAddress: "",
+  });
+
+  async function handleResetPassword(values: ResetPasswordFormType) {
+    if (!values.emailAddress) {
+      console.error("The user's email is undefined");
+      return;
+    }
+
+    setEmail(values.emailAddress);
+    setIsSubmitting(true);
+
+    const result = await resetPassword({ emailAddress: values.emailAddress });
+
+    if (!result?.success) {
+      setIsSubmitting(false);
+      toast({
+        variant: "destructive",
+        title: "Failed to resend password",
+        description: result?.error?.message,
+      });
+      return;
+    }
+
+    if (step < 1) {
+      nextStep();
+      setIsSubmitting(false);
+    }
+  }
+
+  const resetPasswordSteps = [
+    <ResetPassword
+      isSubmitting={isSubmitting}
+      handleResetPassword={handleResetPassword}
+    />,
+    <CheckInbox
+      emailAddress={email}
+      handleResetPassword={handleResetPassword}
+    />,
+  ];
+
   return (
-    <form className="flex w-full max-w-md flex-col gap-2 p-4 [&>input]:mb-4">
-      <h1 className="text-2xl font-medium">Reset password</h1>
-      <p className="text-foreground/60 text-sm">
-        Please enter your new password below.
-      </p>
-      <Label htmlFor="password">New password</Label>
-      <Input
-        type="password"
-        name="password"
-        placeholder="New password"
-        required
-      />
-      <Label htmlFor="confirmPassword">Confirm password</Label>
-      <Input
-        type="password"
-        name="confirmPassword"
-        placeholder="Confirm password"
-        required
-      />
-      <SubmitButton formAction={resetPasswordAction}>
-        Reset password
-      </SubmitButton>
-      <FormMessage message={searchParams} />
-    </form>
+    <AnimationWrapper
+      variants={formVariants}
+      transition={animationConfig}
+      count={step}
+      classes="w-full"
+    >
+      <div className="mx-auto flex h-full w-full items-center justify-center lg:max-w-120">
+        {resetPasswordSteps[step]}
+      </div>
+    </AnimationWrapper>
   );
 }

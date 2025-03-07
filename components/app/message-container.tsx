@@ -6,6 +6,9 @@ import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
 import { User } from "@supabase/supabase-js";
 import { supabase } from "@/utils/supabase/client";
+import { getMessageDateLabel } from "@/lib/utils";
+import { Separator } from "../ui/separator";
+import { useProfileViewStore } from "@/lib/store/profile-view-store";
 
 interface MessageContainerProps {
   conversationId: string;
@@ -20,6 +23,8 @@ const MessageContainer = ({
   user,
   participants,
 }: MessageContainerProps) => {
+  const { isProfileOpen } = useProfileViewStore();
+
   const [messageInputValue, setMessageInputValue] = useState("");
   const [messages, setMessages] = useState(ssrConversationMessages);
   const chatContainerRef = useRef(
@@ -135,24 +140,49 @@ const MessageContainer = ({
     }
   }, [messages]);
 
+  const messagesByDate: { [key: string]: Message[] } = {};
+
+  messages.forEach((message) => {
+    const dateLabel = getMessageDateLabel(message.created_at);
+    if (!messagesByDate[dateLabel]) {
+      messagesByDate[dateLabel] = [];
+    }
+    messagesByDate[dateLabel].push(message);
+  });
+
   return (
-    <section className="relative flex flex-2 flex-col justify-between gap-4">
+    <section
+      className={`relative flex h-[89vh] w-full flex-col justify-between px-4 transition-all duration-300 ease-in-out ${isProfileOpen ? "lg:w-7/10" : "lg:w-full"}`}
+    >
       <MessageHeader chatParticipants={participants} />
 
-      <div className="flex h-full flex-col gap-2 overflow-y-auto rounded">
-        <div className="flex-1 bg-slate-300"></div>
-        <div
-          ref={chatContainerRef}
-          className="flex flex-col gap-2 overflow-y-auto scroll-smooth p-2 [scrollbar-width:_none]"
-        >
-          {messages?.map((message) => (
-            <MessageBubble
-              userId={user?.id}
-              key={message.optimisticId || message.id}
-              message={message}
-            />
-          ))}
-        </div>
+      {/* Messages */}
+      <div
+        ref={chatContainerRef}
+        className="messaging-container border-border h-full flex-1 overflow-y-auto scroll-smooth border-y-1 p-4"
+      >
+        {Object.entries(messagesByDate).map(([dateLabel, dateMessages]) => (
+          <div key={dateLabel}>
+            {/* Date separator */}
+            <div className="flex items-center justify-center py-4">
+              <div className="bg-background-secondary text-text-primary rounded-sm px-1.5 py-0.5 text-center text-xs leading-4">
+                {dateLabel}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              {/* Messages for this date */}
+              {dateMessages?.map((message) => (
+                <MessageBubble
+                  user={user}
+                  participants={participants}
+                  key={message.optimisticId || message.id}
+                  message={message}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       <MessageInput

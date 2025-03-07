@@ -22,7 +22,7 @@ import creditChip from "@/public/icons/icon-credit-chip.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 import { usePathname } from "next/navigation";
-import { signOutAction } from "@/app/actions";
+import { signOut } from "@/app/actions";
 import { navLinksMobile } from "@/lib/data-storage";
 import Link from "next/link";
 import { ListingIcon } from "@/public/icons/listing-icon";
@@ -41,7 +41,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
           </SheetDescription>
           <Button
             variant={"ghost"}
-            className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0"
+            className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0"
           >
             <Image
               src={notificationIcon}
@@ -51,7 +51,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
             />
           </Button>
 
-          <SheetClose className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0">
+          <SheetClose className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0">
             <Image
               src={closeIconNoBorders}
               width={24}
@@ -90,7 +90,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
                 );
               })}
 
-              <form className="w-full" action={signOutAction}>
+              <form className="w-full" action={signOut}>
                 <Button
                   variant={"ghost"}
                   className="flex h-full w-full cursor-pointer justify-start gap-2 rounded-none px-2 py-3 font-normal"

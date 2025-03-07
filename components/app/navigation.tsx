@@ -69,7 +69,7 @@ export default function Navigation({ user }: NavigationProps) {
 
           <Button
             variant={"ghost"}
-            className="hover:bg-background-secondary hidden h-10 w-10 items-center justify-center rounded-full p-0 lg:flex"
+            className="hover:bg-background-secondary hidden size-10 items-center justify-center rounded-full p-0 lg:flex"
           >
             <Image
               src={notificationIcon}
@@ -81,7 +81,7 @@ export default function Navigation({ user }: NavigationProps) {
 
           <Button
             variant={"ghost"}
-            className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0 lg:hidden"
+            className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0 lg:hidden"
             onClick={() => setIsMobileNavOpen(true)}
           >
             <Image
@@ -94,7 +94,7 @@ export default function Navigation({ user }: NavigationProps) {
 
           <Button
             variant={"ghost"}
-            className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-full p-0 lg:hidden"
+            className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0 lg:hidden"
             onClick={() => setIsMobileNavOpen(true)}
           >
             <Image

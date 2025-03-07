@@ -14,6 +14,7 @@ import {
 
 import { UserProfileCardMobile } from "./user-profile-card-mobile";
 import { useState } from "react";
+import { useProfileViewStore } from "@/lib/store/profile-view-store";
 
 interface MessageHeaderProps {
   chatParticipants: ConvoParticipant[] | undefined;
@@ -26,6 +27,8 @@ export default function MessageHeader({
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
 
+  const { toggleProfile } = useProfileViewStore();
+
   const chatParticipant = chatParticipants?.[0]?.users;
   const chatName =
     chatParticipants && chatParticipants.length === 1
@@ -37,11 +40,11 @@ export default function MessageHeader({
   };
 
   return (
-    <div className="bg-background sticky top-0 z-10 flex items-center justify-between">
-      <div className="flex w-full flex-col gap-6 sm:flex-row">
+    <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-4">
+      <div className="flex w-full flex-col items-start gap-2 sm:flex-row sm:items-center">
         <Button
           variant={"ghost"}
-          className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-sm lg:hidden"
+          className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm lg:hidden"
           onClick={handleClickBack}
         >
           <LeftChevonIcon />
@@ -60,7 +63,7 @@ export default function MessageHeader({
           </section>
           <Button
             variant={"ghost"}
-            className="hover:bg-background-secondary flex h-10 w-10 items-center justify-center rounded-sm"
+            className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm"
             onClick={() => setIsOpenDropDown(true)}
           >
             <KabobIcon />
@@ -85,7 +88,10 @@ export default function MessageHeader({
           </DropdownMenuItem>
 
           <DropdownMenuItem asChild>
-            <button className="hidden w-full items-center gap-2 p-2 lg:flex">
+            <button
+              onClick={toggleProfile}
+              className="hidden w-full items-center gap-2 p-2 lg:flex"
+            >
               <span className="text-sm leading-6">View details</span>
             </button>
           </DropdownMenuItem>
@@ -98,7 +104,7 @@ export default function MessageHeader({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <UserProfileCardMobile isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <UserProfileCardMobile participants={chatParticipants} isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </div>
   );
 }

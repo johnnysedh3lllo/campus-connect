@@ -1,6 +1,6 @@
 // Form Data type
 export type MultiStepFormData = {
-  roleId: string;
+  roleId: "1" | "2" | "3";
   firstName: string;
   lastName: string;
   emailAddress: string;

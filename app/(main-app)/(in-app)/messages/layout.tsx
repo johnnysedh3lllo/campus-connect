@@ -3,7 +3,7 @@
 // Utilities
 import { Metadata } from "next";
 import { MessagesList } from "@/components/app/messages-list";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
@@ -55,12 +55,12 @@ export default function MessagesLayout({
   return (
     <div className="relative grid h-full lg:grid-cols-[25%_1fr]">
       <div
-        className={`absolute inset-0 ${isRoot || isDesktop ? "block" : "hidden"} bg-background z-10 lg:static`}
+        className={`border-border absolute inset-0 border-r-1 ${isRoot || isDesktop ? "block" : "hidden"} bg-background z-10 lg:static`}
       >
         <MessagesList />
       </div>
 
-      <main className="border-text-secondary flex w-full flex-2 gap-4 pt-4 pr-4 pl-4">
+      <main className="border-text-secondary flex w-full flex-2 gap-4">
         {children}
       </main>
     </div>

@@ -9,32 +9,32 @@ import { useEffect, useRef, useState } from "react";
 import { MultiStepFormData } from "@/lib/form-types";
 import { createPassword, signUpWithOtp, verifyOtp } from "@/app/actions";
 import {
-  OtpFormSchema,
-  RoleSchema,
-  SetPasswordFormSchema,
-  UserDetailsFormSchema,
+  OtpFormType,
+  RoleFormType,
+  SetPasswordFormType,
+  SignUpFormType,
+  UserDetailsFormType,
 } from "@/lib/form-schemas";
 import { useRouter } from "next/navigation";
 
 // COMPONENTS
-import { GetUserInfo, SelectRole, SetPassword, VerifyOtp } from "./form-steps";
+import {
+  GetUserInfo,
+  SelectRole,
+  SetPassword,
+  VerifyOtp,
+} from "@/components/app/auth-forms";
 import { Badge } from "@/components/ui/badge";
+import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
+import { animationConfig, formVariants } from "@/hooks/animations";
 
 //
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
 //   : "http://localhost:3000";
 
-const formVariants = {
-  hidden: { opacity: 0, x: 50 },
-  visible: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -50 },
-};
-
-const animationConfig = { duration: 0.3 };
-
 const initialData: MultiStepFormData = {
-  roleId: "",
+  roleId: "3",
   firstName: "",
   lastName: "",
   emailAddress: "",
@@ -68,12 +68,12 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   }, [step]);
 
   // Submit handlers for form steps
-  function handleRoleSubmit(values: RoleSchema) {
+  function handleRoleSubmit(values: RoleFormType) {
     updateFields(values);
     nextStep();
   }
 
-  async function handleEmailSubmit(values: UserDetailsFormSchema) {
+  async function handleSignUp(values: UserDetailsFormType) {
     const userInfo = { ...formData, ...values };
 
     try {
@@ -98,10 +98,10 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     }
   }
 
-  async function handleVerifyOtp(values: OtpFormSchema) {
+  async function handleVerifyOtp(values: OtpFormType) {
     try {
-      // if the otp is incorrect it should throw an error
-      // if correct, go to the next step
+      // if the otp SetPasswordFormType incorrect it should throw an error
+      // if correct, go to the next UserDetailsFormType
       const result = await verifyOtp(formData.emailAddress, values.otp);
 
       if (result.success) {
@@ -121,10 +121,10 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     }
   }
 
-  async function handleCreatePassword(values: SetPasswordFormSchema) {
+  async function handleCreatePassword(values: SetPasswordFormType) {
     setIsLoading(true);
     try {
-      const result = await createPassword(values.password);
+      const result = await createPassword(values);
 
       if (result.success) {
         // toast({
@@ -149,7 +149,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
 
   const steps = [
     <SelectRole handleRoleSubmit={handleRoleSubmit} />,
-    <GetUserInfo handleEmailSubmit={handleEmailSubmit} />,
+    <GetUserInfo handleSignUp={handleSignUp} />,
     <VerifyOtp
       handleVerifyOtp={handleVerifyOtp}
       userEmail={formData?.emailAddress}
@@ -178,19 +178,13 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
           ))}
         </div>
       </div>
-
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={step}
-          variants={formVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          transition={animationConfig}
-        >
-          {steps[step]}
-        </motion.div>
-      </AnimatePresence>
+      <AnimationWrapper
+        variants={formVariants}
+        transition={animationConfig}
+        count={step}
+      >
+        {steps[step]}
+      </AnimationWrapper>
     </div>
   );
 }

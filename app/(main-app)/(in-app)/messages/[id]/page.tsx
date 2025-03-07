@@ -1,9 +1,11 @@
 // Utilities
 import MessageContainer from "@/components/app/message-container";
 import { getMessages, getParticipants, getUser } from "@/app/actions";
+import { UserProfileCard } from "@/components/app/user-profile-card";
+import { MessageBody } from "@/components/app/message-body";
+import { UserProfileCardWrapper } from "@/components/ui/user-profile-card-wrapper";
 
 // Components
-import { Suspense } from "react";
 
 export default async function MessagesBodyPage({
   params,
@@ -26,14 +28,17 @@ export default async function MessagesBodyPage({
   const participants = await getParticipantsByConversationId();
 
   return (
-    <div className="grid w-full grid-cols-1">
+    <MessageBody>
       <MessageContainer
         conversationId={id}
         ssrConversationMessages={ssrMessages}
         user={user}
         participants={participants}
       />
-      {/* <div className="hidden lg:block">User Profile</div> */}
-    </div>
+
+      <UserProfileCardWrapper>
+        <UserProfileCard participants={participants} />
+      </UserProfileCardWrapper>
+    </MessageBody>
   );
 }
