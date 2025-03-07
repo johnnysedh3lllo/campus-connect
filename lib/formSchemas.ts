@@ -43,29 +43,31 @@ export const userValidationSchema = z.object({
 export type UserValidationSchema = z.infer<typeof userValidationSchema>;
 
 // SIGN UP ACTION
-export const signUpDataSchema = userValidationSchema.pick({
+export const signUpFormSchema = userValidationSchema.pick({
   firstName: true,
   lastName: true,
   emailAddress: true,
   roleId: true,
   newsletter: true,
-});
+  });
+
+export type SignUpFormType = z.infer<typeof signUpFormSchema>;
 
 // SIGN UP FORM STEPS
 export const roleSchema = userValidationSchema.pick({
   roleId: true,
 });
-export type RoleSchema = z.infer<typeof roleSchema>;
+export type RoleFormType = z.infer<typeof roleSchema>;
 
-export const userDetailsFormSchema = signUpDataSchema.omit({
+export const userDetailsFormSchema = signUpFormSchema.omit({
   roleId: true,
 });
-export type UserDetailsFormSchema = z.infer<typeof userDetailsFormSchema>;
+export type UserDetailsFormType = z.infer<typeof userDetailsFormSchema>;
 
 export const otpFormSchema = userValidationSchema.pick({
   otp: true,
 });
-export type OtpFormSchema = z.infer<typeof otpFormSchema>;
+export type OtpFormType = z.infer<typeof otpFormSchema>;
 
 export const setPasswordFormSchema = userValidationSchema
   .pick({
@@ -82,20 +84,16 @@ export const setPasswordFormSchema = userValidationSchema
       path: ["confirmPassword"],
     },
   );
-export type SetPasswordFormSchema = z.infer<typeof setPasswordFormSchema>;
+export type SetPasswordFormType = z.infer<typeof setPasswordFormSchema>;
 
 // LOGIN FORM
 export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
   password: true,
 });
+export type LoginFormType = z.infer<typeof loginSchema>;
 
-export const resetPasswordEmailSchema = userValidationSchema.pick({
+export const resetPasswordFormSchema = userValidationSchema.pick({
   emailAddress: true,
 });
-export type ResetPasswordFormSchema = z.infer<typeof resetPasswordEmailSchema>;
-
-export const createPasswordSchema = userValidationSchema.pick({
-  password: true,
-  confirmPassword: true,
-});
+export type ResetPasswordFormType = z.infer<typeof resetPasswordFormSchema>;

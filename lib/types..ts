@@ -1,6 +1,4 @@
 import { Database as DB } from "@/database.types";
-import { useForm } from "react-hook-form";
-import { SetPasswordFormSchema } from "@/lib/formSchemas";
 
 declare global {
   interface Database extends DB {}
@@ -32,18 +30,4 @@ declare global {
       email: string;
     } | null;
   }
-}
-
-export interface CreatePasswordStepProps {
-  form: ReturnType<typeof useForm<SetPasswordFormSchema>>;
-  isSubmitting: boolean;
-  onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
-}
-
-export type StepComponent = React.FC<CreatePasswordStepProps> | React.FC;
-
-export interface StepProps {
-  form?: ReturnType<typeof useForm<SetPasswordFormSchema>>;
-  isSubmitting?: boolean;
-  onSubmit?: (e?: React.BaseSyntheticEvent) => Promise<void>;
 }

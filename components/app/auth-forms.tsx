@@ -3,19 +3,23 @@
 // UTILITIES
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
-import { Control, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   otpFormSchema,
-  OtpFormSchema,
-  resetPasswordEmailSchema,
-  ResetPasswordFormSchema,
+  OtpFormType,
+  resetPasswordFormSchema,
+  ResetPasswordFormType,
   roleSchema,
-  RoleSchema,
+  RoleFormType,
   setPasswordFormSchema,
-  SetPasswordFormSchema,
+  SetPasswordFormType,
   userDetailsFormSchema,
-  UserDetailsFormSchema,
+  UserDetailsFormType,
+  loginSchema,
+  LoginFormType,
 } from "@/lib/formSchemas";
+import Link from "next/link";
+import { resendSignUpOtp, signOut } from "@/app/actions";
 
 // COMPONENTS
 import Image from "next/image";
@@ -46,14 +50,11 @@ import { Apple, Facebook, Google } from "@/components/app/social-logos";
 import houseIcon from "@/public/icons/icon-house.svg";
 import tenantIcon from "@/public/icons/icon-tenant.svg";
 import { Loader2 } from "lucide-react";
-import lockIcon from "@/public/icons/icon-lock.svg";
-import { forgotPasswordAction, resendSignUpOtp } from "@/app/actions";
 import { PasswordInput } from "@/components/app/password-input";
-import Link from "next/link";
-import { z } from "zod";
 import { LargeMailIcon } from "@/public/icons/large-mail-icon";
 import { LockIcon } from "@/public/icons/lock-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
+import { ShieldIcon } from "@/public/icons/shield-icon";
 
 //
 const roleDetails = [
@@ -71,12 +72,143 @@ const roleDetails = [
   },
 ];
 
-type SelectRoleProps = {
-  handleRoleSubmit: (values: RoleSchema) => void;
+// TODO: TYPES TO BE ABSTRACTED TO A SEPARATE FOLDER, MAYBE
+
+export type LoginFormProps = {
+  isLoading: boolean;
+  handleLogin: (values: LoginFormType) => void;
+};
+export type SelectRoleProps = {
+  handleRoleSubmit: (values: RoleFormType) => void;
+};
+export type GetUserInfoProps = {
+  handleEmailSubmit: (values: UserDetailsFormType) => void;
+};
+export type VerifyOtpProps = {
+  handleVerifyOtp: (values: OtpFormType) => void;
+  userEmail: string;
+};
+export type SetPasswordProps = {
+  isLoading: boolean;
+  handleCreatePassword: (values: SetPasswordFormType) => void;
+};
+export type ResetPasswordProps = {
+  isSubmitting: boolean;
+  handleResetPassword: (values: ResetPasswordFormType) => void;
+};
+export type CheckInboxProps = {
+  emailAddress: string;
+  handleResetPassword: (values: ResetPasswordFormType) => void;
+};
+export type CreateNewPasswordProps = {
+  isSubmitting: boolean;
+  handleCreatePassword: (values: SetPasswordFormType) => void;
 };
 
+// MAIN FORM COMPONENTS
+
+export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
+  const form = useForm<LoginFormType>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      emailAddress: "",
+      password: "",
+    },
+  });
+  return (
+    <section className="mx-auto flex w-full flex-col justify-center lg:max-w-120">
+      <div className="flex h-full flex-col items-start justify-center">
+        <section className="flex flex-col items-start">
+          <h1 className="text-left text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
+            Welcome Back!
+          </h1>
+        </section>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleLogin)}
+            className="flex w-full flex-col items-start gap-3 pt-10 pb-6 sm:pt-12"
+          >
+            <div className="flex w-full flex-col items-start gap-5.5 px-2 sm:px-0">
+              <FormField
+                control={form.control}
+                name="emailAddress"
+                render={({ field }) => (
+                  <FormItem className="flex w-full flex-col items-start gap-1 text-gray-950">
+                    <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
+                      Email Address
+                      <FormControl>
+                        <Input
+                          disabled={isLoading}
+                          required
+                          placeholder="your@example.com"
+                          className="text-left"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormLabel>
+                    <FormMessage className="text-left" />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex w-full flex-col items-start gap-2">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="flex w-full flex-col items-start gap-1">
+                      <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
+                        Password
+                        <FormControl>
+                          <PasswordInput
+                            disabled={isLoading}
+                            required
+                            placeholder="Enter password"
+                            className=""
+                            field={field}
+                          />
+                        </FormControl>
+                      </FormLabel>
+                      <FormMessage className="text-left" />
+                    </FormItem>
+                  )}
+                />
+                <Link
+                  href={"/reset-password"}
+                  className="text-left text-sm text-red-600"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
+              <Button
+                disabled={isLoading}
+                type="submit"
+                className="w-full cursor-pointer p-6 text-center text-base leading-6 font-semibold transition-all duration-500"
+              >
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading ? "Logging in..." : "Log in"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+
+        <footer className="flex w-full flex-col items-center gap-3">
+          <LoginPrompt callToAction="Don't have an account?" route="/sign-up" />
+          <SeparatorMain />
+          <div className="flex gap-3">
+            <Google />
+            <Facebook />
+            <Apple />
+          </div>
+        </footer>
+      </div>
+    </section>
+  );
+}
+
 export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
-  const form = useForm<RoleSchema>({
+  const form = useForm<RoleFormType>({
     resolver: zodResolver(roleSchema),
   });
 
@@ -176,12 +308,8 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
   );
 }
 
-type GetUserInfoProps = {
-  handleEmailSubmit: (values: UserDetailsFormSchema) => void;
-};
-
 export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
-  const form = useForm<UserDetailsFormSchema>({
+  const form = useForm<UserDetailsFormType>({
     resolver: zodResolver(userDetailsFormSchema),
     defaultValues: {
       firstName: "",
@@ -192,7 +320,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
   });
 
   const {
-    formState: { isValid, isSubmitting },
+    formState: { isSubmitting },
   } = form;
 
   return (
@@ -321,15 +449,10 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
   );
 }
 
-type VerifyOtpProps = {
-  handleVerifyOtp: (values: OtpFormSchema) => void;
-  userEmail: string;
-};
-
 export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
   let [timeLeft, setTimeLeft] = useState(60);
 
-  const form = useForm<OtpFormSchema>({
+  const form = useForm<OtpFormType>({
     resolver: zodResolver(otpFormSchema),
     defaultValues: {
       otp: "",
@@ -420,7 +543,7 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
                     disabled={timeLeft !== 0}
                     className="text-primary p-1 font-medium"
                     variant={"link"}
-                    onClick={handleResendOtp}
+                    onClick={handleResendOtp} // refactor this
                   >
                     Resend Code
                   </Button>
@@ -447,16 +570,11 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
   );
 }
 
-export type SetPasswordProps = {
-  isLoading: boolean;
-  handleCreatePassword: (values: SetPasswordFormSchema) => void;
-};
-
 export function SetPassword({
-  handleCreatePassword,
   isLoading,
+  handleCreatePassword,
 }: SetPasswordProps) {
-  const form = useForm<SetPasswordFormSchema>({
+  const form = useForm<SetPasswordFormType>({
     resolver: zodResolver(setPasswordFormSchema),
     defaultValues: {
       password: "",
@@ -548,17 +666,12 @@ export function SetPassword({
   );
 }
 
-export type ResetPasswordProps = {
-  isSubmitting: boolean;
-  handleResetPassword: (values: ResetPasswordFormSchema) => void;
-};
-
 export function ResetPassword({
   isSubmitting,
   handleResetPassword,
 }: ResetPasswordProps) {
-  const form = useForm<ResetPasswordFormSchema>({
-    resolver: zodResolver(resetPasswordEmailSchema),
+  const form = useForm<ResetPasswordFormType>({
+    resolver: zodResolver(resetPasswordFormSchema),
     defaultValues: {
       emailAddress: "",
     },
@@ -615,11 +728,14 @@ export function ResetPassword({
   );
 }
 
-export type CheckInboxProps = {
-  emailAddress: string;
-};
+export function CheckInbox({
+  emailAddress,
+  handleResetPassword,
+}: CheckInboxProps) {
+  const handleResetPasswordWithEmail = handleResetPassword.bind(null, {
+    emailAddress: emailAddress,
+  });
 
-export function CheckInbox({ emailAddress }: CheckInboxProps) {
   return (
     <div className="flex w-full flex-col gap-10 sm:gap-12">
       <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
@@ -634,7 +750,7 @@ export function CheckInbox({ emailAddress }: CheckInboxProps) {
         </h2>
 
         <p className="text-text-secondary text-sm leading-6">
-          Click on the link we sent to
+          Click on the link we sent to{" "}
           <span className="text-text-primary font-bold">{emailAddress}</span> to
           finish your account set-up.
         </p>
@@ -646,20 +762,141 @@ export function CheckInbox({ emailAddress }: CheckInboxProps) {
           <p className="text-base leading-6 font-semibold">Check your mail</p>
         </div>
 
-        <p className="text-text-accent/80 flex flex-wrap items-center gap-2 text-sm leading-6 sm:gap-4">
-          No email in your inbox or spam folder?{" "}
-          <span
-            className="text-text-accent cursor-pointer font-medium underline"
-            onClick={async () => {
-              await forgotPasswordAction({
-                emailAddress,
-              });
-            }}
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-text-accent/80 text-sm leading-6">
+            No email in your inbox or spam folder?
+          </p>
+
+          <form action={handleResetPasswordWithEmail}>
+            <Button
+              className="text-text-accent cursor-pointer p-0 font-medium underline"
+              variant={"link"}
+            >
+              Resend email
+            </Button>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CreateNewPassword({
+  isSubmitting,
+  handleCreatePassword,
+}: CreateNewPasswordProps) {
+  const form = useForm<SetPasswordFormType>({
+    resolver: zodResolver(setPasswordFormSchema),
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  return (
+    <div className="flex flex-col gap-6 sm:gap-12">
+      <section className="flex flex-col gap-2">
+        <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+          Create Password
+        </h1>
+
+        <p className="text text-secondary-foreground text-sm">
+          Enter a password you can remember, to secure your account
+        </p>
+      </section>
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleCreatePassword)}
+          className="flex flex-col gap-6 sm:gap-12"
+        >
+          <div className="flex flex-col gap-6 sm:px-2">
+            <div className="flex flex-col gap-2">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                      Password
+                      <FormControl>
+                        <PasswordInput
+                          disabled={isSubmitting}
+                          required
+                          placeholder="Enter password"
+                          field={field}
+                        />
+                      </FormControl>
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* <div className="text-sm">
+                Password strength: {getPasswordStrength(form.watch("password"))}
+              </div> */}
+            </div>
+
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem className="flex flex-col gap-1">
+                  <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                    Confirm Password
+                    <FormControl>
+                      <PasswordInput
+                        disabled={isSubmitting}
+                        required
+                        placeholder="Confirm password"
+                        field={field}
+                      />
+                    </FormControl>
+                  </FormLabel>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <Button
+            disabled={isSubmitting}
+            type="submit"
+            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-300"
           >
-            Resend email
-          </span>
+            {isSubmitting && <Loader2 className="animate-spin" />}
+            Create Password
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
+}
+
+export function PasswordCreationSuccess() {
+  return (
+    <div className="mx-auto flex w-full flex-col items-center justify-center gap-7 lg:max-w-120">
+      <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
+        <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
+          <ShieldIcon />
+        </figure>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+          Password Changed!
+        </h1>
+        <p className="text text-secondary-foreground text-sm">
+          Your password has been successfully changed. Please use your new
+          password when logging in
         </p>
       </div>
+
+      <form action={signOut}>
+        <Button className="w-full cursor-pointer p-6 text-base leading-6 font-semibold">
+          Continue to Login
+        </Button>
+      </form>
     </div>
   );
 }

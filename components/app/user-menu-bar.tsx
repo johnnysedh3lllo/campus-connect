@@ -1,6 +1,6 @@
 "use client";
 
-import { signOutAction } from "@/app/actions";
+import { signOut } from "@/app/actions";
 import { Button } from "../ui/button";
 import { userRoles, UserRoles } from "@/lib/testData";
 import Image from "next/image";
@@ -74,7 +74,7 @@ export function UserMenuBar({ user }: { user: User | null }) {
                 </Button>
               </MenubarItem>
 
-              <form className="w-full" action={signOutAction}>
+              <form className="w-full" action={signOut}>
                 <Button
                   variant={"ghost"}
                   className="flex w-full cursor-pointer justify-start gap-2 p-2"

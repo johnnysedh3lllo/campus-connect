@@ -1,18 +1,14 @@
 "use client";
 
-import { forgotPasswordAction } from "@/app/actions";
+import { resetPassword } from "@/app/actions";
 import { useMultiStepForm } from "@/hooks/useMultiStepForm";
-import {
-  resetPasswordEmailSchema,
-  ResetPasswordFormSchema,
-} from "@/lib/formSchemas";
-import { Control, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type * as z from "zod";
+import { ResetPasswordFormType } from "@/lib/formSchemas";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { CheckInbox, ResetPassword } from "@/components/app/form-steps";
-import { Form } from "@/components/ui/form";
+import { CheckInbox, ResetPassword } from "@/components/app/auth-forms";
+import { useEmailState } from "@/lib/store/email-state-store";
+import { toast } from "@/hooks/use-toast";
+import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
+import { animationConfig, formVariants } from "@/hooks/animations";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
@@ -25,56 +21,62 @@ import { Form } from "@/components/ui/form";
 //   // description: "Your rental paradise",
 // };
 
-const formVariants = {
-  hidden: { opacity: 0, x: 50 },
-  visible: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -50 },
-};
-const animationConfig = { duration: 0.3 };
-
-const initialData = {
-  emailAddress: "",
-};
-
 export default function ResetPasswordPage() {
+  const { email, setEmail } = useEmailState();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { step, nextStep, formData } = useMultiStepForm(initialData);
 
-  const handleResetPassword = async (values: ResetPasswordFormSchema) => {
-    const userInfo = { ...formData, ...values };
-    if (step === 0) {
-      setIsSubmitting(true);
+  const { step, nextStep } = useMultiStepForm({
+    emailAddress: "",
+  });
 
-      await forgotPasswordAction({ emailAddress: userInfo.emailAddress });
-      nextStep();
-      setIsSubmitting(false);
+  async function handleResetPassword(values: ResetPasswordFormType) {
+    if (!values.emailAddress) {
+      console.error("The user's email is undefined");
       return;
     }
-  };
+
+    setEmail(values.emailAddress);
+    setIsSubmitting(true);
+
+    const result = await resetPassword({ emailAddress: values.emailAddress });
+
+    if (!result?.success) {
+      setIsSubmitting(false);
+      toast({
+        variant: "destructive",
+        title: "Failed to resend password",
+        description: result?.error?.message,
+      });
+      return;
+    }
+
+    if (step < 1) {
+      nextStep();
+      setIsSubmitting(false);
+    }
+  }
 
   const resetPasswordSteps = [
     <ResetPassword
       isSubmitting={isSubmitting}
       handleResetPassword={handleResetPassword}
     />,
-    <CheckInbox emailAddress={formData.emailAddress} />,
+    <CheckInbox
+      emailAddress={email}
+      handleResetPassword={handleResetPassword}
+    />,
   ];
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        className="w-full"
-        key={step}
-        variants={formVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        transition={animationConfig}
-      >
-        <div className="mx-auto flex h-full w-full items-center justify-center lg:max-w-120">
-          {resetPasswordSteps[step]}
-        </div>
-      </motion.div>
-    </AnimatePresence>
+    <AnimationWrapper
+      variants={formVariants}
+      transition={animationConfig}
+      count={step}
+      classes="w-full"
+    >
+      <div className="mx-auto flex h-full w-full items-center justify-center lg:max-w-120">
+        {resetPasswordSteps[step]}
+      </div>
+    </AnimationWrapper>
   );
 }

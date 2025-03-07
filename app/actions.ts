@@ -9,19 +9,23 @@ import { MultiStepFormData } from "@/lib/formTypes";
 import {
   userValidationSchema,
   loginSchema,
-  signUpDataSchema,
-  resetPasswordEmailSchema,
-  createPasswordSchema,
+  signUpFormSchema,
+  resetPasswordFormSchema,
+  LoginFormType,
+  SetPasswordFormType,
+  setPasswordFormSchema,
+  ResetPasswordFormType,
+  SignUpFormType,
 } from "@/lib/formSchemas";
 import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
 
 // ONBOARDING ACTIONS
-export async function signUpWithOtp(userInfo: MultiStepFormData) {
+export async function signUpWithOtp(userInfo: SignUpFormType) {
   const supabase = await createClient();
 
   // validate form fields first
-  const validatedFields = signUpDataSchema.safeParse(userInfo);
+  const validatedFields = signUpFormSchema.safeParse(userInfo);
 
   if (!validatedFields.success) {
     return {
@@ -117,14 +121,10 @@ export async function resendSignUpOtp(userEmail: string) {
   }
 }
 
-const passwordSchema = userValidationSchema.pick({
-  password: true,
-});
-
-export async function createPassword(password: string) {
+export async function createPassword(formData: SetPasswordFormType) {
   try {
     // Validate password
-    const validatedPassword = passwordSchema.parse({ password });
+    const validatedPassword = setPasswordFormSchema.parse(formData);
 
     // Create Supabase client
     const supabase = await createClient();
@@ -147,15 +147,13 @@ export async function createPassword(password: string) {
   }
 }
 
-type SignInFormInputs = z.infer<typeof loginSchema>;
-
-export const signInAction = async (data: SignInFormInputs) => {
+export async function Login(formData: LoginFormType) {
   const supabase = await createClient();
 
   try {
     const { error, data: authData } = await supabase.auth.signInWithPassword({
-      email: data.emailAddress,
-      password: data.password,
+      email: formData.emailAddress,
+      password: formData.password,
     });
 
     console.log(error?.message);
@@ -170,16 +168,13 @@ export const signInAction = async (data: SignInFormInputs) => {
       return { success: false, error };
     }
   }
-};
+}
 
-type forgotPasswordActionInput = z.infer<typeof resetPasswordEmailSchema>;
+export async function resetPassword(formData: ResetPasswordFormType) {
+  const supabase = await createClient();
 
-export const forgotPasswordAction = async (
-  formData: forgotPasswordActionInput,
-) => {
   try {
-    const validatedFields = resetPasswordEmailSchema.safeParse(formData);
-    console.log("Validating fields", validatedFields);
+    const validatedFields = resetPasswordFormSchema.safeParse(formData);
 
     if (!validatedFields.success) {
       return {
@@ -190,15 +185,26 @@ export const forgotPasswordAction = async (
         },
       };
     }
-
     const validFields = validatedFields.data;
-    console.log("Validated fields", validFields);
+
     const email = validFields.emailAddress;
-    const supabase = await createClient();
+
+    // check if a user already exists
+    const { data: existingUser } = await supabase.rpc("check_user_existence", {
+      user_email_address: email,
+    });
+
+    if (!existingUser || existingUser.length < 1) {
+      return {
+        success: false,
+        error: { message: "A user with this email does not exist" },
+      };
+    }
+
     const origin = (await headers()).get("origin");
 
     if (!email) {
-      return encodedRedirect("error", "/forgot-password", "Email is required");
+      return encodedRedirect("error", "/reset-password", "Email is required");
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -207,25 +213,18 @@ export const forgotPasswordAction = async (
 
     if (error) {
       console.error(error.message);
-      return encodedRedirect(
-        "error",
-        "/forgot-password",
-        "Could not reset password",
-      );
+      throw error;
     }
 
-    return encodedRedirect(
-      "success",
-      "/forgot-password",
-      "Check your email for a link to reset your password.",
-    );
-  } catch (error: any) {
-    console.error(error, error.message);
+    return { success: true };
+  } catch (error) {
+    if (error instanceof Error) {
+      return { success: false, error };
+    }
   }
-};
+}
 
-type resetPasswordActionInput = z.infer<typeof createPasswordSchema>;
-type ResetPasswordResponse = {
+type CreateNewPasswordResponse = {
   success: boolean;
   error?: {
     message: string;
@@ -233,10 +232,10 @@ type ResetPasswordResponse = {
   };
 };
 
-export const resetPasswordAction = async (
-  formData: resetPasswordActionInput,
-): Promise<ResetPasswordResponse> => {
-  const validatedFields = createPasswordSchema.safeParse(formData);
+export async function createNewPassword(
+  formData: SetPasswordFormType,
+): Promise<CreateNewPasswordResponse> {
+  const validatedFields = setPasswordFormSchema.safeParse(formData);
 
   if (!validatedFields.success) {
     return {
@@ -326,14 +325,14 @@ export const resetPasswordAction = async (
   return {
     success: true,
   };
-};
+}
 
-export const signOutAction = async () => {
+export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
 
   return redirect("/log-in");
-};
+}
 
 // C.R.U.D functions
 
