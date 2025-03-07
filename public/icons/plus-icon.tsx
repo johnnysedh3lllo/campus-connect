@@ -14,7 +14,7 @@ export function PlusIcon(props: SVGProps<SVGSVGElement>) {
         d="M6 12H18M12 18V6"
         stroke="white"
         strokeWidth="1.5"
-        stroke-miterlimit="10"
+        strokeMiterlimit="10"
         strokeLinecap="round"
         strokeLinejoin="round"
       />

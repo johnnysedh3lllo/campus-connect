@@ -2,7 +2,7 @@
 
 import { ListingIcon } from "@/public/icons/listing-icon";
 import { InquiriesIcon } from "@/public/icons/inquiries-icon";
-import { MessagesIcon } from "@/public/icons/messages-icon";
+import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIcon } from "@/public/icons/profile-icon";
 import { SettingsIcon } from "@/public/icons/settings-icon";
 

@@ -8,6 +8,8 @@ export function useMediaQuery(query: string): boolean {
   useEffect(() => {
     const media = window.matchMedia(query);
 
+    console.log(media)
+
     // Set initial value
     if (media.matches !== matches) {
       setMatches(media.matches);
