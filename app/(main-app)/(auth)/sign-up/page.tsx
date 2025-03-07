@@ -4,16 +4,16 @@
 import { Metadata } from "next";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
-import { useMultiStepForm } from "@/hooks/useMultiStepForm";
+import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { useEffect, useRef, useState } from "react";
-import { MultiStepFormData } from "@/lib/formTypes";
+import { MultiStepFormData } from "@/lib/form-types";
 import { createPassword, signUpWithOtp, verifyOtp } from "@/app/actions";
 import {
   OtpFormType,
   RoleFormType,
   SetPasswordFormType,
   UserDetailsFormType,
-} from "@/lib/formSchemas";
+} from "@/lib/form-schemas";
 import { useRouter } from "next/navigation";
 
 // COMPONENTS
@@ -131,7 +131,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
         //   description: "Password created successfully",
         // });
 
-        router.replace("/dashboard?welcome=true");
+        router.replace("/listings?welcome=true");
       } else {
         throw result.error;
       }

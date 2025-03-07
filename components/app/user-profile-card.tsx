@@ -1,0 +1,45 @@
+"use client";
+
+import { useProfileViewStore } from "@/lib/store/profile-view-store";
+import { Button } from "../ui/button";
+import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
+export function UserProfileCard({
+  participants,
+}: {
+  participants: ConvoParticipant[] | undefined;
+}) {
+  const participant =
+    participants && participants.length > 0 ? participants[0] : null;
+
+  console.log(participant);
+  return (
+    <main className="profile-card-details flex h-[75vh] flex-col gap-6 overflow-y-auto">
+      <figure className="flex flex-col items-center gap-6">
+        <Avatar className="size-32.5 text-2xl">
+          <AvatarImage src="" alt="avatar" />
+          <AvatarFallback>{participant?.users?.first_name?.[0]}</AvatarFallback>
+        </Avatar>
+
+        <p className="text-text-primary text-2xl leading-8 font-semibold">
+          {participant?.users?.first_name} {participant?.users?.last_name}
+        </p>
+      </figure>
+
+      <div className="">
+        <section className="flex flex-col gap-2">
+          <h2 className="text-text-primary text-sm leading-6 font-medium">
+            About
+          </h2>
+
+          <p className="text-text-secondary text-sm leading-6">
+            Student of the Harvard university, Currently studying Architecture,
+            im easing going, love to play chess and i enjoy cycling in my free
+            time.
+          </p>
+        </section>
+      </div>
+    </main>
+  );
+}

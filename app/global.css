@@ -8,6 +8,7 @@
   /* These are the range of all the colors used in the design */
 
   /* BREAKPOINTS */
+  --breakpoint-max-xl: 82rem;
   --breakpoint-2xl: 90rem;
   --breakpoint-3xl: 96rem;
 
@@ -86,8 +87,11 @@
   --color-white: hsla(0, 0%, 100%, 1);
   --color-black: hsla(0, 0%, 0%);
 
+  /* COLOR TOKENS */
   --color-background: var(--background);
   --color-background-secondary: var(--background-secondary);
+  --color-background-accent: var(--background-accent);
+  --color-background-accent-secondary: var(--background-accent-secondary);
 
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
@@ -158,13 +162,15 @@
   /* done */
   --background: var(--color-white);
   --background-secondary: var(--color-gray-50);
+  --background-accent: var(--color-red-500);
+  --background-accent-secondary: var(--color-red-50);
 
   /* TEXT COLORS */
   --text-primary: var(--color-gray-950);
   --text-secondary: var(--color-gray-800);
   --text-placeholder: var(--color-gray-600);
   --text-disabled: var(--color-red-200);
-  --text-inverse: var(--color-white-900);
+  --text-inverse: var(--color-white);
   --text-accent: var(--color-red-500);
 
   --foreground: var(--color-gray-950);
@@ -287,18 +293,24 @@
     }
   }
 
-  .onboarding-form--wrapper::-webkit-scrollbar {
-    @apply w-1.5;
+  .onboarding-form--wrapper::-webkit-scrollbar,
+  .messaging-container::-webkit-scrollbar,
+  .profile-card-details::-webkit-scrollbar {
+    @apply w-1;
   }
 
   /* Track */
-  .onboarding-form--wrapper::-webkit-scrollbar-track {
-    @apply rounded-lg bg-gray-600;
+  .onboarding-form--wrapper::-webkit-scrollbar-track,
+  .messaging-container::-webkit-scrollbar-track,
+  .profile-card-details::-webkit-scrollbar-track {
+    @apply rounded-lg bg-transparent;
   }
 
   /* Thumb */
-  .onboarding-form--wrapper::-webkit-scrollbar-thumb {
-    @apply rounded-lg bg-gray-950;
+  .onboarding-form--wrapper::-webkit-scrollbar-thumb,
+  .messaging-container::-webkit-scrollbar-thumb,
+  .profile-card-details::-webkit-scrollbar-thumb {
+    @apply rounded-lg bg-gray-200;
   }
 
   @media (min-height: 900px) {

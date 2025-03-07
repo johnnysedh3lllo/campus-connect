@@ -1,9 +1,11 @@
 // Utilities
 import MessageContainer from "@/components/app/message-container";
 import { getMessages, getParticipants, getUser } from "@/app/actions";
+import { UserProfileCard } from "@/components/app/user-profile-card";
+import { MessageBody } from "@/components/app/message-body";
+import { UserProfileCardWrapper } from "@/components/ui/user-profile-card-wrapper";
 
 // Components
-import { Suspense } from "react";
 
 export default async function MessagesBodyPage({
   params,
@@ -19,24 +21,24 @@ export default async function MessagesBodyPage({
     throw new Error("User not found");
   }
 
-  const getParticipantsByConversationId = getParticipants.bind(
-    null,
-    id,
-    user?.id,
-  );
+  const getParticipantsByConversationId = getParticipants.bind(null, id);
 
   const getMessagesByConversationId = getMessages.bind(null, id);
   const ssrMessages = await getMessagesByConversationId();
   const participants = await getParticipantsByConversationId();
 
   return (
-    <Suspense fallback={<p>Loading....</p>}>
+    <MessageBody>
       <MessageContainer
         conversationId={id}
         ssrConversationMessages={ssrMessages}
         user={user}
         participants={participants}
       />
-    </Suspense>
+
+      <UserProfileCardWrapper>
+        <UserProfileCard participants={participants} />
+      </UserProfileCardWrapper>
+    </MessageBody>
   );
 }

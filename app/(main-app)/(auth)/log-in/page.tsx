@@ -4,7 +4,8 @@
 import { useState } from "react";
 import { Login } from "@/app/actions";
 import { useRouter } from "next/navigation";
-import { LoginFormType } from "@/lib/formSchemas";
+import { LoginFormType, loginSchema } from "@/lib/form-schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 
 // COMPONENTS
@@ -26,7 +27,7 @@ export default function LoginPage(props: { searchParams: Promise<Message> }) {
       // If we're here and there's no error, manually navigate
 
       if (result?.success) {
-        router.replace("/dashboard");
+        router.replace("/listings");
       } else {
         throw result?.error;
       }
@@ -35,7 +36,9 @@ export default function LoginPage(props: { searchParams: Promise<Message> }) {
         variant: "destructive",
         title: "Please confirm email and password",
         description:
-          error instanceof Error ? error.message : "An error occurred",
+          error instanceof Error
+            ? error.message
+            : "An error occurred, please try again later.",
       });
       setIsLoading(false);
     }

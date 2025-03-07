@@ -36,15 +36,15 @@ export const updateSession = async (request: NextRequest) => {
   // https://supabase.com/docs/guides/auth/server-side/nextjs
   const user = await supabase.auth.getUser();
 
-  // protected routes
-  if (request.nextUrl.pathname.startsWith("/dashboard") && user.error) {
-    return NextResponse.redirect(new URL("/log-in", request.url));
-  }
+    // protected routes
+    if (request.nextUrl.pathname.startsWith("/listings") && user.error) {
+      return NextResponse.redirect(new URL("/log-in", request.url));
+    }
 
-  // redirects when user is logged in
-  if (request.nextUrl.pathname === "/log-in" && !user.error) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
+    // redirects when user is logged in
+    if (request.nextUrl.pathname === "/log-in" && !user.error) {
+      return NextResponse.redirect(new URL("/listings", request.url));
+    }
 
   if (request.nextUrl.pathname === "/sign-up" && !user.error) {
     return NextResponse.redirect(new URL("/", request.url));
@@ -54,5 +54,5 @@ export const updateSession = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/log-in", "/dashboard"],
+  matcher: ["/log-in", "/listings"],
 };
