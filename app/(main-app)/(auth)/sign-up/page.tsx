@@ -12,6 +12,7 @@ import {
   OtpFormType,
   RoleFormType,
   SetPasswordFormType,
+  SignUpFormType,
   UserDetailsFormType,
 } from "@/lib/form-schemas";
 import { useRouter } from "next/navigation";
@@ -33,7 +34,7 @@ import { animationConfig, formVariants } from "@/hooks/animations";
 //   : "http://localhost:3000";
 
 const initialData: MultiStepFormData = {
-  roleId: "",
+  roleId: "3",
   firstName: "",
   lastName: "",
   emailAddress: "",
@@ -72,7 +73,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     nextStep();
   }
 
-  async function handleEmailSubmit(values: UserDetailsFormType) {
+  async function handleSignUp(values: UserDetailsFormType) {
     const userInfo = { ...formData, ...values };
 
     try {
@@ -123,7 +124,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   async function handleCreatePassword(values: SetPasswordFormType) {
     setIsLoading(true);
     try {
-      const result = await createPassword(values.password);
+      const result = await createPassword(values);
 
       if (result.success) {
         // toast({
@@ -148,7 +149,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
 
   const steps = [
     <SelectRole handleRoleSubmit={handleRoleSubmit} />,
-    <GetUserInfo handleEmailSubmit={handleEmailSubmit} />,
+    <GetUserInfo handleSignUp={handleSignUp} />,
     <VerifyOtp
       handleVerifyOtp={handleVerifyOtp}
       userEmail={formData?.emailAddress}

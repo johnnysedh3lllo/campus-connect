@@ -22,7 +22,7 @@ import creditChip from "@/public/icons/icon-credit-chip.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 import { usePathname } from "next/navigation";
-import { signOutAction } from "@/app/actions";
+import { signOut } from "@/app/actions";
 import { navLinksMobile } from "@/lib/data-storage";
 import Link from "next/link";
 import { ListingIcon } from "@/public/icons/listing-icon";
@@ -90,7 +90,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
                 );
               })}
 
-              <form className="w-full" action={signOutAction}>
+              <form className="w-full" action={signOut}>
                 <Button
                   variant={"ghost"}
                   className="flex h-full w-full cursor-pointer justify-start gap-2 rounded-none px-2 py-3 font-normal"

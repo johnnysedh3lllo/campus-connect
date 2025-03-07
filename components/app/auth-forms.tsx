@@ -17,6 +17,8 @@ import {
   UserDetailsFormType,
   loginSchema,
   LoginFormType,
+  SignUpFormType,
+  signUpFormSchema,
 } from "@/lib/form-schemas";
 import Link from "next/link";
 import { resendSignUpOtp, signOut } from "@/app/actions";
@@ -55,6 +57,7 @@ import { LargeMailIcon } from "@/public/icons/large-mail-icon";
 import { LockIcon } from "@/public/icons/lock-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ShieldIcon } from "@/public/icons/shield-icon";
+import { useCountdownTimer } from "@/hooks/use-countdown-timer";
 
 //
 const roleDetails = [
@@ -82,7 +85,7 @@ export type SelectRoleProps = {
   handleRoleSubmit: (values: RoleFormType) => void;
 };
 export type GetUserInfoProps = {
-  handleEmailSubmit: (values: UserDetailsFormType) => void;
+  handleSignUp: (values: UserDetailsFormType) => void;
 };
 export type VerifyOtpProps = {
   handleVerifyOtp: (values: OtpFormType) => void;
@@ -308,7 +311,7 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
   );
 }
 
-export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
+export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
   const form = useForm<UserDetailsFormType>({
     resolver: zodResolver(userDetailsFormSchema),
     defaultValues: {
@@ -337,7 +340,7 @@ export function GetUserInfo({ handleEmailSubmit }: GetUserInfoProps) {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleEmailSubmit)}
+          onSubmit={form.handleSubmit(handleSignUp)}
           className="flex flex-col gap-6 sm:gap-12"
         >
           <div className="flex flex-col gap-6 sm:px-2">
@@ -584,10 +587,6 @@ export function SetPassword({
       confirmPassword: "",
     },
   });
-
-  // const {
-  //   formState: {  isSubmitting },
-  // } = form;
 
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
