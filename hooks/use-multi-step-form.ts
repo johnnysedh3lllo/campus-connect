@@ -1,5 +1,4 @@
 "use client";
-import { MultiStepFormData } from "@/lib/form-types";
 import { useState } from "react";
 
 // Make the hook generic with type parameter T

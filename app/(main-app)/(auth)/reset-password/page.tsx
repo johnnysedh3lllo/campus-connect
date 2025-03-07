@@ -1,7 +1,7 @@
 "use client";
 
 import { resetPassword } from "@/app/actions";
-import { useMultiStepForm } from "@/hooks/useMultiStepForm";
+import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { ResetPasswordFormType } from "@/lib/formSchemas";
 import { useState } from "react";
 import { CheckInbox, ResetPassword } from "@/components/app/auth-forms";

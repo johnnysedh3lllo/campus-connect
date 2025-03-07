@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { useMultiStepForm } from "@/hooks/useMultiStepForm";
+import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { type SetPasswordFormType } from "@/lib/formSchemas";
 import { createNewPassword } from "@/app/actions";
 import { toast } from "@/hooks/use-toast";
