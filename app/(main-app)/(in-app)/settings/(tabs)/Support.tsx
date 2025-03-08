@@ -29,6 +29,7 @@ const items = [
     details: "Speak directly with our team for immediate assistance",
   },
 ];
+
 export default function Support() {
   return (
     <section className="flex flex-col gap-6">

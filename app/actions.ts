@@ -421,7 +421,7 @@ export const getMessages = async (conversationId: string) => {
 // Insert Message
 
 // CONVERSATIONS
-export const getUserConversationsWithParticipants = async (userId: string) => {
+export const getUserConversationsWithParticipants = async () => {
   const supabase = await createClient();
 
   try {
@@ -438,7 +438,7 @@ export const getUserConversationsWithParticipants = async (userId: string) => {
     console.log(user.id);
 
     const { data: conversations, error } = await supabase
-      .rpc("get_conversations_for_user", { pid: userId })
+      .rpc("get_conversations_for_user", { pid: user.id })
       .is("deleted_at", null);
 
     console.log(conversations);

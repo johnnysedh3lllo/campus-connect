@@ -21,7 +21,7 @@ export default async function MessagesBodyPage({
     throw new Error("User not found");
   }
 
-  const getParticipantsByConversationId = getParticipants.bind(null, id);
+  const getParticipantsByConversationId = getParticipants.bind(null, id, user.id);
 
   const getMessagesByConversationId = getMessages.bind(null, id);
   const ssrMessages = await getMessagesByConversationId();
