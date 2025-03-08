@@ -105,11 +105,9 @@ export async function resendSignUpOtp(userEmail: string) {
   const supabase = await createClient();
 
   try {
-    console.log("before request");
     const { error } = await supabase.auth.signInWithOtp({
       email: userEmail,
     });
-    console.log("after request");
 
     if (error) {
       throw error;
@@ -435,13 +433,9 @@ export const getUserConversationsWithParticipants = async () => {
       throw new Error("User not authenticated");
     }
 
-    console.log(user.id);
-
     const { data: conversations, error } = await supabase
       .rpc("get_conversations_for_user", { pid: user.id })
       .is("deleted_at", null);
-
-    console.log(conversations);
 
     if (error) {
       console.error("Error fetching conversations:", error);

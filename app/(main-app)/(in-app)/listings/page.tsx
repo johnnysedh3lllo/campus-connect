@@ -15,12 +15,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  // const searchParams = useSearchParams();
-
-  // console.log(await params);
-
-  // console.log(searchParams.get("welcome"));
-
   const supabase = await createClient();
   const {
     data: { user },
@@ -42,8 +36,6 @@ export default async function Page() {
   //     ? await supabase.from("properties").select("*").eq("landlord_id", user.id)
   //     : await supabase.from("properties").select("*");
 
-  // console.log("from the roles table:", roles);
-  // console.log("users table:", profile);
 
   return (
     <>
@@ -54,7 +46,7 @@ export default async function Page() {
         buttonIcon={<PlusIcon />}
         showButton={true}
       />
-      <div className="flex pt-4 items-center justify-center px-4">
+      <div className="flex items-center justify-center px-4 pt-4">
         <EmptyPageState
           imageSrc={listingIllustration}
           title="You have no listings yet"

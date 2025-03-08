@@ -80,12 +80,9 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       const result = await signUpWithOtp(userInfo);
 
       if (result && result?.success) {
-        console.log(result);
-
         updateFields({ emailAddress: result.userEmail });
         nextStep();
       } else {
-        console.log(result);
         throw new Error(result?.error?.message || "An error occurred");
       }
     } catch (error) {
@@ -105,7 +102,6 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       const result = await verifyOtp(formData.emailAddress, values.otp);
 
       if (result.success) {
-        console.log(result.data);
         nextStep();
       } else {
         throw result.error;

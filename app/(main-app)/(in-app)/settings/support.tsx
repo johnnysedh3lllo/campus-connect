@@ -13,11 +13,11 @@ const items = [
     title: "FAQs",
     details: "Find quick answers to the most common questions.",
   },
-  {
-    image: <ChatIconFill />,
-    title: "Live chat",
-    details: "Get an immediate support by starting a chat",
-  },
+  // {
+  //   image: <ChatIconFill />,
+  //   title: "Live chat",
+  //   details: "Get an immediate support by starting a chat",
+  // },
   {
     image: <EmailIconFill />,
     title: "Email us",
