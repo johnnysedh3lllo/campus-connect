@@ -27,6 +27,7 @@ import { PasswordInput } from "@/components/app/password-input";
 // ASSETS
 import { Loader2 } from "lucide-react";
 
+//
 export default function Security() {
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm<ChangePasswordFormType>({

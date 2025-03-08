@@ -29,7 +29,7 @@ const items = [
     details: "Speak directly with our team for immediate assistance",
   },
 ];
-const Support = () => {
+export default function Support() {
   return (
     <section className="flex flex-col gap-6">
       <h2 className="text-text-primary text-base leading-6 font-semibold">
@@ -44,7 +44,7 @@ const Support = () => {
           >
             {item.image}
 
-            <CardContent className=" p-0 flex flex-col gap-1">
+            <CardContent className="flex flex-col gap-1 p-0">
               <h3 className="text-text-primary text-base leading-6 font-semibold">
                 {item.title}
               </h3>
@@ -57,6 +57,4 @@ const Support = () => {
       </section>
     </section>
   );
-};
-
-export default Support;
+}
