@@ -8,7 +8,16 @@ export default async function MessagesPage() {
   return (
     <div className="flex w-full flex-2 items-center justify-center rounded-sm">
       {userConversations && userConversations.length > 0 ? (
-        <p className="italic">Select a conversation to display</p>
+        <section className="flex max-w-md flex-col text-center">
+          <h2 className="text-text-primary text-4xl leading-11 font-semibold">
+            Messages will Appear Here
+          </h2>
+
+          <p className="text-text-secondary text-sm leading-6">
+            Send and receive message from tenants who are making enquiries about
+            your properties here
+          </p>
+        </section>
       ) : (
         <EmptyPageState
           imageSrc={messageIllustration}
