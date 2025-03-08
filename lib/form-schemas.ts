@@ -49,7 +49,7 @@ export const signUpFormSchema = userValidationSchema.pick({
   emailAddress: true,
   roleId: true,
   newsletter: true,
-  });
+});
 
 export type SignUpFormType = z.infer<typeof signUpFormSchema>;
 
@@ -142,3 +142,12 @@ export const changePasswordSchema = userValidationSchema
     message: "New password must be different from current password",
     path: ["password"],
   });
+
+export type ChangePasswordFormType = z.infer<typeof changePasswordSchema>;
+
+export const settingsFormSchema = z.object({
+  emailNotification: z.boolean().default(false).optional(),
+  smsNotification: z.boolean(),
+});
+
+export type SettingsFormType = z.infer<typeof settingsFormSchema>;

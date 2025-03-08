@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false);
+  // Gets the current media query media query match on initial
+  const [matches, setMatches] = useState(
+    () => window.matchMedia(query).matches,
+  );
 
   useEffect(() => {
     const media = window.matchMedia(query);
-
-    console.log(media)
 
     // Set initial value
     if (media.matches !== matches) {

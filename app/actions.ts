@@ -147,7 +147,7 @@ export async function createPassword(formData: SetPasswordFormType) {
   }
 }
 
-export async function Login(formData: LoginFormType) {
+export async function login(formData: LoginFormType) {
   const supabase = await createClient();
 
   try {

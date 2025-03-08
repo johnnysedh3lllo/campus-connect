@@ -5,6 +5,7 @@ import { PhoneIconFill } from "@/public/icons/phone-icon-fill";
 import { EmailIconFill } from "@/public/icons/email-icon-fill";
 import { ChatIconFill } from "@/public/icons/chat-icon-fill";
 import { InfoCircleIconFill } from "@/public/icons/info-circle-icon-fill";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 const items = [
   {
@@ -30,20 +31,28 @@ const items = [
 ];
 const Support = () => {
   return (
-    <section className="space-y-4">
-      <h2 className="font-semibold">Help Center</h2>
+    <section className="flex flex-col gap-6">
+      <h2 className="text-text-primary text-base leading-6 font-semibold">
+        Help Center
+      </h2>
+
       <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {items.map((item) => (
-          <div
+          <Card
             key={item.title}
-            className="flex flex-col gap-2 rounded-md border p-4"
+            className="border-border flex flex-col gap-2 rounded-md border p-4"
           >
             {item.image}
-            <h3 className="leading-10 font-semibold sm:leading-11">
-              {item.title}
-            </h3>
-            <span className="text-gray-900">{item.details}</span>
-          </div>
+
+            <CardContent className=" p-0 flex flex-col gap-1">
+              <h3 className="text-text-primary text-base leading-6 font-semibold">
+                {item.title}
+              </h3>
+              <p className="text-text-secondary text-sm leading-6 font-medium">
+                {item.details}
+              </p>
+            </CardContent>
+          </Card>
         ))}
       </section>
     </section>

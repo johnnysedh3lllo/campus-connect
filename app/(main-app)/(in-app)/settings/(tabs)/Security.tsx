@@ -4,8 +4,11 @@
 import { useState } from "react";
 import type { z } from "zod";
 import { useForm } from "react-hook-form";
-import { resetPasswordAction } from "@/app/actions";
-import { changePasswordSchema } from "@/lib/form-schemas";
+import { createPassword } from "@/app/actions";
+import {
+  ChangePasswordFormType,
+  changePasswordSchema,
+} from "@/lib/form-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 
@@ -26,7 +29,7 @@ import { Loader2 } from "lucide-react";
 
 export default function Security() {
   const [isLoading, setIsLoading] = useState(false);
-  const form = useForm<z.infer<typeof changePasswordSchema>>({
+  const form = useForm<ChangePasswordFormType>({
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
       currentPassword: "",
@@ -36,10 +39,10 @@ export default function Security() {
   });
 
   // Custom submit handler to manage loading state
-  const onSubmit = async (data: z.infer<typeof changePasswordSchema>) => {
+  const onSubmit = async (values: ChangePasswordFormType) => {
     setIsLoading(true);
     try {
-      const result = await resetPasswordAction(data);
+      const result = await createPassword(values);
       console.log(result, "Result");
       if (result?.success) {
         toast({
@@ -156,10 +159,10 @@ export default function Security() {
               <Button
                 disabled={isLoading || !isValid}
                 type="submit"
-                className="w-1/2 cursor-pointer p-6 text-center text-base leading-6 font-semibold transition-all duration-500"
+                className="w-fit cursor-pointer p-6 text-center text-base leading-6 font-semibold transition-all duration-500"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save Changes
+                {isLoading ? "Saving changes..." : "Save changes"}
               </Button>
             </div>
           </form>

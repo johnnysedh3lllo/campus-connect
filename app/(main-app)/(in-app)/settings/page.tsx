@@ -3,18 +3,18 @@
 // UTILITIES
 import { useState, useEffect } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { ChevronRight, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // COMPONENTS
-import Notifications from "./(tabs)/Notifications";
-import Security from "./(tabs)/Security";
-import Support from "./(tabs)/Support";
+import Notifications from "@/app/(main-app)/(in-app)/settings/(tabs)/notifications";
+import Security from "@/app/(main-app)/(in-app)/settings/(tabs)/security";
+import Support from "@/app/(main-app)/(in-app)/settings/(tabs)/support";
 
 // ASSETS
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { Button } from "@/components/ui/button";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
+import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
 
 type Tab = {
   id: number;
@@ -34,11 +34,13 @@ export default function Page() {
 
   useEffect(() => {
     setIsMobile(mobile);
-    if (!mobile && selectedTab === null) setSelectedTab(tabs[0]);
-  }, [selectedTab, mobile]);
+    if (!mobile) {
+      setSelectedTab(tabs[0]);
+    }
+  }, [mobile]);
 
   return (
-    <section className="relative mx-auto grid min-h-screen w-[90%] gap-6 grid-rows-[0.5fr_auto_7fr] overflow-hidden sm:grid-rows-[auto_auto_1fr]">
+    <section className="relative flex min-h-screen flex-col gap-6 overflow-hidden px-4 py-6 sm:p-12">
       <section className="flex flex-col gap-6">
         <section
           className={`flex w-full items-center ${isMobile && !selectedTab ? "justify-between" : ""} gap-4 sm:justify-between`}
@@ -67,17 +69,18 @@ export default function Page() {
         </section>
 
         {/* Desktop Tabs Header */}
-        <div className="hidden border-b sm:flex">
+        <div className="hidden border-b sm:flex sm:gap-16">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setSelectedTab(tab)}
-              className={`relative px-6 py-3 font-medium focus:outline-none ${selectedTab?.id === tab.id ? "text-primary" : "text-black hover:text-gray-950"}`}
+              className={`relative py-3 font-medium focus:outline-none ${selectedTab?.id === tab.id ? "text-text-primary" : "text-black hover:text-gray-950"}`}
             >
               {tab.title}
-              {selectedTab?.id === tab.id && (
-                <div className="bg-primary absolute bottom-0 left-0 h-0.5 w-full"></div>
-              )}
+
+              <div
+                className={`bg-primary absolute bottom-0 left-1/2 h-0.5 w-3/4 ${selectedTab?.id === tab.id ? "opacity-100" : "opacity-0"} -translate-x-1/2 rounded-xs transition-all duration-300`}
+              ></div>
             </button>
           ))}
         </div>
@@ -108,10 +111,9 @@ export default function Page() {
               <div
                 key={tab.id}
                 onClick={() => setSelectedTab(tab)}
-                className="flex w-full cursor-pointer items-center justify-between border-b py-4"
+                className="text-text-primary border-border flex w-full cursor-pointer items-center justify-between border-b py-4 text-sm leading-6"
               >
-                {tab.title}{" "}
-                <ChevronRight className="text-[#101010]" strokeWidth={0.5} />
+                {tab.title} <ChevronRightIcon />
               </div>
             ))}
           </motion.section>
