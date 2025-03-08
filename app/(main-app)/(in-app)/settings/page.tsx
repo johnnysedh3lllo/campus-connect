@@ -6,9 +6,9 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { motion, AnimatePresence } from "framer-motion";
 
 // COMPONENTS
-import Notifications from "@/app/(main-app)/(in-app)/settings/(tabs)/notifications";
-import Security from "@/app/(main-app)/(in-app)/settings/(tabs)/security";
-import Support from "@/app/(main-app)/(in-app)/settings/(tabs)/support";
+import Notifications from "./notifications";
+import Security from "./security";
+import Support from "./support";
 
 // ASSETS
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
