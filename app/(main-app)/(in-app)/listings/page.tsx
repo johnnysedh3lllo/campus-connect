@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  
   // const searchParams = useSearchParams();
 
   // console.log(await params);

@@ -125,6 +125,8 @@
   --color-destructive-foreground: var(--destructive-foreground);
 
   --color-border: var(--border);
+  --color-border-primary: var(--border-primary);
+
   --color-line: var(--line);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -152,6 +154,7 @@
 
   /* BOX SHADOW */
   --shadow-lg-1: 0px 10px 15px 0px hsla(0, 0%, 0%, 0.05);
+  --shadow-lg-2: 0px 1.33333px 5.33333px hsla(0, 0%, 0%, 0.12);
 
   /* SPACING */
   --spacing-0.6: 0.6px --spacing-30: 7.5rem;
@@ -194,6 +197,8 @@
 
   /* for accent and destructive */
   --border: var(--color-gray-600);
+  --border-primary: var(--color-red-500);
+
   --input: var(--color-gray-600);
   --line: var(--color-gray-600);
   --ring: var(--color-gray-950);
