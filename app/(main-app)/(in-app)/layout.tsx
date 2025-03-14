@@ -2,6 +2,11 @@
 import { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { UserResponse } from "@supabase/supabase-js";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
 // Assets
 import { figtree } from "@/lib/fonts";
@@ -11,10 +16,10 @@ import "@/app/global.css";
 // Components
 import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
 import Navigation from "@/components/app/navigation";
-import React, { Suspense } from "react";
 
 // Setup
 import TanstackQueryProvider from "@/lib/tanstack-query-provider";
+import { getUser } from "@/app/actions";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -34,20 +39,25 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
+  const queryClient = new QueryClient();
 
-  const {
-    data: { user },
-  }: UserResponse = await supabase.auth.getUser();
+  await queryClient.prefetchQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+  });
 
   return (
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
       <body className="bg-background text-text-primary flex h-screen flex-col font-serif">
         <ThemeProviderWrapper>
-          <Navigation user={user} />
-          <main className="relative flex-1 overflow-y-auto">
-            <TanstackQueryProvider>{children}</TanstackQueryProvider>
-          </main>
+          <TanstackQueryProvider>
+            <HydrationBoundary state={dehydrate(queryClient)}>
+              <Navigation />
+              <main className="relative flex-1 overflow-y-auto">
+                {children}
+              </main>
+            </HydrationBoundary>
+          </TanstackQueryProvider>
         </ThemeProviderWrapper>
       </body>
     </html>

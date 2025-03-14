@@ -3,7 +3,7 @@
 // UTILITIES
 import { User, UserMetadata } from "@supabase/supabase-js";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { use, useState } from "react";
 import { navLinks } from "@/lib/data-storage";
 import { NavigationProps } from "@/lib/component-prop-types";
 
@@ -21,7 +21,12 @@ import notificationIcon from "@/public/icons/icon-notifications.svg";
 import hamburgerIcon from "@/public/icons/icon-hamburger.svg";
 import creditChip from "@/public/icons/icon-credit-chip.svg";
 
-export default function Navigation({ user }: NavigationProps) {
+//
+import { useUser } from "@/hooks/useUser";
+
+export default function Navigation() {
+  const { data: user } = useUser();
+
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [clicked, setIsClicked] = useState(false);
 

@@ -2,7 +2,7 @@ import { User, UserMetadata } from "@supabase/supabase-js";
 import { Dispatch, SetStateAction } from "react";
 
 export interface NavigationProps {
-  user: User | null;
+  user: User | null | undefined;
 }
 
 export interface MobileNavProps extends NavigationProps {
