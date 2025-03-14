@@ -21,7 +21,7 @@ export function MessageListItem({ id, participants }: MessageListItemProps) {
         <AvatarFallback>{participant?.first_name?.[0]}</AvatarFallback>
       </Avatar>
 
-      <div className="flex w-full justify-between">
+      <div className="flex w-full gap-6 justify-between">
         <section className="flex flex-col justify-between gap-2">
           <h2 className="text-text-primary text-base leading-6 font-semibold whitespace-nowrap lg:text-2xl lg:leading-8">
             {participants && participants.length > 0

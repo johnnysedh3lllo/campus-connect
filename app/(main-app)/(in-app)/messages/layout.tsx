@@ -25,7 +25,7 @@ export default async function MessagesLayout({
   });
 
   return (
-    <div className="relative grid h-full  lg:grid-cols-[35%_1fr]">
+    <div className="relative grid h-full lg:grid-cols-[auto_1fr]">
       <HydrationBoundary state={dehydrate(queryClient)}>
         <MessageSideBar />
       </HydrationBoundary>

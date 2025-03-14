@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 
 export function useMediaQuery(query: string): boolean {
   // Gets the current media query media query match on initial
-  const [matches, setMatches] = useState(
-    () => window.matchMedia(query).matches,
-  );
+
+  // TODO: find a way to get the current media query match while avoiding the
+  // pre-render/hydration issue
+
+  const [matches, setMatches] = useState(false);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const media = window.matchMedia(query);
 
     // Set initial value
