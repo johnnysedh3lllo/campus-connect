@@ -49,7 +49,7 @@ export const signUpFormSchema = userValidationSchema.pick({
   emailAddress: true,
   roleId: true,
   newsletter: true,
-  });
+});
 
 export type SignUpFormType = z.infer<typeof signUpFormSchema>;
 
@@ -86,6 +86,25 @@ export const setPasswordFormSchema = userValidationSchema
   );
 export type SetPasswordFormType = z.infer<typeof setPasswordFormSchema>;
 
+export const resetPasswordEmailSchema = userValidationSchema.pick({
+  emailAddress: true,
+});
+
+export const createPasswordSchema = userValidationSchema
+  .pick({
+    password: true,
+    confirmPassword: true,
+  })
+  .refine(
+    (data) =>
+      !data.password ||
+      !data.confirmPassword ||
+      data.password === data.confirmPassword,
+    {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    },
+  );
 // LOGIN FORM
 export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
@@ -97,3 +116,38 @@ export const resetPasswordFormSchema = userValidationSchema.pick({
   emailAddress: true,
 });
 export type ResetPasswordFormType = z.infer<typeof resetPasswordFormSchema>;
+
+export const changePasswordSchema = userValidationSchema
+  .pick({
+    password: true,
+    confirmPassword: true,
+  })
+  .extend({
+    currentPassword: z
+      .string()
+      .min(8, "Current password must be at least 8 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        {
+          message:
+            "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+        },
+      ),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  })
+  .refine((data) => data.currentPassword !== data.password, {
+    message: "New password must be different from current password",
+    path: ["password"],
+  });
+
+export type ChangePasswordFormType = z.infer<typeof changePasswordSchema>;
+
+export const settingsFormSchema = z.object({
+  emailNotification: z.boolean().default(false).optional(),
+  smsNotification: z.boolean(),
+});
+
+export type SettingsFormType = z.infer<typeof settingsFormSchema>;

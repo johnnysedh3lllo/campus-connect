@@ -7,8 +7,8 @@ import type { UserMetadata } from "@supabase/supabase-js";
 
 import Link from "next/link";
 
-import settingsIcon from "@/public/icons/icon-settings.svg";
-import logOutIcon from "@/public/icons/icon-log-out.svg";
+import { SettingsIcon } from "@/public/icons/settings-icon";
+
 import iconDown from "@/public/icons/icon-arrow-down.svg";
 import { UserPill } from "./user-pill";
 import type { UserMenuBarProps } from "@/lib/component-prop-types";
@@ -44,12 +44,7 @@ export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
                 href="/settings"
                 className="flex w-full items-center gap-2 p-2"
               >
-                <Image
-                  src={settingsIcon || "/placeholder.svg"}
-                  width={24}
-                  height={24}
-                  alt="settings icon"
-                />
+                <SettingsIcon />
                 <span className="text-sm leading-6">Settings</span>
               </Link>
             </DropdownMenuItem>

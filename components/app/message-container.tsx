@@ -36,7 +36,6 @@ const MessageContainer = ({
 
     // attempted using a map for quick lookup since Maps are O(1) and Arrays are big 0(n)
     // const messagesMap = new Map(messages.map((msg) => [msg.message_uuid, msg]));
-    // console.log(messagesMap.get("cc061f2a-bc31-4837-96b6-9e997bf53e1b"));
 
     const channel = supabase
       .channel(channelName)
@@ -50,7 +49,6 @@ const MessageContainer = ({
         },
         (payload) => {
           const newMessage = payload.new as Message;
-          // console.log(newMessage);
 
           setMessages((prevMessages) => {
             const optimisticIndex = prevMessages.findIndex(
@@ -98,7 +96,6 @@ const MessageContainer = ({
               return msg;
             });
 
-            // console.log("edited messages", updatedMessages);
             return updatedMessages;
           });
         },
@@ -119,9 +116,6 @@ const MessageContainer = ({
 
             setMessages(newMessages);
           }
-
-          // console.log(payload);
-          // console.log(newMessage);
         },
       )
       .subscribe();

@@ -13,7 +13,7 @@ export function MessagesListItem({ id, participants }: MessagesListItemProps) {
   return (
     <Link
       href={`/messages/${id}`}
-      className="hover:bg-background-secondary transition-all duration-300 flex items-center gap-3 rounded-sm px-3 py-4"
+      className="hover:bg-background-secondary flex items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300"
       key={id}
     >
       <Avatar className="size-10">
@@ -23,7 +23,7 @@ export function MessagesListItem({ id, participants }: MessagesListItemProps) {
 
       <div className="flex w-full justify-between">
         <section className="flex flex-col justify-between gap-2">
-          <h2 className="text-text-primary text-base leading-6 font-semibold whitespace-nowrap">
+          <h2 className="text-text-primary text-base leading-6 font-semibold whitespace-nowrap lg:text-2xl lg:leading-8">
             {participants && participants.length > 0
               ? `${participant?.first_name} ${participant?.last_name}`
               : ""}

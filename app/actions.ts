@@ -105,11 +105,9 @@ export async function resendSignUpOtp(userEmail: string) {
   const supabase = await createClient();
 
   try {
-    console.log("before request");
     const { error } = await supabase.auth.signInWithOtp({
       email: userEmail,
     });
-    console.log("after request");
 
     if (error) {
       throw error;
@@ -147,7 +145,7 @@ export async function createPassword(formData: SetPasswordFormType) {
   }
 }
 
-export async function Login(formData: LoginFormType) {
+export async function login(formData: LoginFormType) {
   const supabase = await createClient();
 
   try {
@@ -435,13 +433,9 @@ export const getUserConversationsWithParticipants = async () => {
       throw new Error("User not authenticated");
     }
 
-    console.log(user.id);
-
     const { data: conversations, error } = await supabase
       .rpc("get_conversations_for_user", { pid: user.id })
       .is("deleted_at", null);
-
-    console.log(conversations);
 
     if (error) {
       console.error("Error fetching conversations:", error);
@@ -457,24 +451,18 @@ export const getUserConversationsWithParticipants = async () => {
 };
 
 // PARTICIPANTS
-export const getParticipants = async (conversationId: string) => {
+export const getParticipants = async (
+  conversationId: string,
+  userId: string,
+) => {
   const supabase = await createClient();
 
   try {
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
-
-    if (userError || !user) {
-      throw new Error("User not authenticated");
-    }
-
     const { data: participants, error } = await supabase
       .from("conversation_participants")
       .select("*, users(first_name, last_name, email)")
       .eq("conversation_id", conversationId)
-      .neq("user_id", user.id);
+      .neq("user_id", userId);
 
     if (error) {
       console.error("Error fetching participants:", error);

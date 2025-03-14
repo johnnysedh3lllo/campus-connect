@@ -14,14 +14,11 @@ export default async function MessagesBodyPage({
 }) {
   const { id } = await params;
   const user = await getUser();
-
-  // console.log(user)
-
   if (!user) {
     throw new Error("User not found");
   }
 
-  const getParticipantsByConversationId = getParticipants.bind(null, id);
+  const getParticipantsByConversationId = getParticipants.bind(null, id, user.id);
 
   const getMessagesByConversationId = getMessages.bind(null, id);
   const ssrMessages = await getMessagesByConversationId();
