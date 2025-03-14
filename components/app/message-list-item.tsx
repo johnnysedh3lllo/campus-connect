@@ -1,23 +1,23 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-type MessagesListItemProps = {
+type MessageListItemProps = {
   id: string;
   participants: Participant[] | undefined;
 };
 
-export function MessagesListItem({ id, participants }: MessagesListItemProps) {
+export function MessageListItem({ id, participants }: MessageListItemProps) {
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
 
   return (
     <Link
       href={`/messages/${id}`}
-      className="hover:bg-background-secondary flex items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300"
+      className="hover:bg-background-secondary grid grid-cols-[auto_1fr] items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300"
       key={id}
     >
       <Avatar className="size-10">
-        <AvatarImage src="" alt="avatar" />
+        {/* <AvatarImage src="" alt="avatar" /> */}
         <AvatarFallback>{participant?.first_name?.[0]}</AvatarFallback>
       </Avatar>
 
@@ -28,7 +28,7 @@ export function MessagesListItem({ id, participants }: MessagesListItemProps) {
               ? `${participant?.first_name} ${participant?.last_name}`
               : ""}
           </h2>
-          <p className="text-text-secondary max-w-[15ch] truncate text-sm leading-6 sm:line-clamp-2 lg:line-clamp-3">
+          <p className="text-text-secondary max-w-[15ch] truncate text-sm leading-6 sm:line-clamp-2 sm:max-w-full lg:line-clamp-3">
             supposed last message
           </p>
         </section>

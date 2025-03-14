@@ -1,6 +1,7 @@
 import { getUserConversationsWithParticipants } from "@/app/actions";
 import { EmptyPageState } from "@/components/app/empty-page-state";
 import messageIllustration from "@/public/illustrations/illustration-messages.svg";
+import { QueryClient } from "@tanstack/react-query";
 
 export default async function MessagesPage() {
   const userConversations = await getUserConversationsWithParticipants();
