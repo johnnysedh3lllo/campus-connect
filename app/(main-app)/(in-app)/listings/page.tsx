@@ -46,7 +46,7 @@ export default async function Page() {
         buttonIcon={<PlusIcon />}
         showButton={true}
       />
-      <div className="flex items-center justify-center px-4 pt-4">
+      <div className="flex items-center justify-center px-4 pt-4 pb-8">
         <EmptyPageState
           imageSrc={listingIllustration}
           title="You have no listings yet"

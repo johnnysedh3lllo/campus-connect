@@ -9,6 +9,10 @@ export function useMediaQuery(query: string): boolean {
   // pre-render/hydration issue
 
   const [matches, setMatches] = useState(false);
+  
+  //  const [matches, setMatches] = useState(
+  //    () => window.matchMedia(query).matches,
+  //  );
 
   useEffect(() => {
     if (typeof window === "undefined") return;

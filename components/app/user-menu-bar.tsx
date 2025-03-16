@@ -42,9 +42,9 @@ export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
             <DropdownMenuItem asChild>
               <Link
                 href="/settings"
-                className="flex w-full items-center gap-2 p-2"
+                className="flex w-full cursor-pointer items-center gap-2 p-2"
               >
-                <SettingsIcon />
+                <SettingsIcon className="size-6" />
                 <span className="text-sm leading-6">Settings</span>
               </Link>
             </DropdownMenuItem>
@@ -52,10 +52,10 @@ export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
             <DropdownMenuItem asChild>
               <form className="w-full" action={signOut}>
                 <button
-                  className="flex w-full items-center gap-2 p-2"
+                  className="flex w-full cursor-pointer items-center gap-2 p-2"
                   type="submit"
                 >
-                  <LogOut />
+                  <LogOut className="size-6" />
                   <span className="text-sm leading-6">Log Out</span>
                 </button>
               </form>

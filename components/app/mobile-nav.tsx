@@ -27,6 +27,7 @@ import { navLinksMobile } from "@/lib/data-storage";
 import Link from "next/link";
 import { ListingIcon } from "@/public/icons/listing-icon";
 import { LogOut } from "@/public/icons/log-out-icon";
+import { CreditDisplayCard } from "./credit-display-card";
 
 export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
   const pathName = usePathname();
@@ -103,27 +104,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
             </ul>
           </div>
 
-          <div className="border-border flex flex-col gap-6 rounded-md border-1 p-4">
-            <div className="flex items-start gap-3">
-              <Image
-                className="h-11 w-11"
-                width={24}
-                height={24}
-                alt="credit chip"
-                src={creditChip}
-              />
-              <section className="flex flex-col gap-2">
-                <h2 className="text-2xl leading-8 font-semibold">
-                  Credits: 800
-                </h2>
-
-                <p className="text-sm leading-6">
-                  Get credits to boost listings and connect with tenants!
-                </p>
-              </section>
-            </div>
-            <Button className="w-full p-6 text-base">Buy Credits</Button>
-          </div>
+          <CreditDisplayCard />
         </div>
       </SheetContent>
     </Sheet>
