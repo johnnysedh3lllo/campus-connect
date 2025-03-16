@@ -68,7 +68,7 @@ export default async function ProfilePage() {
                 <div className="flex items-center gap-2">
                   <PhoneIconStroke />
                   <Button
-                    variant={""}
+                    variant={"link"}
                     className="p-0 text-sm leading-6 font-normal underline hover:bg-transparent hover:no-underline"
                   >
                     Add Phone Number
