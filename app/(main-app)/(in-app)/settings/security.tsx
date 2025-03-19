@@ -4,7 +4,7 @@
 import { useState } from "react";
 import type { z } from "zod";
 import { useForm } from "react-hook-form";
-import { createPassword } from "@/app/actions";
+import { createPassword } from "@/app/actions/actions";
 import {
   ChangePasswordFormType,
   changePasswordSchema,

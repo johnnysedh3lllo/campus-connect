@@ -1,9 +1,7 @@
 "use client";
 
-import { signOut } from "@/app/actions";
+import { getUserProfile, signOut } from "@/app/actions/actions";
 import Image from "next/image";
-
-import type { UserMetadata } from "@supabase/supabase-js";
 
 import Link from "next/link";
 
@@ -19,16 +17,30 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { LogOut } from "@/public/icons/log-out-icon";
+import { useQuery } from "@tanstack/react-query";
 
 export function UserMenuBar({ user, isOpen, onClose }: UserMenuBarProps) {
-  const userMetaData = user?.user_metadata as UserMetadata;
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile", user?.id],
+    queryFn: () => getUserProfile(user?.id!),
+    enabled: !!user?.id,
+    staleTime: 1000 * 60 * 5, // cache data for 5 minutes
+  });
+
+  const firstName: string | null | undefined = userProfile?.first_name;
+  const lastName: string | null | undefined = userProfile?.last_name;
+  const avatarUrl = userProfile?.avatar_url;
 
   if (user) {
     return (
       <div className="hidden p-0 focus-visible:outline-0 lg:flex lg:items-center lg:gap-2">
         <DropdownMenu onOpenChange={(open) => onClose(!open)}>
           <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none">
-            <UserPill userMetaData={userMetaData} />
+            <UserPill
+              firstName={firstName}
+              lastName={lastName}
+              avatarUrl={avatarUrl}
+            />
             <Image
               className={`${isOpen ? "" : "-rotate-180"} transition-all duration-150`}
               src={iconDown || "/placeholder.svg"}

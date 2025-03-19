@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getUserConversationsWithParticipants } from "@/app/actions";
+import { getUserConversationsWithParticipants } from "@/app/actions/actions";
 
 export const useConversations = () => {
   const [conversations, setConversations] = useState<Conversations[]>([]);

@@ -59,13 +59,7 @@ export default function Page() {
             {isMobile && selectedTab ? selectedTab.title : "Settings"}
           </h1>
 
-          {isMobile && selectedTab ? (
-            <></>
-          ) : (
-            <div>
-              <CloseIconNoBorders />
-            </div>
-          )}
+    
         </section>
 
         {/* Desktop Tabs Header */}
@@ -74,7 +68,7 @@ export default function Page() {
             <button
               key={tab.id}
               onClick={() => setSelectedTab(tab)}
-              className={`relative py-3 font-medium focus:outline-none ${selectedTab?.id === tab.id ? "text-text-primary" : "text-black hover:text-gray-950"}`}
+              className={`relative py-3 font-medium cursor-pointer focus:outline-none ${selectedTab?.id === tab.id ? "text-text-primary" : "text-black hover:text-gray-950"}`}
             >
               {tab.title}
 

@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import { UserMetadata } from "@supabase/supabase-js";
 import { UserPill } from "./user-pill";
 import { Separator } from "../ui/separator";
 
@@ -22,7 +21,7 @@ import creditChip from "@/public/icons/icon-credit-chip.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 import { usePathname } from "next/navigation";
-import { signOut } from "@/app/actions";
+import { signOut } from "@/app/actions/actions";
 import { navLinksMobile } from "@/lib/data-storage";
 import Link from "next/link";
 import { ListingIcon } from "@/public/icons/listing-icon";
@@ -64,7 +63,7 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
 
         <div className="flex h-full flex-col justify-between gap-6">
           <div className="flex h-full flex-col justify-between gap-6">
-            <UserPill userMetaData={user?.user_metadata as UserMetadata} />
+            <UserPill userMetaData={user?.user_metadata} />
             <Separator />
 
             <ul className="flex h-full flex-col flex-wrap justify-between">

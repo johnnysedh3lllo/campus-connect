@@ -7,7 +7,11 @@ import { toast } from "@/hooks/use-toast";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { useEffect, useRef, useState } from "react";
 import { MultiStepFormData } from "@/lib/form-types";
-import { createPassword, signUpWithOtp, verifyOtp } from "@/app/actions";
+import {
+  createPassword,
+  signUpWithOtp,
+  verifyOtp,
+} from "@/app/actions/actions";
 import {
   OtpFormType,
   RoleFormType,

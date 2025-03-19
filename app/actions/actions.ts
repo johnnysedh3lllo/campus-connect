@@ -356,6 +356,29 @@ export const getUser = async () => {
     throw new Error("Could not get user");
   }
 };
+export const getUserProfile = async (userId: string | undefined) => {
+  const supabase = await createClient();
+
+  try {
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
+    const { data: userProfile, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("id", userId as string)
+      .single();
+    if (error) {
+      throw error;
+    }
+    return userProfile;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("Could not get user profile");
+  }
+};
 
 // Update User
 export const updateUser = async () => {
@@ -364,6 +387,58 @@ export const updateUser = async () => {
   //   data: {},
   // });
 };
+
+export async function updateProfilePicture(imageData: string, userId: string) {
+  const supabase = await createClient();
+  try {
+    const base64Data = imageData.split(",")[1];
+    const imageBuffer = Buffer.from(base64Data, "base64");
+
+    // const fileName = `${userId}.jpg`;
+    // const filePath = `${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from("avatars")
+      .upload(userId, imageBuffer, {
+        contentType: "image/jpeg",
+        upsert: true,
+      });
+
+    console.log("to avatar bucket:", data);
+
+    if (error) {
+      throw error;
+    }
+
+    // Get the public URL for the uploaded image
+    const { data: publicUrlData } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(userId);
+
+    console.log("public url data", publicUrlData);
+
+    // Update the user's profile in the database with the new avatar URL
+    const { data: updateData, error: updateError } = await supabase
+      .from("users")
+      .update({ avatar_url: publicUrlData.publicUrl })
+      .eq("id", userId);
+
+    console.log("updata data: ", updateData);
+
+    if (updateError) {
+      console.error("Error updating profile:", updateError);
+      throw updateError;
+    }
+
+    return { success: true, imageUrl: publicUrlData.publicUrl };
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    return {
+      success: false,
+      error: "Failed to upload image. Please try again.",
+    };
+  }
+}
 
 // PROPERTIES
 export const insertProperty = async (userId: string) => {

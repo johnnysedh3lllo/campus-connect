@@ -2,7 +2,7 @@
 
 // UTILITIES
 import { useState } from "react";
-import { login } from "@/app/actions";
+import { login } from "@/app/actions/actions";
 import { useRouter } from "next/navigation";
 import { LoginFormType, loginSchema } from "@/lib/form-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";

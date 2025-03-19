@@ -21,7 +21,7 @@ import {
   signUpFormSchema,
 } from "@/lib/form-schemas";
 import Link from "next/link";
-import { resendSignUpOtp, signOut } from "@/app/actions";
+import { resendSignUpOtp, signOut } from "@/app/actions/actions";
 
 // COMPONENTS
 import Image from "next/image";

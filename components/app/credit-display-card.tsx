@@ -1,5 +1,6 @@
 import { CreditChipIcon } from "@/public/icons/credit-chip-icon";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export function CreditDisplayCard() {
   return (
@@ -16,9 +17,11 @@ export function CreditDisplayCard() {
         </section>
       </div>
 
-      <Button className="h-full w-full px-6 py-3 text-base sm:w-fit">
-        Buy Credits
-      </Button>
+      <Link href="#">
+        <Button className="h-full w-full px-6 py-3 text-base sm:w-fit">
+          Buy Credits
+        </Button>
+      </Link>
     </div>
   );
 }

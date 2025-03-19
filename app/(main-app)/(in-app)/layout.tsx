@@ -19,7 +19,7 @@ import Navigation from "@/components/app/navigation";
 
 // Setup
 import TanstackQueryProvider from "@/lib/tanstack-query-provider";
-import { getUser } from "@/app/actions";
+import { getUser } from "@/app/actions/actions";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

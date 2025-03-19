@@ -1,11 +1,9 @@
 "use client";
 
 // UTILITIES
-import { User, UserMetadata } from "@supabase/supabase-js";
 import { usePathname } from "next/navigation";
-import { use, useState } from "react";
+import { useState } from "react";
 import { navLinks } from "@/lib/data-storage";
-import { NavigationProps } from "@/lib/component-prop-types";
 
 // COMPONENTS
 import Link from "next/link";
@@ -22,7 +20,7 @@ import hamburgerIcon from "@/public/icons/icon-hamburger.svg";
 import creditChip from "@/public/icons/icon-credit-chip.svg";
 
 //
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/use-user";
 
 export default function Navigation() {
   const { data: user } = useUser();
