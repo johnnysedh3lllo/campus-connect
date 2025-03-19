@@ -11,7 +11,7 @@ export default function PublicProfilePage() {
   const [isEmpty, setIsEmpty] = useState(false);
 
   return (
-    <div className="grid grid-cols-1 grid-rows-[auto_3fr] md:grid-cols-[auto_1fr] md:max-h-[90vh] overflow-hidden">
+    <div className="grid grid-cols-1 grid-rows-[auto_3fr] md:grid-cols-[auto_1fr] md:max-h-[calc(100vh-66px)] overflow-hidden">
       <aside className="flex flex-col items-center gap-4 p-4 w-full md:min-w-88 md:min-h-screen relative  border-b  md:border-b-0">
         <Image
           src="/illustrations/illustration-avatar.png"
