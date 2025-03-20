@@ -26,14 +26,15 @@ export const userRoles: UserRoles = {
 
 export const navLinks = [
   { href: "/listings", text: "Listings" },
-  { href: "/inquires", text: "Inquires" },
   { href: "/messages", text: "Messages" },
   { href: "/profile", text: "Profile" },
 ];
 
+// { href: "/inquires", text: "Inquires" },
+// { href: "/inquires", text: "Inquires", icon: InquiriesIcon },
+
 export const navLinksMobile = [
   { href: "/listings", text: "Listings", icon: ListingIcon },
-  { href: "/inquires", text: "Inquires", icon: InquiriesIcon },
   { href: "/messages", text: "Messages", icon: MessagesIcon },
   { href: "/profile", text: "Profile", icon: ProfileIcon },
   { href: "/settings", text: "Settings", icon: SettingsIcon },

@@ -204,7 +204,7 @@ export function ProfilePictureUpload({
               square.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-center overflow-hidden py-4">
+          <div className="flex justify-center overflow-hidden p-4">
             {selectedImage && (
               <ReactCrop
                 crop={crop}
@@ -217,7 +217,7 @@ export function ProfilePictureUpload({
                   src={selectedImage || "/placeholder.svg"}
                   alt="Crop preview"
                   onLoad={onImageLoad}
-                  className="max-h-[60vh] object-contain"
+                  className="max-h-[30vh] object-contain"
                 />
               </ReactCrop>
             )}
