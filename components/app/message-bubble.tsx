@@ -6,6 +6,7 @@ import { CircleX, SquarePen } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { User } from "@supabase/supabase-js";
 import { formatDate } from "@/lib/utils";
+import { MessageBubbleProps } from "@/lib/component-prop-types";
 
 
 
