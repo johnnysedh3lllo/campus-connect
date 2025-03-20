@@ -74,7 +74,7 @@ export function UserMenuBar({
     );
   } else {
     return (
-      <div className="flex gap-2">
+      <div className="hidden gap-2 lg:flex">
         <p>user not logged in</p>
       </div>
     );
