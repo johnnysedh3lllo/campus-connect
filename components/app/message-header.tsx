@@ -15,10 +15,7 @@ import {
 import { UserProfileCardMobile } from "./user-profile-card-mobile";
 import { useState } from "react";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-
-interface MessageHeaderProps {
-  chatParticipants: ConvoParticipant[] | undefined;
-}
+import { MessageHeaderProps } from "@/lib/component-prop-types";
 
 export default function MessageHeader({
   chatParticipants,
@@ -104,7 +101,11 @@ export default function MessageHeader({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <UserProfileCardMobile participants={chatParticipants} isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <UserProfileCardMobile
+        participants={chatParticipants}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </div>
   );
 }

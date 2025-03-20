@@ -1,20 +1,18 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { MessageListItemProps } from "@/lib/component-prop-types";
 
-type MessageListItemProps = {
-  id: string;
-  participants: Participant[] | undefined;
-};
 
-export function MessageListItem({ id, participants }: MessageListItemProps) {
+
+export function MessageListItem({ conversationId, participants }: MessageListItemProps) {
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
 
   return (
     <Link
-      href={`/messages/${id}`}
+      href={`/messages/${conversationId}`}
       className="hover:bg-background-secondary grid grid-cols-[auto_1fr] items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300"
-      key={id}
+      key={conversationId}
     >
       <Avatar className="size-10">
         {/* <AvatarImage src="" alt="avatar" /> */}

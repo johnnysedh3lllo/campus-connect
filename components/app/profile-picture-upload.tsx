@@ -19,20 +19,18 @@ import { Button } from "../ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { updateProfilePicture } from "@/app/actions/actions";
+import { ProfilePictureUploadProps } from "@/lib/component-prop-types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { revalidatePath } from "next/cache";
 
 export function ProfilePictureUpload({
   userId,
   initialAvatarUrl,
-}: {
-  userId: string;
-  initialAvatarUrl: string | null | undefined;
-}) {
+}: ProfilePictureUploadProps) {
   const [isCropOpen, setIsCropOpen] = useState<boolean>(false);
   const [originalImage, setOriginalImage] = useState<string | null>(
     initialAvatarUrl || null,
   );
-
-  console.log("initial avatar url", initialAvatarUrl);
 
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -46,6 +44,28 @@ export function ProfilePictureUpload({
     height: 100,
     x: 0,
     y: 0,
+  });
+
+  const queryClient = useQueryClient();
+  const updateProfilePictureMutation = useMutation({
+    mutationFn: async ({
+      base64Image,
+      userId,
+    }: {
+      base64Image: string;
+      userId: string;
+    }) => {
+      return await updateProfilePicture(base64Image, userId);
+    },
+    onSuccess: (_, variable) => {
+      queryClient.invalidateQueries({
+        queryKey: ["userProfile", variable.userId],
+      });
+      queryClient.refetchQueries({
+        queryKey: ["userProfile", variable.userId],
+      });
+      // revalidatePath("/profile")
+    },
   });
 
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -111,7 +131,11 @@ export function ProfilePictureUpload({
     setIsUploading(true);
 
     try {
-      const result = await updateProfilePicture(base64Image, userId);
+      const result = await updateProfilePictureMutation.mutateAsync({
+        base64Image,
+        userId,
+      });
+
       if (result?.success) {
         setCroppedImage(result.imageUrl ?? null);
         toast({
@@ -144,10 +168,7 @@ export function ProfilePictureUpload({
     <>
       <Label className="relative cursor-pointer" htmlFor="profile-image-upload">
         <Avatar className="items-center justify-center overflow-hidden rounded-full bg-gray-100 sm:size-22">
-          <AvatarImage
-            src={initialAvatarUrl || croppedImage || undefined}
-            alt="Profile picture"
-          />
+          <AvatarImage src={croppedImage || undefined} alt="Profile picture" />
           <AvatarFallback className="size-9 overflow-hidden bg-transparent sm:size-full">
             {isUploading ? (
               <Loader2 className="text-muted-foreground z-10 size-6 animate-spin" />

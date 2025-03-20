@@ -394,12 +394,12 @@ export async function updateProfilePicture(imageData: string, userId: string) {
     const base64Data = imageData.split(",")[1];
     const imageBuffer = Buffer.from(base64Data, "base64");
 
-    // const fileName = `${userId}.jpg`;
-    // const filePath = `${fileName}`;
+    const fileName = `${userId}-${Date.now()}.jpg`;
+    const filePath = `${fileName}`;
 
     const { data, error } = await supabase.storage
       .from("avatars")
-      .upload(userId, imageBuffer, {
+      .upload(filePath, imageBuffer, {
         contentType: "image/jpeg",
         upsert: true,
       });
@@ -413,17 +413,15 @@ export async function updateProfilePicture(imageData: string, userId: string) {
     // Get the public URL for the uploaded image
     const { data: publicUrlData } = supabase.storage
       .from("avatars")
-      .getPublicUrl(userId);
+      .getPublicUrl(filePath);
 
     console.log("public url data", publicUrlData);
 
     // Update the user's profile in the database with the new avatar URL
-    const { data: updateData, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from("users")
       .update({ avatar_url: publicUrlData.publicUrl })
       .eq("id", userId);
-
-    console.log("updata data: ", updateData);
 
     if (updateError) {
       console.error("Error updating profile:", updateError);

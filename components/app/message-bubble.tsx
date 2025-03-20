@@ -7,11 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { User } from "@supabase/supabase-js";
 import { formatDate } from "@/lib/utils";
 
-interface MessageBubbleProps {
-  user: User | null;
-  participants: ConvoParticipant[] | undefined;
-  message: Message;
-}
+
 
 export default function MessageBubble({
   user,

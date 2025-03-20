@@ -9,16 +9,13 @@ import {
 } from "../ui/sheet";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 import { UserProfileCard } from "./user-profile-card";
+import { UserProfileCardMobileProps } from "@/lib/component-prop-types";
 
 export function UserProfileCardMobile({
   isOpen,
   onClose,
   participants,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  participants: ConvoParticipant[] | undefined;
-}) {
+}: UserProfileCardMobileProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="h-full w-full p-6 pb-0 sm:w-1/2">

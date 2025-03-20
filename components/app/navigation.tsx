@@ -21,9 +21,11 @@ import creditChip from "@/public/icons/icon-credit-chip.svg";
 
 //
 import { useUser } from "@/hooks/use-user";
+import { useUserProfile } from "@/hooks/use-user-profile";
 
 export default function Navigation() {
   const { data: user } = useUser();
+  const { data: userProfile } = useUserProfile(user?.id);
 
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [clicked, setIsClicked] = useState(false);
@@ -109,11 +111,15 @@ export default function Navigation() {
           </Button>
 
           <Separator orientation="vertical" className="hidden h-4 lg:block" />
-          <UserMenuBar user={user} isOpen={clicked} onClose={setIsClicked} />
+          <UserMenuBar
+            userProfile={userProfile}
+            isOpen={clicked}
+            onClose={setIsClicked}
+          />
         </div>
       </div>
       <MobileNav
-        user={user}
+        userProfile={userProfile}
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
       />

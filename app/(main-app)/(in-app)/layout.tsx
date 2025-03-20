@@ -19,7 +19,7 @@ import Navigation from "@/components/app/navigation";
 
 // Setup
 import TanstackQueryProvider from "@/lib/tanstack-query-provider";
-import { getUser } from "@/app/actions/actions";
+import { getUser, getUserProfile } from "@/app/actions/actions";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -39,11 +39,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getUser();
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
     queryKey: ["user"],
     queryFn: getUser,
+  });
+
+  await queryClient.prefetchQuery({
+    queryKey: ["userProfile"],
+    queryFn: async () => await getUserProfile(user?.id),
   });
 
   return (

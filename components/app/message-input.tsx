@@ -6,15 +6,7 @@ import { SubmitButton } from "./submit-button";
 import { supabase } from "@/utils/supabase/client";
 import { SendHorizontalIcon } from "lucide-react";
 import { Button } from "../ui/button";
-
-interface MessageInputProps {
-  userId: string | undefined;
-  conversationId: string;
-  messageInputValue: string;
-  chatContainerRef: React.RefObject<HTMLDivElement>;
-  setMessageInputValue: (value: string) => void;
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-}
+import { MessageInputProps } from "@/lib/component-prop-types";
 
 export default function MessageInput({
   userId,
@@ -23,6 +15,7 @@ export default function MessageInput({
   setMessageInputValue,
   setMessages,
 }: MessageInputProps) {
+  
   const sendMessage = async (
     e: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {

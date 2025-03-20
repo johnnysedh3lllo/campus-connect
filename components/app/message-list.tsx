@@ -16,13 +16,13 @@ export function MessageList() {
       {userConversations && userConversations.length > 0 ? (
         <>
           {userConversations.map((conversation) => {
-            const { conversation_id: id, participants } =
+            const { conversation_id, participants } =
               conversation as Conversations;
 
             return (
               <MessageListItem
                 key={conversation.conversation_id}
-                id={id}
+                conversationId={conversation_id}
                 participants={participants}
               />
             );

@@ -4,18 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import MessageBubble from "./message-bubble";
 import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
-import { User } from "@supabase/supabase-js";
 import { supabase } from "@/utils/supabase/client";
 import { getMessageDateLabel } from "@/lib/utils";
-import { Separator } from "../ui/separator";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-
-interface MessageContainerProps {
-  conversationId: string;
-  ssrConversationMessages: Message[];
-  user: User | null;
-  participants: ConvoParticipant[] | undefined;
-}
+import { MessageContainerProps } from "@/lib/component-prop-types";
 
 const MessageContainer = ({
   conversationId,

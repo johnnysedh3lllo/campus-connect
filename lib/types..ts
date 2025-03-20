@@ -32,4 +32,6 @@ declare global {
       email: string;
     } | null;
   };
+
+  type UserProfile = DB["public"]["Tables"]["users"]["Row"];
 }

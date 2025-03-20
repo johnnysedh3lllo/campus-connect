@@ -1,11 +1,6 @@
+import { UserPillProps } from "@/lib/component-prop-types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserIcon } from "@/public/icons/user-icon";
-
-type UserPillProps = {
-  firstName: string | undefined |null;
-  lastName: string | undefined |null;
-  avatarUrl: string | undefined |null;
-};
 
 export function UserPill({ firstName, lastName, avatarUrl }: UserPillProps) {
   return (

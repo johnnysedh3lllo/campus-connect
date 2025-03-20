@@ -1,16 +1,12 @@
 "use client";
-import { useUser } from "@/hooks/use-user";
+import { ProfileInfoProps } from "@/lib/component-prop-types";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIconSmall } from "@/public/icons/profile-icon-small";
 
-export function ProfileInfo() {
-  const { data: user } = useUser();
-
-  const userMetaData = user?.user_metadata;
-
-  const firstName: string = userMetaData?.first_name;
-  const lastName: string = userMetaData?.last_name;
-  const emailAddress: string = userMetaData?.email;
+export function ProfileInfo({ userProfile }: ProfileInfoProps) {
+  const firstName = userProfile?.first_name;
+  const lastName = userProfile?.last_name;
+  const emailAddress = userProfile?.email;
 
   return (
     <section className="flex flex-col gap-6">

@@ -1,26 +1,13 @@
 "use client";
-import { useUser } from "@/hooks/use-user";
 import { ProfilePictureUpload } from "./profile-picture-upload";
-import { useQuery } from "@tanstack/react-query";
-import { getUserProfile } from "@/app/actions/actions";
+import { ProfileHeaderProps } from "@/lib/component-prop-types";
 
-export function ProfileHeader() {
-  const { data: user } = useUser();
-  const userId = user?.id;
-
-  const { data: userProfile } = useQuery({
-    queryKey: ["userProfile", userId],
-    queryFn: () => getUserProfile(userId!),
-    enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // cache data for 5 minutes
-  });
-
-  const firstName: string | null | undefined = userProfile?.first_name;
-  const lastName: string | null | undefined = userProfile?.last_name;
-  const emailAddress: string | null | undefined = userProfile?.email;
+export function ProfileHeader({ userProfile }: ProfileHeaderProps) {
+  const firstName = userProfile?.first_name;
+  const lastName = userProfile?.last_name;
+  const emailAddress = userProfile?.email;
   const avatarUrl = userProfile?.avatar_url;
-
-  if (!userId) return null;
+  const userId = userProfile?.id;
 
   return (
     <div className="flex flex-1 shrink-0 items-center gap-7 sm:gap-5">

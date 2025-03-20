@@ -15,21 +15,22 @@ import Image from "next/image";
 import { UserPill } from "./user-pill";
 import { Separator } from "../ui/separator";
 
-import logOutIcon from "@/public/icons/icon-log-out.svg";
 import closeIconNoBorders from "@/public/icons/icon-close-no-borders.svg";
-import creditChip from "@/public/icons/icon-credit-chip.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 import { usePathname } from "next/navigation";
 import { signOut } from "@/app/actions/actions";
 import { navLinksMobile } from "@/lib/data-storage";
 import Link from "next/link";
-import { ListingIcon } from "@/public/icons/listing-icon";
 import { LogOut } from "@/public/icons/log-out-icon";
 import { CreditDisplayCard } from "./credit-display-card";
 
-export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
+export function MobileNav({ userProfile, isOpen, onClose }: MobileNavProps) {
   const pathName = usePathname();
+
+  const firstName = userProfile?.first_name;
+  const lastName = userProfile?.last_name;
+  const avatarUrl = userProfile?.avatar_url;
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -63,7 +64,12 @@ export function MobileNav({ user, isOpen, onClose }: MobileNavProps) {
 
         <div className="flex h-full flex-col justify-between gap-6">
           <div className="flex h-full flex-col justify-between gap-6">
-            <UserPill userMetaData={user?.user_metadata} />
+            <UserPill
+              firstName={firstName}
+              lastName={lastName}
+              avatarUrl={avatarUrl}
+            />
+
             <Separator />
 
             <ul className="flex h-full flex-col flex-wrap justify-between">

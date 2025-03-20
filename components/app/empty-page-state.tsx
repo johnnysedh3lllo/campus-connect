@@ -1,16 +1,7 @@
 import { ReactNode } from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
-
-interface EmptyPageStateProps {
-  imageSrc: string;
-  title: string;
-  subTitle: string;
-  buttonText?: string;
-  buttonIcon?: ReactNode;
-  onButtonClick?: () => void;
-  showButton: boolean;
-}
+import { EmptyPageStateProps } from "@/lib/component-prop-types";
 
 export function EmptyPageState({
   imageSrc,

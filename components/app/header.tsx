@@ -1,14 +1,8 @@
 import type { ReactNode } from "react";
 import { Button } from "../ui/button";
+import { HeaderProps } from "@/lib/component-prop-types";
 
-interface HeaderProps {
-  title: string;
-  subTitle: string;
-  buttonText?: string;
-  buttonIcon?: ReactNode;
-  onButtonClick?: () => void;
-  showButton: boolean;
-}
+
 
 export function Header({
   title,

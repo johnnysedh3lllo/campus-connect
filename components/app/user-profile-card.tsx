@@ -1,15 +1,9 @@
 "use client";
 
-import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import { Button } from "../ui/button";
-import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { UserProfileCardProps } from "@/lib/component-prop-types";
 
-export function UserProfileCard({
-  participants,
-}: {
-  participants: ConvoParticipant[] | undefined;
-}) {
+export function UserProfileCard({ participants }: UserProfileCardProps) {
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
 

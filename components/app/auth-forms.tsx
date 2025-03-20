@@ -2,7 +2,7 @@
 
 // UTILITIES
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import {
   otpFormSchema,
@@ -17,8 +17,6 @@ import {
   UserDetailsFormType,
   loginSchema,
   LoginFormType,
-  SignUpFormType,
-  signUpFormSchema,
 } from "@/lib/form-schemas";
 import Link from "next/link";
 import { resendSignUpOtp, signOut } from "@/app/actions/actions";
@@ -58,6 +56,16 @@ import { LockIcon } from "@/public/icons/lock-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ShieldIcon } from "@/public/icons/shield-icon";
 import { useCountdownTimer } from "@/hooks/use-countdown-timer";
+import {
+  CheckInboxProps,
+  CreateNewPasswordProps,
+  GetUserInfoProps,
+  LoginFormProps,
+  ResetPasswordProps,
+  SelectRoleProps,
+  SetPasswordProps,
+  VerifyOtpProps,
+} from "@/lib/component-prop-types";
 
 //
 const roleDetails = [
@@ -74,39 +82,6 @@ const roleDetails = [
     icon: tenantIcon,
   },
 ];
-
-// TODO: TYPES TO BE ABSTRACTED TO A SEPARATE FOLDER, MAYBE
-
-export type LoginFormProps = {
-  isLoading: boolean;
-  handleLogin: (values: LoginFormType) => void;
-};
-export type SelectRoleProps = {
-  handleRoleSubmit: (values: RoleFormType) => void;
-};
-export type GetUserInfoProps = {
-  handleSignUp: (values: UserDetailsFormType) => void;
-};
-export type VerifyOtpProps = {
-  handleVerifyOtp: (values: OtpFormType) => void;
-  userEmail: string;
-};
-export type SetPasswordProps = {
-  isLoading: boolean;
-  handleCreatePassword: (values: SetPasswordFormType) => void;
-};
-export type ResetPasswordProps = {
-  isSubmitting: boolean;
-  handleResetPassword: (values: ResetPasswordFormType) => void;
-};
-export type CheckInboxProps = {
-  emailAddress: string;
-  handleResetPassword: (values: ResetPasswordFormType) => void;
-};
-export type CreateNewPasswordProps = {
-  isSubmitting: boolean;
-  handleCreatePassword: (values: SetPasswordFormType) => void;
-};
 
 // MAIN FORM COMPONENTS
 
