@@ -21,7 +21,6 @@ import { Loader2 } from "lucide-react";
 import { updateProfilePicture } from "@/app/actions/actions";
 import { ProfilePictureUploadProps } from "@/lib/component-prop-types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { revalidatePath } from "next/cache";
 
 export function ProfilePictureUpload({
   userId,
@@ -196,15 +195,18 @@ export function ProfilePictureUpload({
       </Label>
 
       <Dialog open={isCropOpen} onOpenChange={setIsCropOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl px-4 py-8 sm:p-12">
           <DialogHeader>
-            <DialogTitle>Crop Profile Picture</DialogTitle>
+            <DialogTitle className="text-left text-2xl leading-8 font-semibold">
+              Profile Picture
+            </DialogTitle>
+
             <DialogDescription>
               Drag to adjust the crop area. The image will be cropped as a
               square.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-center overflow-hidden p-4">
+          <div className="flex justify-center overflow-hidden">
             {selectedImage && (
               <ReactCrop
                 crop={crop}
@@ -222,8 +224,10 @@ export function ProfilePictureUpload({
               </ReactCrop>
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex w-full gap-4 sm:flex-row">
             <Button
+              className="border-border py-3"
+              size={"full"}
               variant="outline"
               onClick={() => {
                 setIsCropOpen(false);
@@ -232,7 +236,9 @@ export function ProfilePictureUpload({
             >
               Cancel
             </Button>
-            <Button onClick={getCroppedImg}>Apply</Button>
+            <Button size={"full"} className="py-3" onClick={getCroppedImg}>
+              Change
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
