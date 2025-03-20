@@ -65,9 +65,9 @@ export function MobileNav({ userProfile, isOpen, onClose }: MobileNavProps) {
         <div className="flex h-full flex-col justify-between gap-6">
           <div className="flex h-full flex-col justify-between gap-6">
             <UserPill
-              firstName={firstName}
-              lastName={lastName}
-              avatarUrl={avatarUrl}
+              firstName={firstName ?? null}
+              lastName={lastName ?? null}
+              avatarUrl={avatarUrl ?? null}
             />
 
             <Separator />

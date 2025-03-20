@@ -39,9 +39,9 @@ export type ProfileInfoProps = {
 };
 
 export type UserPillProps = {
-  firstName: UserProfile["first_name"];
-  lastName: UserProfile["last_name"];
-  avatarUrl: UserProfile["avatar_url"];
+  firstName: UserProfile["first_name"] | undefined;
+  lastName: UserProfile["last_name"] | undefined;
+  avatarUrl: UserProfile["avatar_url"] | undefined;
 };
 
 export type UserProfileCardProps = {
