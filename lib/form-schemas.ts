@@ -105,6 +105,7 @@ export const createPasswordSchema = userValidationSchema
       path: ["confirmPassword"],
     },
   );
+
 // LOGIN FORM
 export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
@@ -151,3 +152,9 @@ export const settingsFormSchema = z.object({
 });
 
 export type SettingsFormType = z.infer<typeof settingsFormSchema>;
+
+export const profileInfoFormSchema = userValidationSchema.pick({
+  firstName: true,
+  lastName: true,
+});
+export type ProfileInfoFormType = z.infer<typeof profileInfoFormSchema>;

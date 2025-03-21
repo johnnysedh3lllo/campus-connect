@@ -162,7 +162,8 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
               <Button
                 disabled={isLoading}
                 type="submit"
-                className="w-full cursor-pointer p-6 text-center text-base leading-6 font-semibold transition-all duration-500"
+                width={"full"}
+                className="cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? "Logging in..." : "Log in"}
@@ -274,7 +275,8 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
           <Button
             disabled={!isValid}
             type="submit"
-            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
+            width={"full"}
+            className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
           >
             Continue
           </Button>
@@ -404,7 +406,8 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
           <Button
             disabled={isSubmitting}
             type="submit"
-            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
+            width={"full"}
+            className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
           >
             {isSubmitting && <Loader2 className="animate-spin" />}
             {isSubmitting ? "Signing up..." : "Sign up"}
@@ -534,7 +537,8 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
           <Button
             disabled={!isValid || isSubmitting}
             type="submit"
-            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-500"
+            width={"full"}
+            className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
           >
             {isSubmitting ? (
               <>
@@ -632,7 +636,8 @@ export function SetPassword({
           <Button
             disabled={isLoading}
             type="submit"
-            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-300"
+            width={"full"}
+            className="cursor-pointer text-base leading-6 font-semibold transition-all duration-300"
           >
             {isLoading && <Loader2 className="animate-spin" />}
             Create Password
@@ -693,7 +698,8 @@ export function ResetPassword({
 
           <Button
             type="submit"
-            className="w-full cursor-pointer"
+            className="cursor-pointer"
+            width={"full"}
             disabled={isSubmitting}
           >
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -839,7 +845,8 @@ export function CreateNewPassword({
           <Button
             disabled={isSubmitting}
             type="submit"
-            className="w-full cursor-pointer p-6 text-base leading-6 font-semibold transition-all duration-300"
+            width={"full"}
+            className="cursor-pointer text-base leading-6 font-semibold transition-all duration-300"
           >
             {isSubmitting && <Loader2 className="animate-spin" />}
             Create Password
@@ -870,7 +877,10 @@ export function PasswordCreationSuccess() {
       </div>
 
       <form action={signOut}>
-        <Button className="w-full cursor-pointer p-6 text-base leading-6 font-semibold">
+        <Button
+          width={"full"}
+          className="cursor-pointer text-base leading-6 font-semibold"
+        >
           Continue to Login
         </Button>
       </form>
