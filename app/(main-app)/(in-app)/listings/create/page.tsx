@@ -43,40 +43,42 @@ function CreatePage({ children }: { children: ReactNode }) {
                 className="onboarding-form--wrapper grid grid-cols-1 md:grid-cols-[.7fr_4fr] gap-6 px-4 sm:px-12 sm:gap-12 md:px-0 md:mx-20 lg:overflow-x-hidden lg:overflow-y-auto"
                 ref={listingFormWrapper}
             >
-                    <div className="bg-background sticky sm:hidden top-0 flex gap-1 py-4 lg:pe-4">
-                        <Badge variant="outline">{`${step + 1}/${steps.length}`}</Badge>
+                <div className="bg-background sticky sm:hidden top-0 flex gap-1 py-4 lg:pe-4">
+                    <Badge variant="outline">{`${step + 1}/${steps.length}`}</Badge>
 
-                        <div className="grid w-full grid-flow-row grid-cols-4 items-center gap-1">
-                            {steps.map((_, index) => (
-                                <div className="bg-accent-secondary h-0.5" key={`step-${index}`}>
-                                    <div
-                                        className={`h-full transition-all duration-500 ${index <= step ? "bg-primary w-full" : "w-0"}`}
-                                    ></div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                <div> <div className="hidden sm:grid grid-flow-col md:grid-flow-row auto-cols-auto md:auto-rows-auto items-center md:items-start gap-3">
-                    {steps.map((item, index) => (
-                        <div key={index} className="grid grid-flow-col md:grid-flow-row auto-cols-auto items-center md:items-start md:self-start gap-3">
-                            <div className="grid grid-flow-col items-center md:justify-start gap-3">
-                                <span
-                                    className={`inline-grid place-items-center aspect-square w-7 rounded-full bg-gray-600 ${step === index && "bg-transparent border border-primary text-primary"
-                                        } ${step > index && "bg-primary text-white"}`}
-                                >
-                                    {index + 1}
-                                </span>
-                                <span className={`text-gray-600 ${step === index && "font-semibold text-black!"}`}>
-                                    {item}
-                                </span>
+                    <div className="grid w-full grid-flow-row grid-cols-4 items-center gap-1">
+                        {steps.map((_, index) => (
+                            <div className="bg-accent-secondary h-0.5" key={`step-${index}`}>
+                                <div
+                                    className={`h-full transition-all duration-500 ${index <= step ? "bg-primary w-full" : "w-0"}`}
+                                ></div>
                             </div>
-                            {index !== steps.length - 1 && (
-                                <Separator className="w-10 h-[2px] md:w-[2px] md:h-10 bg-gray-300 md:translate-x-3" />
-                            )}
-                        </div>
-                    ))}
-                </div></div>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <div className="hidden sm:grid grid-flow-col md:grid-flow-row auto-cols-auto md:auto-rows-auto items-center md:items-start gap-3">
+                        {steps.map((item, index) => (
+                            <div key={index} className="grid grid-flow-col md:grid-flow-row auto-cols-auto items-center md:items-start md:self-start gap-3">
+                                <div className="grid grid-flow-col items-center md:justify-start gap-3">
+                                    <span
+                                        className={`inline-grid place-items-center aspect-square w-7 rounded-full bg-gray-600 ${step === index && "bg-transparent border border-primary text-primary"
+                                            } ${step > index && "bg-primary text-white"}`}
+                                    >
+                                        {index + 1}
+                                    </span>
+                                    <span className={`text-gray-600 ${step === index && "font-semibold text-black!"}`}>
+                                        {item}
+                                    </span>
+                                </div>
+                                {index !== steps.length - 1 && (
+                                    <Separator className="w-10 h-[2px] md:w-[2px] md:h-10 bg-gray-300 md:translate-x-3" />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
                 <AnimationWrapper
                     variants={formVariants}

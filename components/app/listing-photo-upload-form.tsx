@@ -41,13 +41,13 @@ export default function PhotoUploadForm() {
         if (zustandPhotos && zustandPhotos.length > 0) {
             // Set form values
             form.setValue('photos' as Path<PhotoUploadFormType>, zustandPhotos);
-    
+
             // Create previews for existing photos
             const newPreviews = zustandPhotos.map(file => URL.createObjectURL(file));
             setPreviews(newPreviews);
         }
     }, [zustandPhotos, form]);
-    
+
     function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
         const files = event.target.files;
         if (files) {
