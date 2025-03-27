@@ -151,3 +151,30 @@ export const settingsFormSchema = z.object({
 });
 
 export type SettingsFormType = z.infer<typeof settingsFormSchema>;
+
+export const HomeTypeEnum = z.enum(["Apartment", "House", "Condo"]);
+export const PaymentFrequencyEnum = z.enum([
+  "Daily",
+  "Weekly",
+  "Monthly",
+  "Yearly",
+]);
+export const createListingFormSchema = z.object({
+  homeDetails: z.object({
+    title: z.string().nonempty({ message: "This is a required field" }),
+    noOfBedRooms: z.string().nonempty({ message: "This is a required field" }),
+    homeType: HomeTypeEnum,
+    homeAddress: z.string().nonempty({ message: "This is a required field" }),
+    description: z.string().nonempty({ message: "This is a required field" }),
+  }),
+  photos: z
+    .array(z.instanceof(File))
+    .min(1, { message: "At least one photo is required" })
+    .max(10, { message: "You can upload a maximum of 10 photos" }),
+  pricing: z.object({
+    paymentFrequency: PaymentFrequencyEnum,
+    price: z.number().min(1, { message: "Enter a number greater than 2" }),
+  }),
+});
+
+export type CreateListingFormType = z.infer<typeof createListingFormSchema>;
