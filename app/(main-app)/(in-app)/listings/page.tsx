@@ -16,7 +16,7 @@ export default async function Page() {
   //     ? await supabase.from("properties").select("*").eq("landlord_id", user.id)
   //     : await supabase.from("properties").select("*");
   function EmptyButtonAction() {
-    router.push("/listings/create/home-details");
+    router.push("/listings/create");
   }
 
   return (
