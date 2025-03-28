@@ -9,11 +9,10 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
 // ASSETS
-import { EditIcon } from "@/public/icons/edit-icon";
 import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
-import { ProfileInfo } from "@/components/app/profile-info";
 import { useUser } from "@/hooks/use-user";
 import { useUserProfile } from "@/hooks/use-user-profile";
+import { ProfileInfo } from "./profile-info";
 
 export function ProfilePageBody() {
   const { data: user } = useUser();
@@ -55,18 +54,9 @@ export function ProfilePageBody() {
           />
         </div>
 
-        {/* PROFILE INFO */}
         <section className="flex w-full flex-col gap-6 py-6 lg:p-6 lg:pr-0">
-          <section className="flex flex-col gap-3">
-            <header className="flex w-full items-center justify-between">
-              <h2 className="text-2xl leading-6 font-semibold">Profile Info</h2>
-              <Button variant={"outline"} className="size-10 rounded-full p-0">
-                <EditIcon />
-              </Button>
-            </header>
-
-            <ProfileInfo userProfile={userProfile} />
-          </section>
+          {/* PROFILE INFO */}
+          <ProfileInfo userProfile={userProfile} />
 
           <Separator orientation="horizontal" />
 

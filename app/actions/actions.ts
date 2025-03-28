@@ -16,6 +16,7 @@ import {
   setPasswordFormSchema,
   ResetPasswordFormType,
   SignUpFormType,
+  ProfileInfoFormType,
 } from "@/lib/form-schemas";
 import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
@@ -155,6 +156,7 @@ export async function login(formData: LoginFormType) {
     });
 
     console.log(error?.message);
+    console.log(error);
 
     if (error) {
       throw error;
@@ -381,11 +383,54 @@ export const getUserProfile = async (userId: string | undefined) => {
 };
 
 // Update User
-export const updateUser = async () => {
-  // const supabase = await createClient();
-  // const { data, error } = await supabase.auth.updateUser({
-  //   data: {},
-  // });
+export const updateUser = async (
+  formData: ProfileInfoFormType,
+  userId: string,
+) => {
+  const supabase = await createClient();
+
+  try {
+    const metadata = Object.fromEntries(
+      Object.entries({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+      }).filter(([_, value]) => value !== undefined),
+    );
+
+    // Update the user metadata
+    const { data, error } = await supabase.auth.updateUser({
+      data: metadata,
+    });
+
+    if (error) {
+      throw new Error(`Failed to update user: ${error.message}`);
+    }
+
+    // TODO BEGIN: LOOK INTO THE SUPABASE TRIGGER FUNCTION ISSUE AND FIX IT TO REMOVE THIS
+    // IT'S SUPPOSED TO UPDATE THE PUBLIC.USERS TABLE WHEN THERE IS A CHANGE ON THE AUTH.USERS TABLE
+    const { data: userPublicData, error: userPublicError } = await supabase
+      .from("users")
+      .update({ first_name: formData.firstName, last_name: formData.lastName })
+      .eq("id", userId)
+      .select();
+
+    if (userPublicError) {
+      throw new Error(`Failed to update user: ${userPublicError.message}`);
+    }
+    // TODO END
+
+    return {
+      success: true,
+      user: data.user,
+    };
+  } catch (error) {
+    console.error("Update user error:", error);
+
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 };
 
 export async function updateProfilePicture(imageData: string, userId: string) {
@@ -394,17 +439,14 @@ export async function updateProfilePicture(imageData: string, userId: string) {
     const base64Data = imageData.split(",")[1];
     const imageBuffer = Buffer.from(base64Data, "base64");
 
-    const fileName = `${userId}-${Date.now()}.jpg`;
-    const filePath = `${fileName}`;
+    const fileName = `${userId}.jpg`;
 
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from("avatars")
-      .upload(filePath, imageBuffer, {
+      .upload(fileName, imageBuffer, {
         contentType: "image/jpeg",
         upsert: true,
       });
-
-    console.log("to avatar bucket:", data);
 
     if (error) {
       throw error;
@@ -413,14 +455,14 @@ export async function updateProfilePicture(imageData: string, userId: string) {
     // Get the public URL for the uploaded image
     const { data: publicUrlData } = supabase.storage
       .from("avatars")
-      .getPublicUrl(filePath);
+      .getPublicUrl(fileName);
 
-    console.log("public url data", publicUrlData);
+    const newPublicUrl = `${publicUrlData.publicUrl}?t=${Date.now()}`;
 
     // Update the user's profile in the database with the new avatar URL
     const { error: updateError } = await supabase
       .from("users")
-      .update({ avatar_url: publicUrlData.publicUrl })
+      .update({ avatar_url: newPublicUrl })
       .eq("id", userId);
 
     if (updateError) {
@@ -428,7 +470,7 @@ export async function updateProfilePicture(imageData: string, userId: string) {
       throw updateError;
     }
 
-    return { success: true, imageUrl: publicUrlData.publicUrl };
+    return { success: true, imageUrl: newPublicUrl };
   } catch (error) {
     console.error("Error uploading image:", error);
     return {
