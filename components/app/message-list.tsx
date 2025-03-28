@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { MessageListItem } from "./message-list-item";
 import { getUserConversationsWithParticipants } from "@/app/actions/actions";
+import MessageConversationSkeletonLoader from "./message-conversation-skeleton-loader";
 
 export function MessageList() {
   const { data: userConversations, isFetching } = useQuery({
@@ -29,7 +30,7 @@ export function MessageList() {
           })}
         </>
       ) : isFetching ? (
-        <p>Loading conversations</p>
+        Array.from({ length: 4 }).map((_, index) => <MessageConversationSkeletonLoader key={index} />)
       ) : (
         <p className="italic">No conversations to display</p>
       )}

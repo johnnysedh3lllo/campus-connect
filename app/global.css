@@ -128,7 +128,7 @@
   --color-border-primary: var(--border-primary);
 
   --color-line: var(--line);
-  --color-input: var(--input);
+  /* --color-input: var(--input); */
   --color-ring: var(--ring);
 
   --color-chart-1: var(--chart-1);
