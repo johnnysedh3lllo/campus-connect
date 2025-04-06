@@ -19,16 +19,16 @@ export const useListingCreationStore = create<ListingCreationState>((set) => ({
   nextStep: () =>
     set((state) => ({
       step: Math.min(state.steps.length - 1, state.step + 1),
-    })), // Prevent going beyond last step
+    })),
   prevStep: () =>
     set((state) => ({
       step: Math.max(0, state.step - 1),
-    })), // Prevent going below first step
+    })),
   goToStep: (step) =>
     set((state) => ({
       step: Math.min(state.steps.length - 1, Math.max(0, step)),
-    })), // Ensure step is within bounds
-  setSteps: (steps) => set(() => ({ steps })), // Dynamically update steps
+    })),
+  setSteps: (steps) => set(() => ({ steps })),
   clearData: () =>
     set((state) => {
       const { step, steps } = state;
@@ -51,8 +51,8 @@ export const useListingCreationStore = create<ListingCreationState>((set) => ({
 
       return {
         ...clearedFormData,
-        step: 0, // Reset step to beginning
-        steps: steps, // Preserve steps array
+        step: 0,
+        steps: steps, 
       };
     }),
 }));
