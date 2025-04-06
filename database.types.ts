@@ -66,18 +66,137 @@ export type Database = {
         }
         Relationships: []
       }
-      countries: {
+      credit_transactions: {
+        Row: {
+          created_at: string | null
+          credits_purchased: number
+          id: number
+          price_paid: number
+          stripe_transaction_id: string
+          transaction_uuid: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          credits_purchased: number
+          id?: never
+          price_paid: number
+          stripe_transaction_id: string
+          transaction_uuid?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          credits_purchased?: number
+          id?: never
+          price_paid?: number
+          stripe_transaction_id?: string
+          transaction_uuid?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      credits: {
+        Row: {
+          remaining_credits: number | null
+          total_credits: number | null
+          updated_at: string | null
+          used_credits: number | null
+          user_id: string
+        }
+        Insert: {
+          remaining_credits?: number | null
+          total_credits?: number | null
+          updated_at?: string | null
+          used_credits?: number | null
+          user_id: string
+        }
+        Update: {
+          remaining_credits?: number | null
+          total_credits?: number | null
+          updated_at?: string | null
+          used_credits?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      listing_images: {
         Row: {
           id: number
-          name: string
+          image_url: string
+          listing_uuid: string
         }
         Insert: {
           id?: never
-          name: string
+          image_url: string
+          listing_uuid: string
         }
         Update: {
           id?: never
-          name?: string
+          image_url?: string
+          listing_uuid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_listing_uuid"
+            columns: ["listing_uuid"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["uuid"]
+          },
+        ]
+      }
+      listings: {
+        Row: {
+          created_at: string
+          description: string | null
+          home_type: Database["public"]["Enums"]["home_type_enum"] | null
+          id: number
+          landlord_id: string | null
+          location: string | null
+          no_of_bedrooms: number | null
+          payment_frequency:
+            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | null
+          price: number | null
+          status: Database["public"]["Enums"]["listing_status_enum"]
+          title: string | null
+          updated_at: string | null
+          uuid: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          home_type?: Database["public"]["Enums"]["home_type_enum"] | null
+          id?: never
+          landlord_id?: string | null
+          location?: string | null
+          no_of_bedrooms?: number | null
+          payment_frequency?:
+            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | null
+          price?: number | null
+          status?: Database["public"]["Enums"]["listing_status_enum"]
+          title?: string | null
+          updated_at?: string | null
+          uuid?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          home_type?: Database["public"]["Enums"]["home_type_enum"] | null
+          id?: never
+          landlord_id?: string | null
+          location?: string | null
+          no_of_bedrooms?: number | null
+          payment_frequency?:
+            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | null
+          price?: number | null
+          status?: Database["public"]["Enums"]["listing_status_enum"]
+          title?: string | null
+          updated_at?: string | null
+          uuid?: string
         }
         Relationships: []
       }
@@ -122,41 +241,43 @@ export type Database = {
           },
         ]
       }
-      properties: {
+      plans: {
         Row: {
-          created_at: string
+          created_at: string | null
           description: string | null
           id: number
-          landlord_id: string | null
-          location: string | null
-          price: number | null
-          property_uuid: string | null
-          title: string | null
-          updated_at: string | null
+          name: string
+          price: number
+          role_id: number
+          stripe_price_id: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
-          id?: number
-          landlord_id?: string | null
-          location?: string | null
-          price?: number | null
-          property_uuid?: string | null
-          title?: string | null
-          updated_at?: string | null
+          id?: never
+          name: string
+          price: number
+          role_id: number
+          stripe_price_id: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           description?: string | null
-          id?: number
-          landlord_id?: string | null
-          location?: string | null
-          price?: number | null
-          property_uuid?: string | null
-          title?: string | null
-          updated_at?: string | null
+          id?: never
+          name?: string
+          price?: number
+          role_id?: number
+          stripe_price_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "plans_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       roles: {
         Row: {
@@ -181,6 +302,50 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string | null
+          end_date: string | null
+          id: number
+          plan_id: number
+          start_date: string | null
+          status: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_subscription_id: string
+          subscription_uuid: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date?: string | null
+          id?: never
+          plan_id: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_subscription_id: string
+          subscription_uuid?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string | null
+          id?: never
+          plan_id?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_subscription_id?: string
+          subscription_uuid?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -285,7 +450,10 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      home_type_enum: "Condo" | "Apartment"
+      listing_status_enum: "Available" | "Taken"
+      payment_frequency_enum: "daily" | "weekly" | "monthly" | "yearly"
+      subscription_status: "active" | "canceled" | "past_due"
     }
     CompositeTypes: {
       [_ in never]: never

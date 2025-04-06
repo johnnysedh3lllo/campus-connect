@@ -3,7 +3,7 @@ import Hero from "@/components/app/hero";
 
 import { ThemeSwitcher } from "@/components/app/theme-switcher";
 import { createClient } from "@/utils/supabase/server";
-import { insertProperty } from "../actions/actions";
+// import { insertProperty } from "../actions/actions";
 import { UserResponse } from "@supabase/supabase-js";
 
 export default async function Index() {
@@ -14,14 +14,17 @@ export default async function Index() {
     error: getUserError,
   }: UserResponse = await supabase.auth.getUser();
 
-  const insertPropertyWithUserId = user?.id
-    ? insertProperty.bind(null, user.id)
-    : undefined;
+  // const insertPropertyWithUserId = user?.id
+  // ? insertProperty.bind(null, user.id)
+  // : undefined;
 
   return (
     <>
       {user?.user_metadata.role_id === 2 && (
-        <button className="bg-amber-200 p-4" onClick={insertPropertyWithUserId}>
+        <button
+          className="bg-amber-200 p-4"
+          // onClick={insertPropertyWithUserId}
+        >
           click me!
         </button>
       )}

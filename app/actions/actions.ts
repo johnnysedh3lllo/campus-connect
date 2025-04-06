@@ -5,10 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserResponse } from "@supabase/supabase-js";
-import { MultiStepFormData } from "@/lib/form-types";
 import {
-  userValidationSchema,
-  loginSchema,
   signUpFormSchema,
   resetPasswordFormSchema,
   LoginFormType,
@@ -17,8 +14,14 @@ import {
   ResetPasswordFormType,
   SignUpFormType,
   ProfileInfoFormType,
+  CreateListingFormType,
+  createListingFormSchema,
+  ListingInsert,
 } from "@/lib/form-schemas";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
+// Define types for your database tables
+
 // import { UserResponse } from "@supabase/supabase-js";
 
 // ONBOARDING ACTIONS
@@ -480,29 +483,110 @@ export async function updateProfilePicture(imageData: string, userId: string) {
   }
 }
 
-// PROPERTIES
-export const insertProperty = async (userId: string) => {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("properties")
-    .insert([
-      {
-        landlord_id: userId,
-        title: "Strange House",
-        description: "Spooky house on the hill",
-        location: "On the hill, duh!",
-        price: 200.0,
-      },
-    ])
-    .select();
-
-  if (error) {
-    console.error("Error inserting property:", error);
-  } else {
-    console.log("Property inserted:", data);
-  }
+// Listings
+type InsertListingResult = {
+  success: boolean;
+  message: string;
+  listingId?: string;
+  error?: string;
 };
+export async function insertListing(
+  data: CreateListingFormType,
+): Promise<InsertListingResult> {
+  const supabase = await createClient();
+  try {
+    const validatedData = createListingFormSchema.parse(data);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return {
+        success: false,
+        message: "Authentication required",
+        error: "User not authenticated",
+      };
+    }
+
+    const { data: newListing, error: listingError } = await supabase
+      .from("listings")
+      .insert({
+        title: validatedData.homeDetails.title,
+        description: validatedData.homeDetails.description,
+        location: validatedData.homeDetails.homeAddress,
+        price: validatedData.pricing.price,
+        payment_frequency: validatedData.pricing.paymentFrequency,
+        no_of_bedrooms: parseInt(validatedData.homeDetails.noOfBedRooms),
+        home_type: validatedData.homeDetails.homeType,
+        created_at: new Date().toISOString(),
+        landlord_id: user.id,
+      } as ListingInsert)
+      .select("uuid")
+      .single();
+
+    if (listingError) {
+      return {
+        success: false,
+        message: "Failed to create listing",
+        error: listingError.message,
+      };
+    }
+    const imageUploadPromises = validatedData.photos.map(
+      async (photo, index) => {
+        const fileExt = photo.name.split(".").pop();
+        const fileName = `${newListing.uuid}/${Date.now()}-${index}.${fileExt}`;
+        const filePath = `listings/${user.id}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("listing-images")
+          .upload(filePath, photo);
+
+        if (uploadError) {
+          throw new Error(
+            `Failed to upload image ${index + 1}: ${uploadError.message}`,
+          );
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from("listing-images")
+          .getPublicUrl(filePath);
+
+        const { error: imageInsertError } = await supabase
+          .from("listing_images")
+          .insert({
+            listing_uuid: newListing.uuid,
+            image_url: publicUrlData.publicUrl,
+          });
+
+        if (imageInsertError) {
+          throw new Error(
+            `Failed to save image reference ${index + 1}: ${imageInsertError.message}`,
+          );
+        }
+
+        return publicUrlData.publicUrl;
+      },
+    );
+
+    await Promise.all(imageUploadPromises);
+
+    // TODO: Revalidate the listings page to show the new listing
+    // revalidatePath("/listings");
+
+    return {
+      success: true,
+      message: "Listing created successfully",
+      listingId: newListing.uuid,
+    };
+  } catch (error) {
+    console.error("Error creating listing:", error);
+    return {
+      success: false,
+      message: "Failed to create listing",
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
+  }
+}
 
 // MESSAGES
 

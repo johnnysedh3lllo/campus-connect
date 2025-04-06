@@ -30,9 +30,29 @@ export const useListingCreationStore = create<ListingCreationState>((set) => ({
     })), // Ensure step is within bounds
   setSteps: (steps) => set(() => ({ steps })), // Dynamically update steps
   clearData: () =>
-    set((state) => ({
-      step: 0, // Reset to first step
-      ...Object.fromEntries(Object.keys(state).map((key) => [key, undefined])), // Clear all form data
-      steps: state.steps, // Preserve steps array
-    })),
+    set((state) => {
+      const { step, steps } = state;
+
+      const formFields = Object.keys(state).filter(
+        (key) =>
+          key !== "step" &&
+          key !== "steps" &&
+          key !== "setData" &&
+          key !== "nextStep" &&
+          key !== "prevStep" &&
+          key !== "goToStep" &&
+          key !== "setSteps" &&
+          key !== "clearData",
+      );
+
+      const clearedFormData = Object.fromEntries(
+        formFields.map((key) => [key, undefined]),
+      );
+
+      return {
+        ...clearedFormData,
+        step: 0, // Reset step to beginning
+        steps: steps, // Preserve steps array
+      };
+    }),
 }));

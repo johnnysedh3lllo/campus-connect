@@ -45,7 +45,7 @@ function PricingForm() {
     const form = useForm<PricingFormType>({
         resolver: zodResolver(PricingFormSchema),
         defaultValues: {
-            paymentFrequency: pricing?.paymentFrequency || PaymentFrequencyEnum.Values.Daily,
+            paymentFrequency: pricing?.paymentFrequency || PaymentFrequencyEnum.Values.daily,
             price: pricing?.price || 0
         }
     });
@@ -66,22 +66,14 @@ function PricingForm() {
                                 <FormLabel className='font-medium'>How do you want tenants to pay rent</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value} >
                                     <FormControl className='bg-white'>
-                                        <SelectTrigger className='w-full rounded-sm bg-white flex justify-between items-center'>
-                                            <SelectValue placeholder="Select payment frequency" className='bg-white' />
-                                            <div className="flex items-center justify-end">
-                                                <Image
-                                                    src="/icons/icon-arrow-down.svg" // Replace with your image path
-                                                    alt="Dropdown chevron"
-                                                    width={16}
-                                                    height={16}
-                                                />
-                                            </div>
+                                        <SelectTrigger className='w-full rounded-sm bg-white flex justify-between items-center capitalize'>
+                                            <SelectValue placeholder="Select payment frequency" className='bg-white ' />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         <SelectGroup>
                                             {PaymentFrequencyEnum.options.map((type) => (
-                                                <SelectItem key={type} value={type}>
+                                                <SelectItem key={type} value={type} className='capitalize'>
                                                     {type}
                                                 </SelectItem>
                                             ))}

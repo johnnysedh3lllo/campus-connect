@@ -159,12 +159,12 @@ export const profileInfoFormSchema = userValidationSchema.pick({
 });
 export type ProfileInfoFormType = z.infer<typeof profileInfoFormSchema>;
 
-export const HomeTypeEnum = z.enum(["Apartment", "House", "Condo"]);
+export const HomeTypeEnum = z.enum(["Apartment", "Condo"]);
 export const PaymentFrequencyEnum = z.enum([
-  "Daily",
-  "Weekly",
-  "Monthly",
-  "Yearly",
+  "daily",
+  "weekly",
+  "monthly",
+  "yearly",
 ]);
 export const createListingFormSchema = z.object({
   homeDetails: z.object({
@@ -185,3 +185,14 @@ export const createListingFormSchema = z.object({
 });
 
 export type CreateListingFormType = z.infer<typeof createListingFormSchema>;
+export type ListingInsert = {
+  title: string;
+  description: string;
+  location: string;
+  price: number;
+  payment_frequency: z.infer<typeof PaymentFrequencyEnum>;
+  no_of_bedrooms: number;
+  home_type: z.infer<typeof HomeTypeEnum>;
+  created_at?: string;
+  landlord_id: string;
+};
