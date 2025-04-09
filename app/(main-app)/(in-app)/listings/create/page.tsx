@@ -2,6 +2,7 @@
 import { useListingCreationStore } from "@/lib/store/listing-creation-store";
 import { Badge } from "@/components/ui/badge";
 import { useRef, useState } from "react";
+import { useModal } from "@/hooks/use-modal";
 import Image from "next/image";
 import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
 import { formVariants, animationConfig } from "@/hooks/animations";
@@ -13,19 +14,18 @@ import PhotoUploadForm from "@/components/app/listing-photo-upload-form";
 import PricingForm from "@/components/app/listing-pricing-form";
 import ListingCreationPreviewPage from "@/components/app/listing-home-details-preview";
 import { toast } from "@/hooks/use-toast";
-import CreateSuccessModal from "@/components/app/listing-create-success-modal";
+import ListingActionModal from "@/components/app/listing-action-modal";
+import { useCreditsStore } from "@/lib/store/credits-store";
+import { CREDITS_REQUIRED_TO_CREATE_LISTING } from "@/lib/constants";
+import ListingPageHeader from "@/components/app/listing-page-header";
 
 function CreatePage() {
   const router = useRouter();
   const { step, steps, clearData, homeDetails, pricing, photos } =
     useListingCreationStore();
-  const [isSuccessModalOpen, setSuccessModalOpen] = useState(false);
+  const { credits, setCredits } = useCreditsStore();
+  const { modalData, openModal, closeModal } = useModal();
   const [isPublishing, setIsPublishing] = useState(false);
-  function handleSuccessModalClose() {
-    setSuccessModalOpen(false);
-    router.push("/listings");
-    clearData();
-  }
   const listingFormWrapper = useRef<HTMLDivElement>(null);
 
   function handleEscape() {
@@ -35,45 +35,65 @@ function CreatePage() {
   async function handlePublish() {
     setIsPublishing(true);
     try {
-      // clearData();
-
       if (!homeDetails || Object.keys(homeDetails).length === 0) {
         throw new Error("Home details are missing");
       }
-
-      if (!pricing || !pricing.price) {
+      if (!pricing || !pricing.price)
         throw new Error("Pricing information is required");
-      }
-
-      if (!photos || photos.length === 0) {
+      if (!photos || photos.length === 0)
         throw new Error("At least one photo is required");
+
+      if (credits < CREDITS_REQUIRED_TO_CREATE_LISTING) {
+        openModal({
+          variant: "error",
+          title: "You don't have enough credits to list this property.",
+          message: "Buy credits now, or join our premium plan",
+          primaryButtonText: "Get Premium",
+          secondaryButtonText: "Buy Credits",
+          onPrimaryAction: () => router.push("/premium"),
+          onSecondaryAction: () => router.push("/credits/purchase"),
+        });
+        return;
       }
 
-      const formData = {
-        homeDetails,
-        pricing,
-        photos,
-      };
-
-      console.log(formData);
+      const formData = { homeDetails, pricing, photos };
       const data = await insertListing(formData);
 
-      if (data.success !== true) {
-        throw new Error(data.message || "Failed to publish listing");
+      if (!data.success) {
+        openModal({
+          variant: "error",
+          title: "Error Publishing Listing",
+          message:
+            data.message || "Failed to publish listing. Please try again.",
+          primaryButtonText: "Try Again",
+        });
+        return;
       }
 
-      // console.log(data);
-      // toast({
-      //   variant: "default",
-      //   title: "Listing Published",
-      //   description: `${data.message}`,
-      // });
-      setSuccessModalOpen(true);
+      await setCredits(credits - CREDITS_REQUIRED_TO_CREATE_LISTING);
+
+      openModal({
+        variant: "success",
+        title: "Property listed successfully",
+        message: `${CREDITS_REQUIRED_TO_CREATE_LISTING} credits have been deducted from your balance.`,
+        primaryButtonText: "Back to listings",
+        onPrimaryAction: () => {
+          router.push("/listings");
+          clearData();
+        },
+      });
     } catch (error: any) {
       toast({
         title: "Error Publishing Listing",
         description: error.message || "An unexpected error occurred",
         variant: "destructive",
+      });
+      openModal({
+        variant: "error",
+        title: "Error Publishing Listing",
+        message:
+          error.message || "An unexpected error occurred. Please try again.",
+        primaryButtonText: "Try Again",
       });
     } finally {
       setIsPublishing(false);
@@ -92,27 +112,11 @@ function CreatePage() {
   return (
     <>
       <section className="flex flex-col gap-12">
-        <header className="border-b px-4 pb-3 sm:px-12 md:mx-20 md:px-0">
-          <section className="flex items-center justify-between">
-            <div>
-              <h1 className="flex w-full items-center justify-between text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
-                New Listing
-              </h1>
-              <p className="text-sm text-[#878787]">
-                Enter any necessary information
-              </p>
-            </div>
-
-            <Image
-              src={"/icons/icon-close-no-borders.svg"}
-              alt="Close Icon"
-              width={40}
-              height={40}
-              className="cursor-pointer"
-              onClick={handleEscape}
-            />
-          </section>
-        </header>
+        <ListingPageHeader
+          heading="New Listing"
+          subHeading="Enter any necessary information"
+          handleEscape={handleEscape}
+        />
 
         <div
           className="onboarding-form--wrapper grid grid-cols-1 gap-6 px-4 sm:gap-12 sm:px-12 md:mx-20 md:grid-cols-[.7fr_4fr] md:px-0 lg:overflow-x-hidden lg:overflow-y-auto"
@@ -175,9 +179,16 @@ function CreatePage() {
           </AnimationWrapper>
         </div>
       </section>
-      <CreateSuccessModal
-        isOpen={isSuccessModalOpen}
-        onClose={handleSuccessModalClose}
+      <ListingActionModal
+        isOpen={modalData.open}
+        onClose={closeModal}
+        variant={modalData.variant}
+        title={modalData.title}
+        message={modalData.message}
+        primaryButtonText={modalData.primaryButtonText}
+        secondaryButtonText={modalData.secondaryButtonText}
+        onPrimaryAction={modalData.onPrimaryAction}
+        onSecondaryAction={modalData.onSecondaryAction}
       />
     </>
   );

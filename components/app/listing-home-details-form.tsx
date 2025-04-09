@@ -38,7 +38,7 @@ export default function HomeDetailsForm() {
         defaultValues: {
             title: homeDetails?.title || '',
             noOfBedRooms: homeDetails?.noOfBedRooms || '',
-            homeType: homeDetails?.homeType || 'House',
+            homeType: homeDetails?.homeType || 'Condo',
             homeAddress: homeDetails?.homeAddress || '',
             description: homeDetails?.description || '',
         }

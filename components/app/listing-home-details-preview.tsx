@@ -10,12 +10,12 @@ import { useListingCreationStore } from "@/lib/store/listing-creation-store";
 import { PaymentFrequencyEnum } from "@/lib/form-schemas";
 import { z } from "zod";
 import Image from "next/image";
+import { useCreditsStore } from "@/lib/store/credits-store";
 
 type PaymentFrequency = z.infer<typeof PaymentFrequencyEnum>;
-// Extracted utility function with improved readability
-const mapPaymentFrequencyToLabel = (
+function mapPaymentFrequencyToLabel(
   paymentFrequency: PaymentFrequency,
-): string => {
+): string {
   const frequencyMap: Record<PaymentFrequency, string> = {
     daily: "Day",
     weekly: "Week",
@@ -24,61 +24,66 @@ const mapPaymentFrequencyToLabel = (
   };
 
   return frequencyMap[paymentFrequency]?.toLowerCase() || "";
-};
+}
 
-// Extracted component for rendering preview details
-const HomeDetailsPreview = ({
+function HomeDetailsPreview({
   homeDetails,
   pricing,
 }: {
   homeDetails: any;
   pricing?: { price?: number; paymentFrequency?: PaymentFrequency };
-}) => (
-  <section className="grid grid-cols-2 gap-6 sm:grid-cols-3">
-    {[
-      { label: "Title", value: homeDetails.title },
-      { label: "Home type", value: homeDetails.homeType },
-      { label: "Location", value: homeDetails.homeAddress },
-      pricing?.price && {
-        label: "Price",
-        value: `${pricing.price}/${mapPaymentFrequencyToLabel(pricing.paymentFrequency!)}`,
-      },
-      { label: "No of Bedrooms", value: homeDetails.noOfBedRooms },
-    ]
-      .filter((detail): detail is { label: string; value: any } =>
-        Boolean(detail),
-      )
-      .map((detail, index) => (
-        <div
-          key={detail.label}
-          className={detail.label === "Description" ? "col-span-full" : ""}
-        >
-          <h3 className="text-sm leading-6 font-medium">{detail.label}</h3>
-          <p className="text-sm text-gray-700">{detail.value}</p>
+}): JSX.Element {
+  const { credits } = useCreditsStore();
+
+  return (
+    <section className="grid grid-cols-2 gap-6 sm:grid-cols-3">
+      {[
+        { label: "Title", value: homeDetails.title },
+        { label: "Home type", value: homeDetails.homeType },
+        { label: "Location", value: homeDetails.homeAddress },
+        pricing?.price && {
+          label: "Price",
+          value: `${pricing.price}/${mapPaymentFrequencyToLabel(pricing.paymentFrequency!)}`,
+        },
+        { label: "No of Bedrooms", value: homeDetails.noOfBedRooms },
+      ]
+        .filter((detail): detail is { label: string; value: any } =>
+          Boolean(detail),
+        )
+        .map((detail, index) => (
+          <div
+            key={detail.label}
+            className={detail.label === "Description" ? "col-span-full" : ""}
+          >
+            <h3 className="text-sm leading-6 font-medium">{detail.label}</h3>
+            <p className="text-sm text-gray-700">{detail.value}</p>
+          </div>
+        ))}
+
+      {homeDetails.description && (
+        <div className="col-span-full">
+          <h3 className="text-sm leading-6 font-medium">Description</h3>
+          <p className="text-sm text-gray-700">{homeDetails.description}</p>
         </div>
-      ))}
+      )}
 
-    {homeDetails.description && (
       <div className="col-span-full">
-        <h3 className="text-sm leading-6 font-medium">Description</h3>
-        <p className="text-sm text-gray-700">{homeDetails.description}</p>
+        <h3 className="text-sm leading-6 font-medium">
+          Your Available Credits
+        </h3>
+        <div className="flex items-center gap-2">
+          <Image
+            width={24}
+            height={24}
+            alt="credit chip"
+            src={"/icons/icon-credit-chip.svg"}
+          />
+          <p className="text-sm leading-6 font-medium">{credits} Credits</p>
+        </div>
       </div>
-    )}
-
-    <div className="col-span-full">
-      <h3 className="text-sm leading-6 font-medium">Your Available Credits</h3>
-      <div className="hidden lg:flex lg:items-center lg:gap-2">
-        <Image
-          width={24}
-          height={24}
-          alt="credit chip"
-          src={"/icons/icon-credit-chip.svg"}
-        />
-        <p className="text-sm leading-6 font-medium">800 Credits</p>
-      </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+}
 
 function ListingCreationPreviewPage({
   handlePublish,
@@ -104,7 +109,6 @@ function ListingCreationPreviewPage({
       };
     }
   }, [photos]);
-
 
   return (
     <div className="w-full md:max-w-202">

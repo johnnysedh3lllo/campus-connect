@@ -22,6 +22,7 @@ import creditChip from "@/public/icons/icon-credit-chip.svg";
 //
 import { useUser } from "@/hooks/use-user";
 import { useUserProfile } from "@/hooks/use-user-profile";
+import { useCreditsStore } from "@/lib/store/credits-store";
 
 export default function Navigation() {
   const { data: user } = useUser();
@@ -29,6 +30,7 @@ export default function Navigation() {
 
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [clicked, setIsClicked] = useState(false);
+  const {credits} = useCreditsStore();
 
   const pathName = usePathname();
   return (
@@ -67,7 +69,7 @@ export default function Navigation() {
         <div className="flex items-center gap-2 lg:pb-3">
           <div className="hidden lg:flex lg:items-center lg:gap-2">
             <Image width={24} height={24} alt="credit chip" src={creditChip} />
-            <p className="text-sm leading-6 font-medium">800 Credits</p>
+            <p className="text-sm leading-6 font-medium">{credits} Credits</p>
           </div>
 
           <Separator orientation="vertical" className="hidden h-4 lg:block" />
