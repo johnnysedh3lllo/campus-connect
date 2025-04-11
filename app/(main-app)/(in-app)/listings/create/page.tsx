@@ -1,9 +1,8 @@
 "use client";
 import { useListingCreationStore } from "@/lib/store/listing-creation-store";
 import { Badge } from "@/components/ui/badge";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useModal } from "@/hooks/use-modal";
-import Image from "next/image";
 import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
 import { formVariants, animationConfig } from "@/hooks/animations";
 import { useRouter } from "next/navigation";
@@ -18,39 +17,82 @@ import ListingActionModal from "@/components/app/listing-action-modal";
 import { useCreditsStore } from "@/lib/store/credits-store";
 import { CREDITS_REQUIRED_TO_CREATE_LISTING } from "@/lib/constants";
 import ListingPageHeader from "@/components/app/listing-page-header";
+import { usePremiumStore } from "@/lib/store/use-premium-store";
+import { useQueryClient } from "@tanstack/react-query";
 
 function CreatePage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { step, steps, clearData, homeDetails, pricing, photos } =
     useListingCreationStore();
   const { credits, setCredits } = useCreditsStore();
   const { modalData, openModal, closeModal } = useModal();
   const [isPublishing, setIsPublishing] = useState(false);
   const listingFormWrapper = useRef<HTMLDivElement>(null);
+  const {
+    isPremium,
+    isLoading: isLoadingPremium,
+    error: errorGettingPremium,
+    checkPremiumStatus,
+    setPremium,
+  } = usePremiumStore();
+
+  useEffect(() => {
+    checkPremiumStatus();
+  }, [checkPremiumStatus]);
 
   function handleEscape() {
     router.push("/listings");
     clearData();
   }
+
   async function handlePublish() {
     setIsPublishing(true);
     try {
       if (!homeDetails || Object.keys(homeDetails).length === 0) {
         throw new Error("Home details are missing");
       }
-      if (!pricing || !pricing.price)
+      if (!pricing || !pricing.price) {
         throw new Error("Pricing information is required");
-      if (!photos || photos.length === 0)
+      }
+      if (!photos || photos.length === 0) {
         throw new Error("At least one photo is required");
+      }
 
-      if (credits < CREDITS_REQUIRED_TO_CREATE_LISTING) {
+      if (isLoadingPremium) {
+        toast({
+          title: "Loading Premium Status",
+          description: "Please wait while we verify your premium status.",
+          variant: "destructive",
+          // variant: "info",
+        });
+        return;
+      }
+
+      if (errorGettingPremium) {
+        toast({
+          title: "Error Checking Premium Status",
+          description:
+            "Unable to verify your premium status. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!isPremium && credits < CREDITS_REQUIRED_TO_CREATE_LISTING) {
         openModal({
           variant: "error",
-          title: "You don't have enough credits to list this property.",
-          message: "Buy credits now, or join our premium plan",
+          title: "Insufficient Credits or Premium Status",
+          message:
+            "You need to either have enough credits or be a premium user to list this property.",
           primaryButtonText: "Get Premium",
           secondaryButtonText: "Buy Credits",
-          onPrimaryAction: () => router.push("/premium"),
+          onPrimaryAction: () => {
+            console.log("Setting Premium");
+            setPremium();
+            console.log("Closing Modal");
+            closeModal();
+          },
           onSecondaryAction: () => router.push("/credits/purchase"),
         });
         return;
@@ -70,12 +112,18 @@ function CreatePage() {
         return;
       }
 
-      await setCredits(credits - CREDITS_REQUIRED_TO_CREATE_LISTING);
+      if (!isPremium) {
+        await setCredits(credits - CREDITS_REQUIRED_TO_CREATE_LISTING);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["listings"] });
 
       openModal({
         variant: "success",
         title: "Property listed successfully",
-        message: `${CREDITS_REQUIRED_TO_CREATE_LISTING} credits have been deducted from your balance.`,
+        message: isPremium
+          ? "Your property has been listed successfully as a premium user."
+          : `${CREDITS_REQUIRED_TO_CREATE_LISTING} credits have been deducted from your balance.`,
         primaryButtonText: "Back to listings",
         onPrimaryAction: () => {
           router.push("/listings");
@@ -83,6 +131,7 @@ function CreatePage() {
         },
       });
     } catch (error: any) {
+      console.log("Error Publishing Listing :", error);
       toast({
         title: "Error Publishing Listing",
         description: error.message || "An unexpected error occurred",

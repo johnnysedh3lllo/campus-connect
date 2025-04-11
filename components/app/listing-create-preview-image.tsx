@@ -1,6 +1,5 @@
 import Image from "next/image"
 import { Button } from "../ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import { RefObject } from "react";
 
 function ListingCreatePreviewImage({ previews, scrollContainerRef, removeSpecificImage, isUploading }: {

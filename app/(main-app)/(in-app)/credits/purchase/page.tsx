@@ -23,6 +23,7 @@ function page() {
   const [selectedPlan, setSelectedPlan] = useState<{
     label: string;
     value: number;
+    price: number;
   } | null>(null);
   const [promoCode, setPromoCode] = useState("");
   const { modalData, openModal } = useModal();
@@ -36,9 +37,9 @@ function page() {
   }
 
   const plans = [
-    { id: 1, label: "10 Credits - $10", value: 10 },
-    { id: 2, label: "20 Credits - $18", value: 20 },
-    { id: 3, label: "50 Credits - $40", value: 50 },
+    { id: 1, label: "10 Credits - $10", value: 10, price: 10 },
+    { id: 2, label: "20 Credits - $18", value: 20, price: 18 },
+    { id: 3, label: "50 Credits - $40", value: 50, price: 40 },
   ];
 
   function onSubmit(data: { plan: string }) {
@@ -48,13 +49,13 @@ function page() {
       variant: "success",
       message:
         "Your credits have been added to your account. Start listing your property and connect with tenants now! 🚀",
-      title: "Purchase Successful!", 
-      primaryButtonText: "Back To Listings"
+      title: "Purchase Successful!",
+      primaryButtonText: "Back To Listings",
     });
     console.log("Selected Plan:", chosenPlan);
   }
-  function closeModal(){
-    router.push("/listings")
+  function closeModal() {
+    router.push("/listings");
   }
 
   const {

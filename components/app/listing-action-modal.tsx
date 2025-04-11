@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { ShieldIcon } from "@/public/icons/shield-icon";
 import { Button } from "../ui/button";
 import Image from "next/image";
@@ -24,14 +24,43 @@ function ListingActionModal({
   onPrimaryAction?: () => void;
   onSecondaryAction?: () => void;
 }) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose]);
+
+  const handleOutsideClick = (event: React.MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 left-0 z-100 flex h-full w-screen items-center justify-center bg-black/20 p-4">
-      <div className="mx-auto flex w-full flex-col items-center justify-center gap-6 rounded-lg bg-white p-4 lg:max-w-120">
+    <div
+      className="fixed top-0 left-0 z-100 flex h-full w-screen items-center justify-center bg-black/20 p-4"
+      onClick={handleOutsideClick}
+    >
+      <div
+        ref={modalRef}
+        className="mx-auto flex w-full flex-col items-center justify-center gap-6 rounded-lg bg-white p-4 lg:max-w-120"
+      >
         {/* Icon section */}
         <div
-          className={`border-foreground w-fit self-center rounded-full border-1 border-solid p-4 ${variant === "success" ? "border-green-200" : "border-red-200"}`}
+          className={`border-foreground w-fit self-center rounded-full border-1 border-solid p-4 ${
+            variant === "success" ? "border-green-200" : "border-red-200"
+          }`}
         >
           {variant === "success" ? (
             <figure className="flex size-50 items-center justify-center rounded-full bg-green-200">

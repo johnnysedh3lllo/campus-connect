@@ -34,4 +34,9 @@ declare global {
   };
 
   type UserProfile = DB["public"]["Tables"]["users"]["Row"];
+  type Listing = DB["public"]["Tables"]["listings"];
+  type ListingImage = DB["public"]["Tables"]["listing_images"];
+  type PaymentFrequency = DB["public"]["Enums"]["payment_frequency_enum"];
+  type HomeType = DB["public"]["Enums"]["home_type_enum"];
+  type ListingStatus = DB["public"]["Enums"]["listing_status_enum"];
 }

@@ -67,3 +67,41 @@ export function getMessageDateLabel(timestamp: string): string {
     });
   }
 }
+
+export function formatNumber(number: number, decimals: number = 1): string {
+  // Handle edge cases
+  if (number === null || number === undefined || isNaN(number)) {
+    return "0";
+  }
+
+  // Use absolute value for calculations but keep track of sign
+  const isNegative = number < 0;
+  const absNumber = Math.abs(number);
+
+  // Define the suffixes and their corresponding thresholds
+  const suffixes = [
+    { value: 1e9, symbol: "B" }, // Billion
+    { value: 1e6, symbol: "M" }, // Million
+    { value: 1e3, symbol: "K" }, // Thousand
+    { value: 1, symbol: "" }, // No suffix
+  ];
+
+  // Find the appropriate suffix
+  const suffix = suffixes.find((s) => absNumber >= s.value);
+
+  if (!suffix) {
+    return "0";
+  }
+
+  // Calculate the formatted value
+  const formattedValue = (absNumber / suffix.value).toFixed(
+    // Only show decimals if not a whole number
+    absNumber % suffix.value === 0 ? 0 : decimals,
+  );
+
+  // Remove trailing zeros in decimal part
+  const cleanValue = formattedValue.replace(/\.0+$/, "");
+
+  // Apply negative sign if needed and add suffix
+  return `${isNegative ? "-" : ""}${cleanValue}${suffix.symbol}`;
+}

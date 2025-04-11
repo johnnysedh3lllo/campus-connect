@@ -13,7 +13,7 @@ import Image from "next/image";
 import { useCreditsStore } from "@/lib/store/credits-store";
 
 type PaymentFrequency = z.infer<typeof PaymentFrequencyEnum>;
-function mapPaymentFrequencyToLabel(
+export function mapPaymentFrequencyToLabel(
   paymentFrequency: PaymentFrequency,
 ): string {
   const frequencyMap: Record<PaymentFrequency, string> = {

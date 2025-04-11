@@ -570,8 +570,7 @@ export async function insertListing(
 
     await Promise.all(imageUploadPromises);
 
-    // TODO: Revalidate the listings page to show the new listing
-    // revalidatePath("/listings");
+    revalidatePath("/listings");
 
     return {
       success: true,
@@ -586,6 +585,108 @@ export async function insertListing(
       error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
+}
+
+type CheckPremiumStatusResult = {
+  success: boolean;
+  isPremium?: boolean;
+  error?: string;
+};
+
+export async function checkIfLandlordIsPremium(): Promise<CheckPremiumStatusResult> {
+  try {
+    const supabase = await createClient();
+
+    // Get the authenticated user
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return {
+        success: false,
+        error: "User not authenticated. Please log in.",
+      };
+    }
+
+    const userId = user.id;
+
+    // Call the Supabase RPC function to check premium status
+    const { data, error: checkError } = await supabase.rpc(
+      "check_landlord_premium_status",
+      {
+        user_id_param: userId,
+      },
+    );
+
+    if (checkError) {
+      return {
+        success: false,
+        error: `Failed to check premium status: ${checkError.message}`,
+      };
+    }
+
+    // Ensure the RPC function returns a valid result
+    if (data === null || typeof data !== "boolean") {
+      return {
+        success: false,
+        error: "Unexpected response from the server.",
+      };
+    }
+
+    return {
+      success: true,
+      isPremium: data,
+    };
+  } catch (error) {
+    console.error("Error in checkIfLandlordIsPremium:", error);
+    return {
+      success: false,
+      error: "An unexpected error occurred. Please try again later.",
+    };
+  }
+}
+
+export async function getListings() {
+  const supabase = await createClient();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !userData.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const userId = userData.user.id;
+
+  // Get the user's role information
+  const { data: userInfo, error: userInfoError } = await supabase
+    .from("users")
+    .select("role_id")
+    .eq("id", userId)
+    .single();
+
+  if (userInfoError) {
+    throw new Error(userInfoError.message);
+  }
+
+  // Query listings based on user role
+  let listingsQuery = supabase.from("listings").select(`
+    *,
+    listing_images(id, image_url)
+  `);
+
+  // If user is a landlord (assuming role_id 2 is landlord), only show their listings
+  if (userInfo.role_id === 2) {
+    listingsQuery = listingsQuery.eq("landlord_id", userId);
+  }
+
+  const { data: listings, error: listingsError } = await listingsQuery;
+
+  if (listingsError) {
+    throw new Error(listingsError.message);
+  }
+
+  return { listings };
 }
 
 // MESSAGES
