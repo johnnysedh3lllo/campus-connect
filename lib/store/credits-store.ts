@@ -1,5 +1,4 @@
 import { create } from "zustand";
-
 interface CreditsState {
   credits: number;
   increaseCredits: (amount: number) => void;
