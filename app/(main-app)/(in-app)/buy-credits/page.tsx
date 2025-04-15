@@ -75,7 +75,7 @@ function page() {
       />
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col items-start gap-6 px-4 pt-12 pb-3 sm:px-12 md:mx-20 md:px-0"
+        className="max-w-screen-max-xl mx-auto flex flex-col items-start gap-6 p-4 pt-6 sm:px-12 sm:pt-10"
       >
         <div className="w-full">
           <h3 className="text-sm leading-6 font-medium">
