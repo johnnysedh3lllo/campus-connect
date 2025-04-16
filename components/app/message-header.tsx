@@ -15,7 +15,7 @@ import {
 import { UserProfileCardMobile } from "./user-profile-card-mobile";
 import { useState } from "react";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import { MessageHeaderProps } from "@/lib/component-prop-types";
+import { MessageHeaderProps } from "@/lib/prop.types";
 
 export default function MessageHeader({
   chatParticipants,

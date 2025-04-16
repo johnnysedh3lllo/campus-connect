@@ -158,3 +158,14 @@ export const profileInfoFormSchema = userValidationSchema.pick({
   lastName: true,
 });
 export type ProfileInfoFormType = z.infer<typeof profileInfoFormSchema>;
+
+export const buyCreditsFormSchema = z.object({
+  creditAmount: z.string({
+    required_error: "Please select a credit amount.",
+  }),
+  promoCode: z.string().min(6, {
+    message: "Code entered must be a valid promo code.",
+  }).optional(),
+});
+
+export type BuyCreditsFormSchemaType = z.infer<typeof buyCreditsFormSchema>;

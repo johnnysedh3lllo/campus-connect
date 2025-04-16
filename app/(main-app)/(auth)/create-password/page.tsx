@@ -4,7 +4,7 @@ import type React from "react";
 
 import { useState } from "react";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
-import { type SetPasswordFormType } from "@/lib/form-schemas";
+import { type SetPasswordFormType } from "@/lib/form.schemas";
 import { createNewPassword } from "@/app/actions/actions";
 import { toast } from "@/hooks/use-toast";
 // import ErrorHandler from "@/lib/ErrorHandler";
@@ -14,7 +14,7 @@ import {
   CreateNewPassword,
   PasswordCreationSuccess,
 } from "@/components/app/auth-forms";
-import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
+import { AnimationWrapper } from "@/lib/providers/amination-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 
 export default function CreateNewPasswordPage() {
@@ -31,7 +31,7 @@ export default function CreateNewPasswordPage() {
     try {
       const result = await createNewPassword(values);
 
-      console.log(result)
+      console.log(result);
 
       if (!result.success) {
         toast({

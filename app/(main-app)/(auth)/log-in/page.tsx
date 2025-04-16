@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { login } from "@/app/actions/actions";
 import { useRouter } from "next/navigation";
-import { LoginFormType, loginSchema } from "@/lib/form-schemas";
+import { LoginFormType, loginSchema } from "@/lib/form.schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 
@@ -12,7 +12,7 @@ import { toast } from "@/hooks/use-toast";
 
 // ASSETS
 import { LoginForm } from "@/components/app/auth-forms";
-import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
+import { AnimationWrapper } from "@/lib/providers/amination-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 
 export default function LoginPage(props: { searchParams: Promise<Message> }) {

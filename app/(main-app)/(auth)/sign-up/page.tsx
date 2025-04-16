@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { useEffect, useRef, useState } from "react";
-import { MultiStepFormData } from "@/lib/form-types";
+import { MultiStepFormData } from "@/lib/form.types";
 import {
   createPassword,
   signUpWithOtp,
@@ -18,7 +18,7 @@ import {
   SetPasswordFormType,
   SignUpFormType,
   UserDetailsFormType,
-} from "@/lib/form-schemas";
+} from "@/lib/form.schemas";
 import { useRouter } from "next/navigation";
 
 // COMPONENTS
@@ -29,7 +29,7 @@ import {
   VerifyOtp,
 } from "@/components/app/auth-forms";
 import { Badge } from "@/components/ui/badge";
-import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
+import { AnimationWrapper } from "@/lib/providers/amination-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 
 //

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
-import { settingsFormSchema, SettingsFormType } from "@/lib/form-schemas";
+import { settingsFormSchema, SettingsFormType } from "@/lib/form.schemas";
 
 import { Button } from "@/components/ui/button";
 import {

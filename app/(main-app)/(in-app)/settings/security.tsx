@@ -8,7 +8,7 @@ import { createPassword } from "@/app/actions/actions";
 import {
   ChangePasswordFormType,
   changePasswordSchema,
-} from "@/lib/form-schemas";
+} from "@/lib/form.schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 

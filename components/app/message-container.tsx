@@ -7,7 +7,7 @@ import MessageHeader from "./message-header";
 import { supabase } from "@/utils/supabase/client";
 import { getMessageDateLabel } from "@/lib/utils";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import { MessageContainerProps } from "@/lib/component-prop-types";
+import { MessageContainerProps } from "@/lib/prop.types";
 
 const MessageContainer = ({
   conversationId,

@@ -3,7 +3,7 @@
 // UTILITIES
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { navLinks } from "@/lib/data-storage";
+import { navLinks } from "@/lib/app.config";
 
 // COMPONENTS
 import Link from "next/link";

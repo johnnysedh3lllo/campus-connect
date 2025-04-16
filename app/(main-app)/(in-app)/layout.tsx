@@ -18,7 +18,7 @@ import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
 import Navigation from "@/components/app/navigation";
 
 // Setup
-import TanstackQueryProvider from "@/lib/tanstack-query-provider";
+import TanstackQueryProvider from "@/lib/providers/tanstack-query-provider";
 import { getUser, getUserProfile } from "@/app/actions/actions";
 
 const defaultUrl = process.env.VERCEL_URL

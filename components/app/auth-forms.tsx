@@ -17,7 +17,7 @@ import {
   UserDetailsFormType,
   loginSchema,
   LoginFormType,
-} from "@/lib/form-schemas";
+} from "@/lib/form.schemas";
 import Link from "next/link";
 import { resendSignUpOtp, signOut } from "@/app/actions/actions";
 
@@ -65,7 +65,7 @@ import {
   SelectRoleProps,
   SetPasswordProps,
   VerifyOtpProps,
-} from "@/lib/component-prop-types";
+} from "@/lib/prop.types";
 
 //
 const roleDetails = [

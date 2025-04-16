@@ -5,7 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserResponse } from "@supabase/supabase-js";
-import { MultiStepFormData } from "@/lib/form-types";
+import { MultiStepFormData } from "@/lib/form.types";
 import {
   userValidationSchema,
   loginSchema,
@@ -17,7 +17,7 @@ import {
   ResetPasswordFormType,
   SignUpFormType,
   ProfileInfoFormType,
-} from "@/lib/form-schemas";
+} from "@/lib/form.schemas";
 import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
 

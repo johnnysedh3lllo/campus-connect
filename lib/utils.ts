@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { PRICE_IDS } from "./pricing.config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -66,4 +67,24 @@ export function getMessageDateLabel(timestamp: string): string {
       year: "numeric",
     });
   }
+}
+
+// Helper functions to work with pricing
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount / 100);
+}
+
+export function getCreditTiers() {
+  return Object.entries(PRICE_IDS.landlord.credits.tiers).map(
+    ([key, tier]) => ({
+      id: key,
+      label: `${tier.credits} Credits - ${formatCurrency(tier.amount)}`,
+      value: tier.credits.toString(),
+      price: tier.amount,
+      priceId: tier.priceId,
+    }),
+  );
 }
