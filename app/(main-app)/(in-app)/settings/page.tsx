@@ -1,7 +1,7 @@
 "use client";
 
 // UTILITIES
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { motion, AnimatePresence } from "framer-motion";
 
