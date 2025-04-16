@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { PRICE_IDS } from "./pricing.config";
+import { PRICING } from "./pricing.config";
+import { CreditTierOptions } from "./pricing.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -77,14 +78,12 @@ export function formatCurrency(amount: number): string {
   }).format(amount / 100);
 }
 
-export function getCreditTiers() {
-  return Object.entries(PRICE_IDS.landlord.credits.tiers).map(
-    ([key, tier]) => ({
-      id: key,
-      label: `${tier.credits} Credits - ${formatCurrency(tier.amount)}`,
-      value: tier.credits.toString(),
-      price: tier.amount,
-      priceId: tier.priceId,
-    }),
-  );
+export function getCreditTiers(): CreditTierOptions[] {
+  return Object.entries(PRICING.landlord.credits.tiers).map(([key, tier]) => ({
+    id: key,
+    label: `${tier.credits} Credits - ${formatCurrency(tier.amount)}`,
+    value: tier.credits.toString(),
+    price: tier.amount,
+    priceId: tier.priceId,
+  }));
 }

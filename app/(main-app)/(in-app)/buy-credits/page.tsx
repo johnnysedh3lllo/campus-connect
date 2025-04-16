@@ -1,10 +1,8 @@
 "use client";
 import { Header } from "@/components/app/header";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
 // import { useCreditsStore } from "@/lib/store/credits-store";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Select,
   SelectTrigger,
@@ -26,51 +24,67 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { buyCreditsFormSchema } from "@/lib/form.schemas";
 import { BuyCreditsFormSchemaType } from "@/lib/form.types";
+import { getCreditTiers } from "@/lib/utils";
+import { CreditTierOptions } from "@/lib/pricing.types";
+import { Loader2 } from "lucide-react";
+import { PURCHASE_TYPES } from "@/lib/pricing.config";
+import { loadStripe } from "@stripe/stripe-js";
 
 export default function Page() {
-  const router = useRouter();
   // const { credits } = useCreditsStore();
   const credits = 150;
-  const [selectedPlan, setSelectedPlan] = useState<{
-    label: string;
-    value: number;
-    price: number;
-  } | null>(null);
+  const [selectedTier, setSelectedTier] = useState<CreditTierOptions>();
   const [promoCode, setPromoCode] = useState("");
-  // const { modalData, openModal } = useModal();
 
-  // function handleEscape() {
-  //   router.push("/listings");
-  // }
+  const creditTiers = getCreditTiers();
 
-  function handleApplyPromo() {
-    console.log("Applying promo code:", promoCode);
-  }
+  async function handleCreditCheckout(values: BuyCreditsFormSchemaType) {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  const plans = [
-    { id: 1, label: "10 Credits - $10", value: "10", price: 10 },
-    { id: 2, label: "20 Credits - $18", value: "20", price: 18 },
-    { id: 3, label: "50 Credits - $40", value: "50", price: 40 },
-  ];
+    const priceId = values.creditPriceID;
+    const promoCode = values.promoCode;
+    const purchaseType = PURCHASE_TYPES.LANDLORD_CREDITS.type;
 
-  function onSubmit(values: BuyCreditsFormSchemaType) {
-    console.log(values);
+    const response = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ purchaseType, priceId, promoCode }),
+    });
+
+    // const { sessionId } = await response.json();
+    // const stripe = await loadStripe(
+    //   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+    // );
+    // await stripe?.redirectToCheckout({ sessionId });
   }
 
   const form = useForm<BuyCreditsFormSchemaType>({
     resolver: zodResolver(buyCreditsFormSchema),
     defaultValues: {
-      creditAmount: "",
+      creditPriceID: "",
       promoCode: "",
     },
   });
 
   const {
-    formState: { errors },
+    formState: { isSubmitting },
+    watch,
   } = form;
+
+  const formValues = watch();
+
+  useEffect(() => {
+    if (formValues.creditPriceID) {
+      const tierOption = creditTiers.find(
+        (tier) => tier?.priceId === formValues.creditPriceID,
+      );
+      if (tierOption?.priceId !== selectedTier?.priceId) {
+        setSelectedTier(tierOption);
+      }
+    }
+  }, [formValues.creditPriceID]);
 
   return (
     <section className="max-w-screen-max-xl mx-auto">
@@ -82,7 +96,7 @@ export default function Page() {
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(handleCreditCheckout)}
           className="flex w-full max-w-96 flex-col items-start gap-16 px-4 pt-6 sm:px-12 lg:px-6"
         >
           <div className="flex w-full flex-col gap-6">
@@ -97,12 +111,13 @@ export default function Page() {
 
             {/* SELECT CREDIT */}
             <FormField
-              name="creditAmount"
+              name="creditPriceID"
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
                   <FormLabel>Select the amount to buy</FormLabel>
                   <Select
+                    disabled={isSubmitting}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -116,11 +131,11 @@ export default function Page() {
                     </FormControl>
 
                     <SelectContent className="rounded-sm">
-                      {plans.map((plan) => (
+                      {creditTiers?.map((plan) => (
                         <SelectItem
                           className=""
-                          key={plan.id}
-                          value={plan.value}
+                          key={plan.label}
+                          value={plan.priceId}
                         >
                           {plan.label}
                         </SelectItem>
@@ -141,6 +156,7 @@ export default function Page() {
                   <FormLabel>Promo Code</FormLabel>
                   <FormControl>
                     <Input
+                      disabled={isSubmitting}
                       className="p-3"
                       placeholder="Enter code"
                       {...field}
@@ -158,7 +174,7 @@ export default function Page() {
               <div className="flex items-center gap-2">
                 <CreditChipIcon />
                 <p className="">
-                  {selectedPlan ? credits + selectedPlan.value : credits}{" "}
+                  {selectedTier ? credits + +selectedTier.value : credits}{" "}
                   Credits
                 </p>
               </div>
@@ -166,11 +182,22 @@ export default function Page() {
           </div>
 
           <div className="flex w-full flex-col-reverse items-center justify-between gap-4 sm:flex-row md:max-w-104">
-            <Button type="button" variant="outline" className="w-full sm:w-50">
+            <Button
+              type="button"
+              disabled={isSubmitting}
+              variant="outline"
+              className="w-full sm:w-50"
+            >
               Back
             </Button>
-            <Button type="submit" className="w-full sm:w-50">
-              Buy Credits
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex w-full items-center sm:w-50"
+            >
+              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isSubmitting ? "Processing..." : "Buy Credits"}
             </Button>
           </div>
         </form>

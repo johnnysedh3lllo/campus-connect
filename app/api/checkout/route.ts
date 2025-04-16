@@ -5,6 +5,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-03-31.basil",
 });
 
-export async function POST(req: NextRequest){
-    // const
+export async function POST(request: NextRequest) {
+  // const
+  try {
+    const requestBody = await request.json();
+
+    console.log(requestBody);
+  } catch (error) {}
 }

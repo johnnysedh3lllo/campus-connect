@@ -11,16 +11,18 @@ import Security from "./security";
 import Support from "./support";
 
 // ASSETS
-import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { Button } from "@/components/ui/button";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
 
-type Tab = {
+// TODO: Decide where to place this type
+export type Tab = {
   id: number;
   title: string;
   component: JSX.Element;
 };
+
+// TODO: Decide whether to move this or not
 const tabs: Tab[] = [
   { id: 1, title: "Security", component: <Security /> },
   { id: 2, title: "Notifications", component: <Notifications /> },
@@ -58,8 +60,6 @@ export default function Page() {
           <h1 className="text-text-primary text-2xl leading-8 font-semibold sm:text-4xl sm:leading-11">
             {isMobile && selectedTab ? selectedTab.title : "Settings"}
           </h1>
-
-    
         </section>
 
         {/* Desktop Tabs Header */}
@@ -68,7 +68,7 @@ export default function Page() {
             <button
               key={tab.id}
               onClick={() => setSelectedTab(tab)}
-              className={`relative py-3 font-medium cursor-pointer focus:outline-none ${selectedTab?.id === tab.id ? "text-text-primary" : "text-black hover:text-gray-950"}`}
+              className={`relative cursor-pointer py-3 font-medium focus:outline-none ${selectedTab?.id === tab.id ? "text-text-primary" : "text-black hover:text-gray-950"}`}
             >
               {tab.title}
 

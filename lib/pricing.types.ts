@@ -12,3 +12,11 @@ export type CreditTier = {
   credits: number;
   amount: number;
 };
+
+export type CreditTierOptions = {
+  id: string;
+  label: string;
+  value: string;
+  price: number;
+  priceId: string;
+};

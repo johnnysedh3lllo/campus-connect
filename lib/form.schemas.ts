@@ -144,13 +144,13 @@ export const profileInfoFormSchema = userValidationSchema.pick({
 });
 
 export const buyCreditsFormSchema = z.object({
-  creditAmount: z.string({
-    required_error: "Please select a credit amount.",
+  creditPriceID: z.string().min(1, {
+    message: "Please select a credit amount.",
   }),
   promoCode: z
     .string()
-    .min(6, {
+    .optional()
+    .refine((value) => !value || value.length === 6, {
       message: "Code entered must be a valid promo code.",
-    })
-    .optional(),
+    }),
 });

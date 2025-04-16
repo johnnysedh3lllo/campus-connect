@@ -1,6 +1,8 @@
 import { CreditTier, PriceTier } from "./pricing.types";
 
-export const PRICE_IDS = {
+// TODO: Consider abstracting these details to the database
+// TODO: Figure out a way to ensure this object is in sync with the Stripe Dashboard
+export const PRICING = {
   student: {
     bronze: {
       productId: "prod_S84H1pGCYazcJf",
@@ -73,3 +75,22 @@ export const PRICE_IDS = {
     },
   },
 };
+
+export const PURCHASE_TYPES = {
+  LANDLORD_CREDITS: {
+    type: "landlord_credits",
+    description: "Buy credits to promote listings.",
+  },
+  LANDLORD_PREMIUM: {
+    type: "landlord_premium",
+    description: "Monthly premium plan for landlords.",
+  },
+  STUDENT_PACKAGE: {
+    type: "student_package",
+    lifetime: true,
+    description: "One-time package with lifetime access for students.",
+  },
+} as const;
+
+export type PurchaseTypeKey = keyof typeof PURCHASE_TYPES;
+export type PurchaseType = (typeof PURCHASE_TYPES)[PurchaseTypeKey];
