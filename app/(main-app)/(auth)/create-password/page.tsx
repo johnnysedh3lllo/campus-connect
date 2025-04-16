@@ -4,7 +4,6 @@ import type React from "react";
 
 import { useState } from "react";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
-import { type SetPasswordFormType } from "@/lib/form.schemas";
 import { createNewPassword } from "@/app/actions/actions";
 import { toast } from "@/hooks/use-toast";
 // import ErrorHandler from "@/lib/ErrorHandler";
@@ -14,8 +13,9 @@ import {
   CreateNewPassword,
   PasswordCreationSuccess,
 } from "@/components/app/auth-forms";
-import { AnimationWrapper } from "@/lib/providers/amination-wrapper";
+import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
+import { SetPasswordFormType } from "@/lib/form.types";
 
 export default function CreateNewPasswordPage() {
   const { step, nextStep, updateFields } = useMultiStepForm({

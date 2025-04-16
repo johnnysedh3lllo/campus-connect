@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
-import { settingsFormSchema, SettingsFormType } from "@/lib/form.schemas";
+import { settingsFormSchema} from "@/lib/form.schemas";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
+import { SettingsFormType } from "@/lib/form.types";
 
 export default function Notifications() {
   const [isLoading, setIsLoading] = useState(false);

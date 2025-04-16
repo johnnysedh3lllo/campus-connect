@@ -27,10 +27,8 @@ import {
 } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  buyCreditsFormSchema,
-  BuyCreditsFormSchemaType,
-} from "@/lib/form.schemas";
+import { buyCreditsFormSchema } from "@/lib/form.schemas";
+import { BuyCreditsFormSchemaType } from "@/lib/form.types";
 
 export default function Page() {
   const router = useRouter();

@@ -116,7 +116,6 @@ export interface EmptyPageStateProps {
 }
 
 // TODO: TYPES TO BE ABSTRACTED TO A SEPARATE FOLDER, MAYBE
-
 export type LoginFormProps = {
   isLoading: boolean;
   handleLogin: (values: LoginFormType) => void;

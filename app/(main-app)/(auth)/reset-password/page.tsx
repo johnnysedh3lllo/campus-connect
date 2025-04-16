@@ -2,13 +2,13 @@
 
 import { resetPassword } from "@/app/actions/actions";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
-import { ResetPasswordFormType } from "@/lib/form.schemas";
 import { useState } from "react";
 import { CheckInbox, ResetPassword } from "@/components/app/auth-forms";
 import { useEmailState } from "@/lib/store/email-state-store";
 import { toast } from "@/hooks/use-toast";
-import { AnimationWrapper } from "@/lib/providers/amination-wrapper";
+import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
+import { ResetPasswordFormType } from "@/lib/form.types";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`

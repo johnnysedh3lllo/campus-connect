@@ -4,16 +4,15 @@
 import { useState } from "react";
 import { login } from "@/app/actions/actions";
 import { useRouter } from "next/navigation";
-import { LoginFormType, loginSchema } from "@/lib/form.schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 
 // COMPONENTS
 
 // ASSETS
 import { LoginForm } from "@/components/app/auth-forms";
-import { AnimationWrapper } from "@/lib/providers/amination-wrapper";
+import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
+import { LoginFormType } from "@/lib/form.types";
 
 export default function LoginPage(props: { searchParams: Promise<Message> }) {
   const router = useRouter();

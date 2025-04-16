@@ -5,18 +5,20 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { UserResponse } from "@supabase/supabase-js";
-import { MultiStepFormData } from "@/lib/form.types";
+import {
+  LoginFormType,
+  MultiStepFormData,
+  ProfileInfoFormType,
+  ResetPasswordFormType,
+  SetPasswordFormType,
+  SignUpFormType,
+} from "@/lib/form.types";
 import {
   userValidationSchema,
   loginSchema,
   signUpFormSchema,
   resetPasswordFormSchema,
-  LoginFormType,
-  SetPasswordFormType,
   setPasswordFormSchema,
-  ResetPasswordFormType,
-  SignUpFormType,
-  ProfileInfoFormType,
 } from "@/lib/form.schemas";
 import { z } from "zod";
 // import { UserResponse } from "@supabase/supabase-js";
