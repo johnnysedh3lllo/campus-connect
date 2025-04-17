@@ -688,6 +688,111 @@ export async function getListings() {
 
   return { listings };
 }
+export async function getListingById(id: string) {
+  const supabase = await createClient();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !userData.user) {
+    throw new Error("Unauthorized");
+  }
+
+  // Get the listing with its images
+  const { data: listing, error: listingError } = await supabase
+    .from("listings")
+    .select(
+      `
+      *,
+      listing_images(id, image_url)
+    `,
+    )
+    .eq("uuid", id)
+    .single();
+
+  if (listingError) {
+    throw new Error(listingError.message);
+  }
+
+  return { listing };
+}
+export async function deleteListingById(listingUuid: string) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      return {
+        success: false,
+        message: "Authentication required to delete listings",
+      };
+    }
+
+    // Get listing to check ownership
+    const { data: listing, error: listingError } = await supabase
+      .from("listings")
+      .select("landlord_id")
+      .eq("uuid", listingUuid)
+      .single();
+
+    if (listingError) {
+      return {
+        success: false,
+        message: "Listing not found",
+      };
+    }
+
+    // Security check: Ensure the current user is the owner of the listing
+    if (listing.landlord_id !== session.user.id) {
+      return {
+        success: false,
+        message: "You do not have permission to delete this listing",
+      };
+    }
+
+    // Start a Supabase transaction to delete both listing and images
+    // First delete all associated images
+    const { error: imagesDeleteError } = await supabase
+      .from("listing_images")
+      .delete()
+      .eq("listing_uuid", listingUuid);
+
+    if (imagesDeleteError) {
+      return {
+        success: false,
+        message: `Failed to delete images: ${imagesDeleteError.message}`,
+      };
+    }
+
+    // Then delete the listing itself
+    const { error: listingDeleteError } = await supabase
+      .from("listings")
+      .delete()
+      .eq("uuid", listingUuid);
+
+    if (listingDeleteError) {
+      return {
+        success: false,
+        message: `Failed to delete listing: ${listingDeleteError.message}`,
+      };
+    }
+
+    // Revalidate the listings page to reflect the changes
+    revalidatePath("/listings");
+
+    return {
+      success: true,
+      message: "Listing and all associated images deleted successfully",
+    };
+  } catch (error) {
+    console.error("Error deleting listing:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
 
 // MESSAGES
 

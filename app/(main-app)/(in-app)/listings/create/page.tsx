@@ -16,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import ListingActionModal from "@/components/app/listing-action-modal";
 import { useCreditsStore } from "@/lib/store/credits-store";
 import { CREDITS_REQUIRED_TO_CREATE_LISTING } from "@/lib/constants";
+import { Header } from "@/components/app/header";
 import ListingPageHeader from "@/components/app/listing-page-header";
 import { usePremiumStore } from "@/lib/store/use-premium-store";
 import { useQueryClient } from "@tanstack/react-query";
@@ -93,7 +94,7 @@ function CreatePage() {
             console.log("Closing Modal");
             closeModal();
           },
-          onSecondaryAction: () => router.push("/credits/purchase"),
+          onSecondaryAction: () => router.push("/buy-credits"),
         });
         return;
       }
@@ -161,14 +162,19 @@ function CreatePage() {
   return (
     <>
       <section className="flex flex-col gap-12">
-        <ListingPageHeader
+        <Header
+          title="New Listing"
+          subTitle="Enter any necessary information"
+          showButton={false}
+        />
+        {/* <ListingPageHeader
           heading="New Listing"
           subHeading="Enter any necessary information"
           handleEscape={handleEscape}
-        />
+        /> */}
 
         <div
-          className="onboarding-form--wrapper grid grid-cols-1 gap-6 px-4 sm:gap-12 sm:px-12 md:mx-20 md:grid-cols-[.7fr_4fr] md:px-0 lg:overflow-x-hidden lg:overflow-y-auto"
+          className="max-w-screen-max-xl onboarding-form--wrapper mx-auto grid w-full grid-cols-1 gap-6 p-4 sm:gap-12 sm:px-12 sm:pt-10 md:grid-cols-[.7fr_4fr] md:px-12 lg:overflow-x-hidden lg:overflow-y-auto"
           ref={listingFormWrapper}
         >
           <div className="bg-background sticky top-0 flex gap-1 py-4 sm:hidden lg:pe-4">
@@ -197,7 +203,7 @@ function CreatePage() {
                 >
                   <div className="grid grid-flow-col items-center gap-3 md:justify-start">
                     <span
-                      className={`inline-grid aspect-square w-7 place-items-center rounded-full bg-gray-600 ${
+                      className={`inline-grid aspect-square w-7 place-items-center rounded-full bg-line ${
                         step === index &&
                         "border-primary text-primary border bg-transparent"
                       } ${step > index && "bg-primary text-white"}`}
@@ -205,13 +211,13 @@ function CreatePage() {
                       {index + 1}
                     </span>
                     <span
-                      className={`text-gray-600 ${step === index && "font-semibold text-black!"}`}
+                      className={`text-text-secondary ${step === index && "font-semibold text-text-primary!"}`}
                     >
                       {item}
                     </span>
                   </div>
                   {index !== steps.length - 1 && (
-                    <Separator className="h-[2px] w-10 bg-gray-300 md:h-10 md:w-[2px] md:translate-x-3" />
+                    <Separator className="h-[2px] w-10 bg-line md:h-10 md:w-[2px] md:translate-x-3" />
                   )}
                 </div>
               ))}

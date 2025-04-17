@@ -4,6 +4,7 @@ import { ListingType } from "@/app/(main-app)/(in-app)/listings/page";
 import { mapPaymentFrequencyToLabel } from "./listing-home-details-preview";
 import { Button } from "../ui/button";
 import { formatNumber } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 function isValidPaymentFrequency(
   frequency: string,
@@ -12,6 +13,10 @@ function isValidPaymentFrequency(
 }
 
 function ListingCard({ listing }: { listing: ListingType }) {
+  const router = useRouter();
+  const goToListingDetails = (listingId: string) => {
+    router.push(`/listings/${listingId}`);
+  };
   return (
     <div className="sm: flex w-full max-w-79 flex-col items-stretch gap-4 rounded-md border px-3 pt-3 pb-4">
       <figure className="aspect-[288/208] h-52 w-full">
@@ -32,7 +37,7 @@ function ListingCard({ listing }: { listing: ListingType }) {
       </figure>
       <div className="flex flex-col gap-2">
         {listing.location && (
-          <div className="flex gap-2 text-gray-700">
+          <div className="text-text-secondary flex gap-2">
             <Image
               src={"/icons/icon-location-grey.svg"}
               alt={"Location Icon"}
@@ -43,7 +48,7 @@ function ListingCard({ listing }: { listing: ListingType }) {
           </div>
         )}
         {listing.no_of_bedrooms && listing.home_type && (
-          <h2 className="text-2xl font-semibold text-black capitalize">
+          <h2 className="text-2xl font-semibold text-text-primarys capitalize">
             {listing.no_of_bedrooms} Bedroom {listing.home_type}
           </h2>
         )}
@@ -58,8 +63,9 @@ function ListingCard({ listing }: { listing: ListingType }) {
             `/${mapPaymentFrequencyToLabel(listing.payment_frequency)}`}
         </p>
         <Button
-          className="flex h-12 items-center justify-center gap-2 border-gray-700 text-black hover:bg-gray-700 p-2"
+          className="text-text-primary flex h-12 items-center justify-center gap-2 border-line p-2"
           variant={"outline"}
+          onClick={() => goToListingDetails(listing.uuid)}
         >
           View Details
           <Image

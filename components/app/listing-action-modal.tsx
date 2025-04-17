@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { ShieldIcon } from "@/public/icons/shield-icon";
 import { Button } from "../ui/button";
-import Image from "next/image";
+import { FrownIcon } from "@/public/icons/icon-frown";
 
 function ListingActionModal({
   isOpen,
@@ -13,6 +13,7 @@ function ListingActionModal({
   secondaryButtonText,
   onPrimaryAction,
   onSecondaryAction,
+  icon,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -23,6 +24,7 @@ function ListingActionModal({
   secondaryButtonText?: string;
   onPrimaryAction?: () => void;
   onSecondaryAction?: () => void;
+  icon?: React.ReactNode;
 }) {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -62,20 +64,19 @@ function ListingActionModal({
             variant === "success" ? "border-green-200" : "border-red-200"
           }`}
         >
-          {variant === "success" ? (
-            <figure className="flex size-50 items-center justify-center rounded-full bg-green-200">
+          <figure
+            className={`flex size-50 items-center justify-center rounded-full ${
+              variant === "success" ? "bg-green-200" : "bg-red-200"
+            }`}
+          >
+            {icon ? (
+              icon
+            ) : variant === "success" ? (
               <ShieldIcon />
-            </figure>
-          ) : (
-            <figure className="flex size-50 items-center justify-center rounded-full bg-red-200">
-              <Image
-                src="/icons/icon-frown.svg"
-                alt="Error Icon"
-                width={50}
-                height={50}
-              />
-            </figure>
-          )}
+            ) : (
+              <FrownIcon size={50} />
+            )}
+          </figure>
         </div>
 
         {/* Content section */}

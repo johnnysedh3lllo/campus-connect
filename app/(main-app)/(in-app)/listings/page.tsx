@@ -23,6 +23,7 @@ export type ListingType = {
   price: number | null;
   payment_frequency: string | null;
   listing_images: { id: number; image_url: string }[];
+  uuid: string;
 };
 
 // Tab component to reduce duplication
@@ -38,9 +39,9 @@ const Tab = ({
   onClick: () => void;
 }) => (
   <button
-    className={`cursor-pointer p-3 select-none ${
+    className={`text-text-secondary cursor-pointer p-3 select-none ${
       isActive
-        ? "rounded-t-sm border-x border-t border-x-red-300 border-t-red-300 bg-red-100 text-red-500"
+        ? "border-x-text-disabled border-t-text-disabled bg-background-accent-secondary !text-text-accent rounded-t-sm border-x border-t"
         : ""
     }`}
     onClick={onClick}
@@ -122,7 +123,7 @@ export default function Page() {
         </div>
       ) : (
         <>
-          <div className="flex min-h-18 w-full items-end justify-start gap-3 border-b bg-gray-300 px-4 sm:px-12">
+          <div className="bg-background-secondary flex min-h-18 w-full items-end justify-start gap-3 border-b px-4 sm:px-12">
             {tabData.map((tab) => (
               <Tab
                 key={tab.label}
