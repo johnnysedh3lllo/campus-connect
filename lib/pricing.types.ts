@@ -13,7 +13,7 @@ export type CreditTier = {
   amount: number;
 };
 
-export type CreditTierOptions = {
+export type CreditTierOption = {
   id: string;
   label: string;
   value: string;

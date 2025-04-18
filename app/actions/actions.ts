@@ -1,10 +1,10 @@
 "use server";
 
 import { encodedRedirect } from "@/utils/utils";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, ENVType } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { UserResponse } from "@supabase/supabase-js";
+import { PostgrestError, UserResponse } from "@supabase/supabase-js";
 import {
   LoginFormType,
   MultiStepFormData,
@@ -360,6 +360,7 @@ export const getUser = async () => {
     throw new Error("Could not get user");
   }
 };
+
 export const getUserProfile = async (userId: string | undefined) => {
   const supabase = await createClient();
 
@@ -487,7 +488,7 @@ export const insertProperty = async (userId: string) => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("properties")
+    .from("listings")
     .insert([
       {
         landlord_id: userId,
@@ -575,7 +576,7 @@ export const getParticipants = async (
   const supabase = await createClient();
 
   try {
-    const { data: participants, error } = await supabase
+    const { data, error } = await supabase
       .from("conversation_participants")
       .select("*, users(first_name, last_name, email)")
       .eq("conversation_id", conversationId)
@@ -586,10 +587,105 @@ export const getParticipants = async (
       throw error;
     }
 
-    return participants;
+    return data;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to get participants ${error.message}`);
     }
+  }
+};
+
+function getEnvContext(SUPABASE_SECRET_KEY: ENVType) {
+  if (SUPABASE_SECRET_KEY) console.log("----------With Service Role Key");
+  else console.log("----------Without Service Role Key");
+}
+
+// CREDITS
+// CALLED ON SERVER & CLIENT
+export const getUserCreditRecord = async (
+  userId: string | undefined,
+  SUPABASE_SECRET_KEY?: ENVType,
+): Promise<Credits | null> => {
+  getEnvContext(SUPABASE_SECRET_KEY);
+  const supabase = await createClient(SUPABASE_SECRET_KEY);
+
+  try {
+    if (!userId) {
+      throw new Error("User ID is required!");
+    }
+    const { data, error } = await supabase
+      .from("credits")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) return null;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// CALLED ON SERVER ONLY
+export const createUserCreditRecord = async (
+  userId: string,
+  totalCredits: number,
+  SUPABASE_SECRET_KEY?: ENVType,
+): Promise<Credits | null> => {
+  getEnvContext(SUPABASE_SECRET_KEY);
+  const supabase = await createClient(SUPABASE_SECRET_KEY);
+
+  try {
+    const { data, error } = await supabase
+      .from("credits")
+      .insert({ user_id: userId, total_credits: totalCredits })
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) return null;
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// CALLED ON SERVER ONLY
+export const updateUserCredits = async (
+  userId: string,
+  addedCredits: number,
+  tableColumn: "total_credits" | "used_credits",
+  SUPABASE_SECRET_KEY?: ENVType,
+): Promise<Credits | null> => {
+  getEnvContext(SUPABASE_SECRET_KEY);
+  const supabase = await createClient(SUPABASE_SECRET_KEY);
+
+  try {
+    if (!userId) {
+      throw new Error("User ID is required!");
+    }
+    // TODO: THIS MAY NOT BE COMPLETELY TYPE-SAFE, PLEASE REMEMBER TO REVISIT.
+    const { data, error } = await supabase.rpc("increment_column_value", {
+      table_name: "credits",
+      table_column: tableColumn,
+      increment: addedCredits, // TODO: CONSIDER SWITCHING THE POSITION OF THIS WITH user_id
+      user_id: userId,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) return null;
+    return data;
+  } catch (error) {
+    throw error;
   }
 };

@@ -17,11 +17,11 @@ import { MobileNav } from "./mobile-nav";
 import logoMain from "@/public/logos/logo-mark-red.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
 import hamburgerIcon from "@/public/icons/icon-hamburger.svg";
-import creditChip from "@/public/icons/icon-credit-chip.svg";
 
 //
 import { useUser } from "@/hooks/use-user";
 import { useUserProfile } from "@/hooks/use-user-profile";
+import { CreditBalance } from "./credit-balance";
 
 export default function Navigation() {
   const { data: user } = useUser();
@@ -65,10 +65,10 @@ export default function Navigation() {
         </ul>
 
         <div className="flex items-center gap-2 lg:pb-3">
-          <div className="hidden lg:flex lg:items-center lg:gap-2">
-            <Image width={24} height={24} alt="credit chip" src={creditChip} />
-            <p className="text-sm leading-6 font-medium">800 Credits</p>
-          </div>
+          <CreditBalance
+            userId={user?.id}
+            className="hidden lg:flex lg:items-center lg:gap-2"
+          />
 
           <Separator orientation="vertical" className="hidden h-4 lg:block" />
 

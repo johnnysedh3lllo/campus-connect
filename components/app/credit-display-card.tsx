@@ -6,6 +6,7 @@ export function CreditDisplayCard() {
   return (
     <div className="border-border flex flex-col gap-6 rounded-md border-1 p-4">
       <div className="flex items-start gap-3">
+        {/* CREDIT BALANCE */}
         <CreditChipIcon className="size-11" />
 
         <section className="flex flex-col gap-2">

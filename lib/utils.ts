@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { PRICING } from "./pricing.config";
-import { CreditTierOptions } from "./pricing.types";
+import { CreditTierOption } from "./pricing.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -72,18 +72,28 @@ export function getMessageDateLabel(timestamp: string): string {
 
 // Helper functions to work with pricing
 export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-CA", {
     style: "currency",
-    currency: "USD",
+    currency: "CAD",
   }).format(amount / 100);
 }
 
-export function getCreditTiers(): CreditTierOptions[] {
-  return Object.entries(PRICING.landlord.credits.tiers).map(([key, tier]) => ({
-    id: key,
-    label: `${tier.credits} Credits - ${formatCurrency(tier.amount)}`,
-    value: tier.credits.toString(),
-    price: tier.amount,
-    priceId: tier.priceId,
-  }));
+// TODO: REVIEW THE EFFICIENCY OF THIS APPROACH
+export function getCreditTiers(
+  priceId?: string,
+): CreditTierOption | CreditTierOption[] | undefined {
+  const creditTiers = Object.entries(PRICING.landlord.credits.tiers).map(
+    ([key, tier]) => ({
+      id: key,
+      label: `${tier.credits} Credits - ${formatCurrency(tier.amount)}`,
+      value: tier.credits.toString(),
+      price: tier.amount,
+      priceId: tier.priceId,
+    }),
+  );
+  if (priceId) {
+    return creditTiers.find((tier) => tier.priceId === priceId);
+  } else {
+    return creditTiers;
+  }
 }

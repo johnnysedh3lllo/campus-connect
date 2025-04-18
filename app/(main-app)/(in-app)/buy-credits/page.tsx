@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { useModal } from "@/hooks/use-modal";
 // import ListingActionModal from "@/components/app/listing-action-modal";
-import { CreditChipIcon } from "@/public/icons/credit-chip-icon";
 import {
   Form,
   FormControl,
@@ -27,37 +26,72 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { buyCreditsFormSchema } from "@/lib/form.schemas";
 import { BuyCreditsFormSchemaType } from "@/lib/form.types";
 import { getCreditTiers } from "@/lib/utils";
-import { CreditTierOptions } from "@/lib/pricing.types";
+import { CreditTierOption } from "@/lib/pricing.types";
 import { Loader2 } from "lucide-react";
 import { PURCHASE_TYPES } from "@/lib/pricing.config";
 import { loadStripe } from "@stripe/stripe-js";
+import { CreditBalance } from "@/components/app/credit-balance";
+import { useUser } from "@/hooks/use-user";
+
+// TODO: CREATE A MODAL TO SHOW A SUCCESSFUL CREDIT PURCHASE
 
 export default function Page() {
   // const { credits } = useCreditsStore();
-  const credits = 150;
-  const [selectedTier, setSelectedTier] = useState<CreditTierOptions>();
+  const [selectedTier, setSelectedTier] = useState<CreditTierOption>();
   const [promoCode, setPromoCode] = useState("");
+  const { data: user } = useUser();
 
-  const creditTiers = getCreditTiers();
+  const creditTiers = getCreditTiers() as CreditTierOption[];
 
+  // TODO: CONSIDER THIS AS A SERVER ACTION TO ALLOW USING MUTATIONS
+  // ...MIGHT NOT HAVE TO MAKE THIS A MUTATION BECAUSE IT TRIGGERS A RELOAD WHICH RE-FETCHES THE USER CREDIT DATA
+  // TODO: - EDGE CASE, NEGATIVE VALUES FOR CREDITS
   async function handleCreditCheckout(values: BuyCreditsFormSchemaType) {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
     const priceId = values.creditPriceID;
     const promoCode = values.promoCode;
     const purchaseType = PURCHASE_TYPES.LANDLORD_CREDITS.type;
+    const creditTier = getCreditTiers(priceId) as CreditTierOption;
+    const creditAmount = creditTier?.value;
+    const userId = user?.id;
 
-    const response = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ purchaseType, priceId, promoCode }),
-    });
+    try {
+      const requestBody = {
+        purchaseType,
+        priceId,
+        promoCode,
+        creditAmount,
+        userId,
+      };
 
-    // const { sessionId } = await response.json();
-    // const stripe = await loadStripe(
-    //   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-    // );
-    // await stripe?.redirectToCheckout({ sessionId });
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        console.log(response);
+        const { sessionId } = await response.json();
+        const stripe = await loadStripe(
+          process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+        );
+
+        const stripeError = await stripe?.redirectToCheckout({
+          sessionId,
+        });
+
+        if (stripeError?.error) {
+          throw new Error(`Stripe error: ${stripeError.error}`);
+        }
+        return;
+      } else {
+        throw new Error(
+          "There was an error trying to process checkout, please try again:",
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const form = useForm<BuyCreditsFormSchemaType>({
@@ -77,7 +111,7 @@ export default function Page() {
 
   useEffect(() => {
     if (formValues.creditPriceID) {
-      const tierOption = creditTiers.find(
+      const tierOption = creditTiers?.find(
         (tier) => tier?.priceId === formValues.creditPriceID,
       );
       if (tierOption?.priceId !== selectedTier?.priceId) {
@@ -103,10 +137,8 @@ export default function Page() {
             {/* AVAILABLE CREDITS */}
             <section className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
               <h3 className="">Your Available Credits</h3>
-              <div className="flex items-center gap-2">
-                <CreditChipIcon />
-                <p className="">{credits} Credits</p>
-              </div>
+
+              <CreditBalance userId={user?.id} />
             </section>
 
             {/* SELECT CREDIT */}
@@ -171,13 +203,11 @@ export default function Page() {
             {/* NEW CREDIT BALANCE */}
             <section className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
               <h3 className=""> Your new Credits balance will be</h3>
-              <div className="flex items-center gap-2">
-                <CreditChipIcon />
-                <p className="">
-                  {selectedTier ? credits + +selectedTier.value : credits}{" "}
-                  Credits
-                </p>
-              </div>
+
+              <CreditBalance
+                userId={user?.id}
+                increment={selectedTier ? +selectedTier.value : 0}
+              />
             </section>
           </div>
 

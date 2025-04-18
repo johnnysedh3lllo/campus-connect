@@ -60,7 +60,7 @@ export const PRICING = {
     premium: {
       monthly: {
         productId: "prod_Rzl1aUktzY0uig",
-        priceId: "price_1RDoERFHlFbirADWiqFY5tXU",
+        priceId: "price_1R5lVMFHlFbirADWeHjJlZ3E",
         interval: "month",
         amount: 2000,
         type: "recurring",
@@ -75,6 +75,25 @@ export const PRICING = {
     },
   },
 };
+
+export const PLANS = {
+  landlord: {
+    basic: [
+      "List your property for as low as 20 credits.",
+      "Your listings will be seen by potential tenants on the platform.",
+      "Your listings will be seen by potential tenants on the platform.",
+      "Your listings will be seen by potential tenants on the platform.",
+    ],
+    premium: [
+      "Unlimited listings without credits.",
+      "Get tailored potential clients, both on and off the platform.",
+      "Get tailored potential clients, both on and off the platform.",
+      "Get tailored potential clients, both on and off the platform.",
+    ],
+  },
+};
+
+export type PlanType = typeof PLANS;
 
 export const PURCHASE_TYPES = {
   LANDLORD_CREDITS: {
@@ -94,3 +113,4 @@ export const PURCHASE_TYPES = {
 
 export type PurchaseTypeKey = keyof typeof PURCHASE_TYPES;
 export type PurchaseType = (typeof PURCHASE_TYPES)[PurchaseTypeKey];
+export type StudentPackagesType = typeof PRICING.student;

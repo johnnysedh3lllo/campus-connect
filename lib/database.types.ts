@@ -1,4 +1,4 @@
-import { Database as DB } from "@/database.types";
+import { Database as DB, Tables } from "@/database.types";
 
 declare global {
   interface Database extends DB {}
@@ -33,5 +33,8 @@ declare global {
     } | null;
   };
 
-  type UserProfile = DB["public"]["Tables"]["users"]["Row"];
+  // TODO[REFACTOR]: USE THIS NEW PATTERN FOR ALL OTHER DATABASE TYPES
+  type UserProfile = Tables<"users">;
+  type Credits = Tables<"credits">;
+  type CreditsTransactions = Tables<"credit_transactions">;
 }

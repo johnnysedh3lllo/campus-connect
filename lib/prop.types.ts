@@ -8,6 +8,7 @@ import {
   UserDetailsFormType,
   LoginFormType,
 } from "@/lib/form.schemas";
+import { PlanType } from "./pricing.config";
 
 export type NavigationProps = {
   user: User | null | undefined;
@@ -114,6 +115,19 @@ export interface EmptyPageStateProps {
   onButtonClick?: () => void;
   showButton: boolean;
 }
+
+export type CreditBalanceProps = {
+  userId: string | undefined;
+  increment?: number;
+  className?: string;
+};
+
+export type PlansCardProps = {
+  isPremium: boolean;
+  plan: string;
+  price: string;
+  planFeatures: string[];
+};
 
 // TODO: TYPES TO BE ABSTRACTED TO A SEPARATE FOLDER, MAYBE
 export type LoginFormProps = {
