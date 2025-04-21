@@ -1,14 +1,15 @@
 import { User } from "@supabase/supabase-js";
 import { Dispatch, SetStateAction } from "react";
+
+import { PlanType } from "./pricing.config";
 import {
+  LoginFormType,
   OtpFormType,
   ResetPasswordFormType,
   RoleFormType,
   SetPasswordFormType,
   UserDetailsFormType,
-  LoginFormType,
-} from "@/lib/form.schemas";
-import { PlanType } from "./pricing.config";
+} from "./form.types";
 
 export type NavigationProps = {
   user: User | null | undefined;

@@ -91,6 +91,9 @@ export async function POST(request: NextRequest) {
           landlordPremiumPrice: landlordPremiumPrice ?? null,
         };
         sessionParams.mode = "subscription";
+        // sessionParams.payment_settings: {
+        //   save_default_payment_method: "on_subscription";
+        // }
         // sessionParams.subscription_data = {
         //   ...sessionParams.subscription_data,
         //     payment_method_types: ["card"],
