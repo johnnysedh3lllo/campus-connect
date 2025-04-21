@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { PRICING } from "./pricing.config";
 import { CreditTierOption } from "./pricing.types";
+import { User, UserMetadata } from "@supabase/supabase-js";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -96,4 +97,10 @@ export function getCreditTiers(
   } else {
     return creditTiers;
   }
+}
+
+export function formatUsersName(userMetadata: UserMetadata): string {
+  return userMetadata
+    ? `${userMetadata.first_name} ${userMetadata.last_name}`
+    : "No name found!";
 }

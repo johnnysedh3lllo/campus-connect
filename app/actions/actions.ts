@@ -4,24 +4,25 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient, ENVType } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { PostgrestError, UserResponse } from "@supabase/supabase-js";
+import { User, UserResponse } from "@supabase/supabase-js";
 import {
   LoginFormType,
-  MultiStepFormData,
   ProfileInfoFormType,
   ResetPasswordFormType,
   SetPasswordFormType,
   SignUpFormType,
 } from "@/lib/form.types";
 import {
-  userValidationSchema,
-  loginSchema,
   signUpFormSchema,
   resetPasswordFormSchema,
   setPasswordFormSchema,
 } from "@/lib/form.schemas";
 import { z } from "zod";
-// import { UserResponse } from "@supabase/supabase-js";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-03-31.basil",
+});
 
 // ONBOARDING ACTIONS
 export async function signUpWithOtp(userInfo: SignUpFormType) {
@@ -402,7 +403,7 @@ export const updateUser = async (
 
     // Update the user metadata
     const { data, error } = await supabase.auth.updateUser({
-      data: metadata,
+      data: {metadata},
     });
 
     if (error) {
@@ -413,7 +414,11 @@ export const updateUser = async (
     // IT'S SUPPOSED TO UPDATE THE PUBLIC.USERS TABLE WHEN THERE IS A CHANGE ON THE AUTH.USERS TABLE
     const { data: userPublicData, error: userPublicError } = await supabase
       .from("users")
-      .update({ first_name: formData.firstName, last_name: formData.lastName })
+      .update({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", userId)
       .select();
 
@@ -606,7 +611,7 @@ export const getUserCreditRecord = async (
   userId: string | undefined,
   SUPABASE_SECRET_KEY?: ENVType,
 ): Promise<Credits | null> => {
-  getEnvContext(SUPABASE_SECRET_KEY);
+  // getEnvContext(SUPABASE_SECRET_KEY);
   const supabase = await createClient(SUPABASE_SECRET_KEY);
 
   try {
@@ -636,7 +641,7 @@ export const createUserCreditRecord = async (
   totalCredits: number,
   SUPABASE_SECRET_KEY?: ENVType,
 ): Promise<Credits | null> => {
-  getEnvContext(SUPABASE_SECRET_KEY);
+  // getEnvContext(SUPABASE_SECRET_KEY);
   const supabase = await createClient(SUPABASE_SECRET_KEY);
 
   try {
@@ -665,6 +670,7 @@ export const updateUserCredits = async (
   SUPABASE_SECRET_KEY?: ENVType,
 ): Promise<Credits | null> => {
   getEnvContext(SUPABASE_SECRET_KEY);
+
   const supabase = await createClient(SUPABASE_SECRET_KEY);
 
   try {
@@ -672,12 +678,15 @@ export const updateUserCredits = async (
       throw new Error("User ID is required!");
     }
     // TODO: THIS MAY NOT BE COMPLETELY TYPE-SAFE, PLEASE REMEMBER TO REVISIT.
-    const { data, error } = await supabase.rpc("increment_column_value", {
-      table_name: "credits",
-      table_column: tableColumn,
-      increment: addedCredits, // TODO: CONSIDER SWITCHING THE POSITION OF THIS WITH user_id
-      user_id: userId,
-    });
+    // TODO: ADD AN `updated_at` column and update the rpc function in this regard as well.
+    const { data, error } = await supabase
+      .rpc("increment_column_value", {
+        table_name: "credits",
+        table_column: tableColumn,
+        increment: addedCredits, // TODO: CONSIDER SWITCHING THE POSITION OF THIS WITH user_id
+        user_id: userId,
+      })
+      .single();
 
     if (error) {
       throw error;
@@ -689,3 +698,143 @@ export const updateUserCredits = async (
     throw error;
   }
 };
+
+type UserDetailsUpdateType = Partial<Pick<UserPublic, "stripe_customer_id">>;
+
+export const updateUserDetails = async (
+  userId: User["id"],
+  userDetails: UserDetailsUpdateType,
+  SUPABASE_SECRET_KEY?: ENVType,
+) => {
+  getEnvContext(SUPABASE_SECRET_KEY);
+  const supabase = await createClient(SUPABASE_SECRET_KEY);
+
+  try {
+    if (!userId) {
+      throw new Error("User ID is required!");
+    }
+
+    console.log("userId:", userId);
+    console.log("userId:", userDetails);
+
+    const { data, error } = await supabase
+      .from("users")
+      .update({ ...userDetails, updated_at: new Date().toISOString() })
+      .eq("id", userId)
+      .select();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// This gets the customer by the Campus Connect userId in the Stripe Customer Metadata
+export async function getStripeCustomerByUserId(userId: string) {
+  try {
+    const customers = await stripe.customers.search({
+      query: `metadata['userId']:'${userId}'`,
+      limit: 1,
+    });
+
+    return customers.data[0] || null;
+  } catch (error) {
+    console.error(
+      `Error fetching Stripe customer by userId (${userId}):`,
+      error,
+    );
+    return null;
+  }
+}
+export async function getStripeCustomerByEmail(userEmail: string) {
+  try {
+    const customers = await stripe.customers.list({
+      email: userEmail,
+      limit: 1,
+    });
+
+    return customers.data[0] || null;
+  } catch (error) {
+    console.error(
+      `Error fetching Stripe customer by email (${userEmail}):`,
+      error,
+    );
+    return null;
+  }
+}
+export async function updateStripeCustomer(
+  customerId: string,
+  parameters: Stripe.CustomerUpdateParams,
+) {
+  try {
+    return await stripe.customers.update(customerId, {
+      ...parameters,
+      metadata: { ...parameters.metadata, updatedAt: new Date().toISOString() },
+    });
+  } catch (error) {
+    console.error(`Error updating Stripe customer (${customerId}):`, error);
+    throw error; // rethrow if you want it to bubble up
+  }
+}
+export async function createStripeCustomer(
+  parameters: Stripe.CustomerCreateParams,
+) {
+  try {
+    return await stripe.customers.create(parameters);
+  } catch (error) {
+    console.error("Error creating Stripe customer:", error);
+    throw error;
+  }
+}
+
+export async function getOrCreateStripeCustomer(
+  userId: string,
+  userEmail: string,
+  usersName: string,
+  options?: { failLoudly?: boolean }, // optional toggle
+): Promise<Stripe.Customer | null> {
+  // fail loudly by default
+  const { failLoudly = true } = options || {};
+  const customerMetadata: Stripe.Emptyable<Stripe.MetadataParam> | undefined = {
+    userId,
+  };
+
+  try {
+    
+
+
+    const customerById = await getStripeCustomerByUserId(userId);
+
+    if (customerById) {
+      if (customerById.email !== userEmail) {
+        return await updateStripeCustomer(customerById.id, {
+          email: userEmail,
+          metadata: customerMetadata,
+        });
+      }
+      return customerById;
+    }
+
+    const customerByEmail = await getStripeCustomerByEmail(userEmail);
+
+    if (customerByEmail) {
+      return await updateStripeCustomer(customerByEmail.id, {
+        metadata: customerMetadata,
+      });
+    }
+
+    return await createStripeCustomer({
+      name: usersName,
+      email: userEmail,
+      metadata: customerMetadata,
+    });
+  } catch (error) {
+    console.error("Error in getOrCreateStripeCustomer:", error);
+    if (failLoudly) throw error;
+    return null;
+  }
+}

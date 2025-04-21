@@ -154,3 +154,11 @@ export const buyCreditsFormSchema = z.object({
       message: "Code entered must be a valid promo code.",
     }),
 });
+
+export const purchasePremiumFormSchema = z.object({
+  purchaseType: z.string(),
+  priceId: z.string(),
+  landlordPremiumPrice: z.number(),
+  userId: z.string(),
+});
+

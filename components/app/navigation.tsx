@@ -65,10 +65,17 @@ export default function Navigation() {
         </ul>
 
         <div className="flex items-center gap-2 lg:pb-3">
-          <CreditBalance
-            userId={user?.id}
-            className="hidden lg:flex lg:items-center lg:gap-2"
-          />
+
+          {/* TODO: REVISIT THE HYDRATION ISSUE HERE. */}
+          <Link
+            href="/buy-credits"
+            className="hover:bg-background-secondary hidden items-center justify-center rounded-sm p-2 lg:flex"
+          >
+            <CreditBalance
+              userId={user?.id}
+              className="hidden lg:flex lg:items-center lg:gap-2"
+            />
+          </Link>
 
           <Separator orientation="vertical" className="hidden h-4 lg:block" />
 

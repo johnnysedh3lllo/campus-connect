@@ -25,7 +25,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { buyCreditsFormSchema } from "@/lib/form.schemas";
 import { BuyCreditsFormSchemaType } from "@/lib/form.types";
-import { getCreditTiers } from "@/lib/utils";
+import { formatUsersName, getCreditTiers } from "@/lib/utils";
 import { CreditTierOption } from "@/lib/pricing.types";
 import { Loader2 } from "lucide-react";
 import { PURCHASE_TYPES } from "@/lib/pricing.config";
@@ -51,16 +51,22 @@ export default function Page() {
     const promoCode = values.promoCode;
     const purchaseType = PURCHASE_TYPES.LANDLORD_CREDITS.type;
     const creditTier = getCreditTiers(priceId) as CreditTierOption;
-    const creditAmount = creditTier?.value;
+    const landLordCreditAmount = creditTier?.value;
     const userId = user?.id;
+    const userEmail = user?.email;
+    const usersName = user?.user_metadata
+      ? formatUsersName(user.user_metadata)
+      : undefined;
 
     try {
       const requestBody = {
         purchaseType,
         priceId,
         promoCode,
-        creditAmount,
+        landLordCreditAmount,
         userId,
+        userEmail,
+        usersName,
       };
 
       const response = await fetch("/api/checkout", {
@@ -70,7 +76,6 @@ export default function Page() {
       });
 
       if (response.ok) {
-        console.log(response);
         const { sessionId } = await response.json();
         const stripe = await loadStripe(
           process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,

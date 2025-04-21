@@ -1,3 +1,4 @@
+"use client";
 import { useUserCredits } from "@/hooks/use-user-credits";
 import { CreditBalanceProps } from "@/lib/prop.types";
 import { CreditChipIcon } from "@/public/icons/credit-chip-icon";

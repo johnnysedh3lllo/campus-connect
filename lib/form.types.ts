@@ -5,6 +5,7 @@ import {
   loginSchema,
   otpFormSchema,
   profileInfoFormSchema,
+  purchasePremiumFormSchema,
   resetPasswordFormSchema,
   RoleEnum,
   roleSchema,
@@ -38,3 +39,4 @@ export type ChangePasswordFormType = z.infer<typeof changePasswordSchema>;
 export type SettingsFormType = z.infer<typeof settingsFormSchema>;
 export type ProfileInfoFormType = z.infer<typeof profileInfoFormSchema>;
 export type BuyCreditsFormSchemaType = z.infer<typeof buyCreditsFormSchema>;
+export type PurchasePremiumFormType = z.infer<typeof purchasePremiumFormSchema>;

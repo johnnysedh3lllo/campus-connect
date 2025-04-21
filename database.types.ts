@@ -98,6 +98,7 @@ export type Database = {
       }
       credits: {
         Row: {
+          created_at: string | null
           remaining_credits: number | null
           total_credits: number
           updated_at: string | null
@@ -105,6 +106,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          created_at?: string | null
           remaining_credits?: number | null
           total_credits?: number
           updated_at?: string | null
@@ -112,6 +114,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          created_at?: string | null
           remaining_credits?: number | null
           total_credits?: number
           updated_at?: string | null
@@ -305,47 +308,60 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          cancel_at_period_end: boolean
           created_at: string | null
+          current_period_end: string | null
+          current_period_start: string
+          customer_type: string
           end_date: string | null
           id: number
-          plan_id: number
+          latest_invoice_id: string | null
+          metadata: Json | null
+          plan_name: string
           start_date: string | null
           status: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_price_id: string
           stripe_subscription_id: string
           subscription_uuid: string | null
           user_id: string
         }
         Insert: {
+          cancel_at_period_end?: boolean
           created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string
+          customer_type: string
           end_date?: string | null
           id?: never
-          plan_id: number
+          latest_invoice_id?: string | null
+          metadata?: Json | null
+          plan_name: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_price_id: string
           stripe_subscription_id: string
           subscription_uuid?: string | null
           user_id: string
         }
         Update: {
+          cancel_at_period_end?: boolean
           created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string
+          customer_type?: string
           end_date?: string | null
           id?: never
-          plan_id?: number
+          latest_invoice_id?: string | null
+          metadata?: Json | null
+          plan_name?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_price_id?: string
           stripe_subscription_id?: string
           subscription_uuid?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_plan_id_fkey"
-            columns: ["plan_id"]
-            isOneToOne: false
-            referencedRelation: "plans"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       users: {
         Row: {
@@ -358,6 +374,7 @@ export type Database = {
           newsletter: boolean | null
           phone: string | null
           role_id: number
+          stripe_customer_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -370,6 +387,7 @@ export type Database = {
           newsletter?: boolean | null
           phone?: string | null
           role_id: number
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -382,6 +400,7 @@ export type Database = {
           newsletter?: boolean | null
           phone?: string | null
           role_id?: number
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Relationships: [

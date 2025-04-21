@@ -15,34 +15,34 @@ export type NavigationProps = {
 };
 
 export type MobileNavProps = {
-  userProfile: UserProfile | undefined;
+  userProfile: UserPublic | undefined;
   isOpen: boolean;
   onClose: () => void;
 };
 
 export type UserMenuBarProps = {
-  userProfile: UserProfile | undefined;
+  userProfile: UserPublic | undefined;
   isOpen: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
 };
 
 export type ProfilePictureUploadProps = {
-  userId: UserProfile["id"];
-  initialAvatarUrl: UserProfile["avatar_url"] | undefined;
+  userId: UserPublic["id"];
+  initialAvatarUrl: UserPublic["avatar_url"] | undefined;
 };
 
 export type ProfileHeaderProps = {
-  userProfile: UserProfile;
+  userProfile: UserPublic;
 };
 
 export type ProfileInfoProps = {
-  userProfile: UserProfile;
+  userProfile: UserPublic;
 };
 
 export type UserPillProps = {
-  firstName: UserProfile["first_name"] | undefined;
-  lastName: UserProfile["last_name"] | undefined;
-  avatarUrl: UserProfile["avatar_url"] | undefined;
+  firstName: UserPublic["first_name"] | undefined;
+  lastName: UserPublic["last_name"] | undefined;
+  avatarUrl: UserPublic["avatar_url"] | undefined;
 };
 
 export type UserProfileCardProps = {
@@ -123,10 +123,10 @@ export type CreditBalanceProps = {
 };
 
 export type PlansCardProps = {
-  isPremium: boolean;
-  plan: string;
+  name: string;
   price: string;
-  planFeatures: string[];
+  status: boolean;
+  features: string[];
 };
 
 // TODO: TYPES TO BE ABSTRACTED TO A SEPARATE FOLDER, MAYBE

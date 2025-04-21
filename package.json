@@ -3,7 +3,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "supabase:generate-types": "supabase gen types typescript --project-id vlxtyiuqcwccecpqtkyk --schema public > database.types.ts",
+    "supabase:generate-migration": "supabase db diff | supabase migration new",
+    "supabase:generate-seed": "supabase db dump --data-only -f supabase/seed.sql"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",

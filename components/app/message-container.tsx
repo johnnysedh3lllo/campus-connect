@@ -19,9 +19,9 @@ const MessageContainer = ({
 
   const [messageInputValue, setMessageInputValue] = useState("");
   const [messages, setMessages] = useState(ssrConversationMessages);
-  const chatContainerRef = useRef(
-    null,
-  ) as React.MutableRefObject<HTMLDivElement | null>;
+
+  // TODO: REVISIT THIS
+  const chatContainerRef = useRef<HTMLDivElement>(null!);
 
   useEffect(() => {
     const channelName = `messages-${conversationId.slice(0, 8)}`;
