@@ -151,53 +151,56 @@ export type Database = {
       }
       listings: {
         Row: {
+          availability_status: Database["public"]["Enums"]["listing_availability_status"]
           created_at: string
           description: string | null
-          home_type: Database["public"]["Enums"]["home_type_enum"] | null
+          home_type: Database["public"]["Enums"]["listing_type"] | null
           id: number
-          landlord_id: string | null
+          landlord_id: string
           location: string | null
           no_of_bedrooms: number | null
           payment_frequency:
-            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | Database["public"]["Enums"]["listing_payment_frequency"]
             | null
-          price: number | null
-          status: Database["public"]["Enums"]["listing_status_enum"]
-          title: string | null
+          price: number
+          publication_status: Database["public"]["Enums"]["listing_publication_status"]
+          title: string
           updated_at: string | null
           uuid: string
         }
         Insert: {
+          availability_status?: Database["public"]["Enums"]["listing_availability_status"]
           created_at?: string
           description?: string | null
-          home_type?: Database["public"]["Enums"]["home_type_enum"] | null
+          home_type?: Database["public"]["Enums"]["listing_type"] | null
           id?: never
-          landlord_id?: string | null
+          landlord_id: string
           location?: string | null
           no_of_bedrooms?: number | null
           payment_frequency?:
-            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | Database["public"]["Enums"]["listing_payment_frequency"]
             | null
-          price?: number | null
-          status?: Database["public"]["Enums"]["listing_status_enum"]
-          title?: string | null
+          price: number
+          publication_status?: Database["public"]["Enums"]["listing_publication_status"]
+          title: string
           updated_at?: string | null
           uuid?: string
         }
         Update: {
+          availability_status?: Database["public"]["Enums"]["listing_availability_status"]
           created_at?: string
           description?: string | null
-          home_type?: Database["public"]["Enums"]["home_type_enum"] | null
+          home_type?: Database["public"]["Enums"]["listing_type"] | null
           id?: never
-          landlord_id?: string | null
+          landlord_id?: string
           location?: string | null
           no_of_bedrooms?: number | null
           payment_frequency?:
-            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | Database["public"]["Enums"]["listing_payment_frequency"]
             | null
-          price?: number | null
-          status?: Database["public"]["Enums"]["listing_status_enum"]
-          title?: string | null
+          price?: number
+          publication_status?: Database["public"]["Enums"]["listing_publication_status"]
+          title?: string
           updated_at?: string | null
           uuid?: string
         }
@@ -466,10 +469,19 @@ export type Database = {
       }
     }
     Enums: {
-      home_type_enum: "Condo" | "Apartment"
-      listing_status_enum: "Available" | "Taken"
-      payment_frequency_enum: "daily" | "weekly" | "monthly" | "yearly"
-      subscription_status: "active" | "canceled" | "past_due"
+      listing_availability_status: "available" | "taken"
+      listing_payment_frequency: "daily" | "weekly" | "monthly" | "yearly"
+      listing_publication_status: "published" | "unpublished" | "draft"
+      listing_type: "condo" | "apartment"
+      subscription_status:
+        | "active"
+        | "canceled"
+        | "past_due"
+        | "trialing"
+        | "unpaid"
+        | "paused"
+        | "incomplete"
+        | "incomplete_expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -585,10 +597,20 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      home_type_enum: ["Condo", "Apartment"],
-      listing_status_enum: ["Available", "Taken"],
-      payment_frequency_enum: ["daily", "weekly", "monthly", "yearly"],
-      subscription_status: ["active", "canceled", "past_due"],
+      listing_availability_status: ["available", "taken"],
+      listing_payment_frequency: ["daily", "weekly", "monthly", "yearly"],
+      listing_publication_status: ["published", "unpublished", "draft"],
+      listing_type: ["condo", "apartment"],
+      subscription_status: [
+        "active",
+        "canceled",
+        "past_due",
+        "trialing",
+        "unpaid",
+        "paused",
+        "incomplete",
+        "incomplete_expired",
+      ],
     },
   },
 } as const

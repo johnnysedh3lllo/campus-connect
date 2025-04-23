@@ -10,15 +10,16 @@ import { useForm } from "react-hook-form";
 import { PurchasePremiumFormType } from "@/lib/form.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { purchasePremiumFormSchema } from "@/lib/form.schemas";
-import { useState } from "react";
 import { PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
 import { useUser } from "@/hooks/use-user";
 import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "../ui/toast";
+import Link from "next/link";
+import { formatUsersName } from "@/lib/utils";
 
 export function PlansCard({ name, price, status, features }: PlansCardProps) {
   const { data: user } = useUser();
-
-  const otherPlan = `Switch to ${status ? "Premium" : "Basic"}`;
 
   const premiumSubscriptionForm = useForm<PurchasePremiumFormType>({
     resolver: zodResolver(purchasePremiumFormSchema),
@@ -38,14 +39,17 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
 
   async function handlePremiumSubscription(values: PurchasePremiumFormType) {
     const { purchaseType, userId, priceId, landlordPremiumPrice } = values;
-    console.log(values);
+    const usersName = user?.user_metadata
+      ? formatUsersName(user.user_metadata)
+      : undefined;
 
     try {
       const requestBody = {
         purchaseType,
-        userId,
         priceId,
         landlordPremiumPrice,
+        userId,
+        usersName,
       };
 
       const response = await fetch("/api/checkout", {
@@ -55,23 +59,28 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
       });
 
       if (response.ok) {
-        console.log(response);
         const { sessionId } = await response.json();
-        console.log(sessionId);
         const stripe = await loadStripe(
           process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
         );
+
         const stripeError = await stripe?.redirectToCheckout({
           sessionId,
         });
+
         if (stripeError?.error) {
           throw new Error(`Stripe error: ${stripeError.error}`);
         }
-        return;
       } else {
-        throw new Error(
-          "There was an error trying to process checkout, please try again:",
-        );
+        const responseObj: { error: string } = await response.json();
+        toast({
+          variant: "default",
+          // title: "Please confirm email and password",
+          description: responseObj.error,
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+
+        throw responseObj;
       }
     } catch (error) {
       console.error(error);
@@ -113,7 +122,7 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
       ) : (
         <>
           {name === "basic" ? (
-            <Button className="h-full w-full px-11 py-3 text-base leading-6 disabled:opacity-100 sm:w-fit">
+            <Button className="h-full w-full px-11 py-3 text-base leading-6 sm:w-fit">
               Switch to Basic
             </Button>
           ) : name === "premium" ? (
@@ -124,13 +133,14 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
                 )}
               >
                 <Button
+                  type="submit"
                   disabled={isSubmittingPremium}
-                  className="h-full w-full px-11 py-3 text-base leading-6 disabled:opacity-100 sm:w-fit"
+                  className="h-full w-full px-11 py-3 text-base leading-6 sm:w-fit"
                 >
-                  {isSubmittingPremium ? "Processing..." : "Go Premium"}
                   {isSubmittingPremium && (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   )}
+                  {isSubmittingPremium ? "Processing..." : "Go Premium"}
                 </Button>
               </form>
             </Form>

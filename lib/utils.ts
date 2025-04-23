@@ -71,12 +71,33 @@ export function getMessageDateLabel(timestamp: string): string {
   }
 }
 
-// Helper functions to work with pricing
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-CA", {
-    style: "currency",
-    currency: "CAD",
-  }).format(amount / 100);
+export function formatUsersName(userMetadata: UserMetadata): string {
+  return userMetadata
+    ? `${userMetadata.first_name} ${userMetadata.last_name}`
+    : "No name found!";
+}
+
+// To formatting monetary values.
+// if the values it to be used for display purposes, use formatCurrencyToLocale instead.
+
+export function formatCurrency(
+  amount: number,
+  use: "internal" | "external",
+): number {
+  let converted: number = 0;
+  converted = use === "internal" ? amount / 100 : amount * 100;
+  return converted;
+}
+
+// Intl instantiation to reduce expensive creation
+const cadFormatter = new Intl.NumberFormat("en-CA", {
+  style: "currency",
+  currency: "CAD",
+});
+
+// To display internally formatted amount in application locale
+export function formatCurrencyToLocale(amount: number): string {
+  return cadFormatter.format(formatCurrency(amount, "internal"));
 }
 
 // TODO: REVIEW THE EFFICIENCY OF THIS APPROACH
@@ -86,7 +107,7 @@ export function getCreditTiers(
   const creditTiers = Object.entries(PRICING.landlord.credits.tiers).map(
     ([key, tier]) => ({
       id: key,
-      label: `${tier.credits} Credits - ${formatCurrency(tier.amount)}`,
+      label: `${tier.credits} Credits - ${formatCurrencyToLocale(tier.amount)}`,
       value: tier.credits.toString(),
       price: tier.amount,
       priceId: tier.priceId,
@@ -99,8 +120,4 @@ export function getCreditTiers(
   }
 }
 
-export function formatUsersName(userMetadata: UserMetadata): string {
-  return userMetadata
-    ? `${userMetadata.first_name} ${userMetadata.last_name}`
-    : "No name found!";
-}
+// function formatCurrency(amount,route){let converted= 0; if (route === "internal") converted = amount / 100; if (route === "external") converted = amount * 100;return converted;}

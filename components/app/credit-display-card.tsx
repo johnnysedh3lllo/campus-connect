@@ -18,7 +18,7 @@ export function CreditDisplayCard() {
         </section>
       </div>
 
-      <Link className="w-fit" href="#">
+      <Link className="w-fit" href="/buy-credits">
         <Button className="h-full w-full px-6 py-3 text-base sm:w-fit">
           Buy Credits
         </Button>

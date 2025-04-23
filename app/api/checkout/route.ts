@@ -1,7 +1,11 @@
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { PURCHASE_TYPES } from "@/lib/pricing.config";
-import { getOrCreateStripeCustomer } from "@/app/actions/actions";
+import {
+  checkActiveSubscription,
+  getOrCreateStripeCustomer,
+  updateUserDetails,
+} from "@/app/actions/actions";
 
 type CheckoutRequestBody = {
   purchaseType: string;
@@ -21,6 +25,7 @@ type CheckoutRequestBody = {
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-03-31.basil",
 });
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
@@ -43,10 +48,17 @@ export async function POST(request: NextRequest) {
     // if not, it creates a new customer object for them.
     // this ensures that whether for one-time or recurring payments,
     // a customer object is available for the Checkout Session.
+    // TODO: add check for customer_id on Supabase at start.
     const customer = await getOrCreateStripeCustomer(
       userId,
       userEmail,
       usersName,
+    );
+
+    const addedStripeCustomerId = await updateUserDetails(
+      userId,
+      { stripe_customer_id: customer?.id },
+      supabaseServiceRoleKey,
     );
 
     let sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -61,8 +73,8 @@ export async function POST(request: NextRequest) {
         usersName,
       },
       mode: "payment",
-      saved_payment_method_options: {
-        allow_redisplay_filters: ["always"],
+      payment_method_data: {
+        allow_redisplay: "always",
       },
     };
 
@@ -80,25 +92,30 @@ export async function POST(request: NextRequest) {
         sessionParams.payment_intent_data = {
           setup_future_usage: "off_session", // to save payment method for future usage
         };
+        // sessionParams.payment_intent_data = {
+        //   setup_future_usage: "on_session", // to save payment method for future usage
+        // };
         break;
 
       case `${PURCHASE_TYPES.LANDLORD_PREMIUM.type}`:
         // TODO: check if a user has an active subscription on stripe or supabase before creating a subscription
-
         sessionParams.cancel_url = `${origin}/plans`;
         sessionParams.metadata = {
           ...sessionParams.metadata,
           landlordPremiumPrice: landlordPremiumPrice ?? null,
         };
         sessionParams.mode = "subscription";
-        // sessionParams.payment_settings: {
-        //   save_default_payment_method: "on_subscription";
-        // }
-        // sessionParams.subscription_data = {
-        //   ...sessionParams.subscription_data,
-        //     payment_method_types: ["card"],
-        //     save_default_payment_method: "on_session",
-        //   },
+
+        const hasActiveSubscription = await checkActiveSubscription(
+          customer?.id,
+        );
+
+        if (hasActiveSubscription) {
+          return NextResponse.json(
+            { error: "You already has an active subscription" },
+            { status: 400 },
+          );
+        }
 
         break;
 
@@ -107,17 +124,6 @@ export async function POST(request: NextRequest) {
 
       default:
         throw new Error("Invalid purchase type");
-    }
-
-    // TODO: check if the user has an active subscription here
-
-    const activeSubscription = true;
-
-    if (activeSubscription) {
-      return NextResponse.json(
-        { error: "User already has an active subscription" },
-        { status: 400 },
-      );
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);

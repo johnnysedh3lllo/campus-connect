@@ -4,7 +4,7 @@ import { encodedRedirect } from "@/utils/utils";
 import { createClient, ENVType } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { User, UserResponse } from "@supabase/supabase-js";
+import { PostgrestError, User, UserResponse } from "@supabase/supabase-js";
 import {
   LoginFormType,
   ProfileInfoFormType,
@@ -386,6 +386,34 @@ export const getUserProfile = async (userId: string | undefined) => {
   }
 };
 
+export const getUserDetail = async <K extends keyof UserPublic>(
+  userId: User["id"],
+  property: K,
+  SUPABASE_SECRET_KEY?: ENVType,
+): Promise<UserPublic[K]> => {
+  if (!userId) {
+    throw new Error("User ID is required!");
+  }
+
+  const supabase = await createClient(SUPABASE_SECRET_KEY);
+
+  const { data, error } = await supabase
+    .from("users")
+    .select(property)
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  if (!data) {
+    throw new Error("User not found");
+  }
+
+  return (data as Record<K, UserPublic[K]>)[property];
+};
+
 // Update User
 export const updateUser = async (
   formData: ProfileInfoFormType,
@@ -403,7 +431,7 @@ export const updateUser = async (
 
     // Update the user metadata
     const { data, error } = await supabase.auth.updateUser({
-      data: {metadata},
+      data: { metadata },
     });
 
     if (error) {
@@ -438,6 +466,39 @@ export const updateUser = async (
       success: false,
       error: error instanceof Error ? error.message : String(error),
     };
+  }
+};
+
+type UserDetailsPartialType = Partial<Pick<UserPublic, "stripe_customer_id">>;
+
+export const updateUserDetails = async (
+  userId: User["id"],
+  userDetails: UserDetailsPartialType,
+  SUPABASE_SECRET_KEY?: ENVType,
+) => {
+  const supabase = await createClient(SUPABASE_SECRET_KEY);
+
+  try {
+    if (!userId) {
+      throw new Error("User ID is required!");
+    }
+
+    console.log("userId:", userId);
+    console.log("userId:", userDetails);
+
+    const { data, error } = await supabase
+      .from("users")
+      .update({ ...userDetails, updated_at: new Date().toISOString() })
+      .eq("id", userId)
+      .select();
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -611,7 +672,6 @@ export const getUserCreditRecord = async (
   userId: string | undefined,
   SUPABASE_SECRET_KEY?: ENVType,
 ): Promise<Credits | null> => {
-  // getEnvContext(SUPABASE_SECRET_KEY);
   const supabase = await createClient(SUPABASE_SECRET_KEY);
 
   try {
@@ -641,7 +701,6 @@ export const createUserCreditRecord = async (
   totalCredits: number,
   SUPABASE_SECRET_KEY?: ENVType,
 ): Promise<Credits | null> => {
-  // getEnvContext(SUPABASE_SECRET_KEY);
   const supabase = await createClient(SUPABASE_SECRET_KEY);
 
   try {
@@ -669,8 +728,6 @@ export const updateUserCredits = async (
   tableColumn: "total_credits" | "used_credits",
   SUPABASE_SECRET_KEY?: ENVType,
 ): Promise<Credits | null> => {
-  getEnvContext(SUPABASE_SECRET_KEY);
-
   const supabase = await createClient(SUPABASE_SECRET_KEY);
 
   try {
@@ -699,41 +756,22 @@ export const updateUserCredits = async (
   }
 };
 
-type UserDetailsUpdateType = Partial<Pick<UserPublic, "stripe_customer_id">>;
-
-export const updateUserDetails = async (
-  userId: User["id"],
-  userDetails: UserDetailsUpdateType,
-  SUPABASE_SECRET_KEY?: ENVType,
-) => {
-  getEnvContext(SUPABASE_SECRET_KEY);
-  const supabase = await createClient(SUPABASE_SECRET_KEY);
-
+// Stripe Functions
+export async function getCustomerById(customerId: string) {
   try {
-    if (!userId) {
-      throw new Error("User ID is required!");
+    const customer = await stripe.customers.retrieve(customerId);
+    if ((customer as { deleted?: boolean }).deleted) {
+      return null;
     }
-
-    console.log("userId:", userId);
-    console.log("userId:", userDetails);
-
-    const { data, error } = await supabase
-      .from("users")
-      .update({ ...userDetails, updated_at: new Date().toISOString() })
-      .eq("id", userId)
-      .select();
-
-    if (error) {
-      throw error;
-    }
-
-    return data;
+    return customer as Stripe.Customer;
   } catch (error) {
-    throw error;
+    console.error(
+      `Error fetching Stripe customer by CustomerId (${customerId}):`,
+      error,
+    );
+    return null;
   }
-};
-
-// This gets the customer by the Campus Connect userId in the Stripe Customer Metadata
+}
 export async function getStripeCustomerByUserId(userId: string) {
   try {
     const customers = await stripe.customers.search({
@@ -799,26 +837,51 @@ export async function getOrCreateStripeCustomer(
 ): Promise<Stripe.Customer | null> {
   // fail loudly by default
   const { failLoudly = true } = options || {};
-  const customerMetadata: Stripe.Emptyable<Stripe.MetadataParam> | undefined = {
+  const customerMetadata: Stripe.Emptyable<Stripe.MetadataParam> = {
     userId,
   };
 
+  const supabase = await createClient(process.env.SUPABASE_SERVICE_ROLE_KEY);
+
   try {
-    
+    // checks Supabase first for Customer ID.
+    const { data, error } = await supabase
+      .from("users")
+      .select("stripe_customer_id")
+      .eq("id", userId)
+      .maybeSingle();
 
+    if (error) {
+      throw error;
+    }
 
-    const customerById = await getStripeCustomerByUserId(userId);
+    if (!data?.stripe_customer_id) {
+      console.error("No Stripe Customer ID was found on Supabase.");
+    }
 
-    if (customerById) {
-      if (customerById.email !== userEmail) {
-        return await updateStripeCustomer(customerById.id, {
+    // gets the Customer Object from Stripe if the Stripe Customer ID exists on Supabase.
+    const customerIdFromSupabase = data?.stripe_customer_id;
+
+    if (customerIdFromSupabase) {
+      const customer = await getCustomerById(customerIdFromSupabase);
+      if (customer) return customer;
+    }
+
+    // gets the Customer Object from Stripe using the Supabase User ID, if the Stripe Customer ID does not exist on Supabase.
+    const customerByUserId = await getStripeCustomerByUserId(userId);
+
+    // updates the email in the Customer Object with the email used from Supabase.
+    if (customerByUserId) {
+      if (customerByUserId.email !== userEmail) {
+        return await updateStripeCustomer(customerByUserId.id, {
           email: userEmail,
           metadata: customerMetadata,
         });
       }
-      return customerById;
+      return customerByUserId;
     }
 
+    // gets the Customer Object from Stripe using the User's Email, if the Stripe Customer Object couldn't be retrieved by the Supabase User ID.
     const customerByEmail = await getStripeCustomerByEmail(userEmail);
 
     if (customerByEmail) {
@@ -826,6 +889,8 @@ export async function getOrCreateStripeCustomer(
         metadata: customerMetadata,
       });
     }
+
+    // create a new Customer Object for the user on Stripe, if a Customer Object could not be retrieved.
 
     return await createStripeCustomer({
       name: usersName,
@@ -836,5 +901,22 @@ export async function getOrCreateStripeCustomer(
     console.error("Error in getOrCreateStripeCustomer:", error);
     if (failLoudly) throw error;
     return null;
+  }
+}
+
+export async function checkActiveSubscription(customerId: string | undefined) {
+  try {
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+      limit: 1,
+    });
+
+    console.log(subscriptions);
+
+    return subscriptions.data.length > 0;
+  } catch (error) {
+    console.error("Error checking subscription:", error);
+    return false;
   }
 }

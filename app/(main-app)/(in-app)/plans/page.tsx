@@ -1,9 +1,10 @@
 "use client";
 import { PLANS, PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrencyToLocale } from "@/lib/utils";
 
 import { Header } from "@/components/app/header";
 import { PlansCard } from "@/components/app/plans-card";
+import { Toaster } from "@/components/ui/toaster";
 
 type LandlordPlansType = {
   name: string;
@@ -14,7 +15,9 @@ type LandlordPlansType = {
 
 export default function Page() {
   const landlordPremiumMonthly = PRICING.landlord.premium.monthly;
-  const landlordPremiumPrice = formatCurrency(landlordPremiumMonthly.amount);
+  const landlordPremiumPrice = formatCurrencyToLocale(
+    landlordPremiumMonthly.amount,
+  );
   const landlordPremiumInterval = landlordPremiumMonthly.interval;
 
   const fromDb: SubscriptionStatus = null;
@@ -55,6 +58,7 @@ export default function Page() {
           );
         })}
       </div>
+      <Toaster />
     </section>
   );
 }
