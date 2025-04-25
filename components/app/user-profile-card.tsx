@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { UserProfileCardProps } from "@/lib/component-prop-types";
+import { UserProfileCardProps } from "@/lib/prop.types";
 
 export function UserProfileCard({ participants }: UserProfileCardProps) {
   const participant =

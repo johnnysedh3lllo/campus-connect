@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { createListingFormSchema, HomeTypeEnum } from '@/lib/form-schemas'
+import { createListingFormSchema, HomeTypeEnum } from '@/lib/form.schemas'
 import { useListingCreationStore } from '@/lib/store/listing-creation-store';
 import Image from 'next/image'
 
@@ -38,7 +38,7 @@ export default function HomeDetailsForm() {
         defaultValues: {
             title: homeDetails?.title || '',
             noOfBedRooms: homeDetails?.noOfBedRooms || '',
-            homeType: homeDetails?.homeType || 'Condo',
+            homeType: homeDetails?.homeType || 'condo',
             homeAddress: homeDetails?.homeAddress || '',
             description: homeDetails?.description || '',
         }

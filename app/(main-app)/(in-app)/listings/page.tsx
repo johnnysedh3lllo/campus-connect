@@ -16,7 +16,7 @@ export type ListingType = {
   id: number;
   created_at: string;
   description: string | null;
-  home_type: "Condo" | "Apartment" | null;
+  home_type: "condo" | "apartment" | null;
   landlord_id: string | null;
   location: string | null;
   no_of_bedrooms: number | null;

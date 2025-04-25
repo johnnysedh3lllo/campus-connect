@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LoginPromptProps } from "@/lib/component-prop-types";
-
-
+import { LoginPromptProps } from "@/lib/prop.types";
 
 export function LoginPrompt({ callToAction, route }: LoginPromptProps) {
   return (

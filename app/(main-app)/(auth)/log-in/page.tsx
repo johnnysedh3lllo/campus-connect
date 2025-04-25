@@ -4,8 +4,7 @@
 import { useState } from "react";
 import { login } from "@/app/actions/actions";
 import { useRouter } from "next/navigation";
-import { LoginFormType, loginSchema } from "@/lib/form-schemas";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginFormType } from "@/lib/form.types";
 import { toast } from "@/hooks/use-toast";
 
 // COMPONENTS

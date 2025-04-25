@@ -19,7 +19,7 @@ import { Button } from "../ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { updateProfilePicture } from "@/app/actions/actions";
-import { ProfilePictureUploadProps } from "@/lib/component-prop-types";
+import { ProfilePictureUploadProps } from "@/lib/prop.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function ProfilePictureUpload({

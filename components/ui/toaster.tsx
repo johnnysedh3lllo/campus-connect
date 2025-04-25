@@ -18,10 +18,15 @@ export function Toaster() {
   return (
     <ToastProvider>
       {toasts.map(function ({ id, title, description, action, ...props }) {
+        const isDestructive = props.variant === "destructive";
+
+        // TODO: Setup Variants for 'Success' and 'Info'
+        // const isSuccess = props.variant === "success";
+        // const isInfo = props.variant === "info";
         return (
-          <Toast key={id} {...props}>
+          <Toast key={id} {...props} className="flex w-fit items-center">
             <div className="flex items-start gap-3">
-              <ErrorIcon />
+              {isDestructive && <ErrorIcon />}
               <section className="grid gap-1">
                 {title && <ToastTitle>{title}</ToastTitle>}
                 {description && (
@@ -29,8 +34,7 @@ export function Toaster() {
                 )}
               </section>
             </div>
-            {action}
-            <ToastClose className="self-center" />
+            {action ? action : <ToastClose className="self-center" />}
           </Toast>
         );
       })}

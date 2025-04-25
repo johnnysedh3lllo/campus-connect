@@ -6,12 +6,6 @@ import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIcon } from "@/public/icons/profile-icon";
 import { SettingsIcon } from "@/public/icons/settings-icon";
 
-// import listingIcon from "@/public/icons/icon-listings.svg";
-// import inquiriesIcon from "@/public/icons/icon-inquires.svg";
-// import messagesIcon from "@/public/icons/icon-message.svg";
-// import profileIcon from "@/public/icons/icon-profile.svg";
-// import settingsIcon from "@/public/icons/icon-settings.svg";
-
 export interface UserRoles {
   1: string;
   2: string;

@@ -3,7 +3,7 @@
 // UTILITIES
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { navLinks } from "@/lib/data-storage";
+import { navLinks } from "@/lib/app.config";
 
 // COMPONENTS
 import Link from "next/link";
@@ -17,12 +17,11 @@ import { MobileNav } from "./mobile-nav";
 import logoMain from "@/public/logos/logo-mark-red.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
 import hamburgerIcon from "@/public/icons/icon-hamburger.svg";
-import creditChip from "@/public/icons/icon-credit-chip.svg";
 
 //
 import { useUser } from "@/hooks/use-user";
 import { useUserProfile } from "@/hooks/use-user-profile";
-import { useCreditsStore } from "@/lib/store/credits-store";
+import { CreditBalance } from "./credit-balance";
 
 export default function Navigation() {
   const { data: user } = useUser();
@@ -30,7 +29,6 @@ export default function Navigation() {
 
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [clicked, setIsClicked] = useState(false);
-  const {credits} = useCreditsStore();
 
   const pathName = usePathname();
   return (
@@ -67,10 +65,17 @@ export default function Navigation() {
         </ul>
 
         <div className="flex items-center gap-2 lg:pb-3">
-          <div className="hidden lg:flex lg:items-center lg:gap-2">
-            <Image width={24} height={24} alt="credit chip" src={creditChip} />
-            <p className="text-sm leading-6 font-medium">{credits} Credits</p>
-          </div>
+
+          {/* TODO: REVISIT THE HYDRATION ISSUE HERE. */}
+          <Link
+            href="/buy-credits"
+            className="hover:bg-background-secondary hidden items-center justify-center rounded-sm p-2 lg:flex"
+          >
+            <CreditBalance
+              userId={user?.id}
+              className="hidden lg:flex lg:items-center lg:gap-2"
+            />
+          </Link>
 
           <Separator orientation="vertical" className="hidden h-4 lg:block" />
 

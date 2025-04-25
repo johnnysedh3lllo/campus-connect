@@ -1,5 +1,5 @@
 "use client";
-import { ProfileInfoProps } from "@/lib/component-prop-types";
+import { ProfileInfoProps } from "@/lib/prop.types";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIconSmall } from "@/public/icons/profile-icon-small";
 import { EditIcon } from "@/public/icons/edit-icon";
@@ -16,11 +16,12 @@ import {
 import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { profileInfoFormSchema, ProfileInfoFormType } from "@/lib/form-schemas";
+import { profileInfoFormSchema } from "@/lib/form.schemas";
 import { Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "@/app/actions/actions";
 import { useToast } from "@/hooks/use-toast";
+import { ProfileInfoFormType } from "@/lib/form.types";
 
 export function ProfileInfo({ userProfile }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);

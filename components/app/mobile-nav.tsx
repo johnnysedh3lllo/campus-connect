@@ -1,6 +1,6 @@
 "use client";
 
-import { MobileNavProps } from "@/lib/component-prop-types";
+import { MobileNavProps } from "@/lib/prop.types";
 import {
   Sheet,
   SheetClose,
@@ -20,7 +20,7 @@ import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 import { usePathname } from "next/navigation";
 import { signOut } from "@/app/actions/actions";
-import { navLinksMobile } from "@/lib/data-storage";
+import { navLinksMobile } from "@/lib/app.config";
 import Link from "next/link";
 import { LogOut } from "@/public/icons/log-out-icon";
 import { CreditDisplayCard } from "./credit-display-card";

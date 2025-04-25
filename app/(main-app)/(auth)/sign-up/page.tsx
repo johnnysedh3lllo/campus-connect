@@ -18,7 +18,7 @@ import {
   SetPasswordFormType,
   SignUpFormType,
   UserDetailsFormType,
-} from "@/lib/form-schemas";
+} from "@/lib/form.types";
 import { useRouter } from "next/navigation";
 
 // COMPONENTS

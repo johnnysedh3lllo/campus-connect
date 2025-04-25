@@ -1,7 +1,6 @@
+import type { ReactNode } from "react";
 import { Button } from "../ui/button";
-import { HeaderProps } from "@/lib/component-prop-types";
-
-
+import { HeaderProps } from "@/lib/prop.types";
 
 export function Header({
   title,
@@ -12,8 +11,8 @@ export function Header({
   showButton = true,
 }: HeaderProps) {
   return (
-    <div className="sticky top-0 bg-background border-border border-b-1 z-6">
-      <header className="max-w-screen-max-xl mx-auto flex items-center justify-between p-4 pt-6 sm:px-12 sm:pt-10">
+    <div className="bg-background border-border sticky top-0 border-b-1">
+      <header className="max-w-screen-max-xl mx-auto flex items-center justify-between p-4 pt-6 sm:px-12 sm:pt-10 lg:px-6">
         <section>
           <h1 className="text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
             {title}

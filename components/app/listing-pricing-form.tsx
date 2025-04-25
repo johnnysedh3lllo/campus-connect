@@ -1,5 +1,5 @@
 "use client"
-import { createListingFormSchema, PaymentFrequencyEnum } from '@/lib/form-schemas';
+import { createListingFormSchema, PaymentFrequencyEnum } from '@/lib/form.schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react'
 import Image from 'next/image';

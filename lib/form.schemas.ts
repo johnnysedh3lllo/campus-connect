@@ -3,8 +3,7 @@
 import { z } from "zod";
 
 // FORM SCHEMAS
-const RoleEnum = z.enum(["1", "2", "3"]);
-export type RoleType = z.infer<typeof RoleEnum>;
+export const RoleEnum = z.enum(["1", "2", "3"]);
 
 export const userValidationSchema = z.object({
   roleId: RoleEnum.describe("User role selection"),
@@ -40,8 +39,6 @@ export const userValidationSchema = z.object({
   confirmPassword: z.string().min(8),
 });
 
-export type UserValidationSchema = z.infer<typeof userValidationSchema>;
-
 // SIGN UP ACTION
 export const signUpFormSchema = userValidationSchema.pick({
   firstName: true,
@@ -51,23 +48,18 @@ export const signUpFormSchema = userValidationSchema.pick({
   newsletter: true,
 });
 
-export type SignUpFormType = z.infer<typeof signUpFormSchema>;
-
 // SIGN UP FORM STEPS
 export const roleSchema = userValidationSchema.pick({
   roleId: true,
 });
-export type RoleFormType = z.infer<typeof roleSchema>;
 
 export const userDetailsFormSchema = signUpFormSchema.omit({
   roleId: true,
 });
-export type UserDetailsFormType = z.infer<typeof userDetailsFormSchema>;
 
 export const otpFormSchema = userValidationSchema.pick({
   otp: true,
 });
-export type OtpFormType = z.infer<typeof otpFormSchema>;
 
 export const setPasswordFormSchema = userValidationSchema
   .pick({
@@ -84,7 +76,6 @@ export const setPasswordFormSchema = userValidationSchema
       path: ["confirmPassword"],
     },
   );
-export type SetPasswordFormType = z.infer<typeof setPasswordFormSchema>;
 
 export const resetPasswordEmailSchema = userValidationSchema.pick({
   emailAddress: true,
@@ -111,12 +102,10 @@ export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
   password: true,
 });
-export type LoginFormType = z.infer<typeof loginSchema>;
 
 export const resetPasswordFormSchema = userValidationSchema.pick({
   emailAddress: true,
 });
-export type ResetPasswordFormType = z.infer<typeof resetPasswordFormSchema>;
 
 export const changePasswordSchema = userValidationSchema
   .pick({
@@ -144,28 +133,43 @@ export const changePasswordSchema = userValidationSchema
     path: ["password"],
   });
 
-export type ChangePasswordFormType = z.infer<typeof changePasswordSchema>;
-
 export const settingsFormSchema = z.object({
   emailNotification: z.boolean().default(false).optional(),
   smsNotification: z.boolean(),
 });
 
-export type SettingsFormType = z.infer<typeof settingsFormSchema>;
-
 export const profileInfoFormSchema = userValidationSchema.pick({
   firstName: true,
   lastName: true,
 });
-export type ProfileInfoFormType = z.infer<typeof profileInfoFormSchema>;
 
-export const HomeTypeEnum = z.enum(["Apartment", "Condo"]);
+export const buyCreditsFormSchema = z.object({
+  creditPriceID: z.string().min(1, {
+    message: "Please select a credit amount.",
+  }),
+  promoCode: z
+    .string()
+    .optional()
+    .refine((value) => !value || value.length === 6, {
+      message: "Code entered must be a valid promo code.",
+    }),
+});
+
+export const purchasePremiumFormSchema = z.object({
+  purchaseType: z.string(),
+  priceId: z.string(),
+  landlordPremiumPrice: z.number(),
+  userId: z.string(),
+});
+
+export const HomeTypeEnum = z.enum(["apartment", "condo"]);
 export const PaymentFrequencyEnum = z.enum([
   "daily",
   "weekly",
   "monthly",
   "yearly",
 ]);
+
 export const createListingFormSchema = z.object({
   homeDetails: z.object({
     title: z.string().nonempty({ message: "This is a required field" }),
@@ -184,15 +188,4 @@ export const createListingFormSchema = z.object({
   }),
 });
 
-export type CreateListingFormType = z.infer<typeof createListingFormSchema>;
-export type ListingInsert = {
-  title: string;
-  description: string;
-  location: string;
-  price: number;
-  payment_frequency: z.infer<typeof PaymentFrequencyEnum>;
-  no_of_bedrooms: number;
-  home_type: z.infer<typeof HomeTypeEnum>;
-  created_at?: string;
-  landlord_id: string;
-};
+

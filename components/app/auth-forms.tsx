@@ -6,18 +6,12 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import {
   otpFormSchema,
-  OtpFormType,
-  resetPasswordFormSchema,
-  ResetPasswordFormType,
+    resetPasswordFormSchema,
   roleSchema,
-  RoleFormType,
   setPasswordFormSchema,
-  SetPasswordFormType,
   userDetailsFormSchema,
-  UserDetailsFormType,
   loginSchema,
-  LoginFormType,
-} from "@/lib/form-schemas";
+} from "@/lib/form.schemas";
 import Link from "next/link";
 import { resendSignUpOtp, signOut } from "@/app/actions/actions";
 
@@ -65,7 +59,8 @@ import {
   SelectRoleProps,
   SetPasswordProps,
   VerifyOtpProps,
-} from "@/lib/component-prop-types";
+} from "@/lib/prop.types";
+import { LoginFormType, RoleFormType, UserDetailsFormType, OtpFormType, SetPasswordFormType, ResetPasswordFormType } from "@/lib/form.types";
 
 //
 const roleDetails = [

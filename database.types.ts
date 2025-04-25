@@ -7,31 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string
-          query?: string
-          variables?: Json
-          extensions?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       conversation_participants: {
@@ -123,22 +98,25 @@ export type Database = {
       }
       credits: {
         Row: {
+          created_at: string | null
           remaining_credits: number | null
-          total_credits: number | null
+          total_credits: number
           updated_at: string | null
           used_credits: number | null
           user_id: string
         }
         Insert: {
+          created_at?: string | null
           remaining_credits?: number | null
-          total_credits?: number | null
+          total_credits?: number
           updated_at?: string | null
           used_credits?: number | null
           user_id: string
         }
         Update: {
+          created_at?: string | null
           remaining_credits?: number | null
-          total_credits?: number | null
+          total_credits?: number
           updated_at?: string | null
           used_credits?: number | null
           user_id?: string
@@ -173,53 +151,56 @@ export type Database = {
       }
       listings: {
         Row: {
+          availability_status: Database["public"]["Enums"]["listing_availability_status"]
           created_at: string
           description: string | null
-          home_type: Database["public"]["Enums"]["home_type_enum"] | null
+          home_type: Database["public"]["Enums"]["listing_type"] | null
           id: number
-          landlord_id: string | null
+          landlord_id: string
           location: string | null
           no_of_bedrooms: number | null
           payment_frequency:
-            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | Database["public"]["Enums"]["listing_payment_frequency"]
             | null
-          price: number | null
-          status: Database["public"]["Enums"]["listing_status_enum"]
-          title: string | null
+          price: number
+          publication_status: Database["public"]["Enums"]["listing_publication_status"]
+          title: string
           updated_at: string | null
           uuid: string
         }
         Insert: {
+          availability_status?: Database["public"]["Enums"]["listing_availability_status"]
           created_at?: string
           description?: string | null
-          home_type?: Database["public"]["Enums"]["home_type_enum"] | null
+          home_type?: Database["public"]["Enums"]["listing_type"] | null
           id?: never
-          landlord_id?: string | null
+          landlord_id: string
           location?: string | null
           no_of_bedrooms?: number | null
           payment_frequency?:
-            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | Database["public"]["Enums"]["listing_payment_frequency"]
             | null
-          price?: number | null
-          status?: Database["public"]["Enums"]["listing_status_enum"]
-          title?: string | null
+          price: number
+          publication_status?: Database["public"]["Enums"]["listing_publication_status"]
+          title: string
           updated_at?: string | null
           uuid?: string
         }
         Update: {
+          availability_status?: Database["public"]["Enums"]["listing_availability_status"]
           created_at?: string
           description?: string | null
-          home_type?: Database["public"]["Enums"]["home_type_enum"] | null
+          home_type?: Database["public"]["Enums"]["listing_type"] | null
           id?: never
-          landlord_id?: string | null
+          landlord_id?: string
           location?: string | null
           no_of_bedrooms?: number | null
           payment_frequency?:
-            | Database["public"]["Enums"]["payment_frequency_enum"]
+            | Database["public"]["Enums"]["listing_payment_frequency"]
             | null
-          price?: number | null
-          status?: Database["public"]["Enums"]["listing_status_enum"]
-          title?: string | null
+          price?: number
+          publication_status?: Database["public"]["Enums"]["listing_publication_status"]
+          title?: string
           updated_at?: string | null
           uuid?: string
         }
@@ -330,47 +311,60 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          cancel_at_period_end: boolean
           created_at: string | null
+          current_period_end: string | null
+          current_period_start: string
+          customer_type: string
           end_date: string | null
           id: number
-          plan_id: number
+          latest_invoice_id: string | null
+          metadata: Json | null
+          plan_name: string
           start_date: string | null
           status: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_price_id: string
           stripe_subscription_id: string
           subscription_uuid: string | null
           user_id: string
         }
         Insert: {
+          cancel_at_period_end?: boolean
           created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string
+          customer_type: string
           end_date?: string | null
           id?: never
-          plan_id: number
+          latest_invoice_id?: string | null
+          metadata?: Json | null
+          plan_name: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_price_id: string
           stripe_subscription_id: string
           subscription_uuid?: string | null
           user_id: string
         }
         Update: {
+          cancel_at_period_end?: boolean
           created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string
+          customer_type?: string
           end_date?: string | null
           id?: never
-          plan_id?: number
+          latest_invoice_id?: string | null
+          metadata?: Json | null
+          plan_name?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_price_id?: string
           stripe_subscription_id?: string
           subscription_uuid?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_plan_id_fkey"
-            columns: ["plan_id"]
-            isOneToOne: false
-            referencedRelation: "plans"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       users: {
         Row: {
@@ -383,6 +377,7 @@ export type Database = {
           newsletter: boolean | null
           phone: string | null
           role_id: number
+          stripe_customer_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -395,6 +390,7 @@ export type Database = {
           newsletter?: boolean | null
           phone?: string | null
           role_id: number
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -407,6 +403,7 @@ export type Database = {
           newsletter?: boolean | null
           phone?: string | null
           role_id?: number
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -457,16 +454,34 @@ export type Database = {
           participants: Json
         }[]
       }
+      increment_column_value: {
+        Args: {
+          table_name: string
+          table_column: string
+          increment: number
+          user_id: string
+        }
+        Returns: undefined
+      }
       soft_delete_conversation: {
         Args: { conversation_id_param: string; user_id_param: string }
         Returns: boolean
       }
     }
     Enums: {
-      home_type_enum: "Condo" | "Apartment"
-      listing_status_enum: "Available" | "Taken"
-      payment_frequency_enum: "daily" | "weekly" | "monthly" | "yearly"
-      subscription_status: "active" | "canceled" | "past_due"
+      listing_availability_status: "available" | "taken"
+      listing_payment_frequency: "daily" | "weekly" | "monthly" | "yearly"
+      listing_publication_status: "published" | "unpublished" | "draft"
+      listing_type: "condo" | "apartment"
+      subscription_status:
+        | "active"
+        | "canceled"
+        | "past_due"
+        | "trialing"
+        | "unpaid"
+        | "paused"
+        | "incomplete"
+        | "incomplete_expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -580,15 +595,22 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
-      home_type_enum: ["Condo", "Apartment"],
-      listing_status_enum: ["Available", "Taken"],
-      payment_frequency_enum: ["daily", "weekly", "monthly", "yearly"],
-      subscription_status: ["active", "canceled", "past_due"],
+      listing_availability_status: ["available", "taken"],
+      listing_payment_frequency: ["daily", "weekly", "monthly", "yearly"],
+      listing_publication_status: ["published", "unpublished", "draft"],
+      listing_type: ["condo", "apartment"],
+      subscription_status: [
+        "active",
+        "canceled",
+        "past_due",
+        "trialing",
+        "unpaid",
+        "paused",
+        "incomplete",
+        "incomplete_expired",
+      ],
     },
   },
 } as const

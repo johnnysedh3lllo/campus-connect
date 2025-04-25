@@ -1,4 +1,4 @@
-import { CreateListingFormType } from "../form-schemas";
+import { CreateListingFormType } from "../form.types";
 import { create } from "zustand";
 
 interface ListingCreationState extends Partial<CreateListingFormType> {

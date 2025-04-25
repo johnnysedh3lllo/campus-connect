@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 import ListingCreatePreviewImage from "@/components/app/listing-create-preview-image";
 import { useListingCreationStore } from "@/lib/store/listing-creation-store";
-import { PaymentFrequencyEnum } from "@/lib/form-schemas";
+import { PaymentFrequencyEnum } from "@/lib/form.schemas";
 import { z } from "zod";
 import Image from "next/image";
 import { useCreditsStore } from "@/lib/store/credits-store";
@@ -20,7 +20,7 @@ export function mapPaymentFrequencyToLabel(
     daily: "Day",
     weekly: "Week",
     monthly: "Month",
-    yearly: "Month",
+    yearly: "Year",
   };
 
   return frequencyMap[paymentFrequency]?.toLowerCase() || "";

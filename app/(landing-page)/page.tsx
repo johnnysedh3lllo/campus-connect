@@ -1,9 +1,7 @@
 import Hero from "@/components/app/hero";
-// import Navigation from "@/components/ui/navigation";
 
 import { ThemeSwitcher } from "@/components/app/theme-switcher";
 import { createClient } from "@/utils/supabase/server";
-// import { insertProperty } from "../actions/actions";
 import { UserResponse } from "@supabase/supabase-js";
 
 export default async function Index() {

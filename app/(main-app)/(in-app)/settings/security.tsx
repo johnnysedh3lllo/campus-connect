@@ -6,9 +6,8 @@ import type { z } from "zod";
 import { useForm } from "react-hook-form";
 import { createPassword } from "@/app/actions/actions";
 import {
-  ChangePasswordFormType,
   changePasswordSchema,
-} from "@/lib/form-schemas";
+} from "@/lib/form.schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
 
@@ -26,6 +25,7 @@ import { PasswordInput } from "@/components/app/password-input";
 
 // ASSETS
 import { Loader2 } from "lucide-react";
+import { ChangePasswordFormType } from "@/lib/form.types";
 
 //
 export default function Security() {

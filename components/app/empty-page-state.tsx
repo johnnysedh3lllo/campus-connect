@@ -1,7 +1,6 @@
-import { ReactNode } from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import { EmptyPageStateProps } from "@/lib/component-prop-types";
+import { EmptyPageStateProps } from "@/lib/prop.types";
 
 export function EmptyPageState({
   imageSrc,

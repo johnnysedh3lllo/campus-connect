@@ -13,7 +13,7 @@ function ListingCreatePreviewImage({
   showNumber,
 }: {
   previews: string[];
-  scrollContainerRef: RefObject<HTMLDivElement>;
+  scrollContainerRef: RefObject<HTMLDivElement | null>;
   removeSpecificImage?: (index: number) => void;
   isUploading: boolean;
   showNumber?: boolean;
