@@ -70,6 +70,9 @@ export const updateSession = async (request: NextRequest) => {
   }
 
   // redirects when user is logged in
+  if (request.nextUrl.pathname === "/" && !user.error) {
+    return NextResponse.redirect(new URL("/listings", request.url));
+  }
   if (request.nextUrl.pathname === "/log-in" && !user.error) {
     return NextResponse.redirect(new URL("/listings", request.url));
   }
