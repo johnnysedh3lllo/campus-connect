@@ -2,9 +2,9 @@
 
 // UTILITIES
 import { useState } from "react";
-import { login } from "@/app/actions/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
+import { login } from "@/app/actions/supabase/onboarding";
 
 // COMPONENTS
 

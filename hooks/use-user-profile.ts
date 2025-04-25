@@ -1,4 +1,4 @@
-import { getUserProfile } from "@/app/actions/actions";
+import { getUserProfile } from "@/app/actions/supabase/user";
 import { useQuery } from "@tanstack/react-query";
 
 export function useUserProfile(userId: string | undefined) {

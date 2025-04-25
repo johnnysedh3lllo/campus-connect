@@ -69,7 +69,7 @@ export function ProfilePageBody() {
                 <p>Basic</p>
               </section>
 
-              <Link href="/">
+              <Link href="/plans">
                 <Button
                   variant={"outline"}
                   className="h-full flex-1 cursor-pointer gap-3 text-base leading-6 sm:flex"

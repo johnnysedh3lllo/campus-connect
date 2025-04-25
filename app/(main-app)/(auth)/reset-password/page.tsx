@@ -1,6 +1,5 @@
 "use client";
 
-import { resetPassword } from "@/app/actions/actions";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { useState } from "react";
 import { CheckInbox, ResetPassword } from "@/components/app/auth-forms";
@@ -9,6 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 import { ResetPasswordFormType } from "@/lib/form.types";
+import { resetPassword } from "@/app/actions/supabase/onboarding";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`

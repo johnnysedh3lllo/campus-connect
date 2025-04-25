@@ -19,11 +19,11 @@ import closeIconNoBorders from "@/public/icons/icon-close-no-borders.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 import { usePathname } from "next/navigation";
-import { signOut } from "@/app/actions/actions";
 import { navLinksMobile } from "@/lib/app.config";
 import Link from "next/link";
 import { LogOut } from "@/public/icons/log-out-icon";
 import { CreditDisplayCard } from "./credit-display-card";
+import { signOut } from "@/app/actions/supabase/onboarding";
 
 export function MobileNav({ userProfile, isOpen, onClose }: MobileNavProps) {
   const pathName = usePathname();

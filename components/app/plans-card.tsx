@@ -42,6 +42,7 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
     const usersName = user?.user_metadata
       ? formatUsersName(user.user_metadata)
       : undefined;
+    const userEmail = user?.email;
 
     try {
       const requestBody = {
@@ -49,6 +50,7 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
         priceId,
         landlordPremiumPrice,
         userId,
+        userEmail,
         usersName,
       };
 
@@ -96,7 +98,7 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
           <h2 className="text-2xl leading-8 font-semibold capitalize">
             {name}
           </h2>
-          <p className="text-sm leading-6 font-medium">{price}</p>
+          <p className="text-sm leading-6 font-medium capitalize">{price}</p>
         </section>
 
         <section className="flex flex-col gap-3">

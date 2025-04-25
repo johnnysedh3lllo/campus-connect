@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { MessageListItem } from "./message-list-item";
-import { getUserConversationsWithParticipants } from "@/app/actions/actions";
+import { getUserConversationsWithParticipants } from "@/app/actions/supabase/messages";
 
 export function MessageList() {
   const { data: userConversations, isFetching } = useQuery({

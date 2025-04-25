@@ -1,9 +1,10 @@
 // Utilities
 import MessageContainer from "@/components/app/message-container";
-import { getMessages, getParticipants, getUser } from "@/app/actions/actions";
 import { UserProfileCard } from "@/components/app/user-profile-card";
 import { MessageBody } from "@/components/app/message-body";
 import { UserProfileCardWrapper } from "@/components/ui/user-profile-card-wrapper";
+import { getParticipants, getMessages } from "@/app/actions/supabase/messages";
+import { getUser } from "@/app/actions/supabase/user";
 
 // Components
 

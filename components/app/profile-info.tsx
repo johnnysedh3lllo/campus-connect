@@ -19,9 +19,9 @@ import { useForm } from "react-hook-form";
 import { profileInfoFormSchema } from "@/lib/form.schemas";
 import { Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateUser } from "@/app/actions/actions";
 import { useToast } from "@/hooks/use-toast";
 import { ProfileInfoFormType } from "@/lib/form.types";
+import { updateUser } from "@/app/actions/supabase/user";
 
 export function ProfileInfo({ userProfile }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);

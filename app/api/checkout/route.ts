@@ -2,10 +2,10 @@ import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { PURCHASE_TYPES } from "@/lib/pricing.config";
 import {
-  checkActiveSubscription,
-  getOrCreateStripeCustomer,
-  updateUserDetails,
-} from "@/app/actions/actions";
+  retrieveActiveSubscription,
+  fetchOrCreateCustomer,
+} from "@/app/actions";
+import { stripe } from "@/lib/stripe";
 
 type CheckoutRequestBody = {
   purchaseType: string;
@@ -21,11 +21,7 @@ type CheckoutRequestBody = {
   landLordCreditAmount?: number;
   landlordPremiumPrice?: number;
 };
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: "2025-03-31.basil",
-});
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+// const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
@@ -49,17 +45,7 @@ export async function POST(request: NextRequest) {
     // this ensures that whether for one-time or recurring payments,
     // a customer object is available for the Checkout Session.
     // TODO: add check for customer_id on Supabase at start.
-    const customer = await getOrCreateStripeCustomer(
-      userId,
-      userEmail,
-      usersName,
-    );
-
-    const addedStripeCustomerId = await updateUserDetails(
-      userId,
-      { stripe_customer_id: customer?.id },
-      supabaseServiceRoleKey,
-    );
+    const customer = await fetchOrCreateCustomer(userId, userEmail, usersName);
 
     let sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"], // TODO: update when google pay or apple pay has been added
@@ -76,6 +62,9 @@ export async function POST(request: NextRequest) {
       payment_method_data: {
         allow_redisplay: "always",
       },
+      subscription_data: {
+        invoice_settings: {},
+      },
     };
 
     if (promoCode) {
@@ -90,33 +79,32 @@ export async function POST(request: NextRequest) {
           landLordCreditAmount: landLordCreditAmount ?? null,
         };
         sessionParams.payment_intent_data = {
-          setup_future_usage: "off_session", // to save payment method for future usage
+          setup_future_usage: "off_session", // to save payment method for future usage where the customer may not be directly involve, such as subscriptions
         };
-        // sessionParams.payment_intent_data = {
-        //   setup_future_usage: "on_session", // to save payment method for future usage
-        // };
         break;
 
       case `${PURCHASE_TYPES.LANDLORD_PREMIUM.type}`:
-        // TODO: check if a user has an active subscription on stripe or supabase before creating a subscription
-        sessionParams.cancel_url = `${origin}/plans`;
-        sessionParams.metadata = {
-          ...sessionParams.metadata,
-          landlordPremiumPrice: landlordPremiumPrice ?? null,
-        };
         sessionParams.mode = "subscription";
+        sessionParams.success_url = `${origin}/plans?session_id={CHECKOUT_SESSION_ID}`;
+        sessionParams.cancel_url = `${origin}/plans`;
+        sessionParams.subscription_data = {
+          metadata: {
+            ...sessionParams.metadata,
+            landlordPremiumPrice: landlordPremiumPrice ?? null,
+          },
+        };
 
-        const hasActiveSubscription = await checkActiveSubscription(
+        const activeSubscription = await retrieveActiveSubscription(
           customer?.id,
+          userId,
         );
 
-        if (hasActiveSubscription) {
+        if (activeSubscription) {
           return NextResponse.json(
-            { error: "You already has an active subscription" },
+            { error: "You already have an active subscription" },
             { status: 400 },
           );
         }
-
         break;
 
       case `${PURCHASE_TYPES.STUDENT_PACKAGE.type}`:

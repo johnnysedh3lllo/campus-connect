@@ -4,7 +4,6 @@ import type React from "react";
 
 import { useState } from "react";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
-import { createNewPassword } from "@/app/actions/actions";
 import { toast } from "@/hooks/use-toast";
 // import ErrorHandler from "@/lib/ErrorHandler";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,6 +15,7 @@ import {
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 import { SetPasswordFormType } from "@/lib/form.types";
+import { createNewPassword } from "@/app/actions/supabase/onboarding";
 
 export default function CreateNewPasswordPage() {
   const { step, nextStep, updateFields } = useMultiStepForm({

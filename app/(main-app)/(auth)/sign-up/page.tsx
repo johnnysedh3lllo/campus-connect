@@ -4,12 +4,13 @@
 import { toast } from "@/hooks/use-toast";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { useEffect, useRef, useState } from "react";
-import { MultiStepFormData, OtpFormType, RoleFormType, SetPasswordFormType, UserDetailsFormType } from "@/lib/form.types";
 import {
-  createPassword,
-  signUpWithOtp,
-  verifyOtp,
-} from "@/app/actions/actions";
+  MultiStepFormData,
+  OtpFormType,
+  RoleFormType,
+  SetPasswordFormType,
+  UserDetailsFormType,
+} from "@/lib/form.types";
 import { useRouter } from "next/navigation";
 
 // COMPONENTS
@@ -22,6 +23,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
+import {
+  createPassword,
+  signUpWithOtp,
+  verifyOtp,
+} from "@/app/actions/supabase/onboarding";
 
 //
 // const defaultUrl = process.env.VERCEL_URL
@@ -73,6 +79,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
 
     try {
       const result = await signUpWithOtp(userInfo);
+      console.log("result from SignUpWithOtp:", result);
 
       if (result && result?.success) {
         updateFields({ emailAddress: result.userEmail });
@@ -95,6 +102,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       // if the otp SetPasswordFormType incorrect it should throw an error
       // if correct, go to the next UserDetailsFormType
       const result = await verifyOtp(formData.emailAddress, values.otp);
+      console.log("result from verifyOtp:", result);
 
       if (result.success) {
         nextStep();
@@ -116,6 +124,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     setIsLoading(true);
     try {
       const result = await createPassword(values);
+      console.log("result from createPassword:", result);
 
       if (result.success) {
         // toast({
@@ -129,6 +138,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       }
     } catch (error) {
       setIsLoading(false);
+
       toast({
         variant: "destructive",
         title: "Error updating password",

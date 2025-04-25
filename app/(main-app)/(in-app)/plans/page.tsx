@@ -4,7 +4,6 @@ import { formatCurrencyToLocale } from "@/lib/utils";
 
 import { Header } from "@/components/app/header";
 import { PlansCard } from "@/components/app/plans-card";
-import { Toaster } from "@/components/ui/toaster";
 
 type LandlordPlansType = {
   name: string;
@@ -58,7 +57,6 @@ export default function Page() {
           );
         })}
       </div>
-      <Toaster />
     </section>
   );
 }

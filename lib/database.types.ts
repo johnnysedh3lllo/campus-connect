@@ -1,4 +1,4 @@
-import { Database as DB, Tables } from "@/database.types";
+import { Database as DB, Tables, TablesInsert } from "@/database.types";
 
 declare global {
   interface Database extends DB {}
@@ -38,5 +38,9 @@ declare global {
   type Credits = Tables<"credits">;
   type CreditsTransactions = Tables<"credit_transactions">;
   type Subscriptions = Tables<"subscriptions">;
+  type SubscriptionsInsert = TablesInsert<"subscriptions">;
   type SubscriptionStatus = Tables<"subscriptions">["status"];
+
+  type Customers = Tables<"customers">;
+  type CustomersInsert = TablesInsert<"customers">;
 }

@@ -1,7 +1,5 @@
 // Utilities
 import { Metadata } from "next";
-import { createClient } from "@/utils/supabase/server";
-import { UserResponse } from "@supabase/supabase-js";
 import {
   dehydrate,
   HydrationBoundary,
@@ -19,7 +17,8 @@ import Navigation from "@/components/app/navigation";
 
 // Setup
 import TanstackQueryProvider from "@/lib/providers/tanstack-query-provider";
-import { getUser, getUserProfile } from "@/app/actions/actions";
+import { getUser, getUserProfile } from "@/app/actions/supabase/user";
+import { Toaster } from "@/components/ui/toaster";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -62,6 +61,7 @@ export default async function RootLayout({
               <main className="relative flex-1 overflow-y-auto">
                 {children}
               </main>
+              <Toaster />
             </HydrationBoundary>
           </TanstackQueryProvider>
         </ThemeProviderWrapper>

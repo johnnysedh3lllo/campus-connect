@@ -9,7 +9,7 @@ export const createClient = async (SUPABASE_SECRET_KEY?: ENVType) => {
 
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    SUPABASE_SECRET_KEY! ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_SECRET_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll() {

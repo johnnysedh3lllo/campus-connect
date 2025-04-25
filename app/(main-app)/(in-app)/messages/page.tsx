@@ -1,4 +1,4 @@
-import { getUserConversationsWithParticipants } from "@/app/actions/actions";
+import { getUserConversationsWithParticipants } from "@/app/actions/supabase/messages";
 import { EmptyPageState } from "@/components/app/empty-page-state";
 import messageIllustration from "@/public/illustrations/illustration-messages.svg";
 import { QueryClient } from "@tanstack/react-query";

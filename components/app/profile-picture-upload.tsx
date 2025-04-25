@@ -18,9 +18,9 @@ import { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
-import { updateProfilePicture } from "@/app/actions/actions";
 import { ProfilePictureUploadProps } from "@/lib/prop.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateProfilePicture } from "@/app/actions/supabase/user";
 
 export function ProfilePictureUpload({
   userId,

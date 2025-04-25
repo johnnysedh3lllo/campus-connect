@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { PRICING } from "./pricing.config";
 import { CreditTierOption } from "./pricing.types";
-import { User, UserMetadata } from "@supabase/supabase-js";
+import { UserMetadata } from "@supabase/supabase-js";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -118,6 +118,13 @@ export function getCreditTiers(
   } else {
     return creditTiers;
   }
+}
+
+export function convertTimeStampToISOSafe(timestamp: number | null) {
+  return timestamp ? new Date(timestamp * 1000).toISOString() : null;
+}
+export function convertTimeStampToISOStrict(timestamp: number) {
+  return new Date(timestamp * 1000).toISOString();
 }
 
 // function formatCurrency(amount,route){let converted= 0; if (route === "internal") converted = amount / 100; if (route === "external") converted = amount * 100;return converted;}

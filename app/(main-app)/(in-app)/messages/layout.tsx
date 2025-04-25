@@ -6,7 +6,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getUserConversationsWithParticipants } from "@/app/actions/actions";
+import { getUserConversationsWithParticipants } from "@/app/actions/supabase/messages";
 
 // export const metadata: Metadata = {
 //   title: "Messages",

@@ -1,4 +1,4 @@
-import { getUserCreditRecord } from "@/app/actions/actions";
+import { getUserCreditRecord } from "@/app/actions/supabase/credits";
 import { useQuery } from "@tanstack/react-query";
 
 export function useUserCredits(userId: string | undefined) {

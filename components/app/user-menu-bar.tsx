@@ -1,6 +1,5 @@
 "use client";
 
-import { signOut } from "@/app/actions/actions";
 import Image from "next/image";
 
 import Link from "next/link";
@@ -17,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { LogOut } from "@/public/icons/log-out-icon";
+import { signOut } from "@/app/actions/supabase/onboarding";
 
 export function UserMenuBar({
   userProfile,

@@ -2,6 +2,8 @@ import { CreditTier, PriceTier } from "./pricing.types";
 
 // TODO: Consider abstracting these details to the database
 // TODO: Figure out a way to ensure this object is in sync with the Stripe Dashboard
+
+
 export const PRICING = {
   student: {
     bronze: {

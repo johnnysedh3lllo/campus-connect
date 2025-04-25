@@ -13,7 +13,6 @@ import {
   loginSchema,
 } from "@/lib/form.schemas";
 import Link from "next/link";
-import { resendSignUpOtp, signOut } from "@/app/actions/actions";
 
 // COMPONENTS
 import Image from "next/image";
@@ -60,7 +59,15 @@ import {
   SetPasswordProps,
   VerifyOtpProps,
 } from "@/lib/prop.types";
-import { LoginFormType, RoleFormType, UserDetailsFormType, OtpFormType, SetPasswordFormType, ResetPasswordFormType } from "@/lib/form.types";
+import {
+  LoginFormType,
+  RoleFormType,
+  UserDetailsFormType,
+  OtpFormType,
+  SetPasswordFormType,
+  ResetPasswordFormType,
+} from "@/lib/form.types";
+import { resendSignUpOtp, signOut } from "@/app/actions/supabase/onboarding";
 
 //
 const roleDetails = [
@@ -554,6 +561,7 @@ export function SetPassword({
   isLoading,
   handleCreatePassword,
 }: SetPasswordProps) {
+  
   const form = useForm<SetPasswordFormType>({
     resolver: zodResolver(setPasswordFormSchema),
     defaultValues: {

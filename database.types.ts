@@ -123,6 +123,27 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          created_at: string
+          id: string
+          stripe_customer_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          stripe_customer_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          stripe_customer_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       listing_images: {
         Row: {
           id: number
@@ -154,9 +175,9 @@ export type Database = {
           availability_status: Database["public"]["Enums"]["listing_availability_status"]
           created_at: string
           description: string | null
-          home_type: Database["public"]["Enums"]["listing_type"] | null
           id: number
           landlord_id: string
+          listing_type: Database["public"]["Enums"]["listing_type"] | null
           location: string | null
           no_of_bedrooms: number | null
           payment_frequency:
@@ -172,9 +193,9 @@ export type Database = {
           availability_status?: Database["public"]["Enums"]["listing_availability_status"]
           created_at?: string
           description?: string | null
-          home_type?: Database["public"]["Enums"]["listing_type"] | null
           id?: never
           landlord_id: string
+          listing_type?: Database["public"]["Enums"]["listing_type"] | null
           location?: string | null
           no_of_bedrooms?: number | null
           payment_frequency?:
@@ -190,9 +211,9 @@ export type Database = {
           availability_status?: Database["public"]["Enums"]["listing_availability_status"]
           created_at?: string
           description?: string | null
-          home_type?: Database["public"]["Enums"]["listing_type"] | null
           id?: never
           landlord_id?: string
+          listing_type?: Database["public"]["Enums"]["listing_type"] | null
           location?: string | null
           no_of_bedrooms?: number | null
           payment_frequency?:
@@ -311,57 +332,60 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          cancel_at: string | null
           cancel_at_period_end: boolean
-          created_at: string | null
-          current_period_end: string | null
+          canceled_at: string | null
+          created: string
+          current_period_end: string
           current_period_start: string
-          customer_type: string
-          end_date: string | null
-          id: number
-          latest_invoice_id: string | null
+          ended_at: string | null
+          id: string
           metadata: Json | null
-          plan_name: string
-          start_date: string | null
+          price_id: string
+          quantity: number | null
+          started_at: string
           status: Database["public"]["Enums"]["subscription_status"] | null
-          stripe_price_id: string
-          stripe_subscription_id: string
-          subscription_uuid: string | null
+          trial_end: string | null
+          trial_start: string | null
+          updated_at: string
           user_id: string
         }
         Insert: {
+          cancel_at?: string | null
           cancel_at_period_end?: boolean
-          created_at?: string | null
-          current_period_end?: string | null
+          canceled_at?: string | null
+          created?: string
+          current_period_end: string
           current_period_start?: string
-          customer_type: string
-          end_date?: string | null
-          id?: never
-          latest_invoice_id?: string | null
+          ended_at?: string | null
+          id: string
           metadata?: Json | null
-          plan_name: string
-          start_date?: string | null
+          price_id: string
+          quantity?: number | null
+          started_at?: string
           status?: Database["public"]["Enums"]["subscription_status"] | null
-          stripe_price_id: string
-          stripe_subscription_id: string
-          subscription_uuid?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
+          updated_at?: string
           user_id: string
         }
         Update: {
+          cancel_at?: string | null
           cancel_at_period_end?: boolean
-          created_at?: string | null
-          current_period_end?: string | null
+          canceled_at?: string | null
+          created?: string
+          current_period_end?: string
           current_period_start?: string
-          customer_type?: string
-          end_date?: string | null
-          id?: never
-          latest_invoice_id?: string | null
+          ended_at?: string | null
+          id?: string
           metadata?: Json | null
-          plan_name?: string
-          start_date?: string | null
+          price_id?: string
+          quantity?: number | null
+          started_at?: string
           status?: Database["public"]["Enums"]["subscription_status"] | null
-          stripe_price_id?: string
-          stripe_subscription_id?: string
-          subscription_uuid?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -377,7 +401,6 @@ export type Database = {
           newsletter: boolean | null
           phone: string | null
           role_id: number
-          stripe_customer_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -390,7 +413,6 @@ export type Database = {
           newsletter?: boolean | null
           phone?: string | null
           role_id: number
-          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -403,7 +425,6 @@ export type Database = {
           newsletter?: boolean | null
           phone?: string | null
           role_id?: number
-          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Relationships: [

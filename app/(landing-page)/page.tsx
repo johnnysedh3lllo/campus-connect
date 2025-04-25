@@ -3,8 +3,8 @@ import Hero from "@/components/app/hero";
 
 import { ThemeSwitcher } from "@/components/app/theme-switcher";
 import { createClient } from "@/utils/supabase/server";
-import { insertProperty } from "../actions/actions";
 import { UserResponse } from "@supabase/supabase-js";
+import { insertProperty } from "../actions/supabase/listings";
 
 export default async function Index() {
   const supabase = await createClient();

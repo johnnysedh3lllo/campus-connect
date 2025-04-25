@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { Database } from "@/database.types";
-import {
-  createUserCreditRecord,
-  getUserCreditRecord,
-  updateUserCredits,
-  updateUserDetails,
-} from "@/app/actions/actions";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-03-31.basil",
-});
+import { supabaseAdmin } from "@/utils/supabase/admin";
+import {
+  getUserCreditRecord,
+  createUserCreditRecord,
+  updateUserCreditRecord,
+} from "@/app/actions/supabase/credits";
+import { deleteCustomer } from "@/app/actions/supabase/customers";
+import { manageSubscriptions } from "@/app/actions/supabase/subscriptions";
+import { stripe } from "@/lib/stripe";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -35,6 +34,47 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const updateCustomerPaymentMethod = async (
+    paymentIntent: Stripe.PaymentIntent,
+  ) => {
+    try {
+      const customer = paymentIntent.customer as string;
+      const paymentMethod = paymentIntent.payment_method as string;
+
+      console.info("payment intent:", paymentIntent);
+
+      if (customer && paymentMethod) {
+        // Check if the payment method is already attached to the customer
+        const customerPaymentMethods = await stripe.paymentMethods.list({
+          customer: customer,
+          type: "card",
+        });
+
+        const isPaymentMethodAttached = customerPaymentMethods.data.some(
+          (pm) => pm.id === paymentMethod,
+        );
+
+        if (!isPaymentMethodAttached) {
+          // Attach the payment method to the customer
+          await stripe.paymentMethods.attach(paymentMethod, {
+            customer: customer,
+          });
+        }
+
+        // Set it as the default payment method
+        await stripe.customers.update(customer, {
+          invoice_settings: { default_payment_method: paymentMethod },
+        });
+
+        console.log(
+          `Default payment method for customer: ${customer} has been updated `,
+        );
+      }
+    } catch (error) {
+      console.error("Error updating default payment method:", error);
+    }
+  };
+
   switch (event.type) {
     case "checkout.session.completed": // Primary event for confirming one-time purchases (Landlord Credits and Student packages).
       const session = event.data.object as Stripe.Checkout.Session;
@@ -44,48 +84,22 @@ export async function POST(req: NextRequest) {
         session.payment_intent &&
         typeof session.payment_intent === "string"
       ) {
-        try {
-          const paymentIntent = await stripe.paymentIntents.retrieve(
-            session.payment_intent,
-          );
-          const customer = paymentIntent.customer as string;
-          const paymentMethod = paymentIntent.payment_method as string;
+        console.log("what modes is this catching?:", session.mode);
 
-          console.log("payment intent:", paymentIntent);
-          console.log("payment method:", paymentMethod);
+        const paymentIntent = await stripe.paymentIntents.retrieve(
+          session.payment_intent,
+        );
+        updateCustomerPaymentMethod(paymentIntent);
+      }
 
-          if (customer && paymentMethod) {
-            // Check if the payment method is already attached to the customer
-            const customerPaymentMethods = await stripe.paymentMethods.list({
-              customer: customer,
-              type: "card",
-            });
-
-            console.log("customer payment methods:", customerPaymentMethods);
-
-            const isPaymentMethodAttached = customerPaymentMethods.data.some(
-              (pm) => pm.id === paymentMethod,
-            );
-
-            if (!isPaymentMethodAttached) {
-              // Attach the payment method to the customer
-              await stripe.paymentMethods.attach(paymentMethod, {
-                customer: customer,
-              });
-            }
-
-            // Set it as the default payment method
-            await stripe.customers.update(customer, {
-              invoice_settings: { default_payment_method: paymentMethod },
-            });
-
-            console.log(
-              `Default payment method updated for customer ${customer}`,
-            );
-          }
-        } catch (error) {
-          console.error("Error updating default payment method:", error);
-        }
+      if (
+        session.mode === "subscription" &&
+        session.payment_status === "unpaid"
+      ) {
+        console.log(
+          "this is inside the checkout.session.completed event but for subscriptions",
+        );
+        console.log(event.data.object.payment_intent);
       }
 
       // to handle one-time payments
@@ -112,7 +126,7 @@ export async function POST(req: NextRequest) {
               supabaseServiceRoleKey,
             );
           } else {
-            await updateUserCredits(
+            await updateUserCreditRecord(
               userId,
               creditAmount,
               "total_credits",
@@ -123,8 +137,6 @@ export async function POST(req: NextRequest) {
       }
       break;
 
-    // case "payment_intent.created":
-    // break;
     case "payment_intent.succeeded":
       // TODO: handle additional confirmation of payment success
       break;
@@ -135,29 +147,38 @@ export async function POST(req: NextRequest) {
     case "customer.created":
     case "customer.updated":
       const customer = event.data.object;
-      console.log("when the customer is either created or updated:", customer);
+      // console.log("when the customer is either created or updated:", customer);
       break;
     case "customer.deleted":
       const deletedCustomer = event.data.object;
-      console.log("deleted customer:", deletedCustomer);
+
+      await deleteCustomer(deletedCustomer.metadata.userId);
       break;
     case "customer.subscription.created": // Primary for managing the lifecycle of subscription-related events (Landlord Premium).
     case "customer.subscription.updated": // Primary for managing the lifecycle of subscription-related events (Landlord Premium).
-      const subscription = event.data.object as Stripe.Subscription;
-      console.log(subscription);
-      console.log("subscription:", subscription);
-      console.log("the customer subscription has been created");
-
-      // TODO: handle when a subscription has been successfully created
-      // TODO: handle a successful checkout session for premium
-      // TODO: handle when a subscription has been updated
-      // TODO: handle if a user would like their subscription to be automatically renewed or cancel at the end date.
-      break;
     case "customer.subscription.deleted": // Primary for managing the lifecycle of subscription-related events (Landlord Premium).
-      const deletedSubscription = event.data.object as Stripe.Subscription;
-      // TODO: handle when a subscription has been deleted
+      const subscription = event.data.object as Stripe.Subscription;
+      let userId = subscription.metadata.userId;
+      const customerFromSub = subscription.customer as string;
+
+      if (event.type === "customer.subscription.created") {
+        const paymentIntent = await stripe.paymentIntents.list({
+          created: { gte: subscription.created },
+          customer: customerFromSub,
+          limit: 1,
+        });
+
+        updateCustomerPaymentMethod(paymentIntent.data[0]);
+      }
+
+      await manageSubscriptions(subscription, userId);
       break;
     case "invoice.paid": // For handling ongoing subscription management (Successful Recurring premium payments).
+      const invoice = event.data.object;
+
+      console.log("-------------from the invoice.paid event", event);
+      console.log("-------------from the invoice.paid event", event.data);
+
       // TODO: handle successful subscription payments
       break;
     case "invoice.payment_failed": // For handling ongoing subscription management (Failed Recurring premium payments).
