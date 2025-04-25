@@ -37,47 +37,36 @@ export const updateSession = async (request: NextRequest) => {
   const user = await supabase.auth.getUser();
 
   // ROUTE PROTECTION
-  // const paths: string[] = [
-  //   "/listings",
-  //   "/profile",
-  //   "messages",
-  //   "/settings",
-  //   "/plans",
-  //   "/buy-credits",
-  // ];
+  const protectedPaths: string[] = [
+    "/listings",
+    "/profile",
+    "/messages",
+    "/settings",
+    "/plans",
+    "/buy-credits",
+  ];
+  const unProtectedPaths: string[] = ["/log-in", "/sign-up"];
 
-  if (request.nextUrl.pathname.startsWith("/") && user.error) {
-    return NextResponse.redirect(new URL("/log-in", request.url));
-  }
-  if (request.nextUrl.pathname.startsWith("/listings") && user.error) {
+  const isProtected = protectedPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path),
+  );
+
+  const isUnprotected = unProtectedPaths.some(
+    (path) => request.nextUrl.pathname === path,
+  );
+
+  console.log(request.nextUrl.pathname);
+
+  if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/log-in", request.url));
   }
 
-  if (request.nextUrl.pathname.startsWith("/profile") && user.error) {
-    return NextResponse.redirect(new URL("/log-in", request.url));
-  }
-  if (request.nextUrl.pathname.startsWith("/messages") && user.error) {
-    return NextResponse.redirect(new URL("/log-in", request.url));
-  }
-  if (request.nextUrl.pathname.startsWith("/settings") && user.error) {
-    return NextResponse.redirect(new URL("/log-in", request.url));
-  }
-  if (request.nextUrl.pathname.startsWith("/plans") && user.error) {
-    return NextResponse.redirect(new URL("/log-in", request.url));
-  }
-  if (request.nextUrl.pathname.startsWith("/buy-credits") && user.error) {
+  if (isProtected && user.error) {
     return NextResponse.redirect(new URL("/log-in", request.url));
   }
 
   // redirects when user is logged in
-  if (request.nextUrl.pathname === "/" && !user.error) {
-    return NextResponse.redirect(new URL("/listings", request.url));
-  }
-  if (request.nextUrl.pathname === "/log-in" && !user.error) {
-    return NextResponse.redirect(new URL("/listings", request.url));
-  }
-
-  if (request.nextUrl.pathname === "/sign-up" && !user.error) {
+  if (isUnprotected && !user.error) {
     return NextResponse.redirect(new URL("/listings", request.url));
   }
 
@@ -85,5 +74,15 @@ export const updateSession = async (request: NextRequest) => {
 };
 
 export const config = {
-  matcher: ["/log-in", "/listings"],
+  matcher: [
+    "/",
+    "/log-in",
+    "/sign-up",
+    "/listings/:path*",
+    "/profile/:path*",
+    "/messages/:path*",
+    "/settings/:path*",
+    "/plans/:path*",
+    "/buy-credits/:path*",
+  ],
 };
