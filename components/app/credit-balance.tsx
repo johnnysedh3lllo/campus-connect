@@ -8,15 +8,15 @@ export function CreditBalance({
   increment,
   className = "flex items-center gap-2",
 }: CreditBalanceProps) {
-  const { data: creditAmount } = useUserCredits(userId);
+  const { data: creditRecord } = useUserCredits(userId);
 
-  const credits = creditAmount?.remaining_credits || 0;
+  const creditAmount = creditRecord?.remaining_credits || 0;
 
   return (
     <div className={`${className}`}>
       <CreditChipIcon />
       <p className="text-sm leading-6 font-medium">
-        {increment ? credits + increment : credits} Credits
+        {increment ? creditAmount + increment : creditAmount} Credits
       </p>
     </div>
   );

@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
 
       case `${PURCHASE_TYPES.LANDLORD_PREMIUM.type}`:
         sessionParams.mode = "subscription";
-        sessionParams.success_url = `${origin}/plans?session_id={CHECKOUT_SESSION_ID}`;
+        sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}?subscription=true`;
         sessionParams.cancel_url = `${origin}/plans`;
         sessionParams.subscription_data = {
           metadata: {

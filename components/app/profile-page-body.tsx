@@ -16,7 +16,9 @@ import { ProfileInfo } from "./profile-info";
 
 export function ProfilePageBody() {
   const { data: user } = useUser();
-  const { data: userProfile } = useUserProfile(user?.id);
+  const userId = user?.id;
+
+  const { data: userProfile } = useUserProfile(userId);
 
   if (!userProfile) return null;
 
@@ -43,7 +45,7 @@ export function ProfilePageBody() {
       <div className="max-w-screen-max-xl mx-auto px-4 sm:px-12 lg:flex">
         <section className="flex flex-col gap-6 py-6 lg:p-6 lg:pl-0">
           <PremiumBanner />
-          <CreditDisplayCard />
+          <CreditDisplayCard userId={userId} />
         </section>
 
         <div>

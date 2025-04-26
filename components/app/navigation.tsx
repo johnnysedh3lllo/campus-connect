@@ -22,10 +22,12 @@ import hamburgerIcon from "@/public/icons/icon-hamburger.svg";
 import { useUser } from "@/hooks/use-user";
 import { useUserProfile } from "@/hooks/use-user-profile";
 import { CreditBalance } from "./credit-balance";
+import { useUserActiveSubscription } from "@/hooks/use-active-subscription";
 
 export default function Navigation() {
   const { data: user } = useUser();
   const { data: userProfile } = useUserProfile(user?.id);
+  const { data: userActiveSubscription } = useUserActiveSubscription(user?.id);
 
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [clicked, setIsClicked] = useState(false);
@@ -65,19 +67,25 @@ export default function Navigation() {
         </ul>
 
         <div className="flex items-center gap-2 lg:pb-3">
-
           {/* TODO: REVISIT THE HYDRATION ISSUE HERE. */}
-          <Link
-            href="/buy-credits"
-            className="hover:bg-background-secondary hidden items-center justify-center rounded-sm p-2 lg:flex"
-          >
-            <CreditBalance
-              userId={user?.id}
-              className="hidden lg:flex lg:items-center lg:gap-2"
-            />
-          </Link>
 
-          <Separator orientation="vertical" className="hidden h-4 lg:block" />
+          {!userActiveSubscription && (
+            <>
+              <Link
+                href="/buy-credits"
+                className="hover:bg-background-secondary hidden items-center justify-center rounded-sm p-2 lg:flex"
+              >
+                <CreditBalance
+                  userId={user?.id}
+                  className="hidden lg:flex lg:items-center lg:gap-2"
+                />
+              </Link>
+              <Separator
+                orientation="vertical"
+                className="hidden h-4 lg:block"
+              />
+            </>
+          )}
 
           <Button
             variant={"ghost"}
