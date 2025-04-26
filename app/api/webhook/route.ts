@@ -79,6 +79,8 @@ export async function POST(req: NextRequest) {
     case "checkout.session.completed": // Primary event for confirming one-time purchases (Landlord Credits and Student packages).
       const session = event.data.object as Stripe.Checkout.Session;
 
+      console.log("we're live on vercel now look!", session);
+
       // handles attaching a payment method to a customer and setting it as a default payment method
       if (
         session.payment_intent &&
