@@ -28,6 +28,8 @@ import {
   signUpWithOtp,
   verifyOtp,
 } from "@/app/actions/supabase/onboarding";
+import { useShowPasswordState } from "@/lib/store/password-visibility-store";
+import { tree } from "next/dist/build/templates/app-page";
 
 //
 // const defaultUrl = process.env.VERCEL_URL
@@ -49,6 +51,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
   const onboardingFormWrapperRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { showPassword, setShowPassword } = useShowPasswordState();
 
   // const searchParams = await props.searchParams;
   // if ("message" in searchParams) {
@@ -122,6 +125,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
 
   async function handleCreatePassword(values: SetPasswordFormType) {
     setIsLoading(true);
+    // setShowPassword(true);   
     try {
       const result = await createPassword(values);
       console.log("result from createPassword:", result);
@@ -138,6 +142,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       }
     } catch (error) {
       setIsLoading(false);
+      // setShowPassword(false);
 
       toast({
         variant: "destructive",

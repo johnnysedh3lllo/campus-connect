@@ -125,7 +125,7 @@ export async function resendSignUpOtp(userEmail: string) {
 
 export async function createPassword(formData: SetPasswordFormType) {
   console.log("🔥🔥🔥 createPassword is running 🔥🔥🔥");
-  console.log("FORM DATA:", formData);
+  // console.log("FORM DATA:", formData);
 
   const supabase = await createClient();
 

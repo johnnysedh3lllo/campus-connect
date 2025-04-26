@@ -561,7 +561,6 @@ export function SetPassword({
   isLoading,
   handleCreatePassword,
 }: SetPasswordProps) {
-  
   const form = useForm<SetPasswordFormType>({
     resolver: zodResolver(setPasswordFormSchema),
     defaultValues: {
