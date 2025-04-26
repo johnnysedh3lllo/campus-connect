@@ -15,9 +15,9 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 const relevantEvent = new Set([
+  "charge.succeeded",
+  "charge.updated",
   "checkout.session.completed",
-  "payment_intent.succeeded",
-  "payment_intent.payment_failed",
   "customer.created",
   "customer.updated",
   "customer.deleted",
@@ -26,6 +26,9 @@ const relevantEvent = new Set([
   "customer.subscription.deleted",
   "invoice.paid",
   "invoice.payment_failed",
+  "payment_intent.created",
+  "payment_intent.succeeded",
+  "payment_intent.payment_failed",
 ]);
 
 export async function POST(req: NextRequest) {
@@ -64,8 +67,6 @@ export async function POST(req: NextRequest) {
       const customer = paymentIntent.customer as string;
       const paymentMethod = paymentIntent.payment_method as string;
 
-      console.info("payment intent:", paymentIntent);
-
       if (customer && paymentMethod) {
         // Check if the payment method is already attached to the customer
         const customerPaymentMethods = await stripe.paymentMethods.list({
@@ -103,15 +104,12 @@ export async function POST(req: NextRequest) {
       switch (event.type) {
         case "checkout.session.completed":
           const session = event.data.object as Stripe.Checkout.Session;
-          console.log("we're live on vercel now look!", session);
 
           // handles attaching a payment method to a customer and setting it as a default payment method
           if (
             session.payment_intent &&
             typeof session.payment_intent === "string"
           ) {
-            console.log("what modes is this catching?:", session.mode);
-
             const paymentIntent = await stripe.paymentIntents.retrieve(
               session.payment_intent,
             );
@@ -199,9 +197,6 @@ export async function POST(req: NextRequest) {
         case "invoice.paid":
           const invoice = event.data.object;
 
-          console.log("-------------from the invoice.paid event", event);
-          console.log("-------------from the invoice.paid event", event.data);
-
           // TODO: handle successful subscription payments
           break;
         case "invoice.payment_failed":
@@ -235,11 +230,10 @@ export async function POST(req: NextRequest) {
 // TO HANDLE OR NOT TO HANDLE?
 // charge.succeeded
 // charge.updated
-// charge.succeeded
 // customer.created
+// payment_intent.created
 // payment_method.attached
 // customer.updated
-// payment_intent.created
 // invoice.created
 // invoice.finalized
 // invoice.payment_succeeded
