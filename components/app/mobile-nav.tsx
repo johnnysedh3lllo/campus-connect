@@ -109,7 +109,7 @@ export function MobileNav({ userProfile, isOpen, onClose }: MobileNavProps) {
             </ul>
           </div>
 
-          <CreditDisplayCard />
+          <CreditDisplayCard userId={userProfile?.id} />
         </div>
       </SheetContent>
     </Sheet>
