@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  console.log(event);
+  console.log(payload);
+
   const updateCustomerPaymentMethod = async (
     paymentIntent: Stripe.PaymentIntent,
   ) => {
