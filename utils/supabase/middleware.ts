@@ -1,4 +1,4 @@
-import { createServerClient } from "@supabase/ssr";
+7import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 export const updateSession = async (request: NextRequest) => {
@@ -75,7 +75,6 @@ export const updateSession = async (request: NextRequest) => {
 
 export const config = {
   matcher: [
-    "/",
     "/log-in",
     "/sign-up",
     "/listings/:path*",
