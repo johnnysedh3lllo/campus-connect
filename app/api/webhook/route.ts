@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   };
 
   switch (event.type) {
-    case "checkout.session.completed": // Primary event for confirming one-time purchases (Landlord Credits and Student packages).
+    case "checkout.session.completed":
       const session = event.data.object as Stripe.Checkout.Session;
 
       console.log("we're live on vercel now look!", session);
@@ -141,7 +141,6 @@ export async function POST(req: NextRequest) {
         }
       }
       break;
-
     case "payment_intent.succeeded":
       // TODO: handle additional confirmation of payment success
       break;
@@ -159,9 +158,9 @@ export async function POST(req: NextRequest) {
 
       await deleteCustomer(deletedCustomer.metadata.userId);
       break;
-    case "customer.subscription.created": // Primary for managing the lifecycle of subscription-related events (Landlord Premium).
-    case "customer.subscription.updated": // Primary for managing the lifecycle of subscription-related events (Landlord Premium).
-    case "customer.subscription.deleted": // Primary for managing the lifecycle of subscription-related events (Landlord Premium).
+    case "customer.subscription.created":
+    case "customer.subscription.updated":
+    case "customer.subscription.deleted":
       const subscription = event.data.object as Stripe.Subscription;
       let userId = subscription.metadata.userId;
       const customerFromSub = subscription.customer as string;
@@ -178,7 +177,7 @@ export async function POST(req: NextRequest) {
 
       await manageSubscriptions(subscription, userId);
       break;
-    case "invoice.paid": // For handling ongoing subscription management (Successful Recurring premium payments).
+    case "invoice.paid":
       const invoice = event.data.object;
 
       console.log("-------------from the invoice.paid event", event);
@@ -186,7 +185,7 @@ export async function POST(req: NextRequest) {
 
       // TODO: handle successful subscription payments
       break;
-    case "invoice.payment_failed": // For handling ongoing subscription management (Failed Recurring premium payments).
+    case "invoice.payment_failed":
       // TODO: handle failed subscription payments
       break;
     default:
@@ -194,7 +193,12 @@ export async function POST(req: NextRequest) {
       break;
   }
 
-  return NextResponse.json({ status: "success", event: event, received: true });
+  return NextResponse.json(
+    { status: "success", event: event, received: true },
+    {
+      status: 200,
+    },
+  );
 }
 
 // charge.succeeded
