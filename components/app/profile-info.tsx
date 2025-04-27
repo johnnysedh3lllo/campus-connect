@@ -22,6 +22,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { ProfileInfoFormType } from "@/lib/form.types";
 import { updateUser } from "@/app/actions/supabase/user";
+import { Skeleton } from "../ui/skeleton";
 
 export function ProfileInfo({ userProfile }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -32,6 +33,8 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
   const lastName = userProfile?.last_name;
   const emailAddress = userProfile?.email;
   const userId = userProfile?.id;
+
+  const fullName: string | undefined = `${firstName} ${lastName}`;
 
   const handleEditToggle = () => {
     if (isEditing) {
@@ -126,9 +129,7 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
           <>
             <div className="flex items-center gap-2">
               <ProfileIconSmall />
-              <h2 className="text-sm leading-6 capitalize">
-                {firstName} {lastName}
-              </h2>
+              <h2 className="text-sm leading-6 capitalize">{fullName}</h2>
             </div>
 
             <div className="flex items-center gap-2">

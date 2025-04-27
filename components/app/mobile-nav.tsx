@@ -24,6 +24,7 @@ import Link from "next/link";
 import { LogOut } from "@/public/icons/log-out-icon";
 import { CreditDisplayCard } from "./credit-display-card";
 import { signOut } from "@/app/actions/supabase/onboarding";
+import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 
 export function MobileNav({ userProfile, isOpen, onClose }: MobileNavProps) {
   const pathName = usePathname();
@@ -53,12 +54,7 @@ export function MobileNav({ userProfile, isOpen, onClose }: MobileNavProps) {
           </Button>
 
           <SheetClose className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0">
-            <Image
-              src={closeIconNoBorders}
-              width={24}
-              height={24}
-              alt="close nav menu icon"
-            />
+            <CloseIconNoBorders />
           </SheetClose>
         </SheetHeader>
 

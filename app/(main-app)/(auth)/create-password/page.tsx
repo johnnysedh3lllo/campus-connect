@@ -14,7 +14,7 @@ import {
 } from "@/components/app/auth-forms";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
-import { SetPasswordFormType } from "@/lib/form.types";
+import { CreatePasswordFormType } from "@/lib/form.types";
 import { createNewPassword } from "@/app/actions/supabase/onboarding";
 
 export default function CreateNewPasswordPage() {
@@ -25,7 +25,7 @@ export default function CreateNewPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCreatePassword = async (
-    values: SetPasswordFormType,
+    values: CreatePasswordFormType,
   ): Promise<void> => {
     setIsLoading(true);
     try {

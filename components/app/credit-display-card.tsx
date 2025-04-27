@@ -2,10 +2,13 @@ import { CreditChipIcon } from "@/public/icons/credit-chip-icon";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { useUserCredits } from "@/hooks/use-user-credits";
+import { useUserActiveSubscription } from "@/hooks/use-active-subscription";
+import BuyCredits from "./buy-credits";
 
 export function CreditDisplayCard({ userId }: { userId: string | undefined }) {
   if (!userId) return;
   const { data: creditRecord } = useUserCredits(userId);
+  const { data: userActiveSubscription } = useUserActiveSubscription(userId);
 
   const creditAmount = creditRecord?.remaining_credits || 0;
 
@@ -26,11 +29,14 @@ export function CreditDisplayCard({ userId }: { userId: string | undefined }) {
         </section>
       </div>
 
-      <Link className="w-fit" href="/buy-credits">
-        <Button className="h-full w-full px-6 py-3 text-base sm:w-fit">
+      {/* TODO: REFACTOR */}
+      {/* {userActiveSubscription ? (
+        <Button disabled className="h-full w-full px-6 py-3 text-base sm:w-fit">
           Buy Credits
         </Button>
-      </Link>
+      ) : ( */}
+        <BuyCredits />
+      {/* )} */}
     </div>
   );
 }

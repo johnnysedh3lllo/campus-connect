@@ -2,13 +2,13 @@
 
 import {
   signUpFormSchema,
-  setPasswordFormSchema,
+  createPasswordSchema,
   resetPasswordFormSchema,
 } from "@/lib/form.schemas";
 
 import {
   SignUpFormType,
-  SetPasswordFormType,
+  CreatePasswordFormType,
   LoginFormType,
   ResetPasswordFormType,
 } from "@/lib/form.types";
@@ -123,7 +123,7 @@ export async function resendSignUpOtp(userEmail: string) {
   }
 }
 
-export async function createPassword(formData: SetPasswordFormType) {
+export async function createPassword(formData: CreatePasswordFormType) {
   console.log("🔥🔥🔥 createPassword is running 🔥🔥🔥");
   // console.log("FORM DATA:", formData);
 
@@ -131,7 +131,7 @@ export async function createPassword(formData: SetPasswordFormType) {
 
   try {
     // Validate password
-    const validatedPassword = setPasswordFormSchema.parse(formData);
+    const validatedPassword = createPasswordSchema.parse(formData);
 
     const { error } = await supabase.auth.updateUser({
       password: validatedPassword.password,
@@ -238,9 +238,9 @@ type CreateNewPasswordResponse = {
 };
 
 export async function createNewPassword(
-  formData: SetPasswordFormType,
+  formData: CreatePasswordFormType,
 ): Promise<CreateNewPasswordResponse> {
-  const validatedFields = setPasswordFormSchema.safeParse(formData);
+  const validatedFields = createPasswordSchema.safeParse(formData);
 
   if (!validatedFields.success) {
     return {

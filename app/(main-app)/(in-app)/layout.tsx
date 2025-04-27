@@ -19,6 +19,7 @@ import Navigation from "@/components/app/navigation";
 import TanstackQueryProvider from "@/lib/providers/tanstack-query-provider";
 import { getUser, getUserProfile } from "@/app/actions/supabase/user";
 import { Toaster } from "@/components/ui/toaster";
+import { Suspense } from "react";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -58,6 +59,7 @@ export default async function RootLayout({
           <TanstackQueryProvider>
             <HydrationBoundary state={dehydrate(queryClient)}>
               <Navigation />
+
               <main className="relative flex-1 overflow-y-auto">
                 {children}
               </main>

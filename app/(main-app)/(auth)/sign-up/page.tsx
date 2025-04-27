@@ -8,7 +8,7 @@ import {
   MultiStepFormData,
   OtpFormType,
   RoleFormType,
-  SetPasswordFormType,
+  CreatePasswordFormType,
   UserDetailsFormType,
 } from "@/lib/form.types";
 import { useRouter } from "next/navigation";
@@ -102,7 +102,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
 
   async function handleVerifyOtp(values: OtpFormType) {
     try {
-      // if the otp SetPasswordFormType incorrect it should throw an error
+      // if the otp CreatePasswordFormType incorrect it should throw an error
       // if correct, go to the next UserDetailsFormType
       const result = await verifyOtp(formData.emailAddress, values.otp);
       console.log("result from verifyOtp:", result);
@@ -123,9 +123,9 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     }
   }
 
-  async function handleCreatePassword(values: SetPasswordFormType) {
+  async function handleCreatePassword(values: CreatePasswordFormType) {
     setIsLoading(true);
-    // setShowPassword(true);   
+    // setShowPassword(true);
     try {
       const result = await createPassword(values);
       console.log("result from createPassword:", result);

@@ -5,6 +5,24 @@ import { z } from "zod";
 // FORM SCHEMAS
 export const RoleEnum = z.enum(["1", "2", "3"]);
 
+const passwordSchema = z
+  .string()
+  .min(8, {
+    message: "Password must be at least 8 characters.",
+  })
+  .refine((val) => /[a-z]/.test(val), {
+    message: "Password must contain at least one lowercase letter.",
+  })
+  .refine((val) => /[A-Z]/.test(val), {
+    message: "Password must contain at least one uppercase letter.",
+  })
+  .refine((val) => /\d/.test(val), {
+    message: "Password must contain at least one number.",
+  })
+  .refine((val) => /[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/.test(val), {
+    message: "Password must contain at least one special character.",
+  });
+
 export const userValidationSchema = z.object({
   roleId: RoleEnum.describe("User role selection"),
   firstName: z
@@ -24,19 +42,10 @@ export const userValidationSchema = z.object({
     .string()
     .length(6, "OTP must be exactly 6 digits")
     .regex(/^\d+$/, "OTP must contain only numbers"),
-  password: z
-    .string()
-    .min(8, {
-      message: "Password must be at least 8 characters.",
-    })
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      {
-        message:
-          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-      },
-    ),
-  confirmPassword: z.string().min(8),
+  password: passwordSchema,
+  confirmPassword: z.string().min(8, {
+    message: "Password must be at least 8 characters.",
+  }),
 });
 
 // SIGN UP ACTION
@@ -61,57 +70,23 @@ export const otpFormSchema = userValidationSchema.pick({
   otp: true,
 });
 
-export const setPasswordFormSchema = userValidationSchema
-  .pick({
-    password: true,
-    confirmPassword: true,
-  })
-  .refine(
-    (data) =>
-      !data.password ||
-      !data.confirmPassword ||
-      data.password === data.confirmPassword,
-    {
-      message: "Passwords don't match",
-      path: ["confirmPassword"],
-    },
-  );
-
-export const resetPasswordEmailSchema = userValidationSchema.pick({
-  emailAddress: true,
-});
-
-export const createPasswordSchema = userValidationSchema
-  .pick({
-    password: true,
-    confirmPassword: true,
-  })
-  .refine(
-    (data) =>
-      !data.password ||
-      !data.confirmPassword ||
-      data.password === data.confirmPassword,
-    {
-      message: "Passwords don't match",
-      path: ["confirmPassword"],
-    },
-  );
-
-// LOGIN FORM
-export const loginSchema = userValidationSchema.pick({
-  emailAddress: true,
+export const passwordFormSchema = userValidationSchema.pick({
   password: true,
+  confirmPassword: true,
 });
 
-export const resetPasswordFormSchema = userValidationSchema.pick({
-  emailAddress: true,
-});
+export const createPasswordSchema = passwordFormSchema.refine(
+  (data) =>
+    !data.password ||
+    !data.confirmPassword ||
+    data.password === data.confirmPassword,
+  {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  },
+);
 
-export const changePasswordSchema = userValidationSchema
-  .pick({
-    password: true,
-    confirmPassword: true,
-  })
+export const changePasswordSchema = passwordFormSchema
   .extend({
     currentPassword: z
       .string()
@@ -132,6 +107,16 @@ export const changePasswordSchema = userValidationSchema
     message: "New password must be different from current password",
     path: ["password"],
   });
+
+export const resetPasswordFormSchema = userValidationSchema.pick({
+  emailAddress: true,
+});
+
+// LOGIN FORM
+export const loginSchema = userValidationSchema.pick({
+  emailAddress: true,
+  password: true,
+});
 
 export const settingsFormSchema = z.object({
   emailNotification: z.boolean().default(false).optional(),
@@ -161,4 +146,3 @@ export const purchasePremiumFormSchema = z.object({
   landlordPremiumPrice: z.number(),
   userId: z.string(),
 });
-

@@ -67,6 +67,18 @@ export async function POST(request: NextRequest) {
       },
     };
 
+    const activeSubscription = await retrieveActiveSubscription(
+      customer?.id,
+      userId,
+    );
+
+    if (activeSubscription) {
+      return NextResponse.json(
+        { error: "You have an active subscription" },
+        { status: 400 },
+      );
+    }
+
     if (promoCode) {
       sessionParams.discounts = [{ promotion_code: promoCode }];
     }
@@ -94,17 +106,6 @@ export async function POST(request: NextRequest) {
           },
         };
 
-        const activeSubscription = await retrieveActiveSubscription(
-          customer?.id,
-          userId,
-        );
-
-        if (activeSubscription) {
-          return NextResponse.json(
-            { error: "You already have an active subscription" },
-            { status: 400 },
-          );
-        }
         break;
 
       case `${PURCHASE_TYPES.STUDENT_PACKAGE.type}`:

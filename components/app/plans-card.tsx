@@ -18,6 +18,9 @@ import { ToastAction } from "../ui/toast";
 import Link from "next/link";
 import { formatUsersName } from "@/lib/utils";
 
+const publishableKey: string | undefined =
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
 export function PlansCard({ name, price, status, features }: PlansCardProps) {
   const { data: user } = useUser();
 
@@ -31,13 +34,17 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
     },
   });
 
-  // const returnToBasicFrom = useForm
+  const switchToBasicForm = useForm();
 
   const {
     formState: { isSubmitting: isSubmittingPremium },
   } = premiumSubscriptionForm;
 
-  async function handlePremiumSubscription(values: PurchasePremiumFormType) {
+  const {
+    formState: { isSubmitting: isSwitchingToBasic },
+  } = switchToBasicForm;
+
+  async function handleSubscribeToPremium(values: PurchasePremiumFormType) {
     const { purchaseType, userId, priceId, landlordPremiumPrice } = values;
     const usersName = user?.user_metadata
       ? formatUsersName(user.user_metadata)
@@ -62,9 +69,11 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
 
       if (response.ok) {
         const { sessionId } = await response.json();
-        const stripe = await loadStripe(
-          process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-        );
+
+        if (!publishableKey) {
+          throw new Error("Stripe publishable key not found");
+        }
+        const stripe = await loadStripe(publishableKey);
 
         const stripeError = await stripe?.redirectToCheckout({
           sessionId,
@@ -87,6 +96,11 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async function handleSwitchToBasic() {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log("opening Stripe billing portal to switch to basic basic");
   }
 
   return (
@@ -124,14 +138,27 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
       ) : (
         <>
           {name === "basic" ? (
-            <Button className="h-full w-full px-11 py-3 text-base leading-6 sm:w-fit">
-              Switch to Basic
-            </Button>
+            <Form {...switchToBasicForm}>
+              <form
+                onSubmit={switchToBasicForm.handleSubmit(handleSwitchToBasic)}
+              >
+                <Button
+                  type="submit"
+                  disabled={isSwitchingToBasic}
+                  className="h-full w-full px-11 py-3 text-base leading-6 sm:w-fit"
+                >
+                  {isSwitchingToBasic && (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  )}
+                  {isSwitchingToBasic ? "Processing..." : "Switch to Basic"}
+                </Button>
+              </form>
+            </Form>
           ) : name === "premium" ? (
             <Form {...premiumSubscriptionForm}>
               <form
                 onSubmit={premiumSubscriptionForm.handleSubmit(
-                  handlePremiumSubscription,
+                  handleSubscribeToPremium,
                 )}
               >
                 <Button

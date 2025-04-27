@@ -7,7 +7,7 @@ import {
   OtpFormType,
   ResetPasswordFormType,
   RoleFormType,
-  SetPasswordFormType,
+  CreatePasswordFormType,
   UserDetailsFormType,
 } from "./form.types";
 
@@ -147,7 +147,7 @@ export type VerifyOtpProps = {
 };
 export type SetPasswordProps = {
   isLoading: boolean;
-  handleCreatePassword: (values: SetPasswordFormType) => void;
+  handleCreatePassword: (values: CreatePasswordFormType) => void;
 };
 export type ResetPasswordProps = {
   isSubmitting: boolean;
@@ -159,5 +159,5 @@ export type CheckInboxProps = {
 };
 export type CreateNewPasswordProps = {
   isSubmitting: boolean;
-  handleCreatePassword: (values: SetPasswordFormType) => void;
+  handleCreatePassword: (values: CreatePasswordFormType) => void;
 };

@@ -17,6 +17,7 @@ import {
 } from "../ui/dropdown-menu";
 import { LogOut } from "@/public/icons/log-out-icon";
 import { signOut } from "@/app/actions/supabase/onboarding";
+import { UserMenuBarSkeleton } from "./skeletons/user-menu-bar-skeleton";
 
 export function UserMenuBar({
   userProfile,
@@ -73,10 +74,6 @@ export function UserMenuBar({
       </div>
     );
   } else {
-    return (
-      <div className="hidden gap-2 lg:flex">
-        <p>user not logged in</p>
-      </div>
-    );
+    return <UserMenuBarSkeleton />;
   }
 }

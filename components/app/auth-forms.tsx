@@ -8,7 +8,7 @@ import {
   otpFormSchema,
   resetPasswordFormSchema,
   roleSchema,
-  setPasswordFormSchema,
+  createPasswordSchema,
   userDetailsFormSchema,
   loginSchema,
 } from "@/lib/form.schemas";
@@ -64,7 +64,7 @@ import {
   RoleFormType,
   UserDetailsFormType,
   OtpFormType,
-  SetPasswordFormType,
+  CreatePasswordFormType,
   ResetPasswordFormType,
 } from "@/lib/form.types";
 import { resendSignUpOtp, signOut } from "@/app/actions/supabase/onboarding";
@@ -165,7 +165,7 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
                 disabled={isLoading}
                 type="submit"
                 width={"full"}
-                className="cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
+                className="w-full cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? "Logging in..." : "Log in"}
@@ -228,7 +228,7 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
                     {roleDetails.map((role, index, arr) => {
                       return (
                         <React.Fragment key={role.title}>
-                          <label
+                          <FormLabel
                             htmlFor={`role-${role.value}`}
                             className="cursor-pointer"
                           >
@@ -242,9 +242,9 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
                                 />
 
                                 <div>
-                                  <FormLabel className="text-secondary-foreground text-xs font-normal sm:text-sm">
+                                  <h3 className="text-secondary-foreground text-xs font-normal sm:text-sm">
                                     {role.title}
-                                  </FormLabel>
+                                  </h3>
                                   <FormDescription className="text-sm font-medium sm:text-base">
                                     {role.description}
                                   </FormDescription>
@@ -253,12 +253,13 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
 
                               <FormControl>
                                 <RadioGroupItem
+                                  id={`role-${role.value}`}
                                   className="h-5 w-5 sm:h-6 sm:w-6"
                                   value={role.value}
                                 />
                               </FormControl>
                             </FormItem>
-                          </label>
+                          </FormLabel>
                           {index !== arr.length - 1 && (
                             <Separator
                               key={`separator-${role.title}`}
@@ -521,6 +522,7 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
 
                 <FormDescription>
                   <Button
+                    type="button"
                     disabled={timeLeft > 0}
                     className="text-primary p-1 font-medium"
                     variant={"link"}
@@ -561,8 +563,8 @@ export function SetPassword({
   isLoading,
   handleCreatePassword,
 }: SetPasswordProps) {
-  const form = useForm<SetPasswordFormType>({
-    resolver: zodResolver(setPasswordFormSchema),
+  const form = useForm<CreatePasswordFormType>({
+    resolver: zodResolver(createPasswordSchema),
     defaultValues: {
       password: "",
       confirmPassword: "",
@@ -770,8 +772,8 @@ export function CreateNewPassword({
   isSubmitting,
   handleCreatePassword,
 }: CreateNewPasswordProps) {
-  const form = useForm<SetPasswordFormType>({
-    resolver: zodResolver(setPasswordFormSchema),
+  const form = useForm<CreatePasswordFormType>({
+    resolver: zodResolver(createPasswordSchema),
     defaultValues: {
       password: "",
       confirmPassword: "",

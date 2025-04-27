@@ -9,7 +9,7 @@ import {
   resetPasswordFormSchema,
   RoleEnum,
   roleSchema,
-  setPasswordFormSchema,
+  createPasswordSchema,
   settingsFormSchema,
   signUpFormSchema,
   userDetailsFormSchema,
@@ -32,7 +32,7 @@ export type SignUpFormType = z.infer<typeof signUpFormSchema>;
 export type RoleFormType = z.infer<typeof roleSchema>;
 export type UserDetailsFormType = z.infer<typeof userDetailsFormSchema>;
 export type OtpFormType = z.infer<typeof otpFormSchema>;
-export type SetPasswordFormType = z.infer<typeof setPasswordFormSchema>;
+export type CreatePasswordFormType = z.infer<typeof createPasswordSchema>;
 export type LoginFormType = z.infer<typeof loginSchema>;
 export type ResetPasswordFormType = z.infer<typeof resetPasswordFormSchema>;
 export type ChangePasswordFormType = z.infer<typeof changePasswordSchema>;
