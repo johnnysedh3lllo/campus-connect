@@ -6,34 +6,105 @@ import { PremiumBanner } from "@/components/app/premium-banner";
 import { ProfileHeader } from "@/components/app/profile-header";
 import { Separator } from "@/components/ui/separator";
 // ASSETS
-import { useUser } from "@/hooks/use-user";
-import { useUserProfile } from "@/hooks/use-user-profile";
+import { useUser } from "@/hooks/tanstack/use-user";
+import { useUserProfile } from "@/hooks/tanstack/use-user-profile";
 import { ProfileInfo } from "./profile-info";
-import { useUserActiveSubscription } from "@/hooks/use-active-subscription";
+import { useUserActiveSubscription } from "@/hooks/tanstack/use-active-subscription";
 import { ProfileHeaderSkeleton } from "./skeletons/profile-header-skeleton";
 import { ProfileInfoSkeleton } from "./skeletons/profile-info-skeleton";
-import { CreditDisplayCardSkeleton } from "./skeletons/credit-display-card-skeleton";
-import { ProfilePlanDisplay } from "./profile-plan-display";
-import { ProfilePlanDisplaySkeleton } from "./skeletons/profile-plan-display-skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
-import { Skeleton } from "../ui/skeleton";
+import { Form } from "../ui/form";
+import { useForm } from "react-hook-form";
+import { ToastAction } from "../ui/toast";
+import { toast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 export function ProfilePageBody() {
+  const [billingPortalUrl, setBillingPortalUrl] = useState<string | null>(null);
+
   const { data: user } = useUser();
   const userId = user?.id;
-
   const { data: userProfile } = useUserProfile(userId);
   const { data: userActiveSubscription } = useUserActiveSubscription(userId);
 
-  // if (!userProfile) return null;
-
   const userCurrentPlan = userActiveSubscription ? "Premium" : "Basic";
+
+  const form = useForm();
+
+  const {
+    formState: { isSubmitting },
+    handleSubmit,
+  } = form;
+
+  // // TODO: DRY this up in other places, maybe abstract into a file
+  // async function createPortalSession(
+  //   userId: User["id"] | undefined,
+  // ): Promise<string> {
+  //   const response = await fetch("/api/billing-portal", {
+  //     method: "POST",
+  //     headers: { "Content-Type": "application/json" },
+  //     body: JSON.stringify({ userId }),
+  //   });
+
+  //   if (!response.ok) {
+  //     throw new Error("Failed to create billing portal session.");
+  //   }
+
+  //   const { url } = await response.json();
+  //   return url;
+  // }
+
+  // // Preload portal session on mount
+  // useEffect(() => {
+  //   async function preloadBillingPortal() {
+  //     if (!userId) return;
+
+  //     try {
+  //       const url = await createPortalSession(userId);
+  //       setBillingPortalUrl(url);
+  //     } catch (error: any) {
+  //       console.error(error);
+  //     }
+  //   }
+
+  //   preloadBillingPortal();
+  // }, [userId]);
+
+  // async function handleRedirect() {
+  //   try {
+  //     if (!userId) {
+  //       throw new Error(
+  //         "Some necessary details are missing. Please reload and try again later.",
+  //       );
+  //     }
+
+  //     let url = billingPortalUrl;
+
+  //     // If not preloaded, fetch on demand
+  //     if (!url) {
+  //       const portalUrl = await createPortalSession(userId);
+  //       url = portalUrl;
+  //       setBillingPortalUrl(url); // cache for future
+  //     }
+
+  //     window.location.href = url!;
+  //   } catch (error: any) {
+  //     if (error instanceof Error) {
+  //       toast({
+  //         variant: "default",
+  //         description: error.message,
+  //         action: <ToastAction altText="Try again">Try again</ToastAction>,
+  //       });
+  //     }
+  //     console.error(error);
+  //   }
+  // }
 
   return (
     <section>
-      <div className="bg-background border-border sticky top-0 z-2 border-b-1">
+      <div className="bg-background border-border sticky z-2 border-b-1 p-0">
         <header className="max-w-screen-max-xl mx-auto flex flex-col justify-between gap-8 p-4 pt-6 sm:flex-row sm:items-center sm:px-12 sm:pt-10">
           {userProfile ? (
             <ProfileHeader userProfile={userProfile} />
@@ -60,11 +131,11 @@ export function ProfilePageBody() {
           <section className="flex flex-col gap-6 py-6 lg:w-full lg:p-6 lg:pl-0">
             {/* TODO: REFACTOR */}
 
-            {userActiveSubscription ? (
-              <CreditDisplayCard userId={userId} />
-            ) : (
-              <CreditDisplayCardSkeleton />
-            )}
+            {/* {userActiveSubscription ? ( */}
+            <CreditDisplayCard userId={userId} />
+            {/* ) : ( */}
+            {/* <CreditDisplayCardSkeleton /> */}
+            {/* )} */}
             {!userActiveSubscription && <PremiumBanner />}
           </section>
           <div>
@@ -95,28 +166,31 @@ export function ProfilePageBody() {
               <p>{userCurrentPlan}</p>
             </section>
 
-            {/* TODO: REFACTOR */}
-            {!userActiveSubscription ? (
-              <Link href="/plans">
-                <Button
-                  variant={"outline"}
-                  className="h-full flex-1 cursor-pointer gap-3 text-base leading-6 sm:flex"
-                >
-                  View plans
-                  <ChevronRightIcon />
-                </Button>
-              </Link>
+            <Link href="/plans">
+              <Button
+                variant={"outline"}
+                className="h-full flex-1 cursor-pointer gap-3 text-base leading-6 sm:flex"
+              >
+                View plans
+                <ChevronRightIcon />
+              </Button>
+            </Link>
+            {/* {!userActiveSubscription ? (
+              <></>
             ) : (
-              <Link href="/plans">
-                <Button
-                  variant={"outline"}
-                  className="h-full cursor-pointer gap-3 text-base leading-6 sm:flex"
-                >
-                  Manage Plans
-                  <ChevronRightIcon />
-                </Button>
-              </Link>
-            )}
+              <Form {...form}>
+                <form onSubmit={handleSubmit(handleRedirect)}>
+                  <Button
+                    variant={"outline"}
+                    disabled={isSubmitting}
+                    className="h-full cursor-pointer gap-3 text-base leading-6 sm:flex"
+                  >
+                    Manage Plans
+                    <ChevronRightIcon />
+                  </Button>
+                </form>
+              </Form>
+            )} */}
           </header>
         </section>
       </div>

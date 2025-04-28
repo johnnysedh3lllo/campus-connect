@@ -14,7 +14,7 @@ import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 import { LoginFormType } from "@/lib/form.types";
 
-export default function LoginPage(props: { searchParams: Promise<Message> }) {
+export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,8 +23,8 @@ export default function LoginPage(props: { searchParams: Promise<Message> }) {
     setIsLoading(true);
     try {
       const result = await login(values);
-      // If we're here and there's no error, manually navigate
 
+      console.log(result);
       if (result?.success) {
         router.replace("/listings");
       } else {
@@ -37,7 +37,7 @@ export default function LoginPage(props: { searchParams: Promise<Message> }) {
         description:
           error instanceof Error
             ? error.message
-            : "An error occurred, please try again later.",
+            : "An error occurred, please reload and try again later.",
       });
       setIsLoading(false);
     }

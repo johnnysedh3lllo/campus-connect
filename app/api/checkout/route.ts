@@ -25,6 +25,8 @@ type CheckoutRequestBody = {
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
+  const referer = request.headers.get("referer");
+
   try {
     const requestBody: CheckoutRequestBody = await request.json();
 
@@ -49,7 +51,8 @@ export async function POST(request: NextRequest) {
 
     let sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"], // TODO: update when google pay or apple pay has been added
-      success_url: `${request.headers.get("origin")}/listings?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/listings?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${referer}`,
       line_items: [{ price: priceId, quantity: 1 }],
       client_reference_id: userId,
       customer: customer?.id,
@@ -85,7 +88,6 @@ export async function POST(request: NextRequest) {
 
     switch (purchaseType) {
       case `${PURCHASE_TYPES.LANDLORD_CREDITS.type}`:
-        sessionParams.cancel_url = `${origin}/buy-credits`;
         sessionParams.metadata = {
           ...sessionParams.metadata,
           landLordCreditAmount: landLordCreditAmount ?? null,
@@ -97,8 +99,7 @@ export async function POST(request: NextRequest) {
 
       case `${PURCHASE_TYPES.LANDLORD_PREMIUM.type}`:
         sessionParams.mode = "subscription";
-        sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}?subscription=true`;
-        sessionParams.cancel_url = `${origin}/plans`;
+        sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}?sub-success=true`;
         sessionParams.subscription_data = {
           metadata: {
             ...sessionParams.metadata,

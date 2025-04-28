@@ -11,18 +11,24 @@ import { PurchasePremiumFormType } from "@/lib/form.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { purchasePremiumFormSchema } from "@/lib/form.schemas";
 import { PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
-import { useUser } from "@/hooks/use-user";
+import { useUser } from "@/hooks/tanstack/use-user";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
-import Link from "next/link";
 import { formatUsersName } from "@/lib/utils";
+import { useEffect, useState } from "react";
+// import { createPortalSession } from "@/lib/stripe";
+import { User } from "@supabase/supabase-js";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
-export function PlansCard({ name, price, status, features }: PlansCardProps) {
+export function PlansCard({ plan }: PlansCardProps) {
+  const [billingPortalUrl, setBillingPortalUrl] = useState<string | null>(null);
   const { data: user } = useUser();
+  const userId = user?.id;
+
+  const { name, price, status, features } = plan;
 
   const premiumSubscriptionForm = useForm<PurchasePremiumFormType>({
     resolver: zodResolver(purchasePremiumFormSchema),
@@ -98,9 +104,68 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
     }
   }
 
-  async function handleSwitchToBasic() {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("opening Stripe billing portal to switch to basic basic");
+  // TODO: DRY this up in other places, maybe abstract into a file
+  async function createPortalSession(
+    userId: User["id"] | undefined,
+  ): Promise<string> {
+    const response = await fetch("/api/billing-portal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create billing portal session.");
+    }
+
+    const { url } = await response.json();
+    return url;
+  }
+
+  // Preload portal session on mount
+  useEffect(() => {
+    async function preloadBillingPortal() {
+      if (!userId) return;
+
+      try {
+        const url = await createPortalSession(userId);
+        setBillingPortalUrl(url);
+      } catch (error: any) {
+        console.error(error);
+      }
+    }
+
+    preloadBillingPortal();
+  }, [userId]);
+
+  async function handleRedirect() {
+    try {
+      if (!userId) {
+        throw new Error(
+          "Some necessary details are missing. Please reload and try again later.",
+        );
+      }
+
+      let url = billingPortalUrl;
+
+      // If not preloaded, fetch on demand
+      if (!url) {
+        const portalUrl = await createPortalSession(userId);
+        url = portalUrl;
+        setBillingPortalUrl(url); // cache for future
+      }
+
+      window.location.href = url!;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        toast({
+          variant: "default",
+          description: error.message,
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+      }
+      console.error(error);
+    }
   }
 
   return (
@@ -139,9 +204,7 @@ export function PlansCard({ name, price, status, features }: PlansCardProps) {
         <>
           {name === "basic" ? (
             <Form {...switchToBasicForm}>
-              <form
-                onSubmit={switchToBasicForm.handleSubmit(handleSwitchToBasic)}
-              >
+              <form onSubmit={switchToBasicForm.handleSubmit(handleRedirect)}>
                 <Button
                   type="submit"
                   disabled={isSwitchingToBasic}

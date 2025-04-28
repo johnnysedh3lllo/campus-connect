@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Settings",
 };
 const SettingsLayout = ({ children }: { children: ReactNode }) => {
-  return <>{children}<Toaster /></>;
+  return <>{children}</>;
 };
 
 export default SettingsLayout;

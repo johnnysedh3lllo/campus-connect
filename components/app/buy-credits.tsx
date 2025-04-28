@@ -41,20 +41,33 @@ import { Loader2 } from "lucide-react";
 import { PURCHASE_TYPES } from "@/lib/pricing.config";
 import { loadStripe } from "@stripe/stripe-js";
 import { CreditBalance } from "@/components/app/credit-balance";
-import { useUser } from "@/hooks/use-user";
+import { useUser } from "@/hooks/tanstack/use-user";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import Link from "next/link";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
+import { useUserCredits } from "@/hooks/tanstack/use-user-credits";
+import { CreditChipIcon } from "@/public/icons/credit-chip-icon";
 
 // TODO: CREATE A MODAL TO SHOW A SUCCESSFUL CREDIT PURCHASE
 
-export default function BuyCredits() {
+export default function BuyCredits({
+  disabled,
+  showBalance,
+  isClickable,
+}: {
+  disabled?: boolean;
+  showBalance?: boolean;
+  isClickable?: boolean;
+}) {
   // const { credits } = useCreditsStore();
   const [selectedTier, setSelectedTier] = useState<CreditTierOption>();
   const [promoCode, setPromoCode] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { data: user } = useUser();
+  const userId = user?.id;
+  const { data: creditRecord } = useUserCredits(userId);
+  const creditAmount = creditRecord?.remaining_credits;
 
   const creditTiers = getCreditTiers() as CreditTierOption[];
 
@@ -149,9 +162,21 @@ export default function BuyCredits() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="h-full w-full px-6 py-3 text-base sm:w-fit">
-          Buy Credits
-        </Button>
+        {showBalance ? (
+          <CreditBalance
+            isClickable={isClickable}
+            disabled={disabled}
+            creditAmount={creditAmount}
+            className="hidden lg:flex lg:items-center lg:gap-2"
+          />
+        ) : (
+          <Button
+            disabled={disabled}
+            className="h-full w-full px-6 py-3 text-base sm:w-fit"
+          >
+            Buy Credits
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="mx-auto flex h-full w-full flex-col rounded-none sm:max-w-full">
         <section className="bg-background border-border sticky top-0 flex items-center justify-between border-b-1">
@@ -177,7 +202,7 @@ export default function BuyCredits() {
               <section className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
                 <h3 className="">Your Available Credits</h3>
 
-                <CreditBalance userId={user?.id} />
+                <CreditBalance disabled creditAmount={creditAmount} />
               </section>
 
               {/* SELECT CREDIT */}
@@ -244,7 +269,7 @@ export default function BuyCredits() {
                 <h3 className=""> Your new Credits balance will be</h3>
 
                 <CreditBalance
-                  userId={user?.id}
+                  creditAmount={creditAmount}
                   increment={selectedTier ? +selectedTier.value : 0}
                 />
               </section>

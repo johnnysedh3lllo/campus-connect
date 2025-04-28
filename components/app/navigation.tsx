@@ -19,16 +19,24 @@ import notificationIcon from "@/public/icons/icon-notifications.svg";
 import hamburgerIcon from "@/public/icons/icon-hamburger.svg";
 
 //
-import { useUser } from "@/hooks/use-user";
-import { useUserProfile } from "@/hooks/use-user-profile";
+import { useUser } from "@/hooks/tanstack/use-user";
+import { useUserProfile } from "@/hooks/tanstack/use-user-profile";
 import { CreditBalance } from "./credit-balance";
-import { useUserActiveSubscription } from "@/hooks/use-active-subscription";
+import { useUserActiveSubscription } from "@/hooks/tanstack/use-active-subscription";
+import BuyCredits from "./buy-credits";
+import { useUserCredits } from "@/hooks/tanstack/use-user-credits";
+import { Skeleton } from "../ui/skeleton";
+import { CreditBalanceSkeleton } from "./skeletons/credit-balance-skeleton";
 
 export default function Navigation() {
   const { data: user } = useUser();
   const userId = user?.id;
+  const { data: creditRecord } = useUserCredits(userId);
   const { data: userProfile } = useUserProfile(userId);
   const { data: userActiveSubscription } = useUserActiveSubscription(userId);
+
+  const hasActiveSubscription = !!userActiveSubscription;
+  const creditAmount = creditRecord?.remaining_credits;
 
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [clicked, setIsClicked] = useState(false);
@@ -69,35 +77,17 @@ export default function Navigation() {
 
         <div className="flex items-center gap-2 lg:pb-3">
           {/* TODO: REVISIT THE HYDRATION ISSUE HERE. */}
+          {/* {userActiveSubscription ? ( */}
+          <BuyCredits
+            showBalance
+            isClickable
+            disabled={hasActiveSubscription}
+          />
+          {/* ) : ( */}
+          {/* <CreditBalanceSkeleton /> */}
+          {/* )} */}
 
-          {!userActiveSubscription ? (
-            <>
-              <Link
-                href="/buy-credits"
-                className="hover:bg-background-secondary hidden items-center justify-center rounded-sm p-2 lg:flex"
-              >
-                <CreditBalance
-                  userId={user?.id}
-                  className="hidden lg:flex lg:items-center lg:gap-2"
-                />
-              </Link>
-              <Separator
-                orientation="vertical"
-                className="hidden h-4 lg:block"
-              />
-            </>
-          ) : (
-            <>
-              <CreditBalance
-                userId={user?.id}
-                className="hidden lg:flex lg:items-center lg:gap-2"
-              />
-              <Separator
-                orientation="vertical"
-                className="hidden h-4 lg:block"
-              />
-            </>
-          )}
+          <Separator orientation="vertical" className="hidden h-4 lg:block" />
 
           <Button
             variant={"ghost"}

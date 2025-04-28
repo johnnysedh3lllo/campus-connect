@@ -118,16 +118,23 @@ export interface EmptyPageStateProps {
 }
 
 export type CreditBalanceProps = {
-  userId: string | undefined;
+  // userId: string | undefined;
+  creditAmount: number | null | undefined;
+  isClickable?: boolean;
   increment?: number;
   className?: string;
+  disabled?: boolean;
 };
 
-export type PlansCardProps = {
+type LandlordPlansType = {
   name: string;
   price: string;
   status: boolean;
   features: string[];
+};
+
+export type PlansCardProps = {
+  plan: LandlordPlansType;
 };
 
 // TODO: TYPES TO BE ABSTRACTED TO A SEPARATE FOLDER, MAYBE

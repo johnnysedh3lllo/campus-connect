@@ -155,7 +155,7 @@ export async function login(formData: LoginFormType) {
   const supabase = await createClient();
 
   try {
-    const { error, data: authData } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email: formData.emailAddress,
       password: formData.password,
     });
@@ -167,7 +167,7 @@ export async function login(formData: LoginFormType) {
       throw error;
     }
 
-    return { success: true, authData };
+    return { success: true, result: data };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, error };

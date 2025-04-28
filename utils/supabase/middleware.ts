@@ -55,12 +55,11 @@ export const updateSession = async (request: NextRequest) => {
     (path) => request.nextUrl.pathname === path,
   );
 
-  console.log(request.nextUrl.pathname);
-
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/log-in", request.url));
   }
 
+  // TODO: handle this edge case, currently this redirects when the user looses connection
   if (isProtected && user.error) {
     return NextResponse.redirect(new URL("/log-in", request.url));
   }
@@ -75,6 +74,7 @@ export const updateSession = async (request: NextRequest) => {
 
 export const config = {
   matcher: [
+    // "/",
     "/log-in",
     "/sign-up",
     "/listings/:path*",
