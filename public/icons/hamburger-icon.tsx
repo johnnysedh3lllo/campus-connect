@@ -1,6 +1,6 @@
 import { SVGProps } from "react";
 
-export function HamburgerIcon(props: SVGProps<SVGElement>) {
+export function HamburgerIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       width="24"
