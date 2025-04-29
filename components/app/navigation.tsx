@@ -16,17 +16,16 @@ import { MobileNav } from "./mobile-nav";
 // ASSETS
 import logoMain from "@/public/logos/logo-mark-red.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
-import hamburgerIcon from "@/public/icons/icon-hamburger.svg";
 
 //
 import { useUser } from "@/hooks/tanstack/use-user";
 import { useUserProfile } from "@/hooks/tanstack/use-user-profile";
-import { CreditBalance } from "./credit-balance";
 import { useUserActiveSubscription } from "@/hooks/tanstack/use-active-subscription";
 import BuyCredits from "./buy-credits";
 import { useUserCredits } from "@/hooks/tanstack/use-user-credits";
-import { Skeleton } from "../ui/skeleton";
-import { CreditBalanceSkeleton } from "./skeletons/credit-balance-skeleton";
+import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
+import { NotificationsIcon } from "@/public/icons/notifications-icon";
+import { HamburgerIcon } from "@/public/icons/hamburger-icon";
 
 export default function Navigation() {
   const { data: user } = useUser();
@@ -37,9 +36,9 @@ export default function Navigation() {
 
   const hasActiveSubscription = !!userActiveSubscription;
   const creditAmount = creditRecord?.remaining_credits;
-
-  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [clicked, setIsClicked] = useState(false);
+
+  const { isMobileNavOpen, setIsMobileNavOpen } = useMobileNavState();
 
   const pathName = usePathname();
   return (
@@ -87,18 +86,15 @@ export default function Navigation() {
           {/* <CreditBalanceSkeleton /> */}
           {/* )} */}
 
-          <Separator orientation="vertical" className="hidden h-4 lg:block" />
+          {/* <Separator orientation="vertical" className="hidden h-4 lg:block" /> */}
 
-          <Button
+          {/* TODO: REVISIT THIS DUPLICATION */}
+          {/* IT IS HERE BECAUSE THE NOTIFICATION DISPLAY WOULD BE DIFFERENT ON VIEWPORTS */}
+          {/* <Button
             variant={"ghost"}
             className="hover:bg-background-secondary hidden size-10 items-center justify-center rounded-full p-0 lg:flex"
           >
-            <Image
-              src={notificationIcon}
-              width={24}
-              height={24}
-              alt="notification icon"
-            />
+            <NotificationsIcon />
           </Button>
 
           <Button
@@ -106,25 +102,15 @@ export default function Navigation() {
             className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0 lg:hidden"
             onClick={() => setIsMobileNavOpen(true)}
           >
-            <Image
-              src={notificationIcon}
-              width={24}
-              height={24}
-              alt="notification icon"
-            />
-          </Button>
+            <NotificationsIcon />
+          </Button> */}
 
           <Button
             variant={"ghost"}
             className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0 lg:hidden"
             onClick={() => setIsMobileNavOpen(true)}
           >
-            <Image
-              src={hamburgerIcon}
-              width={24}
-              height={24}
-              alt="navigation menu icon"
-            />
+            <HamburgerIcon />
           </Button>
 
           <Separator orientation="vertical" className="hidden h-4 lg:block" />
@@ -137,11 +123,7 @@ export default function Navigation() {
         </div>
       </div>
 
-      <MobileNav
-        userProfile={userProfile}
-        isOpen={isMobileNavOpen}
-        onClose={() => setIsMobileNavOpen(false)}
-      />
+      <MobileNav userProfile={userProfile} />
     </nav>
   );
 }

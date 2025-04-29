@@ -11,12 +11,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "../ui/button";
-import Image from "next/image";
 import { UserPill } from "./user-pill";
 import { Separator } from "../ui/separator";
-
-import closeIconNoBorders from "@/public/icons/icon-close-no-borders.svg";
-import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 import { usePathname } from "next/navigation";
 import { navLinksMobile } from "@/lib/app.config";
@@ -25,33 +21,34 @@ import { LogOut } from "@/public/icons/log-out-icon";
 import { CreditDisplayCard } from "./credit-display-card";
 import { signOut } from "@/app/actions/supabase/onboarding";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
+import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
+import { NotificationsIcon } from "@/public/icons/notifications-icon";
+import { UserPillSkeleton } from "./skeletons/user-pill-skeleton";
 
-export function MobileNav({ userProfile, isOpen, onClose }: MobileNavProps) {
+export function MobileNav({ userProfile }: MobileNavProps) {
   const pathName = usePathname();
+  const { isMobileNavOpen, setIsMobileNavOpen } = useMobileNavState();
+
+  const onClose = () => setIsMobileNavOpen(false);
 
   const firstName = userProfile?.first_name;
   const lastName = userProfile?.last_name;
   const avatarUrl = userProfile?.avatar_url;
 
   return (
-    <Sheet open={isOpen} onOpenChange={onClose}>
+    <Sheet open={isMobileNavOpen} onOpenChange={onClose}>
       <SheetContent className="h-full w-full p-4 pt-0 sm:w-1/2">
         <SheetHeader className="flex flex-row justify-end gap-4">
           <SheetTitle className="sr-only">mobile navigation menu</SheetTitle>
           <SheetDescription className="sr-only">
             this is the navigation for mobile and tablet
           </SheetDescription>
-          <Button
+          {/* <Button
             variant={"ghost"}
             className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0"
           >
-            <Image
-              src={notificationIcon}
-              width={24}
-              height={24}
-              alt="notification icon"
-            />
-          </Button>
+            <NotificationsIcon />
+          </Button> */}
 
           <SheetClose className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-full p-0">
             <CloseIconNoBorders />

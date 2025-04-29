@@ -17,8 +17,8 @@ export type NavigationProps = {
 
 export type MobileNavProps = {
   userProfile: UserPublic | undefined;
-  isOpen: boolean;
-  onClose: () => void;
+  // isOpen: boolean;
+  // onClose: () => void;
 };
 
 export type UserMenuBarProps = {

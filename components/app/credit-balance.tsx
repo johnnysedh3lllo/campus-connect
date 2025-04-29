@@ -23,7 +23,7 @@ function CreditBalanceComponent(
   const displayedAmount = increment ? amount + increment : amount;
 
   if (isClickable) {
-    return displayedAmount ? (
+    return (
       <Button
         ref={ref as React.Ref<HTMLButtonElement>} // Cast because Button expects button ref
         variant={"ghost"}
@@ -39,8 +39,6 @@ function CreditBalanceComponent(
           {displayedAmount} Credits
         </p>
       </Button>
-    ) : (
-      <CreditBalanceSkeleton />
     );
   }
 

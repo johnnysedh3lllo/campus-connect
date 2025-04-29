@@ -43,11 +43,9 @@ import { loadStripe } from "@stripe/stripe-js";
 import { CreditBalance } from "@/components/app/credit-balance";
 import { useUser } from "@/hooks/tanstack/use-user";
 import { toast } from "@/hooks/use-toast";
-import { ToastAction } from "@/components/ui/toast";
-import Link from "next/link";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useUserCredits } from "@/hooks/tanstack/use-user-credits";
-import { CreditChipIcon } from "@/public/icons/credit-chip-icon";
+import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
 
 // TODO: CREATE A MODAL TO SHOW A SUCCESSFUL CREDIT PURCHASE
 
@@ -65,6 +63,7 @@ export default function BuyCredits({
   const [promoCode, setPromoCode] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { data: user } = useUser();
+  const { setIsMobileNavOpen } = useMobileNavState();
   const userId = user?.id;
   const { data: creditRecord } = useUserCredits(userId);
   const creditAmount = creditRecord?.remaining_credits;
@@ -159,6 +158,11 @@ export default function BuyCredits({
     }
   }, [formValues.creditPriceID]);
 
+  const closeAction = () => {
+    // setIsMobileNavOpen(false);
+    setIsOpen(false);
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -171,6 +175,7 @@ export default function BuyCredits({
           />
         ) : (
           <Button
+            // onClick={() => setIsMobileNavOpen(false)}
             disabled={disabled}
             className="h-full w-full px-6 py-3 text-base sm:w-fit"
           >
@@ -178,127 +183,132 @@ export default function BuyCredits({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="mx-auto flex h-full w-full flex-col rounded-none sm:max-w-full">
-        <section className="bg-background border-border sticky top-0 flex items-center justify-between border-b-1">
-          <DialogHeader className="p-4 pt-6 sm:px-12 sm:pt-10 lg:px-6">
-            <DialogTitle className="text-start text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
-              Buy Credits
-            </DialogTitle>
-            <DialogDescription className="text-text-secondary text-sm leading-6">
-              Get credits to boost listings and connect with tenants!
-            </DialogDescription>
-          </DialogHeader>
-          <DialogClose className="hover:bg-background-secondary flex items-center justify-center p-0">
-            <CloseIconNoBorders className="size-10" />
-          </DialogClose>
-        </section>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleCreditCheckout)}
-            className="flex w-full max-w-96 flex-col items-start gap-16 px-4 pt-6 sm:px-12 lg:px-6"
-          >
-            <div className="flex w-full flex-col gap-6">
-              {/* AVAILABLE CREDITS */}
-              <section className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
-                <h3 className="">Your Available Credits</h3>
+      <DialogContent className="h-full w-full rounded-none">
+        <section className="max-w-screen-max-xl mx-auto flex w-full flex-col">
+          <section className="bg-background border-border sticky top-0 flex items-center justify-between border-b-1">
+            <DialogHeader className="p-4 pt-6 sm:px-12 sm:pt-10 lg:px-6">
+              <DialogTitle className="text-start text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
+                Buy Credits
+              </DialogTitle>
+              <DialogDescription className="text-text-secondary text-sm leading-6">
+                Get credits to boost listings and connect with tenants!
+              </DialogDescription>
+            </DialogHeader>
+            <DialogClose
+              onClick={closeAction}
+              className="hover:bg-background-secondary flex items-center justify-center p-0"
+            >
+              <CloseIconNoBorders className="size-10" />
+            </DialogClose>
+          </section>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleCreditCheckout)}
+              className="flex w-full flex-col items-start gap-16 px-4 pt-6 sm:px-12 lg:px-6"
+            >
+              <div className="flex w-full flex-col gap-6">
+                {/* AVAILABLE CREDITS */}
+                <section className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
+                  <h3 className="">Your Available Credits</h3>
 
-                <CreditBalance disabled creditAmount={creditAmount} />
-              </section>
+                  <CreditBalance disabled creditAmount={creditAmount} />
+                </section>
 
-              {/* SELECT CREDIT */}
-              <FormField
-                name="creditPriceID"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
-                    <FormLabel>Select the amount to buy</FormLabel>
-                    <Select
-                      disabled={isSubmitting}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                {/* SELECT CREDIT */}
+                <FormField
+                  name="creditPriceID"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
+                      <FormLabel>Select the amount to buy</FormLabel>
+                      <Select
+                        disabled={isSubmitting}
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger
+                            size="full"
+                            className="w-full rounded-sm px-3 py-2 leading-6"
+                          >
+                            <SelectValue placeholder="Select amount" />
+                          </SelectTrigger>
+                        </FormControl>
+
+                        <SelectContent className="rounded-sm">
+                          {creditTiers?.map((plan) => (
+                            <SelectItem
+                              className=""
+                              key={plan.label}
+                              value={plan.priceId}
+                            >
+                              {plan.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* PROMO CODE */}
+                <FormField
+                  name="promoCode"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
+                      <FormLabel>Promo Code</FormLabel>
                       <FormControl>
-                        <SelectTrigger
-                          size="full"
-                          className="w-full rounded-sm px-3 py-2 leading-6"
-                        >
-                          <SelectValue placeholder="Select amount" />
-                        </SelectTrigger>
+                        <Input
+                          disabled={isSubmitting}
+                          className="p-3"
+                          placeholder="Enter code"
+                          {...field}
+                        />
                       </FormControl>
 
-                      <SelectContent className="rounded-sm">
-                        {creditTiers?.map((plan) => (
-                          <SelectItem
-                            className=""
-                            key={plan.label}
-                            value={plan.priceId}
-                          >
-                            {plan.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* PROMO CODE */}
-              <FormField
-                name="promoCode"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
-                    <FormLabel>Promo Code</FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isSubmitting}
-                        className="p-3"
-                        placeholder="Enter code"
-                        {...field}
-                      />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* NEW CREDIT BALANCE */}
-              <section className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
-                <h3 className=""> Your new Credits balance will be</h3>
-
-                <CreditBalance
-                  creditAmount={creditAmount}
-                  increment={selectedTier ? +selectedTier.value : 0}
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </section>
-            </div>
 
-            <div className="flex w-full flex-col-reverse items-center justify-between gap-4 sm:flex-row md:max-w-104">
-              {/* <DialogClose className="sm:w-50"> */}
-              <Button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                disabled={isSubmitting}
-                variant="outline"
-                className="sm:w-50"
-              >
-                Back
-              </Button>
-              {/* </DialogClose> */}
+                {/* NEW CREDIT BALANCE */}
+                <section className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
+                  <h3 className=""> Your new Credits balance will be</h3>
 
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex w-full items-center sm:w-50"
-              >
-                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                {isSubmitting ? "Processing..." : "Buy Credits"}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                  <CreditBalance
+                    creditAmount={creditAmount}
+                    increment={selectedTier ? +selectedTier.value : 0}
+                  />
+                </section>
+              </div>
+
+              <div className="flex w-full flex-col-reverse items-center justify-between gap-4 sm:flex-row md:max-w-104">
+                {/* <DialogClose className="sm:w-50"> */}
+                <Button
+                  type="button"
+                  onClick={closeAction}
+                  disabled={isSubmitting}
+                  variant="outline"
+                  className="flex w-full items-center sm:w-50"
+                >
+                  Back
+                </Button>
+                {/* </DialogClose> */}
+
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex w-full items-center sm:w-50"
+                >
+                  {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {isSubmitting ? "Processing..." : "Buy Credits"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </section>
 
         {/* <ListingActionModal
         isOpen={modalData.open}

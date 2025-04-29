@@ -1,7 +1,6 @@
 "use strict";
 
 import { ListingIcon } from "@/public/icons/listing-icon";
-import { InquiriesIcon } from "@/public/icons/inquiries-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIcon } from "@/public/icons/profile-icon";
 import { SettingsIcon } from "@/public/icons/settings-icon";
@@ -12,11 +11,13 @@ export interface UserRoles {
   3: string;
 }
 
-export const userRoles: UserRoles = {
-  1: "admin",
-  2: "landlord",
-  3: "tenant",
-};
+export const ROLES = {
+  ADMIN: 1,
+  LANDLORD: 2,
+  TENANT: 3,
+} as const;
+
+export type Role = keyof typeof ROLES;
 
 export const navLinks = [
   { href: "/listings", text: "Listings" },

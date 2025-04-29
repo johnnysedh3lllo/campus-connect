@@ -7,10 +7,7 @@ export function ProfileHeaderSkeleton() {
       <Skeleton className="relative flex size-14 items-center justify-center rounded-full sm:size-22" />
 
       <section>
-        {/* Name skeleton */}
         <Skeleton className="mb-2 h-8 w-40 sm:h-10 sm:w-56" />
-
-        {/* Email skeleton */}
         <Skeleton className="h-5 w-56" />
       </section>
     </div>
