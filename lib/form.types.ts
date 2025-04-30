@@ -9,30 +9,22 @@ import {
   resetPasswordFormSchema,
   RoleEnum,
   roleSchema,
-  createPasswordSchema,
+  createPasswordFormSchema,
   settingsFormSchema,
   signUpFormSchema,
   userDetailsFormSchema,
   userValidationSchema,
+  multiStepFormSchema,
 } from "./form.schemas";
 
-// Form Data type
-export type MultiStepFormData = {
-  roleId: "1" | "2" | "3";
-  firstName: string;
-  lastName: string;
-  emailAddress: string;
-  password: string;
-  newsletter: boolean;
-};
-
 export type RoleType = z.infer<typeof RoleEnum>;
-export type UserValidationSchema = z.infer<typeof userValidationSchema>;
+export type UserValidationType = z.infer<typeof userValidationSchema>;
+export type MultiStepFormType = z.infer<typeof multiStepFormSchema>;
 export type SignUpFormType = z.infer<typeof signUpFormSchema>;
 export type RoleFormType = z.infer<typeof roleSchema>;
 export type UserDetailsFormType = z.infer<typeof userDetailsFormSchema>;
 export type OtpFormType = z.infer<typeof otpFormSchema>;
-export type CreatePasswordFormType = z.infer<typeof createPasswordSchema>;
+export type CreatePasswordFormType = z.infer<typeof createPasswordFormSchema>;
 export type LoginFormType = z.infer<typeof loginSchema>;
 export type ResetPasswordFormType = z.infer<typeof resetPasswordFormSchema>;
 export type ChangePasswordFormType = z.infer<typeof changePasswordSchema>;

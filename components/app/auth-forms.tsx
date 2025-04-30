@@ -8,7 +8,7 @@ import {
   otpFormSchema,
   resetPasswordFormSchema,
   roleSchema,
-  createPasswordSchema,
+  createPasswordFormSchema,
   userDetailsFormSchema,
   loginSchema,
 } from "@/lib/form.schemas";
@@ -51,7 +51,7 @@ import { ShieldIcon } from "@/public/icons/shield-icon";
 import { useCountdownTimer } from "@/hooks/use-countdown-timer";
 import {
   CheckInboxProps,
-  CreateNewPasswordProps,
+  CreatePasswordProps,
   GetUserInfoProps,
   LoginFormProps,
   ResetPasswordProps,
@@ -559,12 +559,12 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
   );
 }
 
-export function SetPassword({
-  isLoading,
+export function CreatePassword({
+  isSubmitting,
   handleCreatePassword,
-}: SetPasswordProps) {
+}: CreatePasswordProps) {
   const form = useForm<CreatePasswordFormType>({
-    resolver: zodResolver(createPasswordSchema),
+    resolver: zodResolver(createPasswordFormSchema),
     defaultValues: {
       password: "",
       confirmPassword: "",
@@ -599,7 +599,7 @@ export function SetPassword({
                       Password
                       <FormControl>
                         <PasswordInput
-                          disabled={isLoading}
+                          disabled={isSubmitting}
                           required
                           placeholder="Enter password"
                           field={field}
@@ -624,7 +624,7 @@ export function SetPassword({
                     Confirm Password
                     <FormControl>
                       <PasswordInput
-                        disabled={isLoading}
+                        disabled={isSubmitting}
                         required
                         placeholder="Confirm password"
                         field={field}
@@ -638,12 +638,12 @@ export function SetPassword({
           </div>
 
           <Button
-            disabled={isLoading}
+            disabled={isSubmitting}
             type="submit"
             width={"full"}
             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-300"
           >
-            {isLoading && <Loader2 className="animate-spin" />}
+            {isSubmitting && <Loader2 className="animate-spin" />}
             Create Password
           </Button>
         </form>
@@ -768,98 +768,98 @@ export function CheckInbox({
   );
 }
 
-export function CreateNewPassword({
-  isSubmitting,
-  handleCreatePassword,
-}: CreateNewPasswordProps) {
-  const form = useForm<CreatePasswordFormType>({
-    resolver: zodResolver(createPasswordSchema),
-    defaultValues: {
-      password: "",
-      confirmPassword: "",
-    },
-  });
+// export function CreateNewPassword({
+//   isSubmitting,
+//   handleCreatePassword,
+// }: CreatePasswordProps) {
+//   const form = useForm<CreatePasswordFormType>({
+//     resolver: zodResolver(createPasswordFormSchema),
+//     defaultValues: {
+//       password: "",
+//       confirmPassword: "",
+//     },
+//   });
 
-  return (
-    <div className="flex flex-col gap-6 sm:gap-12">
-      <section className="flex flex-col gap-2">
-        <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
-          Create Password
-        </h1>
+//   return (
+//     <div className="flex flex-col gap-6 sm:gap-12">
+//       <section className="flex flex-col gap-2">
+//         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+//           Create Password
+//         </h1>
 
-        <p className="text text-secondary-foreground text-sm">
-          Enter a password you can remember, to secure your account
-        </p>
-      </section>
+//         <p className="text text-secondary-foreground text-sm">
+//           Enter a password you can remember, to secure your account
+//         </p>
+//       </section>
 
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleCreatePassword)}
-          className="flex flex-col gap-6 sm:gap-12"
-        >
-          <div className="flex flex-col gap-6 sm:px-2">
-            <div className="flex flex-col gap-2">
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col gap-1">
-                    <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
-                      Password
-                      <FormControl>
-                        <PasswordInput
-                          disabled={isSubmitting}
-                          required
-                          placeholder="Enter password"
-                          field={field}
-                        />
-                      </FormControl>
-                    </FormLabel>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* <div className="text-sm">
-                Password strength: {getPasswordStrength(form.watch("password"))}
-              </div> */}
-            </div>
+//       <Form {...form}>
+//         <form
+//           onSubmit={form.handleSubmit(handleCreatePassword)}
+//           className="flex flex-col gap-6 sm:gap-12"
+//         >
+//           <div className="flex flex-col gap-6 sm:px-2">
+//             <div className="flex flex-col gap-2">
+//               <FormField
+//                 control={form.control}
+//                 name="password"
+//                 render={({ field }) => (
+//                   <FormItem className="flex flex-col gap-1">
+//                     <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+//                       Password
+//                       <FormControl>
+//                         <PasswordInput
+//                           disabled={isSubmitting}
+//                           required
+//                           placeholder="Enter password"
+//                           field={field}
+//                         />
+//                       </FormControl>
+//                     </FormLabel>
+//                     <FormMessage />
+//                   </FormItem>
+//                 )}
+//               />
+//               {/* <div className="text-sm">
+//                 Password strength: {getPasswordStrength(form.watch("password"))}
+//               </div> */}
+//             </div>
 
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-1">
-                  <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
-                    Confirm Password
-                    <FormControl>
-                      <PasswordInput
-                        disabled={isSubmitting}
-                        required
-                        placeholder="Confirm password"
-                        field={field}
-                      />
-                    </FormControl>
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+//             <FormField
+//               control={form.control}
+//               name="confirmPassword"
+//               render={({ field }) => (
+//                 <FormItem className="flex flex-col gap-1">
+//                   <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+//                     Confirm Password
+//                     <FormControl>
+//                       <PasswordInput
+//                         disabled={isSubmitting}
+//                         required
+//                         placeholder="Confirm password"
+//                         field={field}
+//                       />
+//                     </FormControl>
+//                   </FormLabel>
+//                   <FormMessage />
+//                 </FormItem>
+//               )}
+//             />
+//           </div>
 
-          <Button
-            disabled={isSubmitting}
-            type="submit"
-            width={"full"}
-            className="cursor-pointer text-base leading-6 font-semibold transition-all duration-300"
-          >
-            {isSubmitting && <Loader2 className="animate-spin" />}
-            Create Password
-          </Button>
-        </form>
-      </Form>
-    </div>
-  );
-}
+//           <Button
+//             disabled={isSubmitting}
+//             type="submit"
+//             width={"full"}
+//             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-300"
+//           >
+//             {isSubmitting && <Loader2 className="animate-spin" />}
+//             Create Password
+//           </Button>
+//         </form>
+//       </Form>
+//     </div>
+//   );
+// }
 
 export function PasswordCreationSuccess() {
   return (

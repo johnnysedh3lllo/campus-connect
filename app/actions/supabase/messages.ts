@@ -4,7 +4,6 @@ import { createClient } from "@/utils/supabase/server";
 export async function getMessages(conversationId: string) {
   const supabase = await createClient();
 
-  // USING ONE QUERY
   try {
     const { data, error } = await supabase
       .from("messages")
@@ -39,9 +38,11 @@ export async function getUserConversationsWithParticipants() {
       throw new Error("User not authenticated");
     }
 
-    const { data: conversations, error } = await supabase
-      .rpc("get_conversations_for_user", { pid: user.id })
-      .is("deleted_at", null);
+    const { data: conversations, error } = await supabase.rpc(
+      "get_conversations_for_user",
+      { pid: user.id },
+    );
+    // .is("deleted_at", null);
 
     if (error) {
       console.error("Error fetching conversations:", error);

@@ -55,6 +55,9 @@ export const updateSession = async (request: NextRequest) => {
     (path) => request.nextUrl.pathname === path,
   );
 
+  // console.log(user.data.user);
+
+  
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/log-in", request.url));
   }
@@ -66,7 +69,7 @@ export const updateSession = async (request: NextRequest) => {
 
   // redirects when user is logged in
   if (isUnprotected && !user.error) {
-    return NextResponse.redirect(new URL("/listings", request.url));
+    return NextResponse.redirect(new URL("/profile", request.url));
   }
 
   return response;

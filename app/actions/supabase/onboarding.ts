@@ -2,8 +2,9 @@
 
 import {
   signUpFormSchema,
-  createPasswordSchema,
+  createPasswordFormSchema,
   resetPasswordFormSchema,
+  changePasswordSchema,
 } from "@/lib/form.schemas";
 
 import {
@@ -11,6 +12,7 @@ import {
   CreatePasswordFormType,
   LoginFormType,
   ResetPasswordFormType,
+  ChangePasswordFormType,
 } from "@/lib/form.types";
 
 import { encodedRedirect } from "@/utils/utils";
@@ -21,8 +23,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export async function signUpWithOtp(userInfo: SignUpFormType) {
-  console.log("user info:", userInfo);
-
   const supabase = await createClient();
 
   // validate form fields first
@@ -31,10 +31,7 @@ export async function signUpWithOtp(userInfo: SignUpFormType) {
   if (!validatedFields.success) {
     return {
       success: false,
-      error: {
-        message: "Validation failed",
-        errors: validatedFields.error.format(),
-      },
+      error: { message: validatedFields.error.format() },
     };
   }
 
@@ -61,10 +58,12 @@ export async function signUpWithOtp(userInfo: SignUpFormType) {
         first_name: validFields.firstName,
         last_name: validFields.lastName,
         role_id: validFields.roleId,
-        newsletter: validFields.newsletter,
       },
     },
   });
+
+  // TODO: STORE THIS IN A SETTINGS TABLE
+  // newsletter: validFields.newsletter,
 
   if (error) {
     console.log(error);
@@ -123,22 +122,33 @@ export async function resendSignUpOtp(userEmail: string) {
   }
 }
 
+// this is for the two create password forms on the create password page
+// and when resetting/forgetting passwords
 export async function createPassword(formData: CreatePasswordFormType) {
   console.log("🔥🔥🔥 createPassword is running 🔥🔥🔥");
   // console.log("FORM DATA:", formData);
 
   const supabase = await createClient();
 
-  try {
-    // Validate password
-    const validatedPassword = createPasswordSchema.parse(formData);
+  // Validate fields
+  const validatedFields = createPasswordFormSchema.safeParse(formData);
 
+  if (!validatedFields.success) {
+    console.log("zod error:", validatedFields.error.format());
+
+    return {
+      success: false,
+      error: validatedFields.error.format(),
+    };
+  }
+
+  try {
     const { error } = await supabase.auth.updateUser({
-      password: validatedPassword.password,
+      password: validatedFields.data.password,
     });
 
     if (error) {
-      console.log(error);
+      console.log("supabase error:", error);
       return { error: error.message };
     }
     return { success: true };
@@ -155,19 +165,17 @@ export async function login(formData: LoginFormType) {
   const supabase = await createClient();
 
   try {
-    const { error, data } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email: formData.emailAddress,
       password: formData.password,
     });
-
-    console.log(error?.message);
-    console.log(error);
 
     if (error) {
       throw error;
     }
 
-    return { success: true, result: data };
+    // TODO: AFTER UPDATING,
+    return { success: true };
   } catch (error) {
     if (error instanceof Error) {
       return { success: false, error };
@@ -178,22 +186,21 @@ export async function login(formData: LoginFormType) {
 export async function resetPassword(formData: ResetPasswordFormType) {
   const supabase = await createClient();
 
+  const validatedFields = resetPasswordFormSchema.safeParse(formData);
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      error: {
+        message: "Validation failed",
+        errors: validatedFields.error.format(),
+      },
+    };
+  }
+  const validFields = validatedFields.data;
+  const email = validFields.emailAddress;
+
   try {
-    const validatedFields = resetPasswordFormSchema.safeParse(formData);
-
-    if (!validatedFields.success) {
-      return {
-        success: false,
-        error: {
-          message: "Validation failed",
-          errors: validatedFields.error.format(),
-        },
-      };
-    }
-    const validFields = validatedFields.data;
-
-    const email = validFields.emailAddress;
-
     // check if a user already exists
     const { data: existingUser } = await supabase.rpc("check_user_existence", {
       user_email_address: email,
@@ -213,7 +220,7 @@ export async function resetPassword(formData: ResetPasswordFormType) {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/auth/callback?redirect_to=/create-password`,
+      redirectTo: `${origin}/auth/callback?redirect_to=/create-new-password`,
     });
 
     if (error) {
@@ -229,7 +236,7 @@ export async function resetPassword(formData: ResetPasswordFormType) {
   }
 }
 
-type CreateNewPasswordResponse = {
+type ChangePasswordResponse = {
   success: boolean;
   error?: {
     message: string;
@@ -237,10 +244,24 @@ type CreateNewPasswordResponse = {
   };
 };
 
-export async function createNewPassword(
-  formData: CreatePasswordFormType,
-): Promise<CreateNewPasswordResponse> {
-  const validatedFields = createPasswordSchema.safeParse(formData);
+// this is for the forget password form on the Setting Page
+// TODO
+// LOGIC FLOW FOR CHANGE PASSWORD: IF THE USER IS CHANGING THEIR PASSWORD,
+// THEY WOULD ENTER THEIR CURRENT PASSWORD, NEW PASSWORD, CONFIRM NEW PASSWORD
+// IT WILL BE PARSED BY THE `.safeParse` METHOD FROM ZOD, AGAINST THE `changePasswordFormSchema` TO ENSURE THE CONSTRAINTS ARE MET
+// IF NOT MET, IT WILL FAIL AND NOTIFY THE USER, TO MAKE CORRECTIONS TO THEIR INPUT.
+
+// IF MET THEN IT WILL CHECK THE CURRENT PASSWORD ENTERED WITH THE USER'S CURRENT PASSWORD ON SUPABASE
+// IF IT DOESN'T MATCH, IT MEANS THEY DON'T REMEMBER,
+// THEY WOULD HAVE TO CLICK THE FORGET PASSWORD BUTTON TO RESET THEIR PASSWORD
+// BECAUSE CHANGING THE PASSWORD WITHOUT THE CURRENT PASSWORD WILL NOT BE ALLOWED.
+
+// IF IT MATCHES, THEN THE NEW PASSWORD IS UPDATED ON SUPABASE SINCE ZOD HAS SAFE-PARSED AND IT MATCHED THE CONSTRAINTS.
+
+export async function changePassword(
+  formData: ChangePasswordFormType,
+): Promise<ChangePasswordResponse> {
+  const validatedFields = changePasswordSchema.safeParse(formData);
 
   if (!validatedFields.success) {
     return {
@@ -252,7 +273,8 @@ export async function createNewPassword(
     };
   }
 
-  const { password, confirmPassword } = validatedFields.data;
+  const { currentPassword, newPassword, confirmNewPassword } =
+    validatedFields.data;
   const supabase = await createClient();
 
   // Get the authenticated user's ID
@@ -264,12 +286,12 @@ export async function createNewPassword(
   if (authError || !user) {
     return {
       success: false,
-      error: { message: "User not authenticated. Please log in again." },
+      error: { message: "User not authenticated. Please log in again." }, // THIS SHOULD AND EVERY OTHER ERROR OBJECT SHOULD BE REFACTORED TO A STRING.
     };
   }
 
   const userId = user.id; // Extract user ID
-  if (!password || !confirmPassword) {
+  if (!newPassword || !confirmNewPassword) {
     return {
       success: false,
       error: {
@@ -279,12 +301,12 @@ export async function createNewPassword(
     };
   }
 
-  if (password !== confirmPassword) {
+  if (newPassword !== confirmNewPassword) {
     return {
       success: false,
       error: {
         message: "Passwords do not match",
-        field: "confirmPassword",
+        field: "confirmNewPassword",
       },
     };
   }
@@ -293,7 +315,7 @@ export async function createNewPassword(
     "check_password_match",
     {
       user_id: userId,
-      new_password: password,
+      new_password: newPassword,
     },
   );
 
@@ -314,7 +336,7 @@ export async function createNewPassword(
   }
 
   const { error } = await supabase.auth.updateUser({
-    password: password,
+    password: newPassword,
   });
 
   if (error) {
@@ -333,6 +355,8 @@ export async function createNewPassword(
 }
 
 export async function signOut() {
+  // const destination = route ?? "/log-in";
+
   const supabase = await createClient();
   await supabase.auth.signOut();
 

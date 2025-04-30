@@ -21,8 +21,10 @@ export default async function Page() {
     error: getUserError,
   }: UserResponse = await supabase.auth.getUser();
 
+
+  console.log(user)
   // if (!user) {
-  //   return redirect("/sign-in");
+    // return redirect("/sign-in");
   // }
 
   let { data: profile } = user?.id

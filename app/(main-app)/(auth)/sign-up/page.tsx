@@ -2,13 +2,10 @@
 
 // UTILITIES
 import { toast } from "@/hooks/use-toast";
-import { useMultiStepForm } from "@/hooks/use-multi-step-form";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
-  MultiStepFormData,
   OtpFormType,
   RoleFormType,
-  CreatePasswordFormType,
   UserDetailsFormType,
 } from "@/lib/form.types";
 import { useRouter } from "next/navigation";
@@ -17,50 +14,19 @@ import { useRouter } from "next/navigation";
 import {
   GetUserInfo,
   SelectRole,
-  SetPassword,
   VerifyOtp,
 } from "@/components/app/auth-forms";
-import { Badge } from "@/components/ui/badge";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
-import {
-  createPassword,
-  signUpWithOtp,
-  verifyOtp,
-} from "@/app/actions/supabase/onboarding";
-import { useShowPasswordState } from "@/lib/store/password-visibility-store";
-import { tree } from "next/dist/build/templates/app-page";
+import { signUpWithOtp, verifyOtp } from "@/app/actions/supabase/onboarding";
+import { OnboardingFlowWrapper } from "@/lib/providers/onboarding-flow-wrapper";
+import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 
-//
-// const defaultUrl = process.env.VERCEL_URL
-//   ? `https://${process.env.VERCEL_URL}`
-//   : "http://localhost:3000";
-
-const initialData: MultiStepFormData = {
-  roleId: "3",
-  firstName: "",
-  lastName: "",
-  emailAddress: "",
-  password: "",
-  newsletter: true,
-};
-
-export default function Signup(props: { searchParams: Promise<Message> }) {
-  const { step, formData, updateFields, nextStep } =
-    useMultiStepForm(initialData);
+export default function Signup() {
+  const { step, setTotalSteps, nextStep, formData, updateFields } =
+    useMultiStepFormStore();
   const onboardingFormWrapperRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const { showPassword, setShowPassword } = useShowPasswordState();
-
-  // const searchParams = await props.searchParams;
-  // if ("message" in searchParams) {
-  //   return (
-  //     <div className="flex h-screen w-full flex-1 items-center justify-center gap-2 p-4 sm:max-w-md">
-  //       <FormMessage message={searchParams} />
-  //     </div>
-  //   );
-  // }
 
   useEffect(() => {
     const formContainer = onboardingFormWrapperRef.current;
@@ -88,7 +54,9 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
         updateFields({ emailAddress: result.userEmail });
         nextStep();
       } else {
-        throw new Error(result?.error?.message || "An error occurred");
+        throw new Error(
+          (result?.error?.message as string) || "An error occurred",
+        );
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -109,6 +77,7 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
 
       if (result.success) {
         nextStep();
+        router.push("/create-password");
       } else {
         throw result.error;
       }
@@ -123,36 +92,6 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
     }
   }
 
-  async function handleCreatePassword(values: CreatePasswordFormType) {
-    setIsLoading(true);
-    // setShowPassword(true);
-    try {
-      const result = await createPassword(values);
-      console.log("result from createPassword:", result);
-
-      if (result.success) {
-        // toast({
-        //   title: "Success",
-        //   description: "Password created successfully",
-        // });
-
-        router.replace("/listings?welcome=true");
-      } else {
-        throw result.error;
-      }
-    } catch (error) {
-      setIsLoading(false);
-      // setShowPassword(false);
-
-      toast({
-        variant: "destructive",
-        title: "Error updating password",
-        description:
-          error instanceof Error ? error.message : "Please try again",
-      });
-    }
-  }
-
   const steps = [
     <SelectRole handleRoleSubmit={handleRoleSubmit} />,
     <GetUserInfo handleSignUp={handleSignUp} />,
@@ -160,30 +99,10 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       handleVerifyOtp={handleVerifyOtp}
       userEmail={formData?.emailAddress}
     />,
-    <SetPassword
-      isLoading={isLoading}
-      handleCreatePassword={handleCreatePassword}
-    />,
   ];
 
   return (
-    <div
-      className="onboarding-form--wrapper flex flex-col gap-6 px-2 sm:gap-12 lg:w-full lg:overflow-x-hidden lg:overflow-y-auto"
-      ref={onboardingFormWrapperRef}
-    >
-      <div className="bg-background sticky top-0 flex gap-1 py-4 lg:pe-4">
-        <Badge variant="outline">{`${step + 1}/${steps.length}`}</Badge>
-
-        <div className="grid w-full grid-flow-row grid-cols-4 items-center gap-1">
-          {steps.map((_, index) => (
-            <div className="bg-accent-secondary h-0.5" key={`step-${index}`}>
-              <div
-                className={`h-full transition-all duration-500 ${index <= step ? "bg-primary w-full" : "w-0"}`}
-              ></div>
-            </div>
-          ))}
-        </div>
-      </div>
+    <OnboardingFlowWrapper currentStep={step} totalSteps={steps.length}>
       <AnimationWrapper
         variants={formVariants}
         transition={animationConfig}
@@ -191,6 +110,6 @@ export default function Signup(props: { searchParams: Promise<Message> }) {
       >
         {steps[step]}
       </AnimationWrapper>
-    </div>
+    </OnboardingFlowWrapper>
   );
 }

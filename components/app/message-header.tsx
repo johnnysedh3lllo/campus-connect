@@ -58,6 +58,8 @@ export default function MessageHeader({
             </Avatar>
             <h2 className="text-lg font-bold">{chatName}</h2>
           </section>
+
+          {/* TODO: REFACTOR THIS TO ONLY HAVE ONE DropDownMenu trigger */}
           <Button
             variant={"ghost"}
             className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm"
@@ -72,7 +74,17 @@ export default function MessageHeader({
         open={isOpenDropDown}
         onOpenChange={() => setIsOpenDropDown(false)}
       >
-        <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none"></DropdownMenuTrigger>
+        {/* TODO: REFACTOR THIS TO ONLY HAVE ONE DropDownMenu trigger */}
+        {/* Preferably, this one */}
+        <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none">
+          {/* <Button
+            variant={"ghost"}
+            className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm"
+            // onClick={() => setIsOpenDropDown(true)}
+          >
+            <KabobIcon />
+          </Button> */}
+        </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-40">
           <DropdownMenuItem asChild>

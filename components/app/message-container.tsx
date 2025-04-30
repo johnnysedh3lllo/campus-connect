@@ -9,12 +9,12 @@ import { getMessageDateLabel } from "@/lib/utils";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
 import { MessageContainerProps } from "@/lib/prop.types";
 
-const MessageContainer = ({
+export default function MessageContainer({
   conversationId,
   ssrConversationMessages,
   user,
   participants,
-}: MessageContainerProps) => {
+}: MessageContainerProps) {
   const { isProfileOpen } = useProfileViewStore();
 
   const [messageInputValue, setMessageInputValue] = useState("");
@@ -29,6 +29,7 @@ const MessageContainer = ({
     // attempted using a map for quick lookup since Maps are O(1) and Arrays are big 0(n)
     // const messagesMap = new Map(messages.map((msg) => [msg.message_uuid, msg]));
 
+    // TODO: REFACTOR THIS TO USE TANSTACK MUTATIONS AND OPTIMISTIC UPDATES
     const channel = supabase
       .channel(channelName)
       .on(
@@ -181,6 +182,4 @@ const MessageContainer = ({
       />
     </section>
   );
-};
-
-export default MessageContainer;
+}

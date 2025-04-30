@@ -159,7 +159,7 @@ export default function BuyCredits({
   }, [formValues.creditPriceID]);
 
   const closeAction = () => {
-    // setIsMobileNavOpen(false);
+    setIsMobileNavOpen(false);
     setIsOpen(false);
   };
 

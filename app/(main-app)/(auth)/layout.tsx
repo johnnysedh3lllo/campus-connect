@@ -22,6 +22,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  
   return (
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
       <body className="bg-primary text-foreground relative flex min-h-screen flex-col font-serif">

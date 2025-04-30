@@ -23,6 +23,10 @@ const passwordSchema = z
     message: "Password must contain at least one special character.",
   });
 
+const confirmPasswordSchema = z.string().min(8, {
+  message: "Password must be at least 8 characters.",
+});
+
 export const userValidationSchema = z.object({
   roleId: RoleEnum.describe("User role selection"),
   firstName: z
@@ -43,9 +47,18 @@ export const userValidationSchema = z.object({
     .length(6, "OTP must be exactly 6 digits")
     .regex(/^\d+$/, "OTP must contain only numbers"),
   password: passwordSchema,
-  confirmPassword: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }),
+  newPassword: passwordSchema,
+  confirmPassword: confirmPasswordSchema,
+  confirmNewPassword: confirmPasswordSchema,
+});
+
+export const multiStepFormSchema = userValidationSchema.pick({
+  roleId: true,
+  firstName: true,
+  lastName: true,
+  emailAddress: true,
+  password: true,
+  newsletter: true,
 });
 
 // SIGN UP ACTION
@@ -75,18 +88,20 @@ export const passwordFormSchema = userValidationSchema.pick({
   confirmPassword: true,
 });
 
-export const createPasswordSchema = passwordFormSchema.refine(
-  (data) =>
-    !data.password ||
-    !data.confirmPassword ||
-    data.password === data.confirmPassword,
+export const newPasswordFormSchema = userValidationSchema.pick({
+  newPassword: true,
+  confirmNewPassword: true,
+});
+
+export const createPasswordFormSchema = passwordFormSchema.refine(
+  (data) => data.password === data.confirmPassword,
   {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   },
 );
 
-export const changePasswordSchema = passwordFormSchema
+export const changePasswordSchema = newPasswordFormSchema
   .extend({
     currentPassword: z
       .string()
@@ -99,13 +114,13 @@ export const changePasswordSchema = passwordFormSchema
         },
       ),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
     message: "Passwords do not match",
-    path: ["confirmPassword"],
+    path: ["confirmNewPassword"],
   })
-  .refine((data) => data.currentPassword !== data.password, {
+  .refine((data) => data.currentPassword !== data.newPassword, {
     message: "New password must be different from current password",
-    path: ["password"],
+    path: ["newPassword"],
   });
 
 export const resetPasswordFormSchema = userValidationSchema.pick({

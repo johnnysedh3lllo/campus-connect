@@ -164,7 +164,7 @@ export type CheckInboxProps = {
   emailAddress: string;
   handleResetPassword: (values: ResetPasswordFormType) => void;
 };
-export type CreateNewPasswordProps = {
+export type CreatePasswordProps = {
   isSubmitting: boolean;
   handleCreatePassword: (values: CreatePasswordFormType) => void;
 };

@@ -5,6 +5,7 @@ import { MessageBody } from "@/components/app/message-body";
 import { UserProfileCardWrapper } from "@/components/ui/user-profile-card-wrapper";
 import { getParticipants, getMessages } from "@/app/actions/supabase/messages";
 import { getUser } from "@/app/actions/supabase/user";
+import { redirect } from "next/navigation";
 
 // Components
 
@@ -28,6 +29,12 @@ export default async function MessagesBodyPage({
   const getMessagesByConversationId = getMessages.bind(null, id);
   const ssrMessages = await getMessagesByConversationId();
   const participants = await getParticipantsByConversationId();
+
+  console.log(participants);
+
+  if (!participants || participants?.length === 0) {
+    return redirect("/messages");
+  }
 
   return (
     <MessageBody>

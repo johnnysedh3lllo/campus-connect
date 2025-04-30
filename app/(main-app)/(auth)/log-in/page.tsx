@@ -24,7 +24,6 @@ export default function LoginPage() {
     try {
       const result = await login(values);
 
-      console.log(result);
       if (result?.success) {
         router.replace("/listings");
       } else {

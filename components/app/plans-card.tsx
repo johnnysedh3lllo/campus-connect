@@ -115,13 +115,13 @@ export function PlansCard({ plan }: PlansCardProps) {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to create billing portal session.");
+      throw new Error("There was an error creating the billing portal session.");
     }
 
     const { url } = await response.json();
     return url;
   }
-
+  // TODO: HANDLE CASE WHERE A USER IS NOT YET A CUSTOMER
   // Preload portal session on mount
   useEffect(() => {
     async function preloadBillingPortal() {

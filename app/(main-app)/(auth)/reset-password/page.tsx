@@ -1,6 +1,5 @@
 "use client";
 
-import { useMultiStepForm } from "@/hooks/use-multi-step-form";
 import { useState } from "react";
 import { CheckInbox, ResetPassword } from "@/components/app/auth-forms";
 import { useEmailState } from "@/lib/store/email-state-store";
@@ -9,6 +8,7 @@ import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 import { ResetPasswordFormType } from "@/lib/form.types";
 import { resetPassword } from "@/app/actions/supabase/onboarding";
+import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
@@ -25,9 +25,8 @@ export default function ResetPasswordPage() {
   const { email, setEmail } = useEmailState();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { step, nextStep } = useMultiStepForm({
-    emailAddress: "",
-  });
+  const { step, setStep, nextStep, formData, updateFields } =
+    useMultiStepFormStore();
 
   async function handleResetPassword(values: ResetPasswordFormType) {
     if (!values.emailAddress) {

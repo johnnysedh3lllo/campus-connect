@@ -1,75 +1,68 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
-import { useMultiStepForm } from "@/hooks/use-multi-step-form";
+// UTILITIES
 import { toast } from "@/hooks/use-toast";
-// import ErrorHandler from "@/lib/ErrorHandler";
-import { Toaster } from "@/components/ui/toaster";
+import { useState } from "react";
+import { CreatePasswordFormType } from "@/lib/form.types";
+import { useRouter } from "next/navigation";
 
-import {
-  CreateNewPassword,
-  PasswordCreationSuccess,
-} from "@/components/app/auth-forms";
+// COMPONENTS
+import { CreatePassword } from "@/components/app/auth-forms";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
-import { CreatePasswordFormType } from "@/lib/form.types";
-import { createNewPassword } from "@/app/actions/supabase/onboarding";
+import { createPassword } from "@/app/actions/supabase/onboarding";
+import { useShowPasswordState } from "@/lib/store/password-visibility-store";
+import { OnboardingFlowWrapper } from "@/lib/providers/onboarding-flow-wrapper";
+import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 
-export default function CreateNewPasswordPage() {
-  const { step, nextStep, updateFields } = useMultiStepForm({
-    password: "",
-    confirmPassword: "",
-  });
+export default function CreatePasswordPage() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const { showPassword, setShowPassword } = useShowPasswordState();
+  const { step } = useMultiStepFormStore();
 
-  const handleCreatePassword = async (
-    values: CreatePasswordFormType,
-  ): Promise<void> => {
+  async function handleCreatePassword(values: CreatePasswordFormType) {
     setIsLoading(true);
+    // setShowPassword(true);
     try {
-      const result = await createNewPassword(values);
+      console.log("result from createPassword:", values);
+      const result = await createPassword(values);
 
-      console.log(result);
-
-      if (!result.success) {
+      if (result.success) {
         toast({
-          variant: "destructive",
-          title: result.error?.message || "Please start the process again",
+          title: "Success",
+          description: "Password created successfully",
         });
-        setIsLoading(false);
-        return;
+
+        router.replace("/listings?welcome=true");
+      } else {
+        throw result.error;
       }
-
-      updateFields(values);
-      nextStep();
     } catch (error) {
-      console.log("error");
-    } finally {
       setIsLoading(false);
-    }
-  };
+      // setShowPassword(false);
 
-  const createNewPasswordSteps = [
-    <CreateNewPassword
-      isSubmitting={isLoading}
-      handleCreatePassword={handleCreatePassword}
-    />,
-    <PasswordCreationSuccess />,
-  ];
+      toast({
+        variant: "destructive",
+        title: "Error updating password",
+        description:
+          error instanceof Error ? error.message : "Please try again",
+      });
+    }
+  }
 
   return (
-    <>
+    <OnboardingFlowWrapper currentStep={step} totalSteps={step + 1}>
       <AnimationWrapper
-        count={step}
         variants={formVariants}
         transition={animationConfig}
-        classes="flex h-full w-full flex-col justify-center"
+        count={step}
       >
-        {createNewPasswordSteps[step]}
-      </AnimationWrapper>
-      <Toaster />
-    </>
+        <CreatePassword
+          isSubmitting={isLoading}
+          handleCreatePassword={handleCreatePassword}
+        />
+      </AnimationWrapper>{" "}
+    </OnboardingFlowWrapper>
   );
 }

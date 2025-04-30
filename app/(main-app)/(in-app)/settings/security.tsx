@@ -23,7 +23,8 @@ import { PasswordInput } from "@/components/app/password-input";
 // ASSETS
 import { Loader2 } from "lucide-react";
 import { ChangePasswordFormType } from "@/lib/form.types";
-import { createPassword } from "@/app/actions/supabase/onboarding";
+import { changePassword } from "@/app/actions/supabase/onboarding";
+import Link from "next/link";
 
 //
 export default function Security() {
@@ -32,8 +33,8 @@ export default function Security() {
     resolver: zodResolver(changePasswordSchema),
     defaultValues: {
       currentPassword: "",
-      password: "",
-      confirmPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
     },
   });
 
@@ -41,21 +42,23 @@ export default function Security() {
   const onSubmit = async (values: ChangePasswordFormType) => {
     setIsLoading(true);
     try {
-      const result = await createPassword(values);
-      console.log(result, "Result");
-      if (result?.success) {
-        toast({
-          title: "Password changed successfully",
-          description: "Your password has been updated.",
-        });
-        // router.replace("/profile") // Redirect to profile or another appropriate page
-      } else {
-        toast({
-          title: "Password changed successfully",
-          description: "Your password has been updated.",
-        });
-        throw result?.error;
-      }
+      // const result = await changePassword(values);
+
+      console.log(values);
+      // console.log(result, "Result");
+      // if (result?.success) {
+      //   toast({
+      //     title: "Password changed successfully",
+      //     description: "Your password has been updated.",
+      //   });
+      //   // router.replace("/profile") // Redirect to profile or another appropriate page
+      // } else {
+      //   toast({
+      //     title: "Password changed successfully",
+      //     description: "Your password has been updated.",
+      //   });
+      //   throw result?.error;
+      // }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -105,9 +108,12 @@ export default function Security() {
                         />
                       </FormControl>
                     </FormLabel>
-                    <span className="text-primary cursor-pointer text-sm">
+                    <Link
+                      href="/reset-password"
+                      className="text-primary underline hover:no-underline cursor-pointer text-sm"
+                    >
                       Forgot Password?
-                    </span>
+                    </Link>
                     <FormMessage className="text-left" />
                   </FormItem>
                 )}
@@ -115,7 +121,7 @@ export default function Security() {
 
               <FormField
                 control={form.control}
-                name="password"
+                name="newPassword"
                 render={({ field }) => (
                   <FormItem className="flex w-full flex-col items-start gap-1">
                     <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
@@ -136,7 +142,7 @@ export default function Security() {
 
               <FormField
                 control={form.control}
-                name="confirmPassword"
+                name="confirmNewPassword"
                 render={({ field }) => (
                   <FormItem className="flex w-full flex-col items-start gap-1">
                     <FormLabel className="flex w-full flex-col gap-1 text-left text-sm leading-6 font-medium">
@@ -156,7 +162,7 @@ export default function Security() {
               />
 
               <Button
-                disabled={isLoading || !isValid}
+                disabled={isLoading}
                 type="submit"
                 className="w-fit cursor-pointer p-6 text-center text-base leading-6 font-semibold transition-all duration-500"
               >
