@@ -172,11 +172,17 @@ export const PaymentFrequencyEnum = z.enum([
 
 export const createListingFormSchema = z.object({
   homeDetails: z.object({
-    title: z.string().nonempty({ message: "This is a required field" }),
-    noOfBedRooms: z.string().nonempty({ message: "This is a required field" }),
-    homeType: HomeTypeEnum,
-    homeAddress: z.string().nonempty({ message: "This is a required field" }),
-    description: z.string().nonempty({ message: "This is a required field" }),
+    title: z
+      .string()
+      .nonempty({ message: "This is a required field" })
+      .max(150, { message: "Can't be longer than 150 characters" }),
+    noOfBedRooms: z.string(),
+    listingType: HomeTypeEnum,
+    location: z
+      .string()
+      .nonempty({ message: "This is a required field" })
+      .max(100, { message: "Can't be longer than 10 characters" }),
+    description: z.string(),
   }),
   photos: z
     .array(z.instanceof(File))
@@ -184,8 +190,6 @@ export const createListingFormSchema = z.object({
     .max(10, { message: "You can upload a maximum of 10 photos" }),
   pricing: z.object({
     paymentFrequency: PaymentFrequencyEnum,
-    price: z.number().min(1, { message: "Enter a number greater than 2" }),
+    price: z.number().min(2, { message: "Enter a number greater than 2" }),
   }),
 });
-
-

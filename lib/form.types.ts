@@ -16,7 +16,7 @@ import {
   userValidationSchema,
   createListingFormSchema,
   PaymentFrequencyEnum,
-  HomeTypeEnum
+  HomeTypeEnum,
 } from "./form.schemas";
 
 // Form Data type
@@ -51,7 +51,8 @@ export type ListingInsert = {
   price: number;
   payment_frequency: z.infer<typeof PaymentFrequencyEnum>;
   no_of_bedrooms: number;
-  home_type: z.infer<typeof HomeTypeEnum>;
+  listing_type: z.infer<typeof HomeTypeEnum>;
   created_at?: string;
   landlord_id: string;
 };
+// In your form.types.ts

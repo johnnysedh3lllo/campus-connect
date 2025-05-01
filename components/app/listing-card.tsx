@@ -3,7 +3,7 @@ import Image from "next/image";
 import { ListingType } from "@/app/(main-app)/(in-app)/listings/page";
 import { mapPaymentFrequencyToLabel } from "./listing-home-details-preview";
 import { Button } from "../ui/button";
-import { formatNumber } from "@/lib/utils";
+import { formatCurrencyToLocale, formatNumberWithSuffix } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 function isValidPaymentFrequency(
@@ -17,8 +17,9 @@ function ListingCard({ listing }: { listing: ListingType }) {
   const goToListingDetails = (listingId: string) => {
     router.push(`/listings/${listingId}`);
   };
+
   return (
-    <div className="sm: flex w-full max-w-79 flex-col items-stretch gap-4 rounded-md border px-3 pt-3 pb-4">
+    <div className="flex w-full max-w-79 flex-col items-stretch gap-4 rounded-md border px-3 pt-3 pb-4">
       <figure className="aspect-[288/208] h-52 w-full">
         <Image
           src={
@@ -47,23 +48,30 @@ function ListingCard({ listing }: { listing: ListingType }) {
             <p>{listing.location}</p>
           </div>
         )}
-        {listing.no_of_bedrooms && listing.home_type && (
-          <h2 className="text-2xl font-semibold text-text-primarys capitalize">
-            {listing.no_of_bedrooms} Bedroom {listing.home_type}
+        {listing.title && (
+          <h2 className="text-text-primarys line-clamp-2 text-2xl font-semibold break-words capitalize">
+            {listing.title}
           </h2>
         )}
       </div>
       <div className="grid grid-cols-2 items-center text-sm">
         <p>
           <span className="text-xl font-semibold">
-            ${formatNumber(listing.price ?? 0)}
+            $
+            {formatNumberWithSuffix(
+             Number(
+              parseFloat(
+                formatCurrencyToLocale(listing.price).slice(1).replace(/,/g, ""),
+              ),
+            )
+            )}
           </span>
           {listing.payment_frequency &&
             isValidPaymentFrequency(listing.payment_frequency) &&
             `/${mapPaymentFrequencyToLabel(listing.payment_frequency)}`}
         </p>
         <Button
-          className="text-text-primary flex h-12 items-center justify-center gap-2 border-line p-2"
+          className="text-text-primary border-line flex h-12 items-center justify-center gap-2 p-2"
           variant={"outline"}
           onClick={() => goToListingDetails(listing.uuid)}
         >

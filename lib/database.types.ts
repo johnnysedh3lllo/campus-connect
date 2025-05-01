@@ -39,4 +39,10 @@ declare global {
   type CreditsTransactions = Tables<"credit_transactions">;
   type Subscriptions = Tables<"subscriptions">;
   type SubscriptionStatus = Tables<"subscriptions">["status"];
+
+  type Listings = Tables<"listings">;
+  type ListingsImages = Tables<"listing_images">;
+  type ListingType = Listings["listing_type"];
+  type ListingPaymentFrequency = Listings["payment_frequency"]
+  type ListingPublicationStatus = Listings["publication_status"];
 }

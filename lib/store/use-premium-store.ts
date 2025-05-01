@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { checkIfLandlordIsPremium } from "@/app/actions/actions";
+import { checkIfLandlordIsPremium } from "@/app/actions/supabase/listings";
 
 interface PremiumState {
   isPremium: boolean | null;

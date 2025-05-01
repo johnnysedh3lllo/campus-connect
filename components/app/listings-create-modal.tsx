@@ -1,27 +1,35 @@
 "use client";
 import { useListingCreationStore } from "@/lib/store/listing-creation-store";
 import { Badge } from "@/components/ui/badge";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, Dispatch, SetStateAction } from "react";
 import { useModal } from "@/hooks/use-modal";
 import { AnimationWrapper } from "@/lib/providers/AnimationWrapper";
 import { formVariants, animationConfig } from "@/hooks/animations";
 import { useRouter } from "next/navigation";
-import { insertListing } from "@/app/actions/actions";
+import { insertListing } from "@/app/actions/supabase/listings";
 import { Separator } from "@/components/ui/separator";
 import HomeDetailsForm from "@/components/app/listing-home-details-form";
 import PhotoUploadForm from "@/components/app/listing-photo-upload-form";
 import PricingForm from "@/components/app/listing-pricing-form";
 import ListingCreationPreviewPage from "@/components/app/listing-home-details-preview";
 import { toast } from "@/hooks/use-toast";
+import { Toaster } from "../ui/toaster";
 import ListingActionModal from "@/components/app/listing-action-modal";
 import { useCreditsStore } from "@/lib/store/credits-store";
 import { CREDITS_REQUIRED_TO_CREATE_LISTING } from "@/lib/constants";
 import { Header } from "@/components/app/header";
-import ListingPageHeader from "@/components/app/listing-page-header";
 import { usePremiumStore } from "@/lib/store/use-premium-store";
 import { useQueryClient } from "@tanstack/react-query";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 
-function CreatePage() {
+function CreateModal({
+  isOpen,
+  setOpen,
+}: {
+  isOpen: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { step, steps, clearData, homeDetails, pricing, photos } =
@@ -38,14 +46,13 @@ function CreatePage() {
     setPremium,
   } = usePremiumStore();
 
+  function onClose() {
+    setOpen(false);
+  }
+
   useEffect(() => {
     checkPremiumStatus();
   }, [checkPremiumStatus]);
-
-  function handleEscape() {
-    router.push("/listings");
-    clearData();
-  }
 
   async function handlePublish() {
     setIsPublishing(true);
@@ -127,7 +134,7 @@ function CreatePage() {
           : `${CREDITS_REQUIRED_TO_CREATE_LISTING} credits have been deducted from your balance.`,
         primaryButtonText: "Back to listings",
         onPrimaryAction: () => {
-          router.push("/listings");
+          onClose();
           clearData();
         },
       });
@@ -149,6 +156,65 @@ function CreatePage() {
       setIsPublishing(false);
     }
   }
+
+  async function handleSaveToDraft() {
+    openModal({
+      variant: "warning",
+      title: "You are about to quit the listing process",
+      message: "You can save to draft to draft and continue when you want",
+      primaryButtonText: "Save to draft",
+      secondaryButtonText: "Don’t Save",
+      onPrimaryAction: async () => {
+        if (
+          !homeDetails?.title ||
+          !homeDetails?.listingType ||
+          !pricing?.price
+        ) {
+          toast({
+            title: "Missing Required Fields",
+            description:
+              "Title, property type, and price are required to save draft",
+            variant: "destructive",
+          });
+          return;
+        }
+        try {
+          const formData = {
+            homeDetails: {
+              title: homeDetails.title,
+              listingType: homeDetails.listingType,
+              noOfBedRooms: homeDetails.noOfBedRooms,
+              location: homeDetails.location,
+              description: homeDetails.description,
+            },
+            pricing: {
+              price: pricing.price,
+              paymentFrequency: pricing.paymentFrequency,
+            },
+            photos: photos || [],
+          };
+
+          await insertListing(formData, true);
+          clearData();
+          await queryClient.invalidateQueries({ queryKey: ["listings"] });
+          setOpen(false);
+          closeModal();
+        } catch (error) {
+          console.error("Error saving draft:", error);
+          toast({
+            title: "Error Saving Draft",
+            description: "Failed to save draft. Please try again.",
+            variant: "destructive",
+          });
+        }
+      },
+      onSecondaryAction: () => {
+        setOpen(false);
+        closeModal();
+      },
+    });
+  }
+
   const stepComponents = [
     <HomeDetailsForm />,
     <PhotoUploadForm />,
@@ -160,18 +226,23 @@ function CreatePage() {
   ];
 
   return (
-    <>
-      <section className="flex flex-col gap-12">
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) handleSaveToDraft();
+        else setOpen(open);
+      }}
+    >
+      <DialogContent className="h-full w-screen max-w-none min-w-screen overflow-y-scroll rounded-none bg-white">
+        <DialogTitle className="invisible">New Listing</DialogTitle>
         <Header
           title="New Listing"
           subTitle="Enter any necessary information"
           showButton={false}
+          onlyIcon={true}
+          buttonIcon={<CloseIconNoBorders />}
+          onButtonClick={handleSaveToDraft}
         />
-        {/* <ListingPageHeader
-          heading="New Listing"
-          subHeading="Enter any necessary information"
-          handleEscape={handleEscape}
-        /> */}
 
         <div
           className="max-w-screen-max-xl onboarding-form--wrapper mx-auto grid w-full grid-cols-1 gap-6 p-4 sm:gap-12 sm:px-12 sm:pt-10 md:grid-cols-[.7fr_4fr] md:px-12 lg:overflow-x-hidden lg:overflow-y-auto"
@@ -203,7 +274,7 @@ function CreatePage() {
                 >
                   <div className="grid grid-flow-col items-center gap-3 md:justify-start">
                     <span
-                      className={`inline-grid aspect-square w-7 place-items-center rounded-full bg-line ${
+                      className={`bg-line inline-grid aspect-square w-7 place-items-center rounded-full ${
                         step === index &&
                         "border-primary text-primary border bg-transparent"
                       } ${step > index && "bg-primary text-white"}`}
@@ -211,13 +282,13 @@ function CreatePage() {
                       {index + 1}
                     </span>
                     <span
-                      className={`text-text-secondary ${step === index && "font-semibold text-text-primary!"}`}
+                      className={`text-text-secondary ${step === index && "text-text-primary! font-semibold"}`}
                     >
                       {item}
                     </span>
                   </div>
                   {index !== steps.length - 1 && (
-                    <Separator className="h-[2px] w-10 bg-line md:h-10 md:w-[2px] md:translate-x-3" />
+                    <Separator className="bg-line h-[2px] w-10 md:h-10 md:w-[2px] md:translate-x-3" />
                   )}
                 </div>
               ))}
@@ -233,20 +304,24 @@ function CreatePage() {
             {stepComponents[step]}
           </AnimationWrapper>
         </div>
-      </section>
-      <ListingActionModal
-        isOpen={modalData.open}
-        onClose={closeModal}
-        variant={modalData.variant}
-        title={modalData.title}
-        message={modalData.message}
-        primaryButtonText={modalData.primaryButtonText}
-        secondaryButtonText={modalData.secondaryButtonText}
-        onPrimaryAction={modalData.onPrimaryAction}
-        onSecondaryAction={modalData.onSecondaryAction}
-      />
-    </>
+        <ListingActionModal
+          isOpen={modalData.open}
+          onClose={closeModal}
+          variant={modalData.variant}
+          title={modalData.title}
+          message={modalData.message}
+          primaryButtonText={modalData.primaryButtonText}
+          secondaryButtonText={modalData.secondaryButtonText}
+          onPrimaryAction={modalData.onPrimaryAction}
+          onSecondaryAction={modalData.onSecondaryAction}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }
 
-export default CreatePage;
+export default CreateModal;
+
+/**
+     
+ */

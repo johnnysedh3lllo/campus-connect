@@ -11,6 +11,8 @@ import { PaymentFrequencyEnum } from "@/lib/form.schemas";
 import { z } from "zod";
 import Image from "next/image";
 import { useCreditsStore } from "@/lib/store/credits-store";
+import { CreditBalance } from "./credit-balance";
+import { useUser } from "@/hooks/use-user";
 
 type PaymentFrequency = z.infer<typeof PaymentFrequencyEnum>;
 export function mapPaymentFrequencyToLabel(
@@ -30,22 +32,29 @@ function HomeDetailsPreview({
   homeDetails,
   pricing,
 }: {
-  homeDetails: any;
+  homeDetails?: {
+    description: string;
+    location: string;
+    title: string;
+    noOfBedRooms: string;
+    listingType: "condo" | "apartment";
+  };
   pricing?: { price?: number; paymentFrequency?: PaymentFrequency };
-}): JSX.Element {
+}) {
   const { credits } = useCreditsStore();
+  const { data: user } = useUser();
 
   return (
     <section className="grid grid-cols-2 gap-6 sm:grid-cols-3">
       {[
-        { label: "Title", value: homeDetails.title },
-        { label: "Home type", value: homeDetails.homeType },
-        { label: "Location", value: homeDetails.homeAddress },
+        { label: "Title", value: homeDetails?.title },
+        { label: "Home type", value: homeDetails?.listingType },
+        { label: "Location", value: homeDetails?.location },
         pricing?.price && {
           label: "Price",
           value: `${pricing.price}/${mapPaymentFrequencyToLabel(pricing.paymentFrequency!)}`,
         },
-        { label: "No of Bedrooms", value: homeDetails.noOfBedRooms },
+        { label: "No of Bedrooms", value: homeDetails?.noOfBedRooms },
       ]
         .filter((detail): detail is { label: string; value: any } =>
           Boolean(detail),
@@ -56,11 +65,11 @@ function HomeDetailsPreview({
             className={detail.label === "Description" ? "col-span-full" : ""}
           >
             <h3 className="text-sm leading-6 font-medium">{detail.label}</h3>
-            <p className="text-sm text-gray-700">{detail.value}</p>
+            <p className="text-sm text-gray-700 capitalize">{detail.value}</p>
           </div>
         ))}
 
-      {homeDetails.description && (
+      {homeDetails?.description && (
         <div className="col-span-full">
           <h3 className="text-sm leading-6 font-medium">Description</h3>
           <p className="text-sm text-gray-700">{homeDetails.description}</p>
@@ -71,15 +80,7 @@ function HomeDetailsPreview({
         <h3 className="text-sm leading-6 font-medium">
           Your Available Credits
         </h3>
-        <div className="flex items-center gap-2">
-          <Image
-            width={24}
-            height={24}
-            alt="credit chip"
-            src={"/icons/icon-credit-chip.svg"}
-          />
-          <p className="text-sm leading-6 font-medium">{credits} Credits</p>
-        </div>
+        <CreditBalance userId={user?.id} />
       </div>
     </section>
   );

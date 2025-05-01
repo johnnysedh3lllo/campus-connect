@@ -19,5 +19,9 @@
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["figtree", "lucide", "turbopack"]
+  "cSpell.words": [
+    "figtree",
+    "lucide",
+    "turbopack"
+  ]
 }

@@ -4,13 +4,14 @@ import { useState } from "react";
 export function useModal() {
   const [modalData, setModalData] = useState<{
     open: boolean;
-    variant: "success" | "error";
+    variant: "success" | "error" | "warning";
     title?: string;
     message?: string;
     primaryButtonText?: string;
     secondaryButtonText?: string;
     onPrimaryAction?: () => void;
     onSecondaryAction?: () => void;
+    icon?: React.ReactNode;
   }>({
     open: false,
     variant: "success",

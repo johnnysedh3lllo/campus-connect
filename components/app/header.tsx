@@ -9,9 +9,10 @@ export function Header({
   buttonIcon,
   onButtonClick,
   showButton = true,
+  onlyIcon,
 }: HeaderProps) {
   return (
-    <div className="bg-background border-border sticky top-0 border-b-1">
+    <div className="bg-background border-border sticky top-0 z-20 border-b-1">
       <header className="max-w-screen-max-xl mx-auto flex items-center justify-between p-4 pt-6 sm:px-12 sm:pt-10 lg:px-6">
         <section>
           <h1 className="text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
@@ -26,6 +27,14 @@ export function Header({
             className="hidden h-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex"
           >
             <p>{buttonText} </p>
+            {buttonIcon}
+          </Button>
+        )}
+        {onlyIcon && (
+          <Button
+            onClick={onButtonClick}
+            className="text-text-primary border-none bg-transparent shadow-none outline-none hover:border-none hover:bg-transparent hover:outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0"
+          >
             {buttonIcon}
           </Button>
         )}

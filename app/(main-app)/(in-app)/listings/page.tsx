@@ -6,91 +6,88 @@ import { useState } from "react";
 import { PlusIcon } from "@/public/icons/plus-icon";
 import { Header } from "@/components/app/header";
 import { EmptyPageState } from "@/components/app/empty-page-state";
-import { getListings } from "@/app/actions/actions";
+import { fetchListings } from "@/app/actions/supabase/listings";
 import listingIllustration from "@/public/illustrations/illustration-listings.svg";
 import ListingCard from "@/components/app/listing-card";
 import ListingCardSkeleton from "@/components/app/listing-card-skeleton";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import CreateModal from "../../../../components/app/listings-create-modal";
+import { Button } from "@/components/ui/button";
+import { AddIcon } from "@/public/icons/icon-add";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-// Types can be moved to a separate file like types/listing.ts
-export type ListingType = {
-  id: number;
-  created_at: string;
-  description: string | null;
-  home_type: "condo" | "apartment" | null;
-  landlord_id: string | null;
-  location: string | null;
-  no_of_bedrooms: number | null;
-  price: number | null;
-  payment_frequency: string | null;
-  listing_images: { id: number; image_url: string }[];
-  uuid: string;
-};
-
-// Tab component to reduce duplication
-const Tab = ({
-  label,
-  count,
-  isActive,
-  onClick,
-}: {
-  label: string;
-  count: number;
-  isActive: boolean;
-  onClick: () => void;
-}) => (
-  <button
-    className={`text-text-secondary cursor-pointer p-3 select-none ${
-      isActive
-        ? "border-x-text-disabled border-t-text-disabled bg-background-accent-secondary !text-text-accent rounded-t-sm border-x border-t"
-        : ""
-    }`}
-    onClick={onClick}
-  >
-    {label} ({count})
-  </button>
-);
+export type ListingType = Listings & { listing_images: ListingsImages[] };
 
 export default function Page() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState("Published");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["listings"],
-    queryFn: getListings,
+    queryFn: fetchListings,
     staleTime: 1000 * 60 * 5,
   });
 
   const listings = data?.listings || [];
+  const publishedListing = listings.filter(
+    (item) => item.publication_status === "published",
+  );
+  const unpublishedListing = listings.filter(
+    (item) => item.publication_status === "unpublished",
+  );
+  const draftListing = listings.filter(
+    (item) => item.publication_status === "draft",
+  );
 
-  const goToCreateListing = () => router.push("/listings/create");
+  const openCreateModal = () => setIsCreateOpen(true);
 
   const tabData = [
     {
       label: "Published",
-      count: listings.length,
+      count: publishedListing.length,
       content: (
         <>
-          {listings.map((listing: ListingType) => (
-            <ListingCard listing={listing} key={listing.id} />
-          ))}
+          {publishedListing.length > 0 ? (
+            publishedListing.map((listing) => (
+              <ListingCard listing={listing} key={listing.id} />
+            ))
+          ) : (
+            <div>You don't have any published listing</div>
+          )}
         </>
       ),
     },
     {
       label: "Unpublished",
-      count: 0,
-      content: <div className="p-4">No unpublished listings</div>,
+      count: unpublishedListing.length,
+      content: (
+        <>
+          {unpublishedListing.length > 0 ? (
+            unpublishedListing.map((listing) => (
+              <ListingCard listing={listing} key={listing.id} />
+            ))
+          ) : (
+            <div>You don't have any unpublished listing</div>
+          )}
+        </>
+      ),
     },
     {
       label: "Drafts",
-      count: 0,
-      content: <div className="p-4">No drafts</div>,
+      count: draftListing.length,
+      content: (
+        <>
+          {draftListing.length > 0 ? (
+            draftListing.map((listing) => (
+              <ListingCard listing={listing} key={listing.id} />
+            ))
+          ) : (
+            <div>You don't have any draft</div>
+          )}
+        </>
+      ),
     },
   ];
-
-  const activeTabContent = tabData.find(
-    (tab) => tab.label === activeTab,
-  )?.content;
 
   return (
     <>
@@ -100,11 +97,12 @@ export default function Page() {
         buttonText="Create a listing"
         buttonIcon={<PlusIcon />}
         showButton={true}
-        onButtonClick={goToCreateListing}
+        onButtonClick={openCreateModal}
       />
+      <CreateModal isOpen={isCreateOpen} setOpen={setIsCreateOpen} />
 
       {isLoading ? (
-        <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 gap-4 p-4 pt-6 sm:grid-cols-2 sm:px-12 sm:pt-10 md:grid-cols-3">
+        <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 p-4 pt-6 sm:grid-cols-2 sm:px-12 sm:pt-10 md:grid-cols-3">
           {Array.from({ length: 3 }).map((_, index) => (
             <ListingCardSkeleton key={index} />
           ))}
@@ -118,27 +116,47 @@ export default function Page() {
             buttonText="Create a listing"
             buttonIcon={<PlusIcon />}
             showButton={true}
-            onButtonClick={goToCreateListing}
+            onButtonClick={() => setIsCreateOpen(false)}
           />
         </div>
       ) : (
         <>
-          <div className="bg-background-secondary flex min-h-18 w-full items-end justify-start gap-3 border-b px-4 sm:px-12">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="bg-background-secondary min-h-18 w-full items-end justify-start gap-3 rounded-none border-b px-4 py-0 sm:px-7 md:px-12">
+              <div className="max-w-98 h-full flex items-end gap-3 w-full overflow-x-auto listing-image-preview-container">
+                {tabData.map((tab) => (
+                  <TabsTrigger
+                    key={tab.label}
+                    value={tab.label}
+                    className="data-[state=active]:bg-background-accent-secondary! text-text-secondary! data-[state=active]:text-text-accent! data-[state=active]:border-text-disabled! max-h-12 rounded-t-sm rounded-b-none border-x border-t border-b-0 p-4"
+                  >
+                    {tab.label} ({tab.count})
+                  </TabsTrigger>
+                ))}
+              </div>
+            </TabsList>
+
             {tabData.map((tab) => (
-              <Tab
-                key={tab.label}
-                label={tab.label}
-                count={tab.count}
-                isActive={activeTab === tab.label}
-                onClick={() => setActiveTab(tab.label)}
-              />
+              <TabsContent key={tab.label} value={tab.label}>
+                <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 p-4 pt-6 sm:grid-cols-1 sm:px-12 sm:pt-10 md:grid-cols-3 md:justify-items-start">
+                  {tab.content}
+                </div>
+              </TabsContent>
             ))}
-          </div>
-          <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 gap-4 p-4 pt-6 sm:grid-cols-2 sm:px-12 sm:pt-10 md:grid-cols-3">
-            {activeTabContent}
-          </div>
+          </Tabs>
         </>
       )}
+
+      <Button
+        className="fixed right-4 bottom-4 z-20 aspect-square w-14 rounded-md sm:hidden"
+        onClick={openCreateModal}
+      >
+        <AddIcon />
+      </Button>
     </>
   );
 }

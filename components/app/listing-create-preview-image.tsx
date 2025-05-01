@@ -61,7 +61,7 @@ function ListingCreatePreviewImage({
         {/* Horizontally Scrollable Image Container */}
         <div
           ref={scrollContainerRef}
-          className="scrollbar-hide flex flex-grow space-x-4 overflow-x-auto px-1 py-2"
+          className="scrollbar-hide flex flex-grow space-x-4 overflow-x-auto px-1 py-2 listing-image-preview-container"
           style={{
             scrollSnapType: "x mandatory",
             WebkitOverflowScrolling: "touch",

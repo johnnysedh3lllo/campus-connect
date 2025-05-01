@@ -1,47 +1,49 @@
 import { User } from "@supabase/supabase-js";
 import { Dispatch, SetStateAction } from "react";
+
+import { PlanType } from "./pricing.config";
 import {
+  LoginFormType,
   OtpFormType,
   ResetPasswordFormType,
   RoleFormType,
   SetPasswordFormType,
   UserDetailsFormType,
-  LoginFormType,
-} from "@/lib/form.types";
+} from "./form.types";
 
 export type NavigationProps = {
   user: User | null | undefined;
 };
 
 export type MobileNavProps = {
-  userProfile: UserProfile | undefined;
+  userProfile: UserPublic | undefined;
   isOpen: boolean;
   onClose: () => void;
 };
 
 export type UserMenuBarProps = {
-  userProfile: UserProfile | undefined;
+  userProfile: UserPublic | undefined;
   isOpen: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
 };
 
 export type ProfilePictureUploadProps = {
-  userId: UserProfile["id"];
-  initialAvatarUrl: UserProfile["avatar_url"] | undefined;
+  userId: UserPublic["id"];
+  initialAvatarUrl: UserPublic["avatar_url"] | undefined;
 };
 
 export type ProfileHeaderProps = {
-  userProfile: UserProfile;
+  userProfile: UserPublic;
 };
 
 export type ProfileInfoProps = {
-  userProfile: UserProfile;
+  userProfile: UserPublic;
 };
 
 export type UserPillProps = {
-  firstName: UserProfile["first_name"] | undefined;
-  lastName: UserProfile["last_name"] | undefined;
-  avatarUrl: UserProfile["avatar_url"] | undefined;
+  firstName: UserPublic["first_name"] | undefined;
+  lastName: UserPublic["last_name"] | undefined;
+  avatarUrl: UserPublic["avatar_url"] | undefined;
 };
 
 export type UserProfileCardProps = {
@@ -103,6 +105,7 @@ export type HeaderProps = {
   buttonIcon?: React.ReactNode;
   onButtonClick?: () => void;
   showButton: boolean;
+  onlyIcon?: boolean;
 };
 
 export interface EmptyPageStateProps {
@@ -115,8 +118,20 @@ export interface EmptyPageStateProps {
   showButton: boolean;
 }
 
-// TODO: TYPES TO BE ABSTRACTED TO A SEPARATE FOLDER, MAYBE
+export type CreditBalanceProps = {
+  userId: string | undefined;
+  increment?: number;
+  className?: string;
+};
 
+export type PlansCardProps = {
+  name: string;
+  price: string;
+  status: boolean;
+  features: string[];
+};
+
+// TODO: TYPES TO BE ABSTRACTED TO A SEPARATE FOLDER, MAYBE
 export type LoginFormProps = {
   isLoading: boolean;
   handleLogin: (values: LoginFormType) => void;
@@ -146,4 +161,54 @@ export type CheckInboxProps = {
 export type CreateNewPasswordProps = {
   isSubmitting: boolean;
   handleCreatePassword: (values: SetPasswordFormType) => void;
+};
+
+export type ResponsiveHeaderProps = {
+  title: string;
+  subtitle: string | null;
+  onEditClick?: () => void;
+  onDeleteClick?: () => void;
+  publicationStatus: Partial<ListingPublicationStatus>;
+  listingId: string;
+  openModal: (
+    data: Partial<{
+      open: boolean;
+      variant: "success" | "error" | "warning";
+      title?: string;
+      message?: string;
+      primaryButtonText?: string;
+      secondaryButtonText?: string;
+      onPrimaryAction?: () => void;
+      onSecondaryAction?: () => void;
+      icon?: React.ReactNode;
+    }>,
+  ) => void;
+  closeModal: () => void;
+  handlePublish: () => void;
+  handleUnpublish: () => void;
+};
+
+export type PropertyHighlightItemProps = {
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+};
+
+export type ListingActionModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  variant: "success" | "error" | "warning";
+  title?: string;
+  message?: string;
+  primaryButtonText?: string;
+  secondaryButtonText?: string;
+  onPrimaryAction?: () => void;
+  onSecondaryAction?: () => void;
+  icon?: React.ReactNode;
+};
+
+export type ListingEditModalProps = {
+  listingId: string;
+  isOpen: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
