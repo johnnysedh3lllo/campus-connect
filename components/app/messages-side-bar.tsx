@@ -17,8 +17,6 @@ export function MessageSideBar() {
     } else {
       setIsRoot(false);
     }
-
-    console.log(pathname);
   }, [pathname]);
 
   return (

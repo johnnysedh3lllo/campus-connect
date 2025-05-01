@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { PRICING } from "./pricing.config";
 import { CreditTierOption } from "./pricing.types";
 import { UserMetadata } from "@supabase/supabase-js";
+import { format, isBefore, subMonths, formatDistanceToNow } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -80,6 +81,7 @@ export function formatUsersName(userMetadata: UserMetadata): string {
 // To formatting monetary values.
 // if the values it to be used for display purposes, use formatCurrencyToLocale instead.
 
+// TODO: USE A BETTER NAME FOR THE USE
 export function formatCurrency(
   amount: number,
   use: "internal" | "external",
@@ -127,4 +129,24 @@ export function convertTimeStampToISOStrict(timestamp: number) {
   return new Date(timestamp * 1000).toISOString();
 }
 
-// function formatCurrency(amount,route){let converted= 0; if (route === "internal") converted = amount / 100; if (route === "external") converted = amount * 100;return converted;}
+// Custom formatting logic for messages
+export const customRelativeTime = (dateString: string) => {
+  // Parse the date
+  const date = new Date(dateString);
+
+  // Check if the date is invalid
+  if (isNaN(date.getTime())) {
+    return "Invalid date"; // Return a fallback if the date is invalid
+  }
+
+  // Calculate 6 months ago
+  const sixMonthsAgo = subMonths(new Date(), 6);
+
+  // If the date is older than 6 months, show the exact date
+  if (isBefore(date, sixMonthsAgo)) {
+    return format(date, "MMM dd, yyyy"); // Show the exact date if older than 6 months
+  }
+
+  // Otherwise, show the relative time
+  return formatDistanceToNow(date, { addSuffix: true });
+};

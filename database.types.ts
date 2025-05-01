@@ -13,16 +13,22 @@ export type Database = {
         Row: {
           conversation_id: string
           created_at: string | null
+          deleted_at: string | null
+          last_read_at: string | null
           user_id: string
         }
         Insert: {
           conversation_id: string
           created_at?: string | null
+          deleted_at?: string | null
+          last_read_at?: string | null
           user_id: string
         }
         Update: {
           conversation_id?: string
           created_at?: string | null
+          deleted_at?: string | null
+          last_read_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -177,12 +183,10 @@ export type Database = {
           description: string | null
           id: number
           landlord_id: string
-          listing_type: Database["public"]["Enums"]["listing_type"] | null
-          location: string | null
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          location: string
           no_of_bedrooms: number | null
-          payment_frequency:
-            | Database["public"]["Enums"]["listing_payment_frequency"]
-            | null
+          payment_frequency: Database["public"]["Enums"]["listing_payment_frequency"]
           price: number
           publication_status: Database["public"]["Enums"]["listing_publication_status"]
           title: string
@@ -195,12 +199,10 @@ export type Database = {
           description?: string | null
           id?: never
           landlord_id: string
-          listing_type?: Database["public"]["Enums"]["listing_type"] | null
-          location?: string | null
+          listing_type: Database["public"]["Enums"]["listing_type"]
+          location: string
           no_of_bedrooms?: number | null
-          payment_frequency?:
-            | Database["public"]["Enums"]["listing_payment_frequency"]
-            | null
+          payment_frequency?: Database["public"]["Enums"]["listing_payment_frequency"]
           price: number
           publication_status?: Database["public"]["Enums"]["listing_publication_status"]
           title: string
@@ -213,12 +215,10 @@ export type Database = {
           description?: string | null
           id?: never
           landlord_id?: string
-          listing_type?: Database["public"]["Enums"]["listing_type"] | null
-          location?: string | null
+          listing_type?: Database["public"]["Enums"]["listing_type"]
+          location?: string
           no_of_bedrooms?: number | null
-          payment_frequency?:
-            | Database["public"]["Enums"]["listing_payment_frequency"]
-            | null
+          payment_frequency?: Database["public"]["Enums"]["listing_payment_frequency"]
           price?: number
           publication_status?: Database["public"]["Enums"]["listing_publication_status"]
           title?: string
@@ -442,10 +442,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_landlord_premium_status: {
-        Args: { user_id_param: string }
-        Returns: boolean
-      }
       check_participant_access: {
         Args: { convo_id: string; pid: string }
         Returns: boolean
@@ -473,6 +469,10 @@ export type Database = {
           deleted_at: string
           updated_at: string
           participants: Json
+          last_message: string
+          last_message_sent_at: string
+          last_message_sender_id: string
+          unread_count: number
         }[]
       }
       increment_column_value: {
@@ -483,10 +483,6 @@ export type Database = {
           user_id: string
         }
         Returns: undefined
-      }
-      soft_delete_conversation: {
-        Args: { conversation_id_param: string; user_id_param: string }
-        Returns: boolean
       }
     }
     Enums: {

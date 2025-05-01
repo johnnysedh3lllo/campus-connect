@@ -4,6 +4,7 @@ import { ListingIcon } from "@/public/icons/listing-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIcon } from "@/public/icons/profile-icon";
 import { SettingsIcon } from "@/public/icons/settings-icon";
+import { User } from "@supabase/supabase-js";
 
 export interface UserRoles {
   1: string;
@@ -34,3 +35,5 @@ export const navLinksMobile = [
   { href: "/profile", text: "Profile", icon: ProfileIcon },
   { href: "/settings", text: "Settings", icon: SettingsIcon },
 ];
+
+export const DEFAULT_STALE_TIME = 1000 * 60 * 5;

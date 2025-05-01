@@ -15,6 +15,7 @@ import {
   userDetailsFormSchema,
   userValidationSchema,
   multiStepFormSchema,
+  conversationFormSchema,
 } from "./form.schemas";
 
 export type RoleType = z.infer<typeof RoleEnum>;
@@ -32,3 +33,4 @@ export type SettingsFormType = z.infer<typeof settingsFormSchema>;
 export type ProfileInfoFormType = z.infer<typeof profileInfoFormSchema>;
 export type BuyCreditsFormSchemaType = z.infer<typeof buyCreditsFormSchema>;
 export type PurchasePremiumFormType = z.infer<typeof purchasePremiumFormSchema>;
+export type ConversationFormType = z.infer<typeof conversationFormSchema>;

@@ -1,4 +1,5 @@
 import { fetchActiveSubscription } from "@/app/actions/supabase/subscriptions";
+import { DEFAULT_STALE_TIME } from "@/lib/app.config";
 import { useQuery } from "@tanstack/react-query";
 
 export function useUserActiveSubscription(userId: string | undefined) {
@@ -6,6 +7,6 @@ export function useUserActiveSubscription(userId: string | undefined) {
     queryKey: ["userActiveSubscription", userId],
     queryFn: async () => await fetchActiveSubscription(userId),
     enabled: !!userId,
-    staleTime: 1000 * 60 * 5, // cache data for 5 minutes
+    staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes
   });
 }

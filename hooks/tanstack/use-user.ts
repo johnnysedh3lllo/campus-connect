@@ -1,10 +1,11 @@
 import { getUser } from "@/app/actions/supabase/user";
+import { DEFAULT_STALE_TIME } from "@/lib/app.config";
 import { useQuery } from "@tanstack/react-query";
 
 export function useUser() {
   return useQuery({
     queryKey: ["user"],
     queryFn: getUser,
-    staleTime: 1000 * 60 * 5, // cache data for 5 minutes
+    staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes
   });
 }

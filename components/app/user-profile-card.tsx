@@ -7,7 +7,6 @@ export function UserProfileCard({ participants }: UserProfileCardProps) {
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
 
-  console.log(participant);
   return (
     <main className="profile-card-details flex h-[75vh] flex-col gap-6 overflow-y-auto">
       <figure className="flex flex-col items-center gap-6">

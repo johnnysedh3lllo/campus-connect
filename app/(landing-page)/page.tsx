@@ -2,29 +2,29 @@ import Hero from "@/components/app/hero";
 // import Navigation from "@/components/ui/navigation";
 
 import { ThemeSwitcher } from "@/components/app/theme-switcher";
-import { createClient } from "@/utils/supabase/server";
-import { UserResponse } from "@supabase/supabase-js";
-import { insertProperty } from "../actions/supabase/listings";
+// import { createClient } from "@/utils/supabase/server";
+// import { UserResponse } from "@supabase/supabase-js";
+// import { insertProperty } from "../actions/supabase/listings";
 
 export default async function Index() {
-  const supabase = await createClient();
+  // const supabase = await createClient();
 
-  const {
-    data: { user },
-    error: getUserError,
-  }: UserResponse = await supabase.auth.getUser();
+  // const {
+  //   data: { user },
+  //   error: getUserError,
+  // }: UserResponse = await supabase.auth.getUser();
 
-  const insertPropertyWithUserId = user?.id
-    ? insertProperty.bind(null, user.id)
-    : undefined;
+  // const insertPropertyWithUserId = user?.id
+  //   ? insertProperty.bind(null, user.id)
+  //   : undefined;
 
   return (
     <>
-      {user?.user_metadata.role_id === 2 && (
+      {/* {user?.user_metadata.role_id === 2 && (
         <button className="bg-amber-200 p-4" onClick={insertPropertyWithUserId}>
           click me!
         </button>
-      )}
+      )} */}
       <Hero />
       <main className="gap-8 p-12">
         <div className="flex flex-col gap-8">

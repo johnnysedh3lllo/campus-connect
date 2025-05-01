@@ -1,4 +1,5 @@
 "use server";
+import { ConversationFormType } from "@/lib/form.types";
 import { createClient } from "@/utils/supabase/server";
 
 export async function getMessages(conversationId: string) {
@@ -42,7 +43,6 @@ export async function getUserConversationsWithParticipants() {
       "get_conversations_for_user",
       { pid: user.id },
     );
-    // .is("deleted_at", null);
 
     if (error) {
       console.error("Error fetching conversations:", error);
@@ -77,5 +77,35 @@ export async function getParticipants(conversationId: string, userId: string) {
     if (error instanceof Error) {
       throw new Error(`Failed to get participants ${error.message}`);
     }
+  }
+}
+
+export async function updateConversationParticipants(
+  conversationData: ConversationFormType,
+  conversationParticipantsDetails: ConversationParticipantsUpdate,
+) {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("conversation_participants")
+      .update(conversationParticipantsDetails)
+      .eq("user_id", conversationData.userId)
+      .eq("conversation_id", conversationData.conversationId);
+
+    if (error) {
+      throw error;
+    }
+
+    return { success: true, data };
+  } catch (error: any) {
+    console.error(error);
+    return {
+      success: false,
+      error: {
+        message:
+          "Something went wrong while deleting this chat, please try again.",
+      },
+    };
   }
 }

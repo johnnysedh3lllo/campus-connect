@@ -2,7 +2,6 @@
 "use client";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
-import { SubmitButton } from "./submit-button";
 import { supabase } from "@/utils/supabase/client";
 import { SendHorizontalIcon } from "lucide-react";
 import { Button } from "../ui/button";
@@ -15,6 +14,7 @@ export default function MessageInput({
   setMessageInputValue,
   setMessages,
 }: MessageInputProps) {
+  // TODO: REFACTOR EVERY SINGLE THING HERE USING TANSTACK MUTATIONS, ABSTRACT TO SERVER ACTIONS, ORGANIZE PROPERLY
   const sendMessage = async (
     e: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
@@ -55,6 +55,15 @@ export default function MessageInput({
           prevMessages.filter((msg) => msg.optimisticId !== optimisticId),
         );
         console.error("Failed to send message:", error);
+      }
+
+      const { error: conversationUpdateError } = await supabase
+        .from("conversations")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", conversationId);
+
+      if (conversationUpdateError) {
+        console.log("Could not update conversation", conversationUpdateError);
       }
     } catch (error) {
       setMessages((prevMessages) =>

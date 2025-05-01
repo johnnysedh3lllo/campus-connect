@@ -6,6 +6,14 @@ import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { KabobIcon } from "@/public/icons/kabob-icon";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -16,15 +24,34 @@ import { UserProfileCardMobile } from "./user-profile-card-mobile";
 import { useState } from "react";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
 import { MessageHeaderProps } from "@/lib/prop.types";
+import { BinIcon } from "@/public/icons/bin-icon";
+import { useForm } from "react-hook-form";
+import { Loader2 } from "lucide-react";
+import { Form } from "../ui/form";
+import { ConversationFormType } from "@/lib/form.types";
+import { updateConversationParticipants } from "@/app/actions/supabase/messages";
+import { toast } from "@/hooks/use-toast";
 
 export default function MessageHeader({
+  user,
+  conversationId,
   chatParticipants,
 }: MessageHeaderProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const { toggleProfile } = useProfileViewStore();
+
+  const form = useForm<ConversationFormType>({
+    defaultValues: { userId: user?.id, conversationId: conversationId },
+  });
+
+  const {
+    formState: { isSubmitting },
+    handleSubmit,
+  } = form;
 
   const chatParticipant = chatParticipants?.[0]?.users;
   const chatName =
@@ -35,6 +62,41 @@ export default function MessageHeader({
   const handleClickBack = () => {
     router.replace("/messages");
   };
+
+  async function handleChatDeletion(values: ConversationFormType) {
+    try {
+      // TODO: REFACTOR TO USE TANSTACK QUERY MUTATIONS
+      const result = await updateConversationParticipants(values, {
+        deleted_at: new Date().toISOString(),
+      });
+
+      if (!result.success) {
+        throw new Error(result.error?.message);
+      }
+
+      console.log(result);
+      console.log("you have successfully deleted this chat");
+
+      toast({
+        variant: "default",
+        // title: "",
+        description: "The chat has been successfully deleted.",
+      });
+
+      setDeleteModal(false);
+      router.push("/messages");
+    } catch (error: any) {
+      if (error instanceof Error) {
+        console.error(error.message);
+
+        toast({
+          variant: "destructive",
+          title: "Unable to delete chat",
+          description: error.message,
+        });
+      }
+    }
+  }
 
   return (
     <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-4">
@@ -106,8 +168,11 @@ export default function MessageHeader({
           </DropdownMenuItem>
 
           <DropdownMenuItem asChild>
-            <button className="flex w-full items-center gap-2 p-2">
-              <span className="text-sm leading-6">Clear chat</span>
+            <button
+              onClick={() => setDeleteModal(true)}
+              className="flex w-full items-center gap-2 p-2"
+            >
+              <span className="text-sm leading-6">Delete chat</span>
             </button>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -118,6 +183,60 @@ export default function MessageHeader({
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       />
+
+      <Dialog open={deleteModal} onOpenChange={() => setDeleteModal(false)}>
+        {/* <DialogTrigger>Open</DialogTrigger> */}
+        <DialogContent className="max-w-[542px] p-12">
+          <section className="flex flex-col gap-6 sm:gap-12">
+            <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
+              <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
+                <BinIcon />
+              </figure>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <DialogHeader className="flex flex-col gap-2 sm:text-center">
+                <DialogTitle className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+                  Delete Chat
+                </DialogTitle>
+                <DialogDescription className="text text-secondary-foreground text-sm">
+                  You are about to clear your chat with {chatName}, are you sure
+                  you want to continue?
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="grid w-full grid-cols-1 flex-col-reverse items-center justify-between gap-4 sm:grid-cols-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setDeleteModal(false)}
+                  className="flex w-full items-center"
+                >
+                  Back
+                </Button>
+
+                <Form {...form}>
+                  <form
+                    className=""
+                    onSubmit={handleSubmit(handleChatDeletion)}
+                  >
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex w-full items-center"
+                    >
+                      {isSubmitting && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
+                      {isSubmitting ? "Deleting..." : "Delete"}
+                    </Button>
+                  </form>
+                </Form>
+              </div>
+            </div>
+          </section>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

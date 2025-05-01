@@ -8,6 +8,7 @@ import { supabase } from "@/utils/supabase/client";
 import { getMessageDateLabel } from "@/lib/utils";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
 import { MessageContainerProps } from "@/lib/prop.types";
+import { useActiveChatStore } from "@/lib/store/active-chat-store";
 
 export default function MessageContainer({
   conversationId,
@@ -15,14 +16,12 @@ export default function MessageContainer({
   user,
   participants,
 }: MessageContainerProps) {
-  const { isProfileOpen } = useProfileViewStore();
-
   const [messageInputValue, setMessageInputValue] = useState("");
+  const { isProfileOpen } = useProfileViewStore();
   const [messages, setMessages] = useState(ssrConversationMessages);
 
   // TODO: REVISIT THIS
   const chatContainerRef = useRef<HTMLDivElement>(null!);
-
   useEffect(() => {
     const channelName = `messages-${conversationId.slice(0, 8)}`;
 
@@ -141,7 +140,11 @@ export default function MessageContainer({
     <section
       className={`relative flex h-[89vh] w-full flex-col justify-between px-4 transition-all duration-300 ease-in-out ${isProfileOpen ? "lg:w-7/10" : "lg:w-full"}`}
     >
-      <MessageHeader chatParticipants={participants} />
+      <MessageHeader
+        user={user}
+        conversationId={conversationId}
+        chatParticipants={participants}
+      />
 
       {/* Messages */}
       <div

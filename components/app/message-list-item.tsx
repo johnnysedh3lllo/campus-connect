@@ -1,19 +1,33 @@
+"use client";
+
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { MessageListItemProps } from "@/lib/prop.types";
+import { usePathname } from "next/navigation";
+import { customRelativeTime } from "@/lib/utils";
 
-export function MessageListItem({
-  conversationId,
-  participants,
-}: MessageListItemProps) {
+export function MessageListItem({ conversation }: MessageListItemProps) {
+  const participants = conversation.participants;
+  const conversationId = conversation.conversation_id;
+
+  const lastMessage = conversation.last_message;
+  const lastMessageSender = conversation.last_message_sender_id;
+  const lastMessageSent = customRelativeTime(conversation.last_message_sent_at);
+  const unreadMessagesCount = conversation.unread_count;
+
+  const lastMessageDisplay = lastMessageSender
+    ? lastMessage
+    : `You: ${lastMessage}`;
+
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
+
+  const pathName = usePathname();
 
   return (
     <Link
       href={`/messages/${conversationId}`}
-      className="hover:bg-background-secondary grid grid-cols-[auto_1fr] items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300"
-      key={conversationId}
+      className={`hover:bg-background-secondary grid grid-cols-[auto_1fr] items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300 ${pathName.includes(conversationId) ? "bg-background-secondary" : ""}`}
     >
       <Avatar className="size-10">
         {/* <AvatarImage src="" alt="avatar" /> */}
@@ -28,15 +42,21 @@ export function MessageListItem({
               : ""}
           </h2>
           <p className="text-text-secondary max-w-[15ch] truncate text-sm leading-6 sm:line-clamp-2 sm:max-w-full lg:line-clamp-3">
-            supposed last message
+            {lastMessageDisplay}
           </p>
         </section>
 
         <div className="flex flex-col items-end justify-between gap-2">
-          <div className="text-text-inverse bg-background-accent flex size-5 items-center justify-center rounded-full text-xs leading-4 font-medium">
-            <p>5</p>
-          </div>
-          <p className="text-text-secondary text-sm leading-6">1 min ago</p>
+          {unreadMessagesCount ? (
+            <div className="text-text-inverse bg-background-accent flex size-5 items-center justify-center rounded-full text-xs leading-4 font-medium">
+              <p>{unreadMessagesCount}</p>
+            </div>
+          ) : (
+            <></>
+          )}
+          <p className="text-text-secondary text-sm leading-6">
+            {lastMessageSent}
+          </p>
         </div>
       </div>
     </Link>

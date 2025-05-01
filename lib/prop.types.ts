@@ -61,10 +61,7 @@ export interface PasswordInputProps
   field: any;
 }
 
-export type MessageListItemProps = {
-  conversationId: Message["conversation_id"];
-  participants: Participant[] | undefined;
-};
+export type MessageListItemProps = { conversation: Conversations };
 
 // refactor this to point to types coming from Supabase
 export type MessageInputProps = {
@@ -77,6 +74,8 @@ export type MessageInputProps = {
 };
 
 export type MessageHeaderProps = {
+  conversationId: Message["conversation_id"];
+  user: User | null;
   chatParticipants: ConvoParticipant[] | undefined;
 };
 

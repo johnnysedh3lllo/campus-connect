@@ -1,4 +1,9 @@
-import { Database as DB, Tables, TablesInsert } from "@/database.types";
+import {
+  Database as DB,
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+} from "@/database.types";
 
 declare global {
   interface Database extends DB {}
@@ -14,11 +19,17 @@ declare global {
     "id" | "first_name" | "last_name" | "role_id" | "email"
   >;
 
+  type Messages = Tables<"messages">;
+
   type Conversations = {
     conversation_id: DB["public"]["Tables"]["conversations"]["Row"]["id"];
     created_at: DB["public"]["Tables"]["conversations"]["Row"]["created_at"];
     deleted_at: DB["public"]["Tables"]["conversations"]["Row"]["deleted_at"];
     updated_at: DB["public"]["Tables"]["conversations"]["Row"]["updated_at"];
+    last_message: Messages["content"];
+    last_message_sender_id: Messages["sender_id"];
+    last_message_sent_at: Messages["created_at"];
+    unread_count: number; // TODO: revisit and properly type this.
     participants: Participant[];
   };
 
@@ -43,4 +54,8 @@ declare global {
 
   type Customers = Tables<"customers">;
   type CustomersInsert = TablesInsert<"customers">;
+
+  type ConversationParticipants = Tables<"conversation_participants">;
+  type ConversationParticipantsUpdate =
+    TablesUpdate<"conversation_participants">;
 }

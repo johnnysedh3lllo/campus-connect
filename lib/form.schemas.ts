@@ -161,3 +161,8 @@ export const purchasePremiumFormSchema = z.object({
   landlordPremiumPrice: z.number(),
   userId: z.string(),
 });
+
+export const conversationFormSchema = z.object({
+  userId: z.string(),
+  conversationId: z.string(),
+});

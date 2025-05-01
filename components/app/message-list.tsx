@@ -1,29 +1,20 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { MessageListItem } from "./message-list-item";
-import { getUserConversationsWithParticipants } from "@/app/actions/supabase/messages";
+import { useUserConversations } from "@/hooks/tanstack/use-user-conversations";
 
 export function MessageList() {
-  const { data: userConversations, isFetching } = useQuery({
-    queryKey: ["userConversations"],
-    queryFn: getUserConversationsWithParticipants,
-    staleTime: 1000 * 60 * 5, // cache data for 5 minutes
-  });
+  const { data: userConversations, isFetching } = useUserConversations();
 
   return (
     <div className="flex w-full flex-1 flex-col gap-4 overflow-y-auto">
       {userConversations && userConversations.length > 0 ? (
         <>
           {userConversations.map((conversation) => {
-            const { conversation_id, participants } =
-              conversation as Conversations;
-
             return (
               <MessageListItem
                 key={conversation.conversation_id}
-                conversationId={conversation_id}
-                participants={participants}
+                conversation={conversation}
               />
             );
           })}
