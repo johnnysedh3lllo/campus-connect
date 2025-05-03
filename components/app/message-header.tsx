@@ -45,7 +45,10 @@ export default function MessageHeader({
   const { toggleProfile } = useProfileViewStore();
 
   const form = useForm<ConversationFormType>({
-    defaultValues: { userId: user?.id, conversationId: conversationId },
+    defaultValues: {
+      userId: user?.id,
+      conversationId: conversationId || undefined, // TODO: revisit this and optimize 
+    },
   });
 
   const {
