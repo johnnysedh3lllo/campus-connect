@@ -1,0 +1,18 @@
+{
+    "schema": "public",
+    "table": "conversations",
+    "commit_timestamp": "2025-05-02T16:34:44.897Z",
+    "eventType": "UPDATE",
+    "new": {
+        "created_at": "2025-04-29T23:38:20.020895+00:00",
+        "deleted_at": null,
+        "id": "ee9688ae-95af-4eb2-8d76-6c5bbcbef7cc",
+        "last_message_id": null,
+        "updated_at": "2025-05-02T16:34:43.888+00:00"
+    },
+    "old": {
+        "id": "ee9688ae-95af-4eb2-8d76-6c5bbcbef7cc"
+    },
+    "errors": null
+}
+

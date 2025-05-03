@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { MessageListItemProps } from "@/lib/prop.types";
 import { usePathname } from "next/navigation";
 import { customRelativeTime } from "@/lib/utils";
@@ -12,7 +12,9 @@ export function MessageListItem({ conversation }: MessageListItemProps) {
 
   const lastMessage = conversation.last_message;
   const lastMessageSender = conversation.last_message_sender_id;
-  const lastMessageSent = customRelativeTime(conversation.last_message_sent_at);
+  const lastMessageSent = customRelativeTime(
+    conversation.last_message_sent_at ?? "",
+  );
   const unreadMessagesCount = conversation.unread_count;
 
   const lastMessageDisplay = lastMessageSender
@@ -41,18 +43,19 @@ export function MessageListItem({ conversation }: MessageListItemProps) {
               ? `${participant?.first_name} ${participant?.last_name}`
               : ""}
           </h2>
-          <p className="text-text-secondary max-w-[15ch] truncate text-sm leading-6 sm:line-clamp-2 sm:max-w-full lg:line-clamp-3">
+          <p className="text-text-secondary w-[15ch] truncate text-sm leading-6 sm:line-clamp-2 sm:max-w-full lg:line-clamp-3">
             {lastMessageDisplay}
           </p>
         </section>
 
+        {/* TODO: FIND A BETTER WAY TO HANDLE THE UNREAD MESSAGES COUNT */}
         <div className="flex flex-col items-end justify-between gap-2">
           {unreadMessagesCount ? (
-            <div className="text-text-inverse bg-background-accent flex size-5 items-center justify-center rounded-full text-xs leading-4 font-medium">
+            <div className="text-text-inverse bg-background-accent invisible flex size-5 items-center justify-center rounded-full text-xs leading-4 font-medium">
               <p>{unreadMessagesCount}</p>
             </div>
           ) : (
-            <></>
+            <div></div>
           )}
           <p className="text-text-secondary text-sm leading-6">
             {lastMessageSent}

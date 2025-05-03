@@ -2,7 +2,7 @@ import { getUser } from "@/app/actions/supabase/user";
 import { DEFAULT_STALE_TIME } from "@/lib/app.config";
 import { useQuery } from "@tanstack/react-query";
 
-export function useUser() {
+export function useGetUser() {
   return useQuery({
     queryKey: ["user"],
     queryFn: getUser,

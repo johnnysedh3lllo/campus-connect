@@ -1,7 +1,7 @@
 "use client";
 import { SearchBar } from "./search-bar";
 import { MessageList } from "./message-list";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
 

@@ -18,21 +18,21 @@ import logoMain from "@/public/logos/logo-mark-red.svg";
 import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 //
-import { useUser } from "@/hooks/tanstack/use-user";
-import { useUserProfile } from "@/hooks/tanstack/use-user-profile";
-import { useUserActiveSubscription } from "@/hooks/tanstack/use-active-subscription";
+import { useGetUser } from "@/hooks/tanstack/use-get-user";
+import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
+import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import BuyCredits from "./buy-credits";
-import { useUserCredits } from "@/hooks/tanstack/use-user-credits";
+import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
 import { NotificationsIcon } from "@/public/icons/notifications-icon";
 import { HamburgerIcon } from "@/public/icons/hamburger-icon";
 
 export default function Navigation() {
-  const { data: user } = useUser();
+  const { data: user } = useGetUser();
   const userId = user?.id;
-  const { data: creditRecord } = useUserCredits(userId);
-  const { data: userProfile } = useUserProfile(userId);
-  const { data: userActiveSubscription } = useUserActiveSubscription(userId);
+  const { data: creditRecord } = useGetUserCredits(userId);
+  const { data: userProfile } = useGetUserPublic(userId);
+  const { data: userActiveSubscription } = useGetActiveSubscription(userId);
 
   const hasActiveSubscription = !!userActiveSubscription;
   const creditAmount = creditRecord?.remaining_credits;

@@ -2,7 +2,7 @@ import { getUserCreditRecord } from "@/app/actions/supabase/credits";
 import { DEFAULT_STALE_TIME } from "@/lib/app.config";
 import { useQuery } from "@tanstack/react-query";
 
-export function useUserCredits(userId: string | undefined) {
+export function useGetUserCredits(userId: string | undefined) {
   return useQuery({
     queryKey: ["userCredits", userId],
     queryFn: async () => await getUserCreditRecord(userId),

@@ -1,13 +1,13 @@
 import { CreditChipIcon } from "@/public/icons/credit-chip-icon";
-import { useUserCredits } from "@/hooks/tanstack/use-user-credits";
-import { useUserActiveSubscription } from "@/hooks/tanstack/use-active-subscription";
+import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
+import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import BuyCredits from "./buy-credits";
 import { CreditDisplayCardSkeleton } from "./skeletons/credit-display-card-skeleton";
 
 export function CreditDisplayCard({ userId }: { userId: string | undefined }) {
   if (!userId) return;
-  const { data: creditRecord } = useUserCredits(userId);
-  const { data: userActiveSubscription } = useUserActiveSubscription(userId);
+  const { data: creditRecord } = useGetUserCredits(userId);
+  const { data: userActiveSubscription } = useGetActiveSubscription(userId);
 
   const hasActiveSubscription = !!userActiveSubscription;
   const creditAmount = creditRecord?.remaining_credits || 0;

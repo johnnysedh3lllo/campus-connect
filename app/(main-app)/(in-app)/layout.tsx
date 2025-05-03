@@ -17,7 +17,7 @@ import Navigation from "@/components/app/navigation";
 
 // Setup
 import TanstackQueryProvider from "@/lib/providers/tanstack-query-provider";
-import { getUser, getUserProfile } from "@/app/actions/supabase/user";
+import { getUser, getUserPublic } from "@/app/actions/supabase/user";
 import { Toaster } from "@/components/ui/toaster";
 import { Suspense } from "react";
 
@@ -48,8 +48,8 @@ export default async function RootLayout({
   });
 
   await queryClient.prefetchQuery({
-    queryKey: ["userProfile"],
-    queryFn: async () => await getUserProfile(user?.id),
+    queryKey: ["userPublic"],
+    queryFn: async () => await getUserPublic(user?.id),
   });
 
   return (

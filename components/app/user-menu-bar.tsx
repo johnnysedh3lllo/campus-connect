@@ -38,6 +38,8 @@ export function UserMenuBar({
               lastName={lastName}
               avatarUrl={avatarUrl}
             />
+
+            {/* TODO: USE COMPONENT */}
             <Image
               className={`${isOpen ? "" : "-rotate-180"} transition-all duration-150`}
               src={iconDown || "/placeholder.svg"}

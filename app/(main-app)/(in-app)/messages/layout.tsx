@@ -6,22 +6,25 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getUserConversationsWithParticipants } from "@/app/actions/supabase/messages";
+import { getConversations } from "@/app/actions/supabase/messages";
+import { getUser } from "@/app/actions/supabase/user";
 
-// export const metadata: Metadata = {
-//   title: "Messages",
-// };
+export const metadata: Metadata = {
+  title: "Messages",
+};
 
 export default async function MessagesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getUser();
+  const userId = user?.id;
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["userConversations"],
-    queryFn: getUserConversationsWithParticipants,
+    queryKey: ["conversations", userId],
+    queryFn: async () => await getConversations(userId),
   });
 
   return (

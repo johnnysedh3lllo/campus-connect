@@ -1,48 +1,13 @@
-// message-bubble.tsx
 "use client";
-import { useState } from "react";
-import { supabase } from "@/utils/supabase/client";
-import { CircleX, SquarePen } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { User } from "@supabase/supabase-js";
 import { formatDate } from "@/lib/utils";
-import { MessageBubbleProps } from "@/lib/prop.types";
+import type { MessageBubbleProps } from "@/lib/prop.types";
 
 export default function MessageBubble({
   user,
   participants,
   message,
 }: MessageBubbleProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDelete = async () => {
-    if (message.status === "optimistic") {
-      return;
-    }
-
-    setIsDeleting(true);
-
-    try {
-      const { error } = await supabase
-        .from("messages")
-        .delete()
-        .eq("id", message.id);
-
-      console.log(error);
-
-      if (error) {
-        throw error;
-      }
-    } catch (error) {
-      console.error("Failed to delete message:", error);
-      setIsDeleting(false);
-    }
-  };
-
-  const handleUpdate = async () => {
-    // Implement update functionality
-  };
-
   const isUser = user?.id === message.sender_id;
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
@@ -54,10 +19,9 @@ export default function MessageBubble({
 
   const messageStyles = `py-3 px-4 rounded-md ${
     isUser ? senderStyles : receiverStyles
-  } ${isOptimistic ? "opacity-70" : ""} 
-  ${isDeleting ? "opacity-50" : ""}`;
+  } ${isOptimistic ? "opacity-70" : ""}`;
 
-  const messageCreatedAt = new Date(message.created_at);
+  const messageCreatedAt = new Date(message.created_at || new Date());
 
   return (
     <div
@@ -66,8 +30,8 @@ export default function MessageBubble({
       <div className="flex items-end gap-2">
         {!isUser && (
           <Avatar className="size-7.5">
-            <AvatarImage src="" alt="avatar" />
-            <AvatarFallback>
+            <AvatarImage src="/placeholder.svg" alt="avatar" />
+            <AvatarFallback className="size-7.5">
               {participant?.users?.first_name?.[0]}
             </AvatarFallback>
           </Avatar>
@@ -75,28 +39,11 @@ export default function MessageBubble({
 
         <div className={messageStyles}>
           <p className="">{message.content}</p>
-          {/* {message.id && (
-          <div className="text-white w-full flex justify-between">
-            {isUser && (
-              <>
-                <button
-                  onClick={handleDelete}
-                  disabled={isDeleting || message.status === "optimistic"}
-                >
-                  <CircleX />
-                </button>
-                <button onClick={handleUpdate}>
-                  <SquarePen />
-                </button>
-              </>
-            )}
-          </div>
-        )} */}
         </div>
       </div>
 
       <p className="text-text-secondary text-xs leading-4">
-        {formatDate(messageCreatedAt, "en-US")}
+        {isOptimistic ? " sending..." : formatDate(messageCreatedAt, "en-US")}
       </p>
     </div>
   );

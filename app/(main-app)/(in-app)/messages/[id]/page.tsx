@@ -1,66 +1,43 @@
 // Utilities
-import MessageContainer from "@/components/app/message-container";
-import { UserProfileCard } from "@/components/app/user-profile-card";
-import { MessageBody } from "@/components/app/message-body";
-import { UserProfileCardWrapper } from "@/components/ui/user-profile-card-wrapper";
 import {
-  getParticipants,
-  getMessages,
-  updateConversationParticipants,
+  getConversationMessages,
+  getConversationParticipants,
 } from "@/app/actions/supabase/messages";
 import { getUser } from "@/app/actions/supabase/user";
-import { redirect } from "next/navigation";
+import MessagesIdPageBody from "@/components/app/page-containers/messages-id-page-body";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
-// Components
-
-export default async function MessagesBodyPage({
+export default async function MessagesIdPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id: conversationId } = await params;
   const user = await getUser();
   if (!user) {
     throw new Error("User not found");
   }
+  const userId = user.id;
 
-  // In your server action or loader
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["conversationMessages", conversationId, userId],
+    queryFn: async () => await getConversationMessages(conversationId, userId),
+  });
 
-  const result = await updateConversationParticipants(
-    { userId: user.id, conversationId: id },
-    { last_read_at: new Date().toISOString() },
-  );
-
-  if (!result.success) {
-    console.log("There was an issue updating participants");
-  }
-
-  // TODO: REFACTOR TO BE FETCHED WITH TANSTACK QUERY
-  const getParticipantsByConversationId = getParticipants.bind(
-    null,
-    id,
-    user.id,
-  );
-  const getMessagesByConversationId = getMessages.bind(null, id);
-  const ssrMessages = await getMessagesByConversationId();
-  const participants = await getParticipantsByConversationId();
-
-  if (!participants || participants?.length === 0) {
-    return redirect("/messages");
-  }
+  await queryClient.prefetchQuery({
+    queryKey: ["conversationParticipants", userId, conversationId],
+    queryFn: async () =>
+      await getConversationParticipants(userId, conversationId),
+  });
 
   return (
-    <MessageBody>
-      <MessageContainer
-        conversationId={id}
-        ssrConversationMessages={ssrMessages}
-        user={user}
-        participants={participants}
-      />
-
-      <UserProfileCardWrapper>
-        <UserProfileCard participants={participants} />
-      </UserProfileCardWrapper>
-    </MessageBody>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <MessagesIdPageBody user={user} conversationId={conversationId} />;
+    </HydrationBoundary>
   );
 }

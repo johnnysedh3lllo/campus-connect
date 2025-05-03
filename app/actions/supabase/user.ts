@@ -23,7 +23,7 @@ export async function getUser() {
   }
 }
 
-export async function getUserProfile(userId: string | undefined) {
+export async function getUserPublic(userId: string | undefined) {
   const supabase = await createClient();
 
   try {

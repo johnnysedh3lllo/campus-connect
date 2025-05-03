@@ -9,7 +9,7 @@ import { createClient, ENVType } from "@/utils/supabase/server";
 import Stripe from "stripe";
 
 // SERVER & CLIENT
-export async function fetchActiveSubscription(
+export async function getActiveSubscription(
   userId: string | undefined,
   // SUPABASE_SECRET_KEY?: ENVType,
 ): Promise<Subscriptions | null> {

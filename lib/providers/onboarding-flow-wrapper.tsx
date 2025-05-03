@@ -23,7 +23,7 @@ export function OnboardingFlowWrapper({
         <Badge variant="outline">{`${currentStep + 1}/${totalSteps}`}</Badge>
 
         <div className="grid w-full grid-flow-row grid-cols-4 items-center gap-1">
-          {[...Array.from({ length: totalSteps })].map((_, index) => (
+          {Array.from({ length: totalSteps }).map((_, index) => (
             <div className="bg-accent-secondary h-0.5" key={`step-${index}`}>
               <div
                 className={`h-full transition-all duration-500 ${index <= currentStep ? "bg-primary w-full" : "w-0"}`}

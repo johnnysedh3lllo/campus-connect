@@ -19,6 +19,8 @@ export const ROLES = {
 } as const;
 
 export type Role = keyof typeof ROLES;
+ 
+// supabase.role_id === ROLES.LANDLORD
 
 export const navLinks = [
   { href: "/listings", text: "Listings" },

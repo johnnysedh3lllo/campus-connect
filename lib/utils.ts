@@ -35,7 +35,9 @@ export const formatDate = (date: Date, locale: string): string => {
   });
 };
 
-export function getMessageDateLabel(timestamp: string): string {
+export function getMessageDateLabel(timestamp: string | null): string | null {
+  if (!timestamp) return null;
+
   const date = new Date(timestamp);
   const today = new Date();
   const yesterday = new Date(today);

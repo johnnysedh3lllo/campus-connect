@@ -40,3 +40,6 @@ next-env.d.ts
 /sql-queries
 /case-studies
 /logs
+get_user_conversations.sql
+schema.sql
+stripe-products-and-prices.txt

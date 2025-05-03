@@ -6,28 +6,28 @@ import { PremiumBanner } from "@/components/app/premium-banner";
 import { ProfileHeader } from "@/components/app/profile-header";
 import { Separator } from "@/components/ui/separator";
 // ASSETS
-import { useUser } from "@/hooks/tanstack/use-user";
-import { useUserProfile } from "@/hooks/tanstack/use-user-profile";
-import { ProfileInfo } from "./profile-info";
-import { useUserActiveSubscription } from "@/hooks/tanstack/use-active-subscription";
-import { ProfileHeaderSkeleton } from "./skeletons/profile-header-skeleton";
-import { ProfileInfoSkeleton } from "./skeletons/profile-info-skeleton";
+import { useGetUser } from "@/hooks/tanstack/use-get-user";
+import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
+import { ProfileInfo } from "../profile-info";
+import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
+import { ProfileHeaderSkeleton } from "../skeletons/profile-header-skeleton";
+import { ProfileInfoSkeleton } from "../skeletons/profile-info-skeleton";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
-import { Form } from "../ui/form";
+import { Form } from "../../ui/form";
 import { useForm } from "react-hook-form";
-import { ToastAction } from "../ui/toast";
+import { ToastAction } from "../../ui/toast";
 import { toast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 
 export function ProfilePageBody() {
   const [billingPortalUrl, setBillingPortalUrl] = useState<string | null>(null);
 
-  const { data: user } = useUser();
+  const { data: user } = useGetUser();
   const userId = user?.id;
-  const { data: userProfile } = useUserProfile(userId);
-  const { data: userActiveSubscription } = useUserActiveSubscription(userId);
+  const { data: userProfile } = useGetUserPublic(userId);
+  const { data: userActiveSubscription } = useGetActiveSubscription(userId);
 
   const userCurrentPlan = userActiveSubscription ? "Premium" : "Basic";
 

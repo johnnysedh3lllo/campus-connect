@@ -29,8 +29,8 @@ import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
 import { Form } from "../ui/form";
 import { ConversationFormType } from "@/lib/form.types";
-import { updateConversationParticipants } from "@/app/actions/supabase/messages";
 import { toast } from "@/hooks/use-toast";
+import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
 
 export default function MessageHeader({
   user,
@@ -63,11 +63,18 @@ export default function MessageHeader({
     router.replace("/messages");
   };
 
+  const conversationParticipantsMutation = useUpdateConversationParticipants();
+
   async function handleChatDeletion(values: ConversationFormType) {
     try {
       // TODO: REFACTOR TO USE TANSTACK QUERY MUTATIONS
-      const result = await updateConversationParticipants(values, {
-        deleted_at: new Date().toISOString(),
+      const currentDate = new Date().toISOString();
+      const result = await conversationParticipantsMutation.mutateAsync({
+        conversationData: values,
+        conversationParticipantsDetails: {
+          deleted_at: currentDate,
+          message_cutoff_at: currentDate,
+        },
       });
 
       if (!result.success) {

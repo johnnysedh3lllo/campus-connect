@@ -1,11 +1,11 @@
-import { getUserProfile } from "@/app/actions/supabase/user";
+import { getUserPublic } from "@/app/actions/supabase/user";
 import { DEFAULT_STALE_TIME } from "@/lib/app.config";
 import { useQuery } from "@tanstack/react-query";
 
-export function useUserProfile(userId: string | undefined) {
+export function useGetUserPublic(userId: string | undefined) {
   return useQuery({
-    queryKey: ["userProfile", userId],
-    queryFn: async () => await getUserProfile(userId),
+    queryKey: ["userPublic", userId],
+    queryFn: async () => await getUserPublic(userId),
     enabled: !!userId,
     staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes
   });

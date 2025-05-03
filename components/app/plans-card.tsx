@@ -11,7 +11,7 @@ import { PurchasePremiumFormType } from "@/lib/form.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { purchasePremiumFormSchema } from "@/lib/form.schemas";
 import { PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
-import { useUser } from "@/hooks/tanstack/use-user";
+import { useGetUser } from "@/hooks/tanstack/use-get-user";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
@@ -25,7 +25,7 @@ const publishableKey: string | undefined =
 
 export function PlansCard({ plan }: PlansCardProps) {
   const [billingPortalUrl, setBillingPortalUrl] = useState<string | null>(null);
-  const { data: user } = useUser();
+  const { data: user } = useGetUser();
   const userId = user?.id;
 
   const { name, price, status, features } = plan;
@@ -115,7 +115,9 @@ export function PlansCard({ plan }: PlansCardProps) {
     });
 
     if (!response.ok) {
-      throw new Error("There was an error creating the billing portal session.");
+      throw new Error(
+        "There was an error creating the billing portal session.",
+      );
     }
 
     const { url } = await response.json();

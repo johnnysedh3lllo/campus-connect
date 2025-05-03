@@ -1,135 +1,33 @@
-// message-container.tsx
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import MessageBubble from "./message-bubble";
 import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
-import { supabase } from "@/utils/supabase/client";
 import { getMessageDateLabel } from "@/lib/utils";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import { MessageContainerProps } from "@/lib/prop.types";
-import { useActiveChatStore } from "@/lib/store/active-chat-store";
+import type { MessageContainerProps } from "@/lib/prop.types";
 
 export default function MessageContainer({
   conversationId,
-  ssrConversationMessages,
+  conversationMessages,
   user,
   participants,
 }: MessageContainerProps) {
-  const [messageInputValue, setMessageInputValue] = useState("");
   const { isProfileOpen } = useProfileViewStore();
-  const [messages, setMessages] = useState(ssrConversationMessages);
-
-  // TODO: REVISIT THIS
   const chatContainerRef = useRef<HTMLDivElement>(null!);
-  useEffect(() => {
-    const channelName = `messages-${conversationId.slice(0, 8)}`;
 
-    // attempted using a map for quick lookup since Maps are O(1) and Arrays are big 0(n)
-    // const messagesMap = new Map(messages.map((msg) => [msg.message_uuid, msg]));
-
-    // TODO: REFACTOR THIS TO USE TANSTACK MUTATIONS AND OPTIMISTIC UPDATES
-    const channel = supabase
-      .channel(channelName)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          const newMessage = payload.new as Message;
-
-          setMessages((prevMessages) => {
-            const optimisticIndex = prevMessages.findIndex(
-              (msg) =>
-                msg.status === "optimistic" &&
-                msg.content === newMessage.content &&
-                msg.sender_id === newMessage.sender_id,
-            );
-
-            if (optimisticIndex !== -1) {
-              const updatedMessages = [...prevMessages];
-              updatedMessages[optimisticIndex] = newMessage;
-
-              updatedMessages[optimisticIndex].message_uuid =
-                newMessage.message_uuid;
-              updatedMessages[optimisticIndex].status = "confirmed";
-              updatedMessages[optimisticIndex].optimisticId =
-                prevMessages[optimisticIndex].optimisticId;
-              return updatedMessages;
-            }
-
-            return [
-              ...prevMessages,
-              { ...newMessage, status: "confirmed" } as Message,
-            ];
-          });
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "messages",
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          const newMessage = payload.new as Message;
-
-          setMessages((prevMessages) => {
-            const updatedMessages = prevMessages.map((msg) => {
-              if (msg.message_uuid === newMessage.message_uuid) {
-                return { ...msg, content: newMessage.content };
-              }
-              return msg;
-            });
-
-            return updatedMessages;
-          });
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "DELETE",
-          schema: "public",
-          table: "messages",
-          // filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload) => {
-          if (payload) {
-            const newMessages = messages.filter(
-              (msg) => msg.id !== payload.old.id,
-            );
-
-            setMessages(newMessages);
-          }
-        },
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [conversationId, messages]);
-
-  // when a new message comes in, scroll to the bottom
+  // Scroll to bottom when messages change
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
-
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  }, [messages]);
+  }, [conversationMessages]);
 
-  const messagesByDate: { [key: string]: Message[] } = {};
-
-  messages.forEach((message) => {
-    const dateLabel = getMessageDateLabel(message.created_at);
+  // Group messages by date
+  const messagesByDate: { [key: string]: any[] } = {};
+  conversationMessages?.forEach((message) => {
+    const dateLabel = getMessageDateLabel(message.created_at) || "Unknown";
     if (!messagesByDate[dateLabel]) {
       messagesByDate[dateLabel] = [];
     }
@@ -175,14 +73,13 @@ export default function MessageContainer({
         ))}
       </div>
 
-      <MessageInput
-        userId={user?.id}
-        conversationId={conversationId}
-        messageInputValue={messageInputValue}
-        chatContainerRef={chatContainerRef}
-        setMessageInputValue={setMessageInputValue}
-        setMessages={setMessages}
-      />
+      {user?.id && conversationId && (
+        <MessageInput
+          userId={user.id}
+          conversationId={conversationId}
+          chatContainerRef={chatContainerRef}
+        />
+      )}
     </section>
   );
 }

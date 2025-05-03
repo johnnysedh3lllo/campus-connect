@@ -15,6 +15,7 @@ export type Database = {
           created_at: string | null
           deleted_at: string | null
           last_read_at: string | null
+          message_cutoff_at: string | null
           user_id: string
         }
         Insert: {
@@ -22,6 +23,7 @@ export type Database = {
           created_at?: string | null
           deleted_at?: string | null
           last_read_at?: string | null
+          message_cutoff_at?: string | null
           user_id: string
         }
         Update: {
@@ -29,6 +31,7 @@ export type Database = {
           created_at?: string | null
           deleted_at?: string | null
           last_read_at?: string | null
+          message_cutoff_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -330,6 +333,38 @@ export type Database = {
         }
         Relationships: []
       }
+      settings: {
+        Row: {
+          created_at: string
+          id: string
+          settings: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          settings?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          settings?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           cancel_at: string | null
@@ -439,7 +474,35 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      visible_messages_for_user: {
+        Row: {
+          content: string | null
+          conversation_id: string | null
+          created_at: string | null
+          edited_at: string | null
+          id: number | null
+          message_uuid: string | null
+          read_at: string | null
+          sender_id: string | null
+          viewer_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_user_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       check_participant_access: {
@@ -483,6 +546,10 @@ export type Database = {
           user_id: string
         }
         Returns: undefined
+      }
+      update_user_settings: {
+        Args: { user_id: string; new_settings: Json }
+        Returns: Json
       }
     }
     Enums: {

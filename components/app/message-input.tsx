@@ -1,104 +1,106 @@
-// message-input.tsx
 "use client";
-import React from "react";
-import { v4 as uuidv4 } from "uuid";
-import { supabase } from "@/utils/supabase/client";
-import { SendHorizontalIcon } from "lucide-react";
+import type React from "react";
 import { Button } from "../ui/button";
 import { MessageInputProps } from "@/lib/prop.types";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SendIcon } from "@/public/icons/send-icon";
+import { Input } from "../ui/input";
+import { useUpdateConversationMessages } from "@/hooks/tanstack/mutations/use-update-conversation-messages";
 
 export default function MessageInput({
   userId,
   conversationId,
-  messageInputValue,
-  setMessageInputValue,
-  setMessages,
+  chatContainerRef,
 }: MessageInputProps) {
-  // TODO: REFACTOR EVERY SINGLE THING HERE USING TANSTACK MUTATIONS, ABSTRACT TO SERVER ACTIONS, ORGANIZE PROPERLY
-  const sendMessage = async (
-    e: React.FormEvent<HTMLFormElement>,
-  ): Promise<void> => {
-    e.preventDefault();
-    if (!messageInputValue.trim() || !userId) return;
+  if (!conversationId || !userId) return null;
 
-    const optimisticId = uuidv4();
-    const optimisticMessage: Message = {
-      id: -1, // Temporary ID for optimistic message
-      optimisticId: optimisticId,
-      message_uuid: null,
-      conversation_id: conversationId,
-      content: messageInputValue.trim(),
-      sender_id: userId,
-      created_at: new Date().toISOString(),
-      edited_at: null,
-      read_at: null,
-      status: "optimistic",
-    };
+  const sendMessageFormSchema = z.object({
+    message: z.string(),
+  });
 
-    setMessages((prevMessages) => [...prevMessages, optimisticMessage]);
-    setMessageInputValue("");
+  type SendMessageFormType = z.infer<typeof sendMessageFormSchema>;
 
-    try {
-      const { error } = await supabase
-        .from("messages")
-        .insert([
-          {
-            conversation_id: conversationId,
-            sender_id: userId,
-            content: messageInputValue.trim(),
-          },
-        ])
-        .single();
+  const form = useForm<SendMessageFormType>({
+    resolver: zodResolver(sendMessageFormSchema),
+    defaultValues: {
+      message: "",
+    },
+  });
 
-      if (error) {
-        setMessages((prevMessages) =>
-          prevMessages.filter((msg) => msg.optimisticId !== optimisticId),
-        );
-        console.error("Failed to send message:", error);
-      }
+  const sendMessageMutation = useUpdateConversationMessages(
+    conversationId,
+    userId,
+  );
 
-      const { error: conversationUpdateError } = await supabase
-        .from("conversations")
-        .update({ updated_at: new Date().toISOString() })
-        .eq("id", conversationId);
+  const isSending = sendMessageMutation.isPending;
 
-      if (conversationUpdateError) {
-        console.log("Could not update conversation", conversationUpdateError);
-      }
-    } catch (error) {
-      setMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.optimisticId !== optimisticId),
-      );
-      console.error("Failed to send message:", error);
+  const handleSubmit = (values: SendMessageFormType): void => {
+    const messageInputValue = values.message.trim();
+    form.reset({ message: "" });
+    if (!messageInputValue || !userId) return;
+
+    if (sendMessageMutation) {
+      sendMessageMutation.mutateAsync({
+        content: messageInputValue,
+        senderId: userId,
+      });
+    }
+
+    // Scroll to bottom after sending
+    if (chatContainerRef?.current) {
+      setTimeout(() => {
+        chatContainerRef.current!.scrollTop =
+          chatContainerRef.current!.scrollHeight;
+      }, 100);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMessageInputValue(e.target.value);
-  };
+  const {
+    formState: { isSubmitting },
+    watch,
+  } = form;
+  const messageValue = watch("message");
 
   return (
-    <form
-      onSubmit={sendMessage}
-      className="bg-background-secondary mt-6 flex gap-2 rounded-xl p-2 pl-6"
-    >
-      <input
-        placeholder="Type a message.."
-        className="w-full focus:outline-0"
-        type="text"
-        name="message"
-        autoComplete="off"
-        id="message"
-        value={messageInputValue}
-        onChange={handleChange}
-      />
-
-      <Button
-        className="flex size-10 items-center justify-center rounded-full"
-        disabled={!messageInputValue.trim()}
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="relative my-3 flex w-full items-center gap-2"
       >
-        <SendHorizontalIcon />
-      </Button>
-    </form>
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem className="w-full overflow-hidden rounded-xl">
+              <FormControl>
+                <Input
+                  placeholder="Type a message.."
+                  className="bg-background-secondary placeholder:text-text-secondary min-h-14 w-full overflow-hidden rounded-xl p-2 pl-6 focus:outline-0"
+                  {...field}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          className="absolute top-1/2 right-2 flex size-10 -translate-y-1/2 items-center justify-center rounded-full p-0"
+          disabled={!messageValue || isSubmitting || isSending}
+        >
+          <SendIcon />
+        </Button>
+      </form>
+    </Form>
   );
 }

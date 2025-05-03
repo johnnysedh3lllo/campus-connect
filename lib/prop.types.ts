@@ -64,24 +64,22 @@ export interface PasswordInputProps
 export type MessageListItemProps = { conversation: Conversations };
 
 // refactor this to point to types coming from Supabase
+
 export type MessageInputProps = {
-  userId: string | undefined;
-  conversationId: string;
-  messageInputValue: string;
-  chatContainerRef: React.RefObject<HTMLDivElement>;
-  setMessageInputValue: (value: string) => void;
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  userId: User["id"] | undefined;
+  conversationId: Messages["conversation_id"];
+  chatContainerRef?: React.RefObject<HTMLDivElement>;
 };
 
 export type MessageHeaderProps = {
-  conversationId: Message["conversation_id"];
+  conversationId: Messages["conversation_id"];
   user: User | null;
   chatParticipants: ConvoParticipant[] | undefined;
 };
 
 export type MessageContainerProps = {
-  conversationId: Message["conversation_id"];
-  ssrConversationMessages: Message[];
+  conversationId: Messages["conversation_id"];
+  conversationMessages: Messages[] | undefined;
   user: User | null;
   participants: ConvoParticipant[] | undefined;
 };
@@ -89,7 +87,7 @@ export type MessageContainerProps = {
 export type MessageBubbleProps = {
   user: User | null;
   participants: ConvoParticipant[] | undefined;
-  message: Message;
+  message: Messages;
 };
 
 export type LoginPromptProps = {

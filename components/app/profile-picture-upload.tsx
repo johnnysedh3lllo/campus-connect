@@ -21,6 +21,7 @@ import { Loader2 } from "lucide-react";
 import { ProfilePictureUploadProps } from "@/lib/prop.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProfilePicture } from "@/app/actions/supabase/user";
+import { useUpdateUserAvatar } from "@/hooks/tanstack/mutations/use-update-user-avatar";
 
 export function ProfilePictureUpload({
   userId,
@@ -45,29 +46,7 @@ export function ProfilePictureUpload({
 
   const { toast } = useToast();
 
-  const queryClient = useQueryClient();
-  const updateProfilePictureMutation = useMutation({
-    mutationFn: async ({
-      base64Image,
-      userId,
-    }: {
-      base64Image: string;
-      userId: string;
-    }) => {
-      return await updateProfilePicture(base64Image, userId);
-    },
-    onSuccess: (_, variable) => {
-      queryClient.invalidateQueries({
-        queryKey: ["userProfile", variable.userId],
-      });
-
-      // queryClient.setQueryData(["userProfile", variable.userId], (oldData) => {
-      //   oldData
-      //     ? { ...oldData, avatar_url: `${data.imageUrl}?t=${Date.now()}` }
-      //     : oldData;
-      // });
-    },
-  });
+  const userAvatarMutation = useUpdateUserAvatar();
 
   const imageRef = useRef<HTMLImageElement | null>(null);
 
@@ -134,7 +113,7 @@ export function ProfilePictureUpload({
     setIsUploading(true);
 
     try {
-      const result = await updateProfilePictureMutation.mutateAsync({
+      const result = await userAvatarMutation.mutateAsync({
         base64Image,
         userId,
       });

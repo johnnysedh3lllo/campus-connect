@@ -41,10 +41,10 @@ import { Loader2 } from "lucide-react";
 import { PURCHASE_TYPES } from "@/lib/pricing.config";
 import { loadStripe } from "@stripe/stripe-js";
 import { CreditBalance } from "@/components/app/credit-balance";
-import { useUser } from "@/hooks/tanstack/use-user";
+import { useGetUser } from "@/hooks/tanstack/use-get-user";
 import { toast } from "@/hooks/use-toast";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
-import { useUserCredits } from "@/hooks/tanstack/use-user-credits";
+import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
 
 // TODO: CREATE A MODAL TO SHOW A SUCCESSFUL CREDIT PURCHASE
@@ -62,10 +62,10 @@ export default function BuyCredits({
   const [selectedTier, setSelectedTier] = useState<CreditTierOption>();
   const [promoCode, setPromoCode] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { data: user } = useUser();
+  const { data: user } = useGetUser();
   const { setIsMobileNavOpen } = useMobileNavState();
   const userId = user?.id;
-  const { data: creditRecord } = useUserCredits(userId);
+  const { data: creditRecord } = useGetUserCredits(userId);
   const creditAmount = creditRecord?.remaining_credits;
 
   const creditTiers = getCreditTiers() as CreditTierOption[];

@@ -1,7 +1,7 @@
 "use server";
 
 import Stripe from "stripe";
-import { fetchActiveSubscription } from "./supabase/subscriptions";
+import { getActiveSubscription } from "./supabase/subscriptions";
 import {
   createStripeCustomer,
   fetchStripeActiveSubscription,
@@ -26,7 +26,7 @@ export async function retrieveActiveSubscription(
       return null;
     }
 
-    const subscriptionOnSupabase = await fetchActiveSubscription(userId);
+    const subscriptionOnSupabase = await getActiveSubscription(userId);
 
     if (subscriptionOnSupabase) {
       return subscriptionOnSupabase;

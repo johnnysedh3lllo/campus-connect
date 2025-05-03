@@ -22,11 +22,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { ProfileInfoFormType } from "@/lib/form.types";
 import { updateUser } from "@/app/actions/supabase/user";
-import { Skeleton } from "../ui/skeleton";
+import { useUpdateUserMetadata } from "@/hooks/tanstack/mutations/use-update-user-metadata";
 
 export function ProfileInfo({ userProfile }: ProfileInfoProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const firstName = userProfile?.first_name;
@@ -58,29 +57,11 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
     formState: { isSubmitting, isValid },
   } = form;
 
-  const updateUserMetadataMutation = useMutation({
-    mutationFn: async ({
-      values,
-      userId,
-    }: {
-      values: ProfileInfoFormType;
-      userId: string;
-    }) => {
-      return await updateUser(values, userId);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["user"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["userProfile", userId],
-      });
-    },
-  });
+  const userMetadataMutation = useUpdateUserMetadata();
 
   const handleUpdateProfileInfo = async (values: ProfileInfoFormType) => {
     try {
-      const result = await updateUserMetadataMutation.mutateAsync({
+      const result = await userMetadataMutation.mutateAsync({
         values,
         userId: userId!,
       });
