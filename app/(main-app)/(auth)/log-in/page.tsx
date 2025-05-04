@@ -29,14 +29,19 @@ export default function LoginPage() {
       } else {
         throw result?.error;
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error(error);
+
+      const errorMessage =
+        error.code === "invalid_credentials"
+          ? "Please enter your correct email and password to login to your account"
+          : error.message;
       toast({
         variant: "destructive",
         title: "Please confirm email and password",
         description:
-          error instanceof Error
-            ? error.message
-            : "An error occurred, please reload and try again later.",
+          errorMessage ||
+          "An error occurred, please reload and try again later.",
       });
       setIsLoading(false);
     }

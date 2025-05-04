@@ -171,15 +171,17 @@ export async function login(formData: LoginFormType) {
     });
 
     if (error) {
+      // console.error("error from supabase", error.code);
       throw error;
     }
 
     // TODO: AFTER UPDATING,
     return { success: true };
-  } catch (error) {
-    if (error instanceof Error) {
-      return { success: false, error };
-    }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: { message: error.message, code: error.code },
+    }; 
   }
 }
 

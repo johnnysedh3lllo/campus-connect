@@ -47,7 +47,7 @@ export default function MessageHeader({
   const form = useForm<ConversationFormType>({
     defaultValues: {
       userId: user?.id,
-      conversationId: conversationId || undefined, // TODO: revisit this and optimize 
+      conversationId: conversationId || undefined, // TODO: revisit this and optimize
     },
   });
 
@@ -88,9 +88,9 @@ export default function MessageHeader({
       console.log("you have successfully deleted this chat");
 
       toast({
-        variant: "default",
-        // title: "",
-        description: "The chat has been successfully deleted.",
+        variant: "success",
+        showCloseButton: false,
+        description: `Your chat with ${chatName} has been deleted!`,
       });
 
       setDeleteModal(false);

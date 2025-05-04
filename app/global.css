@@ -100,6 +100,11 @@
   --color-text-inverse: var(--text-inverse);
   --color-text-accent: var(--text-accent);
 
+  --color-alert-success-primary: var(--alert-success-primary);
+  --color-alert-success-secondary: var(--alert-success-secondary);
+  --color-alert-success-text: var(--alert-success-text);
+  --color-alert-success-line: var(--alert-success-line);
+
   --color-foreground: var(--foreground);
 
   --color-card: var(--card);
@@ -175,6 +180,11 @@
   --text-disabled: var(--color-red-200);
   --text-inverse: var(--color-white);
   --text-accent: var(--color-red-500);
+
+  --alert-success-primary: var(--color-green-800);
+  --alert-success-secondary: var(--color-green-50);
+  --alert-success-text: var(--color-green-800);
+  --alert-success-line: var(--color-green-800);
 
   --foreground: var(--color-gray-950);
 

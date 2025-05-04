@@ -41,28 +41,6 @@ export function useGetConversationMessages(
         (payload) => {
           const newMessage = payload.new as Messages;
 
-          queryClient.setQueryData(
-            ["conversations", userId],
-            (oldData: Conversations[] | undefined) => {
-              if (!oldData) return [];
-
-              return oldData.map((conversation) => {
-                // to get the conversation the new message belong to
-                if (
-                  conversation.conversation_id !== newMessage.conversation_id
-                ) {
-                  return conversation;
-                }
-
-                return {
-                  ...conversation,
-                  last_message: newMessage.content,
-                  last_message_sent_at: newMessage.created_at,
-                };
-              });
-            },
-          );
-
           // Update query cache with the new message
           queryClient.setQueryData(
             conversationMessagesQueryKey,
@@ -95,8 +73,8 @@ export function useGetConversationMessages(
             },
           );
 
-          refetch();
           // After receiving a real-time update, refetch to ensure we have the latest data
+          refetch();
         },
       )
       .subscribe();

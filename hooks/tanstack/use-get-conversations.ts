@@ -18,42 +18,55 @@ export function useGetConversations(userId: string | undefined) {
     staleTime: Infinity,
   });
 
-  // const refetch = query.refetch;
+  const refetch = query.refetch;
 
-  // // TODO: REFACTOR TO USE BROADCAST INSTEAD
-  // useEffect(() => {
-  //   // Create a channel to listen for changes
-  //   const channel = supabase
-  //     .channel("conversations-changes")
-  //     .on(
-  //       "postgres_changes",
-  //       {
-  //         event: "*",
-  //         schema: "public",
-  //         table: "conversations",
-  //       },
-  //       (payload) => {
-  //         const eventType = payload.eventType;
-  //         switch (eventType) {
-  //           case "UPDATE":
-  //           case "INSERT":
-  //           case "DELETE":
-  //             console.log("conversations", payload);
-  //             refetch();
-  //             break;
-  //           default:
-  //             console.log("unhandled payload event");
-  //             break;
-  //         }
-  //       },
-  //     )
-  //     .subscribe();
+  // TODO: REFACTOR TO USE BROADCAST INSTEAD
+  useEffect(() => {
+    // Create a channel to listen for changes
+    const channel = supabase
+      .channel("conversations-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "conversations",
+        },
+        (payload) => {
+          const eventType = payload.eventType;
+          switch (eventType) {
+            case "UPDATE":
+            case "INSERT":
+            case "DELETE":
+              console.log("conversations", payload);
 
-  //   // Clean up the subscription when the component unmounts
-  //   return () => {
-  //     supabase.removeChannel(channel);
-  //   };
-  // }, [queryClient, supabase]);
+              // if (payload.new) {
+              //   const newConversation = payload.new as ConversationsMain;
+
+              //   console.log(
+              //     queryClient.getQueryData([
+              //       "conversationParticipants",
+              //       userId,
+              //       newConversation.id,
+              //     ]),
+              //   );
+              // }
+
+              refetch();
+              break;
+            default:
+              console.log("unhandled payload event");
+              break;
+          }
+        },
+      )
+      .subscribe();
+
+    // Clean up the subscription when the component unmounts
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userId, queryClient, supabase]);
 
   return query;
 }

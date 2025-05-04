@@ -24,6 +24,8 @@ const ToastViewport = React.forwardRef<
 ));
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
+// background: #F6FAF7;
+
 const toastVariants = cva(
   "group pointer-events-auto flex w-full justify-between items-start gap-3 overflow-hidden rounded-sm p-3 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-top-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-top-full",
   {
@@ -31,6 +33,8 @@ const toastVariants = cva(
       variant: {
         default: "border bg-background text-foreground",
         destructive: "destructive group bg-accent-secondary text-primary",
+        success:
+          "success group bg-alert-success-secondary text-alert-success-text",
       },
     },
     defaultVariants: {
