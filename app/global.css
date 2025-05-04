@@ -128,7 +128,7 @@
   --color-border-primary: var(--border-primary);
 
   --color-line: var(--line);
-  /* --color-input: var(--input); */
+  --color-input: var(--input);
   --color-ring: var(--ring);
 
   --color-chart-1: var(--chart-1);
@@ -300,22 +300,35 @@
 
   .onboarding-form--wrapper::-webkit-scrollbar,
   .messaging-container::-webkit-scrollbar,
-  .profile-card-details::-webkit-scrollbar {
+  .profile-card-details::-webkit-scrollbar,
+  .listing-image-preview-container::-webkit-scrollbar {
     @apply w-1;
   }
 
   /* Track */
   .onboarding-form--wrapper::-webkit-scrollbar-track,
   .messaging-container::-webkit-scrollbar-track,
-  .profile-card-details::-webkit-scrollbar-track {
+  .profile-card-details::-webkit-scrollbar-track,
+  .listing-image-preview-container::-webkit-scrollbar-track {
     @apply rounded-lg bg-transparent;
   }
 
   /* Thumb */
   .onboarding-form--wrapper::-webkit-scrollbar-thumb,
   .messaging-container::-webkit-scrollbar-thumb,
-  .profile-card-details::-webkit-scrollbar-thumb {
+  .profile-card-details::-webkit-scrollbar-thumb,
+  .listing-image-preview-container::-webkit-scrollbar-thumb {
     @apply rounded-lg bg-gray-200;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 
   @media (min-height: 900px) {

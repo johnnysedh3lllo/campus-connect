@@ -6,7 +6,7 @@ import { SubmitButton } from "./submit-button";
 import { supabase } from "@/utils/supabase/client";
 import { SendHorizontalIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import { MessageInputProps } from "@/lib/component-prop-types";
+import { MessageInputProps } from "@/lib/prop.types";
 
 export default function MessageInput({
   userId,
@@ -15,7 +15,6 @@ export default function MessageInput({
   setMessageInputValue,
   setMessages,
 }: MessageInputProps) {
-  
   const sendMessage = async (
     e: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {

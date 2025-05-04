@@ -6,9 +6,7 @@ import { CircleX, SquarePen } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { User } from "@supabase/supabase-js";
 import { formatDate } from "@/lib/utils";
-import { MessageBubbleProps } from "@/lib/component-prop-types";
-
-
+import { MessageBubbleProps } from "@/lib/prop.types";
 
 export default function MessageBubble({
   user,
@@ -51,7 +49,8 @@ export default function MessageBubble({
   const isOptimistic = message.status === "optimistic";
 
   const senderStyles = "rounded-br-sm bg-primary text-white";
-  const receiverStyles = "rounded-bl-sm bg-background-secondary text-text-primary";
+  const receiverStyles =
+    "rounded-bl-sm bg-background-secondary text-text-primary";
 
   const messageStyles = `py-3 px-4 rounded-md ${
     isUser ? senderStyles : receiverStyles

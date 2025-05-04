@@ -9,7 +9,7 @@ import {
 } from "../ui/sheet";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 import { UserProfileCard } from "./user-profile-card";
-import { UserProfileCardMobileProps } from "@/lib/component-prop-types";
+import { UserProfileCardMobileProps } from "@/lib/prop.types";
 
 export function UserProfileCardMobile({
   isOpen,

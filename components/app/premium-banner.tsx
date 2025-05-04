@@ -20,7 +20,7 @@ export function PremiumBanner() {
         </section>
       </div>
 
-      <Link href="#">
+      <Link className="w-fit" href="#">
         <Button
           variant={"secondary"}
           className="h-full w-full px-6 py-3 text-base sm:w-fit"

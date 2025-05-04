@@ -1,4 +1,4 @@
-import { CreateListingFormType } from "../form-schemas";
+import { CreateListingFormType } from "../form.types";
 import { create } from "zustand";
 
 interface ListingCreationState extends Partial<CreateListingFormType> {
@@ -19,20 +19,40 @@ export const useListingCreationStore = create<ListingCreationState>((set) => ({
   nextStep: () =>
     set((state) => ({
       step: Math.min(state.steps.length - 1, state.step + 1),
-    })), // Prevent going beyond last step
+    })),
   prevStep: () =>
     set((state) => ({
       step: Math.max(0, state.step - 1),
-    })), // Prevent going below first step
+    })),
   goToStep: (step) =>
     set((state) => ({
       step: Math.min(state.steps.length - 1, Math.max(0, step)),
-    })), // Ensure step is within bounds
-  setSteps: (steps) => set(() => ({ steps })), // Dynamically update steps
-  clearData: () =>
-    set((state) => ({
-      step: 0, // Reset to first step
-      ...Object.fromEntries(Object.keys(state).map((key) => [key, undefined])), // Clear all form data
-      steps: state.steps, // Preserve steps array
     })),
+  setSteps: (steps) => set(() => ({ steps })),
+  clearData: () =>
+    set((state) => {
+      const { step, steps } = state;
+
+      const formFields = Object.keys(state).filter(
+        (key) =>
+          key !== "step" &&
+          key !== "steps" &&
+          key !== "setData" &&
+          key !== "nextStep" &&
+          key !== "prevStep" &&
+          key !== "goToStep" &&
+          key !== "setSteps" &&
+          key !== "clearData",
+      );
+
+      const clearedFormData = Object.fromEntries(
+        formFields.map((key) => [key, undefined]),
+      );
+
+      return {
+        ...clearedFormData,
+        step: 0,
+        steps: steps, 
+      };
+    }),
 }));

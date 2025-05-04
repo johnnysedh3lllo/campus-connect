@@ -1,6 +1,6 @@
 "use client";
 import { ProfilePictureUpload } from "./profile-picture-upload";
-import { ProfileHeaderProps } from "@/lib/component-prop-types";
+import { ProfileHeaderProps } from "@/lib/prop.types";
 
 export function ProfileHeader({ userProfile }: ProfileHeaderProps) {
   const firstName = userProfile?.first_name;

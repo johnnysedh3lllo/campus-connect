@@ -16,10 +16,10 @@ import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { updateProfilePicture } from "@/app/actions/actions";
-import { ProfilePictureUploadProps } from "@/lib/component-prop-types";
+import { ProfilePictureUploadProps } from "@/lib/prop.types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function ProfilePictureUpload({
@@ -30,13 +30,11 @@ export function ProfilePictureUpload({
   const [originalImage, setOriginalImage] = useState<string | null>(
     initialAvatarUrl || null,
   );
-
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(
     initialAvatarUrl || null,
   );
-
   const [crop, setCrop] = useState<Crop>({
     unit: "%",
     width: 100,
@@ -44,6 +42,8 @@ export function ProfilePictureUpload({
     x: 0,
     y: 0,
   });
+
+  const { toast } = useToast();
 
   const queryClient = useQueryClient();
   const updateProfilePictureMutation = useMutation({
@@ -60,10 +60,12 @@ export function ProfilePictureUpload({
       queryClient.invalidateQueries({
         queryKey: ["userProfile", variable.userId],
       });
-      queryClient.refetchQueries({
-        queryKey: ["userProfile", variable.userId],
-      });
-      // revalidatePath("/profile")
+
+      // queryClient.setQueryData(["userProfile", variable.userId], (oldData) => {
+      //   oldData
+      //     ? { ...oldData, avatar_url: `${data.imageUrl}?t=${Date.now()}` }
+      //     : oldData;
+      // });
     },
   });
 
@@ -81,6 +83,7 @@ export function ProfilePictureUpload({
     }
   };
 
+  // TODO: ANALYZE THIS FUNCTION
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     imageRef.current = e.currentTarget;
 
@@ -98,6 +101,7 @@ export function ProfilePictureUpload({
     });
   };
 
+  // TODO: ANALYZE THIS FUNCTION
   const getCroppedImg = async () => {
     if (!imageRef.current) return;
 
@@ -226,8 +230,8 @@ export function ProfilePictureUpload({
           </div>
           <DialogFooter className="flex w-full gap-4 sm:flex-row">
             <Button
-              className="border-border py-3"
-              size={"full"}
+              className="border-border"
+              width={"full"}
               variant="outline"
               onClick={() => {
                 setIsCropOpen(false);
@@ -236,7 +240,7 @@ export function ProfilePictureUpload({
             >
               Cancel
             </Button>
-            <Button size={"full"} className="py-3" onClick={getCroppedImg}>
+            <Button width={"full"} onClick={getCroppedImg}>
               Change
             </Button>
           </DialogFooter>

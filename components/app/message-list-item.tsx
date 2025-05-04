@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { MessageListItemProps } from "@/lib/component-prop-types";
+import { MessageListItemProps } from "@/lib/prop.types";
 
-
-
-export function MessageListItem({ conversationId, participants }: MessageListItemProps) {
+export function MessageListItem({
+  conversationId,
+  participants,
+}: MessageListItemProps) {
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
 
@@ -19,7 +20,7 @@ export function MessageListItem({ conversationId, participants }: MessageListIte
         <AvatarFallback>{participant?.first_name?.[0]}</AvatarFallback>
       </Avatar>
 
-      <div className="flex w-full gap-6 justify-between">
+      <div className="flex w-full justify-between gap-6">
         <section className="flex flex-col justify-between gap-2">
           <h2 className="text-text-primary text-base leading-6 font-semibold whitespace-nowrap lg:text-2xl lg:leading-8">
             {participants && participants.length > 0

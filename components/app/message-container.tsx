@@ -7,7 +7,7 @@ import MessageHeader from "./message-header";
 import { supabase } from "@/utils/supabase/client";
 import { getMessageDateLabel } from "@/lib/utils";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import { MessageContainerProps } from "@/lib/component-prop-types";
+import { MessageContainerProps } from "@/lib/prop.types";
 
 const MessageContainer = ({
   conversationId,
@@ -19,9 +19,9 @@ const MessageContainer = ({
 
   const [messageInputValue, setMessageInputValue] = useState("");
   const [messages, setMessages] = useState(ssrConversationMessages);
-  const chatContainerRef = useRef(
-    null,
-  ) as React.MutableRefObject<HTMLDivElement | null>;
+
+  // TODO: REVISIT THIS
+  const chatContainerRef = useRef<HTMLDivElement>(null!);
 
   useEffect(() => {
     const channelName = `messages-${conversationId.slice(0, 8)}`;

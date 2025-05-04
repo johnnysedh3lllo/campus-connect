@@ -7,7 +7,7 @@ import {
   SetPasswordFormType,
   UserDetailsFormType,
   LoginFormType,
-} from "@/lib/form-schemas";
+} from "@/lib/form.types";
 
 export type NavigationProps = {
   user: User | null | undefined;

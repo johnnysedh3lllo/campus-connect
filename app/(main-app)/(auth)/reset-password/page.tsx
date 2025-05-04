@@ -2,7 +2,7 @@
 
 import { resetPassword } from "@/app/actions/actions";
 import { useMultiStepForm } from "@/hooks/use-multi-step-form";
-import { ResetPasswordFormType } from "@/lib/form-schemas";
+import { ResetPasswordFormType } from "@/lib/form.types";
 import { useState } from "react";
 import { CheckInbox, ResetPassword } from "@/components/app/auth-forms";
 import { useEmailState } from "@/lib/store/email-state-store";

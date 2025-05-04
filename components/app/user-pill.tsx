@@ -1,4 +1,4 @@
-import { UserPillProps } from "@/lib/component-prop-types";
+import { UserPillProps } from "@/lib/prop.types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserIcon } from "@/public/icons/user-icon";
 
