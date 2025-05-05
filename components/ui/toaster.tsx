@@ -12,6 +12,7 @@ import {
 
 import { ErrorIcon } from "@/public/icons/error-icon";
 import { SuccessCheckIcon } from "@/public/icons/success-check-icon";
+import { InfoIcon } from "@/public/icons/info-icon";
 
 export function Toaster() {
   const { toasts } = useToast();
@@ -28,16 +29,22 @@ export function Toaster() {
       }) {
         const isDestructive = props.variant === "destructive";
         const isSuccess = props.variant === "success";
+        const isInfo = props.variant === "info";
+        const isWarning = props.variant === "warning";
 
-        // TODO: Setup Variants for 'Success' and 'Info'
-        // const isInfo = props.variant === "info";
         return (
-          <Toast key={id} {...props} className="flex w-fit items-center">
+          <Toast
+            key={id}
+            {...props}
+            className="flex w-fit items-center text-sm leading-6"
+          >
             <div className="flex items-start gap-3">
               {isDestructive && <ErrorIcon />}
               {isSuccess && <SuccessCheckIcon />}
+              {isInfo && <InfoIcon />}
+              {isWarning && <ErrorIcon />}
 
-              <section className="grid gap-1">
+              <section className="grid gap-1 self-center">
                 {title && <ToastTitle>{title}</ToastTitle>}
                 {description && (
                   <ToastDescription>{description}</ToastDescription>

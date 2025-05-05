@@ -37,7 +37,7 @@ export default async function MessagesIdPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <MessagesIdPageBody user={user} conversationId={conversationId} />;
+      <MessagesIdPageBody user={user} conversationId={conversationId} />
     </HydrationBoundary>
   );
 }

@@ -11,6 +11,8 @@ export default function MessageBubble({
   const isUser = user?.id === message.sender_id;
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
+  const participantAvatarUrl = participant?.users?.avatar_url ?? undefined;
+
   const isOptimistic = message.status === "optimistic";
 
   const senderStyles = "rounded-br-sm bg-primary text-white";
@@ -30,7 +32,11 @@ export default function MessageBubble({
       <div className="flex items-end gap-2">
         {!isUser && (
           <Avatar className="size-7.5">
-            <AvatarImage src="/placeholder.svg" alt="avatar" />
+            <AvatarImage
+              className="rounded-full"
+              src={participantAvatarUrl}
+              alt="avatar"
+            />
             <AvatarFallback className="size-7.5">
               {participant?.users?.first_name?.[0]}
             </AvatarFallback>

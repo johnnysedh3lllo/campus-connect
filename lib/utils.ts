@@ -4,6 +4,7 @@ import { PRICING } from "./pricing.config";
 import { CreditTierOption } from "./pricing.types";
 import { UserMetadata } from "@supabase/supabase-js";
 import { format, isBefore, subMonths, formatDistanceToNow } from "date-fns";
+import { Role, ROLES } from "./app.config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -152,3 +153,11 @@ export const customRelativeTime = (dateString: string) => {
   // Otherwise, show the relative time
   return formatDistanceToNow(date, { addSuffix: true });
 };
+
+export function hasRole(
+  userRoleId: number | null,
+  ...allowedRoles: Role[]
+): boolean {
+  if (!userRoleId) return false;
+  return allowedRoles.some((roleKey) => userRoleId === ROLES[roleKey]);
+}

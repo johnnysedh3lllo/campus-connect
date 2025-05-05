@@ -22,10 +22,12 @@ import { CreditDisplayCard } from "./credit-display-card";
 import { signOut } from "@/app/actions/supabase/onboarding";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
-import { NotificationsIcon } from "@/public/icons/notifications-icon";
-import { UserPillSkeleton } from "./skeletons/user-pill-skeleton";
+import { RoleGate } from "./role-gate";
+import { useUserStore } from "@/lib/store/user-store";
 
 export function MobileNav({ userProfile }: MobileNavProps) {
+  const { userRoleId } = useUserStore();
+
   const pathName = usePathname();
   const { isMobileNavOpen, setIsMobileNavOpen } = useMobileNavState();
 
@@ -55,8 +57,8 @@ export function MobileNav({ userProfile }: MobileNavProps) {
           </SheetClose>
         </SheetHeader>
 
-        <div className="flex h-full flex-col justify-between gap-6">
-          <div className="flex h-full flex-col justify-between gap-6">
+        <div className="mobile-nav-menu flex h-full flex-col gap-6 overflow-y-auto">
+          <div className="bg-background sticky top-0 flex flex-col gap-6">
             <UserPill
               firstName={firstName ?? null}
               lastName={lastName ?? null}
@@ -64,8 +66,10 @@ export function MobileNav({ userProfile }: MobileNavProps) {
             />
 
             <Separator />
+          </div>
 
-            <ul className="flex h-full flex-col flex-wrap justify-between">
+          <div className="flex h-full flex-col justify-between gap-6">
+            <ul className="flex h-fit flex-col justify-between">
               {navLinksMobile.map((link, index) => {
                 const LinkIcon = link.icon;
                 return (
@@ -100,9 +104,11 @@ export function MobileNav({ userProfile }: MobileNavProps) {
                 </Button>
               </form>
             </ul>
-          </div>
 
-          <CreditDisplayCard userId={userProfile?.id} />
+            <RoleGate userRoleId={userRoleId} role="LANDLORD">
+              <CreditDisplayCard />
+            </RoleGate>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

@@ -19,7 +19,7 @@ declare global {
 
   type Participant = Pick<
     UserPublic,
-    "id" | "first_name" | "last_name" | "role_id" | "email"
+    "id" | "first_name" | "last_name" | "role_id" | "email" | "avatar_url"
   >;
 
   type ConversationsMain = Tables<"conversations">;
@@ -36,17 +36,6 @@ declare global {
   };
   type ConversationsInsert = TablesInsert<"conversations">;
 
-  type ConvoParticipant = {
-    conversation_id: string;
-    created_at: string | null;
-    user_id: string;
-    users: {
-      first_name: string | null;
-      last_name: string | null;
-      email: string;
-    } | null;
-  };
-
   // TODO[REFACTOR]: USE THIS NEW PATTERN BELOW FOR ALL OTHER DATABASE TYPES
   type UserPublic = Tables<"users">;
   type Credits = Tables<"credits">;
@@ -59,6 +48,21 @@ declare global {
   type CustomersInsert = TablesInsert<"customers">;
 
   type ConversationParticipants = Tables<"conversation_participants">;
+
+  type ConvoParticipant = {
+    conversation_id: string;
+    created_at: string | null;
+    user_id: string;
+    users: {
+      first_name: string | null;
+      last_name: string | null;
+      email: string;
+      role_id: number;
+      about: string | null;
+      avatar_url: string | null;
+    } | null;
+  };
+
   type ConversationParticipantsUpdate =
     TablesUpdate<"conversation_participants">;
 }

@@ -3,11 +3,19 @@ import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import BuyCredits from "./buy-credits";
 import { CreditDisplayCardSkeleton } from "./skeletons/credit-display-card-skeleton";
+import { useUserStore } from "@/lib/store/user-store";
 
-export function CreditDisplayCard({ userId }: { userId: string | undefined }) {
-  if (!userId) return;
-  const { data: creditRecord } = useGetUserCredits(userId);
-  const { data: userActiveSubscription } = useGetActiveSubscription(userId);
+export function CreditDisplayCard() {
+  const { userId, userRoleId } = useUserStore();
+
+  const { data: creditRecord } = useGetUserCredits(
+    userId || undefined,
+    userRoleId,
+  );
+  const { data: userActiveSubscription } = useGetActiveSubscription(
+    userId || undefined,
+    userRoleId,
+  );
 
   const hasActiveSubscription = !!userActiveSubscription;
   const creditAmount = creditRecord?.remaining_credits || 0;

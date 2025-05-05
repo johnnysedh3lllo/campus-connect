@@ -2,7 +2,7 @@
 
 // UTILITIES
 import { usePathname } from "next/navigation";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { navLinks } from "@/lib/app.config";
 
 // COMPONENTS
@@ -15,37 +15,36 @@ import { MobileNav } from "./mobile-nav";
 
 // ASSETS
 import logoMain from "@/public/logos/logo-mark-red.svg";
-import notificationIcon from "@/public/icons/icon-notifications.svg";
 
 //
-import { useGetUser } from "@/hooks/tanstack/use-get-user";
 import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import BuyCredits from "./buy-credits";
-import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
-import { NotificationsIcon } from "@/public/icons/notifications-icon";
 import { HamburgerIcon } from "@/public/icons/hamburger-icon";
+import { useUserStore } from "@/lib/store/user-store";
+import { RoleGate } from "./role-gate";
 
 export default function Navigation() {
-  const { data: user } = useGetUser();
-  const userId = user?.id;
-  const { data: creditRecord } = useGetUserCredits(userId);
-  const { data: userProfile } = useGetUserPublic(userId);
-  const { data: userActiveSubscription } = useGetActiveSubscription(userId);
+  const { userId, userRoleId } = useUserStore();
+  const { data: userProfile } = useGetUserPublic(userId || undefined);
+
+  const { data: userActiveSubscription } = useGetActiveSubscription(
+    userId || undefined,
+    userRoleId,
+  );
 
   const hasActiveSubscription = !!userActiveSubscription;
-  const creditAmount = creditRecord?.remaining_credits;
   const [clicked, setIsClicked] = useState(false);
 
-  const { isMobileNavOpen, setIsMobileNavOpen } = useMobileNavState();
+  const { setIsMobileNavOpen } = useMobileNavState();
 
   const pathName = usePathname();
   return (
     <nav className="bg-background border-b-foreground/10 sticky top-0 flex h-16 w-full justify-center border-b">
       <div className="flex w-full max-w-screen-2xl items-center justify-between p-4 text-sm lg:px-6 lg:pt-6 lg:pb-0">
         <div className="flex items-center gap-5 font-semibold">
-          <Link href={!user ? "/" : "/listings"}>
+          <Link href="/listings">
             <Image
               src={logoMain}
               alt="primary campus connect logo"
@@ -76,19 +75,16 @@ export default function Navigation() {
 
         <div className="flex items-center gap-2 lg:pb-3">
           {/* TODO: REVISIT THE HYDRATION ISSUE HERE. */}
-          {/* {userActiveSubscription ? ( */}
-          <BuyCredits
-            showBalance
-            isClickable
-            disabled={hasActiveSubscription}
-          />
-          {/* ) : ( */}
-          {/* <CreditBalanceSkeleton /> */}
-          {/* )} */}
 
-          {/* <Separator orientation="vertical" className="hidden h-4 lg:block" /> */}
+          <RoleGate userRoleId={userRoleId} role="LANDLORD">
+            <BuyCredits
+              showBalance
+              isClickable
+              disabled={hasActiveSubscription}
+            />
+          </RoleGate>
 
-          {/* TODO: REVISIT THIS DUPLICATION */}
+          {/* TODO: DEDUPLICATION */}
           {/* IT IS HERE BECAUSE THE NOTIFICATION DISPLAY WOULD BE DIFFERENT ON VIEWPORTS */}
           {/* <Button
             variant={"ghost"}

@@ -12,14 +12,14 @@ import { figtree } from "@/lib/fonts";
 import "@/app/global.css";
 
 // Components
-import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
+import ThemeProviderWrapper from "@/lib/providers/theme-provider-wrapper";
 import Navigation from "@/components/app/navigation";
 
 // Setup
 import TanstackQueryProvider from "@/lib/providers/tanstack-query-provider";
 import { getUser, getUserPublic } from "@/app/actions/supabase/user";
 import { Toaster } from "@/components/ui/toaster";
-import { Suspense } from "react";
+import UserIdentityProvider from "@/lib/providers/user-identity-provider";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -58,12 +58,14 @@ export default async function RootLayout({
         <ThemeProviderWrapper>
           <TanstackQueryProvider>
             <HydrationBoundary state={dehydrate(queryClient)}>
-              <Navigation />
+              <UserIdentityProvider>
+                <Navigation />
 
-              <main className="relative flex-1 overflow-y-auto">
-                {children}
-              </main>
-              <Toaster />
+                <main className="relative flex-1 overflow-y-auto">
+                  {children}
+                </main>
+                <Toaster />
+              </UserIdentityProvider>
             </HydrationBoundary>
           </TanstackQueryProvider>
         </ThemeProviderWrapper>

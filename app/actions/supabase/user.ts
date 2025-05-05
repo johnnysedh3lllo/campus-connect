@@ -81,39 +81,51 @@ export async function updateUser(
 ) {
   const supabase = await createClient();
 
+  const userDataObject = {
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+  };
   try {
+    const userMain = await getUser();
+
+    const userMetadata = userMain?.user_metadata;
+
     const metadata = Object.fromEntries(
-      Object.entries({
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-      }).filter(([_, value]) => value !== undefined),
+      Object.entries(userDataObject).filter(
+        ([_, value]) => value !== undefined,
+      ),
     );
+
+    console.log(metadata);
 
     // Update the user metadata
     const { data, error } = await supabase.auth.updateUser({
-      data: { metadata },
+      data: { ...userMetadata, ...metadata },
     });
+
+    console.log("updated user", data);
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`);
     }
 
-    // TODO BEGIN: LOOK INTO THE SUPABASE TRIGGER FUNCTION ISSUE AND FIX IT TO REMOVE THIS
-    // IT'S SUPPOSED TO UPDATE THE PUBLIC.USERS TABLE WHEN THERE IS A CHANGE ON THE AUTH.USERS TABLE
+    // TODO: FIND A WAY TO UPDATE ONLY ONE USER OBJECT; EITHER USERS OR PUBLIC.USERS
+    const userPublicDataObject = {
+      first_name: formData.firstName,
+      last_name: formData.lastName,
+      ...(formData.about ? { about: formData.about } : {}),
+      updated_at: new Date().toISOString(),
+    };
+
     const { data: userPublicData, error: userPublicError } = await supabase
       .from("users")
-      .update({
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        updated_at: new Date().toISOString(),
-      })
+      .update(userPublicDataObject)
       .eq("id", userId)
       .select();
 
     if (userPublicError) {
       throw new Error(`Failed to update user: ${userPublicError.message}`);
     }
-    // TODO END
 
     return {
       success: true,

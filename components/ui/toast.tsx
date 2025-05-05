@@ -6,6 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { CircleX } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import CloseIcon from "@/public/icons/close-icon";
 
 const ToastProvider = ToastPrimitives.Provider;
 
@@ -32,9 +33,13 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: "border bg-background text-foreground",
-        destructive: "destructive group bg-accent-secondary text-primary",
         success:
           "success group bg-alert-success-secondary text-alert-success-text",
+        info: "info group bg-alert-info-secondary text-alert-info-text",
+        warning:
+          "warning group bg-alert-warning-secondary text-alert-warning-text",
+        destructive:
+          "destructive group bg-alert-error-secondary text-alert-error-text",
       },
     },
     defaultVariants: {
@@ -83,7 +88,7 @@ const ToastClose = React.forwardRef<
     toast-close=""
     {...props}
   >
-    <CircleX className="text-primary h-6 w-6" />
+    <CloseIcon />
   </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;
@@ -94,7 +99,10 @@ const ToastTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitives.Title
     ref={ref}
-    className={cn("text-base font-semibold [&+div]:text-xs", className)}
+    className={cn(
+      "text-base leading-8 font-semibold [&+div]:text-xs",
+      className,
+    )}
     {...props}
   />
 ));

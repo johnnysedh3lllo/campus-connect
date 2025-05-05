@@ -88,7 +88,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           credits_purchased: number
-          id?: never
+          id?: number
           price_paid: number
           stripe_transaction_id: string
           transaction_uuid?: string | null
@@ -97,7 +97,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           credits_purchased?: number
-          id?: never
+          id?: number
           price_paid?: number
           stripe_transaction_id?: string
           transaction_uuid?: string | null
@@ -246,7 +246,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           edited_at?: string | null
-          id?: never
+          id?: number
           message_uuid?: string | null
           read_at?: string | null
           sender_id: string
@@ -256,7 +256,7 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           edited_at?: string | null
-          id?: never
+          id?: number
           message_uuid?: string | null
           read_at?: string | null
           sender_id?: string
@@ -284,7 +284,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           description?: string | null
-          id?: never
+          id?: number
           name: string
           price: number
           role_id: number
@@ -293,7 +293,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           description?: string | null
-          id?: never
+          id?: number
           name?: string
           price?: number
           role_id?: number
@@ -427,6 +427,7 @@ export type Database = {
       }
       users: {
         Row: {
+          about: string | null
           avatar_url: string | null
           created_at: string | null
           email: string
@@ -439,6 +440,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          about?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email: string
@@ -451,6 +453,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          about?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string

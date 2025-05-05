@@ -100,10 +100,29 @@
   --color-text-inverse: var(--text-inverse);
   --color-text-accent: var(--text-accent);
 
+  /* ALERT: SUCCESS */
   --color-alert-success-primary: var(--alert-success-primary);
   --color-alert-success-secondary: var(--alert-success-secondary);
   --color-alert-success-text: var(--alert-success-text);
   --color-alert-success-line: var(--alert-success-line);
+
+  /* ALERT: INFO */
+  --color-alert-info-primary: var(--alert-info-primary);
+  --color-alert-info-secondary: var(--alert-info-secondary);
+  --color-alert-info-text: var(--alert-info-text);
+  --color-alert-info-line: var(--alert-info-line);
+
+  /* ALERT: WARNING */
+  --color-alert-warning-primary: var(--alert-warning-primary);
+  --color-alert-warning-secondary: var(--alert-warning-secondary);
+  --color-alert-warning-text: var(--alert-warning-text);
+  --color-alert-warning-line: var(--alert-warning-line);
+
+  /* ALERT: ERROR */
+  --color-alert-error-primary: var(--alert-error-primary);
+  --color-alert-error-secondary: var(--alert-error-secondary);
+  --color-alert-error-text: var(--alert-error-text);
+  --color-alert-error-line: var(--alert-error-line);
 
   --color-foreground: var(--foreground);
 
@@ -131,6 +150,7 @@
 
   --color-border: var(--border);
   --color-border-primary: var(--border-primary);
+  --color-border-secondary: var(--border-secondary);
 
   --color-line: var(--line);
   --color-input: var(--input);
@@ -181,10 +201,29 @@
   --text-inverse: var(--color-white);
   --text-accent: var(--color-red-500);
 
+  /* ALERT: SUCCESS */
   --alert-success-primary: var(--color-green-800);
   --alert-success-secondary: var(--color-green-50);
   --alert-success-text: var(--color-green-800);
   --alert-success-line: var(--color-green-800);
+
+  /* ALERT: INFO */
+  --alert-info-primary: var(--color-blue-800);
+  --alert-info-secondary: var(--color-blue-50);
+  --alert-info-text: var(--color-blue-800);
+  --alert-info-line: var(--color-blue-800);
+
+  /* ALERT: WARNING */
+  --alert-warning-primary: var(--color-yellow-500);
+  --alert-warning-secondary: var(--color-yellow-50);
+  --alert-warning-text: var(--color-yellow-500);
+  --alert-warning-line: var(--color-yellow-500);
+
+  /* ALERT: ERROR */
+  --alert-error-primary: var(--color-red-500);
+  --alert-error-secondary: var(--color-red-50);
+  --alert-error-text: var(--color-red-500);
+  --alert-error-line: var(--color-red-500);
 
   --foreground: var(--color-gray-950);
 
@@ -208,6 +247,7 @@
   /* for accent and destructive */
   --border: var(--color-gray-600);
   --border-primary: var(--color-red-500);
+  --border-secondary: var(--color-gray-800);
 
   --input: var(--color-gray-600);
   --line: var(--color-gray-600);
@@ -311,7 +351,8 @@
   .onboarding-form--wrapper::-webkit-scrollbar,
   .messaging-container::-webkit-scrollbar,
   .profile-card-details::-webkit-scrollbar,
-  .message-text-area::-webkit-scrollbar {
+  .message-text-area::-webkit-scrollbar,
+  .mobile-nav-menu::-webkit-scrollbar {
     @apply w-1;
   }
 
@@ -319,7 +360,8 @@
   .onboarding-form--wrapper::-webkit-scrollbar-track,
   .messaging-container::-webkit-scrollbar-track,
   .profile-card-details::-webkit-scrollbar-track,
-  .message-text-area::-webkit-scrollbar-track {
+  .message-text-area::-webkit-scrollbar-track,
+  .mobile-nav-menu::-webkit-scrollbar-track {
     @apply rounded-lg bg-transparent;
   }
 
@@ -327,7 +369,8 @@
   .onboarding-form--wrapper::-webkit-scrollbar-thumb,
   .messaging-container::-webkit-scrollbar-thumb,
   .profile-card-details::-webkit-scrollbar-thumb,
-  .message-text-area::-webkit-scrollbar-thumb {
+  .message-text-area::-webkit-scrollbar-thumb,
+  .mobile-nav-menu::-webkit-scrollbar-thumb {
     @apply rounded-lg bg-gray-200;
   }
 

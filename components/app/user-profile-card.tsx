@@ -2,37 +2,46 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserProfileCardProps } from "@/lib/prop.types";
+import { RoleGate } from "./role-gate";
 
 export function UserProfileCard({ participants }: UserProfileCardProps) {
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
 
+  const roleId = +(participant?.users?.role_id ?? 0);
+  const firstName = participant?.users?.first_name ?? "";
+  const lastName = participant?.users?.last_name ?? "";
+  const about = participant?.users?.about ?? "Nil";
+  const avatarUrl = participant?.users?.avatar_url ?? undefined;
+
   return (
     <main className="profile-card-details flex h-[75vh] flex-col gap-6 overflow-y-auto">
       <figure className="flex flex-col items-center gap-6">
-        <Avatar className="size-32.5 text-2xl">
-          <AvatarImage src="" alt="avatar" />
-          <AvatarFallback>{participant?.users?.first_name?.[0]}</AvatarFallback>
-        </Avatar>
+        <div className="border-border-secondary border p-1 rounded-full">
+          <Avatar className="size-32.5 text-2xl">
+            <AvatarImage
+              className="rounded-full"
+              src={avatarUrl}
+              alt="avatar"
+            />
+            <AvatarFallback>{firstName[0]}</AvatarFallback>
+          </Avatar>
+        </div>
 
         <p className="text-text-primary text-2xl leading-8 font-semibold">
-          {participant?.users?.first_name} {participant?.users?.last_name}
+          {firstName} {lastName}
         </p>
       </figure>
 
-      <div className="">
+      <RoleGate userRoleId={roleId} role="TENANT">
         <section className="flex flex-col gap-2">
           <h2 className="text-text-primary text-sm leading-6 font-medium">
             About
           </h2>
 
-          <p className="text-text-secondary text-sm leading-6">
-            Student of the Harvard university, Currently studying Architecture,
-            im easing going, love to play chess and i enjoy cycling in my free
-            time.
-          </p>
+          <p className="text-text-secondary text-sm leading-6">{about}</p>
         </section>
-      </div>
+      </RoleGate>
     </main>
   );
 }

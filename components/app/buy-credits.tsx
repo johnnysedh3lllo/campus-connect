@@ -1,5 +1,4 @@
 "use client";
-import { Header } from "@/components/app/header";
 import React, { useEffect, useState } from "react";
 // import { useCreditsStore } from "@/lib/store/credits-store";
 import { useForm } from "react-hook-form";
@@ -12,8 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import { useModal } from "@/hooks/use-modal";
-// import ListingActionModal from "@/components/app/listing-action-modal";
+
 import {
   Form,
   FormControl,
@@ -27,7 +25,6 @@ import {
   DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -46,9 +43,9 @@ import { toast } from "@/hooks/use-toast";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
+import { useUserStore } from "@/lib/store/user-store";
 
 // TODO: CREATE A MODAL TO SHOW A SUCCESSFUL CREDIT PURCHASE
-
 export default function BuyCredits({
   disabled,
   showBalance,
@@ -58,14 +55,23 @@ export default function BuyCredits({
   showBalance?: boolean;
   isClickable?: boolean;
 }) {
-  // const { credits } = useCreditsStore();
+  const { userId, userRoleId } = useUserStore();
   const [selectedTier, setSelectedTier] = useState<CreditTierOption>();
   const [promoCode, setPromoCode] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { data: user } = useGetUser();
   const { setIsMobileNavOpen } = useMobileNavState();
-  const userId = user?.id;
-  const { data: creditRecord } = useGetUserCredits(userId);
+
+  const userEmail = user?.email;
+  const usersName = user?.user_metadata
+    ? formatUsersName(user.user_metadata)
+    : undefined;
+
+  const { data: creditRecord } = useGetUserCredits(
+    userId || undefined,
+    userRoleId,
+  );
+
   const creditAmount = creditRecord?.remaining_credits;
 
   const creditTiers = getCreditTiers() as CreditTierOption[];
@@ -135,6 +141,9 @@ export default function BuyCredits({
   const form = useForm<BuyCreditsFormSchemaType>({
     resolver: zodResolver(buyCreditsFormSchema),
     defaultValues: {
+      userId: userId ?? undefined,
+      userEmail,
+      usersName,
       creditPriceID: "",
       promoCode: "",
     },

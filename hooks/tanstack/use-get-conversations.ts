@@ -38,21 +38,7 @@ export function useGetConversations(userId: string | undefined) {
             case "UPDATE":
             case "INSERT":
             case "DELETE":
-              console.log("conversations", payload);
-
-              // if (payload.new) {
-              //   const newConversation = payload.new as ConversationsMain;
-
-              //   console.log(
-              //     queryClient.getQueryData([
-              //       "conversationParticipants",
-              //       userId,
-              //       newConversation.id,
-              //     ]),
-              //   );
-              // }
-
-              refetch();
+              queryClient.invalidateQueries({ queryKey: conversationQueryKey });
               break;
             default:
               console.log("unhandled payload event");

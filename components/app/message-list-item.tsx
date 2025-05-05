@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { MessageListItemProps } from "@/lib/prop.types";
 import { usePathname } from "next/navigation";
 import { customRelativeTime } from "@/lib/utils";
@@ -24,6 +24,8 @@ export function MessageListItem({ conversation }: MessageListItemProps) {
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
 
+  const participantAvatarUrl = participant?.avatar_url ?? undefined;
+
   const pathName = usePathname();
 
   return (
@@ -32,7 +34,11 @@ export function MessageListItem({ conversation }: MessageListItemProps) {
       className={`hover:bg-background-secondary grid grid-cols-[auto_1fr] items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300 ${pathName.includes(conversationId) ? "bg-background-secondary" : ""}`}
     >
       <Avatar className="size-10">
-        {/* <AvatarImage src="" alt="avatar" /> */}
+        <AvatarImage
+          className="rounded-full"
+          src={participantAvatarUrl}
+          alt="avatar"
+        />
         <AvatarFallback>{participant?.first_name?.[0]}</AvatarFallback>
       </Avatar>
 

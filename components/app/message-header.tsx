@@ -62,6 +62,8 @@ export default function MessageHeader({
       ? `${chatParticipant?.first_name} ${chatParticipant?.last_name}`
       : "";
 
+  const chatParticipantAvatarUrl = chatParticipant?.avatar_url ?? undefined;
+
   const handleClickBack = () => {
     router.replace("/messages");
   };
@@ -70,7 +72,6 @@ export default function MessageHeader({
 
   async function handleChatDeletion(values: ConversationFormType) {
     try {
-      // TODO: REFACTOR TO USE TANSTACK QUERY MUTATIONS
       const currentDate = new Date().toISOString();
       const result = await conversationParticipantsMutation.mutateAsync({
         conversationData: values,
@@ -122,7 +123,11 @@ export default function MessageHeader({
         <div className="flex w-full items-center justify-between">
           <section className="flex items-center gap-4.5">
             <Avatar>
-              <AvatarImage src="" alt="avatar" />
+              <AvatarImage
+                className="rounded-full"
+                src={chatParticipantAvatarUrl}
+                alt="avatar"
+              />
               <AvatarFallback>
                 {chatParticipants &&
                   chatParticipants[0]?.users?.first_name?.[0]}

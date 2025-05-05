@@ -37,6 +37,13 @@ export const userValidationSchema = z.object({
     .string()
     .nonempty({ message: "This is a required field" })
     .min(2, { message: "Last name must be at least 2 characters long." }),
+  about: z
+    .string()
+    .optional()
+    .refine((value) => !value || (value.length >= 10 && value.length < 120), {
+      message: "About must be at least 10 but no longer than 120 characters.",
+    }),
+
   emailAddress: z
     .string()
     .nonempty({ message: "This is a required field" })
@@ -141,9 +148,13 @@ export const settingsFormSchema = z.object({
 export const profileInfoFormSchema = userValidationSchema.pick({
   firstName: true,
   lastName: true,
+  about: true,
 });
 
 export const buyCreditsFormSchema = z.object({
+  userId: z.string(),
+  userEmail: z.string(),
+  usersName: z.string(),
   creditPriceID: z.string().min(1, {
     message: "Please select a credit amount.",
   }),

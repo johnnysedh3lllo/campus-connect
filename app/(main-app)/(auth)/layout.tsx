@@ -2,7 +2,7 @@
 
 // COMPONENTS
 import Link from "next/link";
-import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
+import ThemeProviderWrapper from "@/lib/providers/theme-provider-wrapper";
 import Logo from "@/components/app/logo";
 import { Toaster } from "@/components/ui/toaster";
 import Image from "next/image";
@@ -22,7 +22,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  
   return (
     <html lang="en" className={figtree.variable} suppressHydrationWarning>
       <body className="bg-primary text-foreground relative flex min-h-screen flex-col font-serif">

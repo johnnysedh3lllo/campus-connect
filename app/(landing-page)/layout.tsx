@@ -1,7 +1,7 @@
 import { figtree } from "@/lib/fonts";
 
 import "@/app/global.css";
-import ThemeProviderWrapper from "@/components/app/theme-provider-wrapper";
+import ThemeProviderWrapper from "@/lib/providers/theme-provider-wrapper";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

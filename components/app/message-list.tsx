@@ -10,9 +10,6 @@ export function MessageList() {
   const { data: user } = useGetUser();
   const { data: conversations, isLoading } = useGetConversations(user?.id);
 
-  if (isLoading) {
-  }
-
   return (
     <div className="flex max-h-[calc(80vh-100px)] w-full flex-1 flex-col gap-4 overflow-y-auto">
       {isLoading ? (

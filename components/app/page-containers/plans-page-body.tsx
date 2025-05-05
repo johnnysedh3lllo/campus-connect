@@ -6,6 +6,7 @@ import { Header } from "@/components/app/header";
 import { PlansCard } from "@/components/app/plans-card";
 import { useGetUser } from "@/hooks/tanstack/use-get-user";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
+import { useUserStore } from "@/lib/store/user-store";
 
 type LandlordPlansType = {
   name: string;
@@ -15,8 +16,12 @@ type LandlordPlansType = {
 };
 
 export default function PlansPageBody() {
-  const { data: user } = useGetUser();
-  const { data: userActiveSubscription } = useGetActiveSubscription(user?.id);
+  const { userId, userRoleId } = useUserStore();
+
+  const { data: userActiveSubscription } = useGetActiveSubscription(
+    userId || undefined,
+    userRoleId,
+  );
 
   const landlordPremiumMonthly = PRICING.landlord.premium.monthly;
   const landlordPremiumPrice = formatCurrencyToLocale(
