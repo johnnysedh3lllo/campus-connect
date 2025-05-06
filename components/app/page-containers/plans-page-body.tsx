@@ -1,10 +1,9 @@
 "use client";
-import { PLANS, PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
+import { PRICING } from "@/lib/pricing.config";
 import { formatCurrencyToLocale } from "@/lib/utils";
 
 import { Header } from "@/components/app/header";
 import { PlansCard } from "@/components/app/plans-card";
-import { useGetUser } from "@/hooks/tanstack/use-get-user";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import { useUserStore } from "@/lib/store/user-store";
 
@@ -38,13 +37,13 @@ export default function PlansPageBody() {
       name: "basic",
       price: "free",
       status: !isActive,
-      features: PLANS.landlord.basic,
+      features: PRICING.landlord.basic.features,
     },
     {
       name: "premium",
       price: `${landlordPremiumPrice}/${landlordPremiumInterval}`,
       status: isActive,
-      features: PLANS.landlord.premium,
+      features: PRICING.landlord.premium.monthly?.features,
     },
   ];
 
@@ -53,7 +52,6 @@ export default function PlansPageBody() {
       <Header
         title="Plans"
         subTitle="Switch between plans whenever you want."
-        showButton={false}
       />
       <div className="mx-auto flex w-full max-w-7xl flex-col justify-center gap-6 px-4 py-6 lg:flex-row 2xl:p-12">
         {landlordPlans.map((plan) => {

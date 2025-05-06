@@ -109,13 +109,13 @@ export function formatCurrencyToLocale(amount: number): string {
 export function getCreditTiers(
   priceId?: string,
 ): CreditTierOption | CreditTierOption[] | undefined {
-  const creditTiers = Object.entries(PRICING.landlord.credits.tiers).map(
-    ([key, tier]) => ({
+  const creditTiers = Object.entries(PRICING.landlord.basic.creditTiers).map(
+    ([key, creditTiers]) => ({
       id: key,
-      label: `${tier.credits} Credits - ${formatCurrencyToLocale(tier.amount)}`,
-      value: tier.credits.toString(),
-      price: tier.amount,
-      priceId: tier.priceId,
+      label: `${creditTiers.credits} Credits - ${formatCurrencyToLocale(creditTiers.amount)}`,
+      value: creditTiers.credits.toString(),
+      price: creditTiers.amount,
+      priceId: creditTiers.priceId,
     }),
   );
   if (priceId) {

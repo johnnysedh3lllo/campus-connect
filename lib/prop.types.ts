@@ -1,7 +1,6 @@
 import { User } from "@supabase/supabase-js";
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 
-import { PlanType } from "./pricing.config";
 import {
   LoginFormType,
   OtpFormType,
@@ -98,10 +97,7 @@ export type LoginPromptProps = {
 export type HeaderProps = {
   title: string;
   subTitle: string;
-  buttonText?: string;
-  buttonIcon?: React.ReactNode;
-  onButtonClick?: () => void;
-  showButton: boolean;
+  button?: React.ReactNode;
 };
 
 export interface EmptyPageStateProps {

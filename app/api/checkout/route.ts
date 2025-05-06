@@ -6,6 +6,7 @@ import {
   fetchOrCreateCustomer,
 } from "@/app/actions";
 import { stripe } from "@/lib/stripe";
+import { ROLES } from "@/lib/app.config";
 
 type CheckoutRequestBody = {
   purchaseType: string;
@@ -13,11 +14,13 @@ type CheckoutRequestBody = {
   userId: string;
   userEmail: string;
   usersName: string;
+  userRoleId: "1" | "2" | "3";
 
   promoCode?: string;
   packageType?: "bronze" | "silver" | "gold";
   interval?: "month" | "year";
 
+  studentPackagePrice?: string;
   landLordCreditAmount?: number;
   landlordPremiumPrice?: number;
 };
@@ -36,19 +39,19 @@ export async function POST(request: NextRequest) {
       userId,
       userEmail,
       usersName,
+      userRoleId,
       promoCode,
+      studentPackagePrice,
       landLordCreditAmount,
       landlordPremiumPrice,
     } = requestBody;
 
-    // at a new session this checks if the user exists as a customer on Stripe.
-    // if so, it get's their object.
-    // if not, it creates a new customer object for them.
-    // this ensures that whether for one-time or recurring payments,
-    // a customer object is available for the Checkout Session.
-    // TODO: add check for customer_id on Supabase at start.
+    console.log(requestBody);
+
+    // Gets or creates a customer
     const customer = await fetchOrCreateCustomer(userId, userEmail, usersName);
 
+    // Setup session object
     let sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"], // TODO: update when google pay or apple pay has been added
       success_url: `${origin}/listings?session_id={CHECKOUT_SESSION_ID}`,
@@ -60,27 +63,13 @@ export async function POST(request: NextRequest) {
         userId,
         userEmail,
         usersName,
+        userRoleId,
       },
       mode: "payment",
       payment_method_data: {
         allow_redisplay: "always",
       },
-      subscription_data: {
-        invoice_settings: {},
-      },
     };
-
-    const activeSubscription = await retrieveActiveSubscription(
-      customer?.id,
-      userId,
-    );
-
-    if (activeSubscription) {
-      return NextResponse.json(
-        { error: "You have an active subscription" },
-        { status: 400 },
-      );
-    }
 
     if (promoCode) {
       sessionParams.discounts = [{ promotion_code: promoCode }];
@@ -88,30 +77,72 @@ export async function POST(request: NextRequest) {
 
     switch (purchaseType) {
       case `${PURCHASE_TYPES.LANDLORD_CREDITS.type}`:
+      case `${PURCHASE_TYPES.LANDLORD_PREMIUM.type}`:
+        if (+userRoleId !== ROLES.LANDLORD) {
+          return NextResponse.json(
+            { error: "You are not allowed to make this transaction" },
+            { status: 500 },
+          );
+        }
+
+        // Check if the Landlord has an active subscription before buying credits or subscribing to premium
+        const activeSubscription = await retrieveActiveSubscription(
+          customer?.id,
+          userId,
+        );
+
+        if (activeSubscription) {
+          return NextResponse.json(
+            { error: "You have an active subscription" },
+            { status: 400 },
+          );
+        }
+
+        // if not, handle Credit and Premium subscription case.
+        if (purchaseType === PURCHASE_TYPES.LANDLORD_CREDITS.type) {
+          sessionParams.metadata = {
+            ...sessionParams.metadata,
+            landLordCreditAmount: landLordCreditAmount ?? null,
+          };
+          sessionParams.payment_intent_data = {
+            setup_future_usage: "off_session", // to save payment method for future usage where the customer may not be directly involve, such as subscriptions
+          };
+          console.log("landlord credit purchasing:", sessionParams);
+        }
+
+        if (purchaseType === PURCHASE_TYPES.LANDLORD_PREMIUM.type) {
+          sessionParams.mode = "subscription";
+          sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}?sub-success=true`;
+          sessionParams.subscription_data = {
+            metadata: {
+              ...sessionParams.metadata,
+              landlordPremiumPrice: landlordPremiumPrice ?? null,
+            },
+          };
+          console.log("landlord premium purchasing:", sessionParams);
+        }
+
+        console.log("landlord is purchasing...................");
+        break;
+
+      case `${PURCHASE_TYPES.STUDENT_PACKAGE.type}`:
+        if (+userRoleId !== ROLES.TENANT) {
+          return NextResponse.json(
+            { error: "You are not allowed to make this transaction" },
+            { status: 500 },
+          );
+        }
+
         sessionParams.metadata = {
           ...sessionParams.metadata,
-          landLordCreditAmount: landLordCreditAmount ?? null,
+          studentPackagePrice: studentPackagePrice ?? null,
         };
         sessionParams.payment_intent_data = {
           setup_future_usage: "off_session", // to save payment method for future usage where the customer may not be directly involve, such as subscriptions
         };
+
+        console.log("student purchasing:", sessionParams);
         break;
-
-      case `${PURCHASE_TYPES.LANDLORD_PREMIUM.type}`:
-        sessionParams.mode = "subscription";
-        sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}?sub-success=true`;
-        sessionParams.subscription_data = {
-          metadata: {
-            ...sessionParams.metadata,
-            landlordPremiumPrice: landlordPremiumPrice ?? null,
-          },
-        };
-
-        break;
-
-      case `${PURCHASE_TYPES.STUDENT_PACKAGE.type}`:
-        break;
-
       default:
         throw new Error("Invalid purchase type");
     }

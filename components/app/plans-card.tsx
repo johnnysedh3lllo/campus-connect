@@ -19,14 +19,24 @@ import { formatUsersName } from "@/lib/utils";
 import { useEffect, useState } from "react";
 // import { createPortalSession } from "@/lib/stripe";
 import { User } from "@supabase/supabase-js";
+import { useUserStore } from "@/lib/store/user-store";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
 export function PlansCard({ plan }: PlansCardProps) {
+  const { userId, userRoleId } = useUserStore();
   const [billingPortalUrl, setBillingPortalUrl] = useState<string | null>(null);
+
+  const newUserRoleId = userRoleId
+    ? (`${userRoleId}` as "1" | "2" | "3")
+    : undefined;
+
   const { data: user } = useGetUser();
-  const userId = user?.id;
+  const usersName = user?.user_metadata
+    ? formatUsersName(user.user_metadata)
+    : undefined;
+  const userEmail = user?.email;
 
   const { name, price, status, features } = plan;
 
@@ -37,25 +47,24 @@ export function PlansCard({ plan }: PlansCardProps) {
       priceId: PRICING.landlord.premium.monthly.priceId,
       landlordPremiumPrice: PRICING.landlord.premium.monthly.amount,
       userId: user?.id,
+      userEmail,
+      usersName,
+      userRoleId: newUserRoleId,
     },
   });
-
-  const switchToBasicForm = useForm();
 
   const {
     formState: { isSubmitting: isSubmittingPremium },
   } = premiumSubscriptionForm;
 
+  const switchToBasicForm = useForm();
   const {
     formState: { isSubmitting: isSwitchingToBasic },
   } = switchToBasicForm;
 
   async function handleSubscribeToPremium(values: PurchasePremiumFormType) {
-    const { purchaseType, userId, priceId, landlordPremiumPrice } = values;
-    const usersName = user?.user_metadata
-      ? formatUsersName(user.user_metadata)
-      : undefined;
-    const userEmail = user?.email;
+    const { purchaseType, userId, priceId, landlordPremiumPrice, userRoleId } =
+      values;
 
     try {
       const requestBody = {
@@ -65,6 +74,7 @@ export function PlansCard({ plan }: PlansCardProps) {
         userId,
         userEmail,
         usersName,
+        userRoleId,
       };
 
       const response = await fetch("/api/checkout", {

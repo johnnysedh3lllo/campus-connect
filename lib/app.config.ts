@@ -4,7 +4,6 @@ import { ListingIcon } from "@/public/icons/listing-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIcon } from "@/public/icons/profile-icon";
 import { SettingsIcon } from "@/public/icons/settings-icon";
-// import { User } from "@supabase/supabase-js";
 
 export const ROLES = {
   ADMIN: 1,
@@ -19,9 +18,6 @@ export const navLinks = [
   { href: "/messages", text: "Messages" },
   { href: "/profile", text: "Profile" },
 ];
-
-// { href: "/inquires", text: "Inquires" },
-// { href: "/inquires", text: "Inquires", icon: InquiriesIcon },
 
 export const navLinksMobile = [
   { href: "/listings", text: "Listings", icon: ListingIcon },

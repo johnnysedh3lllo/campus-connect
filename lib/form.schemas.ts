@@ -3,7 +3,7 @@
 import { z } from "zod";
 
 // FORM SCHEMAS
-export const RoleEnum = z.enum(["1", "2", "3"]);
+export const RoleEnum = z.enum(["1", "2", "3"]); // TODO: REFACTOR THIS TO BE A NUMBER INSTEAD OF STRING
 
 const passwordSchema = z
   .string()
@@ -151,11 +151,18 @@ export const profileInfoFormSchema = userValidationSchema.pick({
   about: true,
 });
 
-export const buyCreditsFormSchema = z.object({
+export const purchaseSchema = z.object({
+  purchaseType: z.string(),
+  priceId: z.string(),
   userId: z.string(),
-  userEmail: z.string(),
+  userEmail: z.string().email(),
   usersName: z.string(),
-  creditPriceID: z.string().min(1, {
+  userRoleId: RoleEnum.describe("User role selection"),
+});
+
+// Override priceId to make sure a credit amount is selected when buying credits
+export const buyCreditsFormSchema = purchaseSchema.extend({
+  priceId: z.string().min(1, {
     message: "Please select a credit amount.",
   }),
   promoCode: z
@@ -166,11 +173,12 @@ export const buyCreditsFormSchema = z.object({
     }),
 });
 
-export const purchasePremiumFormSchema = z.object({
-  purchaseType: z.string(),
-  priceId: z.string(),
+export const purchasePremiumFormSchema = purchaseSchema.extend({
   landlordPremiumPrice: z.number(),
-  userId: z.string(),
+});
+
+export const purchasePackageFormSchema = purchaseSchema.extend({
+  studentPackagePrice: z.number(),
 });
 
 export const conversationFormSchema = z.object({

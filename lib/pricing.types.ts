@@ -1,10 +1,12 @@
 export type PriceTier = {
+  tier: string;
   priceId: string;
   productId: string;
   amount: number;
   credits?: number;
   type: "one_time" | "recurring";
   interval?: "month" | "year";
+  features: string[];
 };
 
 export type CreditTier = {

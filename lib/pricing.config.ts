@@ -3,34 +3,49 @@ import { CreditTier, PriceTier } from "./pricing.types";
 // TODO: Consider abstracting these details to the database
 // TODO: Figure out a way to ensure this object is in sync with the Stripe Dashboard
 
-
 export const PRICING = {
   student: {
     bronze: {
+      tier: "bronze",
       productId: "prod_S84H1pGCYazcJf",
       priceId: "price_1RDo8rFHlFbirADWDclDqGAf",
       amount: 4900,
       type: "one_time",
+      features: [
+        "6 listings tailored to match your specific criteria gathered from the information you provided through our form",
+      ],
     } as PriceTier,
     silver: {
+      tier: "silver",
       productId: "prod_S84JOZDKksgQ1B",
       priceId: "price_1RDoBUFHlFbirADW2U6aRFMo",
       amount: 5000,
       type: "one_time",
+      features: [
+        "Unlimited listings curated to your preference",
+        "Verification of the legitimacy of listings",
+        "Assistance with rent negotiation to ensure a fair deal",
+      ],
     } as PriceTier,
     gold: {
+      tier: "gold",
       productId: "prod_S84NnHe0bgwLtp",
       priceId: "price_1RDoERFHlFbirADWiqFY5tXU",
       amount: 12000,
       type: "one_time",
+      features: [
+        "All features included in Silver package Plus",
+        "One-on-one virtual or telephone consultation",
+        "Complementary welcome rug from our shop",
+      ],
     } as PriceTier,
   },
 
   landlord: {
-    credits: {
+    basic: {
       productId: "prod_RzkrATmWMAdd6I",
       type: "one_time",
-      tiers: {
+      creditTiers: {
         c10: {
           priceId: "price_1R5lLQFHlFbirADWsSXv5vrT",
           credits: 10,
@@ -57,6 +72,12 @@ export const PRICING = {
           amount: 2250,
         } as CreditTier,
       },
+      features: [
+        "List your property for as low as 20 credits.",
+        "Your listings will be seen by potential tenants on the platform.",
+        "Your listings will be seen by potential tenants on the platform.",
+        "Your listings will be seen by potential tenants on the platform.",
+      ],
     },
 
     premium: {
@@ -66,6 +87,12 @@ export const PRICING = {
         interval: "month",
         amount: 2000,
         type: "recurring",
+        features: [
+          "Unlimited listings without credits.",
+          "Get tailored potential clients, both on and off the platform.",
+          "Get tailored potential clients, both on and off the platform.",
+          "Get tailored potential clients, both on and off the platform.",
+        ],
       } as PriceTier,
       yearly: {
         productId: "prod_Rzl1aUktzY0uig",
@@ -73,29 +100,16 @@ export const PRICING = {
         interval: "year",
         amount: 24000,
         type: "recurring",
+        features: [
+          "Unlimited listings without credits.",
+          "Get tailored potential clients, both on and off the platform.",
+          "Get tailored potential clients, both on and off the platform.",
+          "Get tailored potential clients, both on and off the platform.",
+        ],
       } as PriceTier,
     },
   },
 };
-
-export const PLANS = {
-  landlord: {
-    basic: [
-      "List your property for as low as 20 credits.",
-      "Your listings will be seen by potential tenants on the platform.",
-      "Your listings will be seen by potential tenants on the platform.",
-      "Your listings will be seen by potential tenants on the platform.",
-    ],
-    premium: [
-      "Unlimited listings without credits.",
-      "Get tailored potential clients, both on and off the platform.",
-      "Get tailored potential clients, both on and off the platform.",
-      "Get tailored potential clients, both on and off the platform.",
-    ],
-  },
-};
-
-export type PlanType = typeof PLANS;
 
 export const PURCHASE_TYPES = {
   LANDLORD_CREDITS: {

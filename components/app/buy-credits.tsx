@@ -45,20 +45,27 @@ import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
 import { useUserStore } from "@/lib/store/user-store";
 
+type BuyCreditProps = {
+  disabled?: boolean;
+  showBalance?: boolean;
+  isClickable?: boolean;
+};
+
 // TODO: CREATE A MODAL TO SHOW A SUCCESSFUL CREDIT PURCHASE
 export default function BuyCredits({
   disabled,
   showBalance,
   isClickable,
-}: {
-  disabled?: boolean;
-  showBalance?: boolean;
-  isClickable?: boolean;
-}) {
+}: BuyCreditProps) {
   const { userId, userRoleId } = useUserStore();
+  const newUserRoleId = userRoleId
+    ? (`${userRoleId}` as "1" | "2" | "3")
+    : undefined;
+
   const [selectedTier, setSelectedTier] = useState<CreditTierOption>();
   const [promoCode, setPromoCode] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const { data: user } = useGetUser();
   const { setIsMobileNavOpen } = useMobileNavState();
 
@@ -76,20 +83,34 @@ export default function BuyCredits({
 
   const creditTiers = getCreditTiers() as CreditTierOption[];
 
-  // TODO: CONSIDER THIS AS A SERVER ACTION TO ALLOW USING MUTATIONS
-  // ...MIGHT NOT HAVE TO MAKE THIS A MUTATION BECAUSE IT TRIGGERS A RELOAD WHICH RE-FETCHES THE USER CREDIT DATA
-  // TODO: - EDGE CASE, NEGATIVE VALUES FOR CREDITS
+  const form = useForm<BuyCreditsFormSchemaType>({
+    resolver: zodResolver(buyCreditsFormSchema),
+    defaultValues: {
+      purchaseType: PURCHASE_TYPES.LANDLORD_CREDITS.type,
+      priceId: "",
+      promoCode: "",
+      userId: userId ?? undefined,
+      userEmail,
+      usersName,
+      userRoleId: newUserRoleId,
+    },
+  });
+
+  const {
+    formState: { isSubmitting },
+    watch,
+  } = form;
+
+  const formValues = watch();
+
   async function handleCreditCheckout(values: BuyCreditsFormSchemaType) {
-    const priceId = values.creditPriceID;
+    const priceId = values.priceId;
     const promoCode = values.promoCode;
-    const purchaseType = PURCHASE_TYPES.LANDLORD_CREDITS.type;
+    const purchaseType = values.purchaseType;
+    const userRoleId = values.userRoleId;
+    
     const creditTier = getCreditTiers(priceId) as CreditTierOption;
     const landLordCreditAmount = creditTier?.value;
-    const userId = user?.id;
-    const userEmail = user?.email;
-    const usersName = user?.user_metadata
-      ? formatUsersName(user.user_metadata)
-      : undefined;
 
     try {
       const requestBody = {
@@ -100,6 +121,7 @@ export default function BuyCredits({
         userId,
         userEmail,
         usersName,
+        userRoleId,
       };
 
       const response = await fetch("/api/checkout", {
@@ -138,34 +160,16 @@ export default function BuyCredits({
     }
   }
 
-  const form = useForm<BuyCreditsFormSchemaType>({
-    resolver: zodResolver(buyCreditsFormSchema),
-    defaultValues: {
-      userId: userId ?? undefined,
-      userEmail,
-      usersName,
-      creditPriceID: "",
-      promoCode: "",
-    },
-  });
-
-  const {
-    formState: { isSubmitting },
-    watch,
-  } = form;
-
-  const formValues = watch();
-
   useEffect(() => {
-    if (formValues.creditPriceID) {
+    if (formValues.priceId) {
       const tierOption = creditTiers?.find(
-        (tier) => tier?.priceId === formValues.creditPriceID,
+        (tier) => tier?.priceId === formValues.priceId,
       );
       if (tierOption?.priceId !== selectedTier?.priceId) {
         setSelectedTier(tierOption);
       }
     }
-  }, [formValues.creditPriceID]);
+  }, [formValues.priceId]);
 
   const closeAction = () => {
     setIsMobileNavOpen(false);
@@ -225,7 +229,7 @@ export default function BuyCredits({
 
                 {/* SELECT CREDIT */}
                 <FormField
-                  name="creditPriceID"
+                  name="priceId"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
@@ -318,18 +322,6 @@ export default function BuyCredits({
             </form>
           </Form>
         </section>
-
-        {/* <ListingActionModal
-        isOpen={modalData.open}
-        onClose={closeModal}
-        variant={modalData.variant}
-        title={modalData.title}
-        message={modalData.message}
-        primaryButtonText={modalData.primaryButtonText}
-        secondaryButtonText={modalData.secondaryButtonText}
-        onPrimaryAction={modalData.onPrimaryAction}
-        onSecondaryAction={modalData.onSecondaryAction}
-      /> */}
       </DialogContent>
     </Dialog>
   );
