@@ -7,7 +7,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { PurchasePremiumFormType } from "@/lib/form.types";
+import { PurchasePremiumFormType, UserValidationType } from "@/lib/form.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { purchasePremiumFormSchema } from "@/lib/form.schemas";
 import { PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
@@ -19,20 +19,17 @@ import { formatUsersName } from "@/lib/utils";
 import { useEffect, useState } from "react";
 // import { createPortalSession } from "@/lib/stripe";
 import { User } from "@supabase/supabase-js";
-import { useUserStore } from "@/lib/store/user-store";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
 export function PlansCard({ plan }: PlansCardProps) {
-  const { userId, userRoleId } = useUserStore();
   const [billingPortalUrl, setBillingPortalUrl] = useState<string | null>(null);
 
-  const newUserRoleId = userRoleId
-    ? (`${userRoleId}` as "1" | "2" | "3")
-    : undefined;
-
   const { data: user } = useGetUser();
+
+  const userId = user?.id;
+  const userRoleId: UserValidationType["roleId"] = user?.user_metadata.role_id;
   const usersName = user?.user_metadata
     ? formatUsersName(user.user_metadata)
     : undefined;
@@ -49,7 +46,7 @@ export function PlansCard({ plan }: PlansCardProps) {
       userId: user?.id,
       userEmail,
       usersName,
-      userRoleId: newUserRoleId,
+      userRoleId,
     },
   });
 

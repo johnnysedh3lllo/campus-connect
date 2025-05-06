@@ -1,3 +1,4 @@
+import { ROLES } from "@/lib/app.config";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -35,6 +36,7 @@ export const updateSession = async (request: NextRequest) => {
   // This will refresh session if expired - required for Server Components
   // https://supabase.com/docs/guides/auth/server-side/nextjs
   const user = await supabase.auth.getUser();
+  const userRoleId = +user?.data?.user?.user_metadata.role_id;
 
   // ROUTE PROTECTION
   const protectedPaths: string[] = [
@@ -57,7 +59,6 @@ export const updateSession = async (request: NextRequest) => {
 
   // console.log(user.data.user);
 
-  
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/log-in", request.url));
   }
@@ -72,12 +73,33 @@ export const updateSession = async (request: NextRequest) => {
     return NextResponse.redirect(new URL("/profile", request.url));
   }
 
+  // handle role-specific routes for authenticated users
+  if (request.nextUrl.pathname === "/packages") {
+    if (user.error) {
+      return NextResponse.redirect(new URL("/log-in", request.url));
+    }
+
+    if (userRoleId === ROLES.LANDLORD) {
+      return NextResponse.redirect(new URL("/plans", request.url));
+    }
+  }
+
+  if (request.nextUrl.pathname === "/plans") {
+    if (user.error) {
+      return NextResponse.redirect(new URL("/log-in", request.url));
+    }
+
+    if (userRoleId === ROLES.TENANT) {
+      return NextResponse.redirect(new URL("/packages", request.url));
+    }
+  }
+
   return response;
 };
 
 export const config = {
   matcher: [
-    // "/",
+    "/",
     "/log-in",
     "/sign-up",
     "/listings/:path*",
@@ -85,6 +107,7 @@ export const config = {
     "/messages/:path*",
     "/settings/:path*",
     "/plans/:path*",
+    "/packages/:path*",
     "/buy-credits/:path*",
   ],
 };

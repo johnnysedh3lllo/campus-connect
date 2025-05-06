@@ -6,5 +6,8 @@ export const metadata: Metadata = {
 };
 
 export default function PackagesPage() {
+
+
+  
   return <PackagesPageBody />;
 }

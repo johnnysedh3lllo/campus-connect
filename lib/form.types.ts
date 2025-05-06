@@ -17,6 +17,7 @@ import {
   multiStepFormSchema,
   conversationFormSchema,
   purchasePackageFormSchema,
+  purchaseFormSchema,
 } from "./form.schemas";
 
 export type RoleType = z.infer<typeof RoleEnum>;
@@ -33,6 +34,7 @@ export type ChangePasswordFormType = z.infer<typeof changePasswordSchema>;
 export type SettingsFormType = z.infer<typeof settingsFormSchema>;
 export type ProfileInfoFormType = z.infer<typeof profileInfoFormSchema>;
 export type BuyCreditsFormSchemaType = z.infer<typeof buyCreditsFormSchema>;
+export type PurchaseFormType = z.infer<typeof purchaseFormSchema>;
 export type PurchasePremiumFormType = z.infer<typeof purchasePremiumFormSchema>;
 export type PurchasePackageFormType = z.infer<typeof purchasePackageFormSchema>;
 export type ConversationFormType = z.infer<typeof conversationFormSchema>;

@@ -22,15 +22,15 @@ export default function ListingPageBody() {
   return (
     <>
       <RoleGate userRoleId={userRoleId} role="LANDLORD">
-        <section className="lg:max-w-screen-max-xl px-4 py-6 sm:px-6 sm:pt-10 sm:pb-6 lg:mx-auto">
-          {!activeSubscription && (
+        {!activeSubscription && (
+          <section className="lg:max-w-screen-max-xl px-4 py-6 sm:px-6 sm:pt-10 sm:pb-6 lg:mx-auto">
             <PremiumBanner
               description="Find the perfect tenants in any location you choose to list & get expert support from us!"
               buttonText="Get Premium"
               href="/plans"
             />
-          )}
-        </section>
+          </section>
+        )}
       </RoleGate>
 
       <RoleGate userRoleId={userRoleId} role="TENANT">

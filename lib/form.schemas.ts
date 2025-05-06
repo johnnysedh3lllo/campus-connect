@@ -151,7 +151,7 @@ export const profileInfoFormSchema = userValidationSchema.pick({
   about: true,
 });
 
-export const purchaseSchema = z.object({
+export const purchaseFormSchema = z.object({
   purchaseType: z.string(),
   priceId: z.string(),
   userId: z.string(),
@@ -160,8 +160,9 @@ export const purchaseSchema = z.object({
   userRoleId: RoleEnum.describe("User role selection"),
 });
 
+
 // Override priceId to make sure a credit amount is selected when buying credits
-export const buyCreditsFormSchema = purchaseSchema.extend({
+export const buyCreditsFormSchema = purchaseFormSchema.extend({
   priceId: z.string().min(1, {
     message: "Please select a credit amount.",
   }),
@@ -173,11 +174,11 @@ export const buyCreditsFormSchema = purchaseSchema.extend({
     }),
 });
 
-export const purchasePremiumFormSchema = purchaseSchema.extend({
+export const purchasePremiumFormSchema = purchaseFormSchema.extend({
   landlordPremiumPrice: z.number(),
 });
 
-export const purchasePackageFormSchema = purchaseSchema.extend({
+export const purchasePackageFormSchema = purchaseFormSchema.extend({
   studentPackagePrice: z.number(),
 });
 

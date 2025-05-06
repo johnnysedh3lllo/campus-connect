@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-import { supabaseAdmin } from "@/utils/supabase/admin";
 import {
   getUserCreditRecord,
   createUserCreditRecord,
@@ -10,6 +9,7 @@ import {
 import { deleteCustomer } from "@/app/actions/supabase/customers";
 import { manageSubscriptions } from "@/app/actions/supabase/subscriptions";
 import { stripe } from "@/lib/stripe";
+import { PURCHASE_TYPES } from "@/lib/pricing.config";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -129,14 +129,13 @@ export async function POST(req: NextRequest) {
           // to handle one-time payments
           if (session.mode === "payment" && session.payment_status === "paid") {
             const userId = session.client_reference_id;
+            const purchaseType = session.metadata?.purchaseType ?? undefined;
             const creditAmount = +(session.metadata?.landLordCreditAmount ?? 0);
-            const customerId =
-              typeof session.customer === "string"
-                ? session.customer
-                : session.customer?.id;
 
-            // TODO: CONSIDER A MORE ROBUST WAY OF HANDLING CREDIT UPDATES BESIDES THE CREDIT AMOUNT
-            if (userId && creditAmount) {
+            if (
+              userId &&
+              purchaseType === PURCHASE_TYPES.LANDLORD_CREDITS.type
+            ) {
               const userCreditDetails = await getUserCreditRecord(
                 userId,
                 supabaseServiceRoleKey,
@@ -157,6 +156,13 @@ export async function POST(req: NextRequest) {
                   supabaseServiceRoleKey,
                 );
               }
+            }
+
+            if (
+              userId &&
+              purchaseType === PURCHASE_TYPES.STUDENT_PACKAGE.type
+            ) {
+              console.log("hey there student, ready to find some house?");
             }
           }
           break;

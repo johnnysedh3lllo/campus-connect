@@ -7,15 +7,9 @@ import {
 } from "@/app/actions";
 import { stripe } from "@/lib/stripe";
 import { ROLES } from "@/lib/app.config";
+import { PurchaseFormType } from "@/lib/form.types";
 
-type CheckoutRequestBody = {
-  purchaseType: string;
-  priceId: string;
-  userId: string;
-  userEmail: string;
-  usersName: string;
-  userRoleId: "1" | "2" | "3";
-
+type CheckoutRequestBody = PurchaseFormType & {
   promoCode?: string;
   packageType?: "bronze" | "silver" | "gold";
   interval?: "month" | "year";
@@ -46,8 +40,6 @@ export async function POST(request: NextRequest) {
       landlordPremiumPrice,
     } = requestBody;
 
-    console.log(requestBody);
-
     // Gets or creates a customer
     const customer = await fetchOrCreateCustomer(userId, userEmail, usersName);
 
@@ -64,6 +56,7 @@ export async function POST(request: NextRequest) {
         userEmail,
         usersName,
         userRoleId,
+        purchaseType,
       },
       mode: "payment",
       payment_method_data: {
@@ -76,8 +69,8 @@ export async function POST(request: NextRequest) {
     }
 
     switch (purchaseType) {
-      case `${PURCHASE_TYPES.LANDLORD_CREDITS.type}`:
-      case `${PURCHASE_TYPES.LANDLORD_PREMIUM.type}`:
+      case PURCHASE_TYPES.LANDLORD_CREDITS.type:
+      case PURCHASE_TYPES.LANDLORD_PREMIUM.type:
         if (+userRoleId !== ROLES.LANDLORD) {
           return NextResponse.json(
             { error: "You are not allowed to make this transaction" },
@@ -125,13 +118,13 @@ export async function POST(request: NextRequest) {
         console.log("landlord is purchasing...................");
         break;
 
-      case `${PURCHASE_TYPES.STUDENT_PACKAGE.type}`:
-        if (+userRoleId !== ROLES.TENANT) {
-          return NextResponse.json(
-            { error: "You are not allowed to make this transaction" },
-            { status: 500 },
-          );
-        }
+      case PURCHASE_TYPES.STUDENT_PACKAGE.type:
+        // if (+userRoleId !== ROLES.TENANT) {
+        //   return NextResponse.json(
+        //     { error: "You are not allowed to make this transaction" },
+        //     { status: 500 },
+        //   );
+        // }
 
         sessionParams.metadata = {
           ...sessionParams.metadata,
