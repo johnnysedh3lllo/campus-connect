@@ -1,18 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { KabobIcon } from "@/public/icons/kabob-icon";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -21,9 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { UserProfileCardMobile } from "./user-profile-card-mobile";
-import { useState } from "react";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import { MessageHeaderProps } from "@/lib/prop.types";
+import { MessageHeaderProps, ModalProps } from "@/lib/prop.types";
 import { BinIcon } from "@/public/icons/bin-icon";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
@@ -31,18 +23,19 @@ import { Form } from "../ui/form";
 import { ConversationFormType } from "@/lib/form.types";
 import { toast } from "@/hooks/use-toast";
 import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
+import Modal from "./modal";
+import { User } from "@supabase/supabase-js";
 
-export default function MessageHeader({
+function DeleteChatBtn({
   user,
   conversationId,
-  chatParticipants,
-}: MessageHeaderProps) {
+  chatName,
+}: {
+  user: User | null;
+  conversationId: Messages["conversation_id"];
+  chatName: string;
+}) {
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isOpenDropDown, setIsOpenDropDown] = useState(false);
-  const [deleteModal, setDeleteModal] = useState(false);
-
-  const { toggleProfile } = useProfileViewStore();
 
   const form = useForm<ConversationFormType>({
     defaultValues: {
@@ -55,18 +48,6 @@ export default function MessageHeader({
     formState: { isSubmitting },
     handleSubmit,
   } = form;
-
-  const chatParticipant = chatParticipants?.[0]?.users;
-  const chatName =
-    chatParticipants && chatParticipants.length === 1
-      ? `${chatParticipant?.first_name} ${chatParticipant?.last_name}`
-      : "";
-
-  const chatParticipantAvatarUrl = chatParticipant?.avatar_url ?? undefined;
-
-  const handleClickBack = () => {
-    router.replace("/messages");
-  };
 
   const conversationParticipantsMutation = useUpdateConversationParticipants();
 
@@ -94,7 +75,7 @@ export default function MessageHeader({
         description: `Your chat with ${chatName} has been deleted!`,
       });
 
-      setDeleteModal(false);
+      // setIsDeleteModalOpen(false);
       router.push("/messages");
     } catch (error: any) {
       if (error instanceof Error) {
@@ -110,7 +91,85 @@ export default function MessageHeader({
   }
 
   return (
-    <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-4">
+    <Form {...form}>
+      <form className="w-full" onSubmit={handleSubmit(handleChatDeletion)}>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex w-full items-center"
+        >
+          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSubmitting ? "Deleting..." : "Delete"}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+function ChatHeaderDetails({
+  participant,
+}: {
+  participant: ConvoParticipant["users"] | undefined | null;
+}) {
+  const chatName = participant
+    ? `${participant?.first_name} ${participant?.last_name}`
+    : "";
+
+  return (
+    <section className="flex items-center gap-4.5">
+      <Avatar>
+        <AvatarImage
+          className="rounded-full"
+          src={participant?.avatar_url ?? undefined}
+          alt="avatar"
+        />
+        <AvatarFallback>{participant?.first_name?.[0]}</AvatarFallback>
+      </Avatar>
+      <h2 className="text-lg font-bold">{chatName}</h2>
+    </section>
+  );
+}
+
+export default function MessageHeader({
+  user,
+  conversationId,
+  chatParticipants,
+}: MessageHeaderProps) {
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenDropDown, setIsOpenDropDown] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { toggleProfile } = useProfileViewStore();
+
+  const otherUser = chatParticipants?.[0]?.users;
+
+  const chatName = otherUser
+    ? `${otherUser?.first_name} ${otherUser?.last_name}`
+    : "";
+
+  const deleteModalProps: ModalProps = {
+    modalId: "welcome",
+    variant: "error",
+    title: "Delete Chat",
+    description: `You are about to clear your chat with ${chatName}, are you sure you want to continue?`,
+    modalImage: <BinIcon />,
+    open: isDeleteModalOpen,
+    setOpen: setIsDeleteModalOpen,
+    modalActionButton: (
+      <DeleteChatBtn
+        user={user}
+        conversationId={conversationId}
+        chatName={chatName}
+      />
+    ),
+  };
+
+  const handleClickBack = () => {
+    router.replace("/messages");
+  };
+
+  return (
+    <div className="bg-background sticky top-0 z-10 flex items-end justify-between py-4 sm:items-center">
       <div className="flex w-full flex-col items-start gap-2 sm:flex-row sm:items-center">
         <Button
           variant={"ghost"}
@@ -120,23 +179,14 @@ export default function MessageHeader({
           <LeftChevonIcon />
         </Button>
 
-        <div className="flex w-full items-center justify-between">
-          <section className="flex items-center gap-4.5">
-            <Avatar>
-              <AvatarImage
-                className="rounded-full"
-                src={chatParticipantAvatarUrl}
-                alt="avatar"
-              />
-              <AvatarFallback>
-                {chatParticipants &&
-                  chatParticipants[0]?.users?.first_name?.[0]}
-              </AvatarFallback>
-            </Avatar>
-            <h2 className="text-lg font-bold">{chatName}</h2>
-          </section>
+        <ChatHeaderDetails participant={otherUser} />
+      </div>
 
-          {/* TODO: REFACTOR THIS TO ONLY HAVE ONE DropDownMenu trigger */}
+      <DropdownMenu
+        open={isOpenDropDown}
+        onOpenChange={() => setIsOpenDropDown(false)}
+      >
+        <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none">
           <Button
             variant={"ghost"}
             className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm"
@@ -144,26 +194,10 @@ export default function MessageHeader({
           >
             <KabobIcon />
           </Button>
-        </div>
-      </div>
-
-      <DropdownMenu
-        open={isOpenDropDown}
-        onOpenChange={() => setIsOpenDropDown(false)}
-      >
-        {/* TODO: REFACTOR THIS TO ONLY HAVE ONE DropDownMenu trigger */}
-        {/* Preferably, this one */}
-        <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none">
-          {/* <Button
-            variant={"ghost"}
-            className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm"
-            // onClick={() => setIsOpenDropDown(true)}
-          >
-            <KabobIcon />
-          </Button> */}
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-40">
+          {/* THIS TRIGGERS THE SHEET COMPONENT FOR THE USER PROFILE ON MOBILE */}
           <DropdownMenuItem asChild>
             <button
               onClick={() => setIsOpen(true)}
@@ -173,6 +207,7 @@ export default function MessageHeader({
             </button>
           </DropdownMenuItem>
 
+          {/* THIS TRIGGERS THE USER PROFILE COMPONENT ON DESKTOP (WITHOUT THE SHEET WRAPPER) */}
           <DropdownMenuItem asChild>
             <button
               onClick={toggleProfile}
@@ -184,7 +219,7 @@ export default function MessageHeader({
 
           <DropdownMenuItem asChild>
             <button
-              onClick={() => setDeleteModal(true)}
+              onClick={() => setIsDeleteModalOpen(true)}
               className="flex w-full items-center gap-2 p-2"
             >
               <span className="text-sm leading-6">Delete chat</span>
@@ -193,65 +228,14 @@ export default function MessageHeader({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* TODO: MOVE THIS TO MESSAGE ROOT */}
       <UserProfileCardMobile
         participants={chatParticipants}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
       />
 
-      <Dialog open={deleteModal} onOpenChange={() => setDeleteModal(false)}>
-        {/* <DialogTrigger>Open</DialogTrigger> */}
-        <DialogContent className="max-w-[542px] p-12">
-          <section className="flex flex-col gap-6 sm:gap-12">
-            <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
-              <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
-                <BinIcon />
-              </figure>
-            </div>
-
-            <div className="flex flex-col gap-6">
-              <DialogHeader className="flex flex-col gap-2 sm:text-center">
-                <DialogTitle className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
-                  Delete Chat
-                </DialogTitle>
-                <DialogDescription className="text text-secondary-foreground text-sm">
-                  You are about to clear your chat with {chatName}, are you sure
-                  you want to continue?
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="grid w-full grid-cols-1 flex-col-reverse items-center justify-between gap-4 sm:grid-cols-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setDeleteModal(false)}
-                  className="flex w-full items-center"
-                >
-                  Back
-                </Button>
-
-                <Form {...form}>
-                  <form
-                    className=""
-                    onSubmit={handleSubmit(handleChatDeletion)}
-                  >
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="flex w-full items-center"
-                    >
-                      {isSubmitting && (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      )}
-                      {isSubmitting ? "Deleting..." : "Delete"}
-                    </Button>
-                  </form>
-                </Form>
-              </div>
-            </div>
-          </section>
-        </DialogContent>
-      </Dialog>
+      <Modal {...deleteModalProps} />
     </div>
   );
 }

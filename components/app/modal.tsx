@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -12,20 +12,7 @@ import {
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-
-type ModalVariants = "default" | "neutral" | "success" | "error";
-type ModalProps = {
-  modalId?: string;
-  variant?: ModalVariants;
-  triggerButton?: React.ReactNode;
-  title: string;
-  description: string;
-  modalImage: React.ReactNode;
-  showCloseButton?: boolean;
-  modalActionButton?: React.ReactNode;
-  clearParamAfterOpen?: boolean;
-  children?: React.ReactNode;
-};
+import { ModalProps } from "@/lib/prop.types";
 
 const variants = {
   default: {
@@ -48,7 +35,7 @@ const variants = {
   },
 };
 
-export function Modal({
+export default function Modal({
   variant = "default",
   modalId,
   triggerButton,
@@ -58,9 +45,10 @@ export function Modal({
   showCloseButton,
   modalActionButton,
   clearParamAfterOpen,
+  open,
+  setOpen,
   children,
 }: ModalProps) {
-  const [open, setOpen] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -118,9 +106,9 @@ export function Modal({
                   type="button"
                   variant="outline"
                   onClick={() => setOpen(false)}
-                  className="flex w-full flex-1 items-center"
+                  className="flex w-full items-center"
                 >
-                  Cancel Action
+                  Cancel
                 </Button>
 
                 {modalActionButton}

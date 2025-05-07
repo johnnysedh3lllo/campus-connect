@@ -36,8 +36,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   const user = await getUser();
   const queryClient = new QueryClient();
@@ -63,6 +65,7 @@ export default async function RootLayout({
 
                 <main className="relative flex-1 overflow-y-auto">
                   {children}
+                  {modal}
                 </main>
                 <Toaster />
               </UserIdentityProvider>

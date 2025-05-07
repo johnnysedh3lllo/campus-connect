@@ -76,12 +76,6 @@ export function ProfilePageBody() {
             </RoleGate>
 
             <RoleGate userRoleId={userRoleId} role="TENANT">
-              <PremiumBanner
-                description="Find the perfect tenants in any location you choose to list & get expert support from us!"
-                buttonText="Get Premium"
-                href="/plans"
-              />
-
               {!currentPackage && (
                 <PremiumBanner
                   description="Find the perfect off campus housing in any location Tailored to your preferences"

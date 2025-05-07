@@ -161,3 +161,19 @@ export type CreatePasswordProps = {
   isSubmitting: boolean;
   handleCreatePassword: (values: CreatePasswordFormType) => void;
 };
+
+export type ModalVariants = "default" | "neutral" | "success" | "error";
+export type ModalProps = {
+  variant?: ModalVariants;
+  modalId?: string;
+  triggerButton?: React.ReactNode;
+  title: string;
+  description: string;
+  modalImage: React.ReactNode;
+  showCloseButton?: boolean;
+  modalActionButton?: React.ReactNode;
+  clearParamAfterOpen?: boolean;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  children?: React.ReactNode;
+};
