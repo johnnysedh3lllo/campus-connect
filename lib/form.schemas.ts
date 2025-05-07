@@ -160,7 +160,6 @@ export const purchaseFormSchema = z.object({
   userRoleId: RoleEnum.describe("User role selection"),
 });
 
-
 // Override priceId to make sure a credit amount is selected when buying credits
 export const buyCreditsFormSchema = purchaseFormSchema.extend({
   priceId: z.string().min(1, {
@@ -179,7 +178,8 @@ export const purchasePremiumFormSchema = purchaseFormSchema.extend({
 });
 
 export const purchasePackageFormSchema = purchaseFormSchema.extend({
-  studentPackagePrice: z.number(),
+  studentInquiryCount: z.number(),
+  studentPackageName: z.string(),
 });
 
 export const conversationFormSchema = z.object({

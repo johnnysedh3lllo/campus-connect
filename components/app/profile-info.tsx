@@ -207,28 +207,26 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
                 </RoleGate>
               </div>
 
-              <div>
-                <div className="flex max-w-xs gap-4">
-                  <Button
-                    className="flex-1"
-                    variant={"outline"}
-                    disabled={isSubmitting}
-                    onClick={handleEditToggle}
-                    width={"full"}
-                  >
-                    Close
-                  </Button>
+              <div className="flex max-w-xs gap-4 sm:max-w-full">
+                <Button
+                  className="flex-1"
+                  variant={"outline"}
+                  disabled={isSubmitting}
+                  onClick={handleEditToggle}
+                  width={"full"}
+                >
+                  Close
+                </Button>
 
-                  <Button
-                    disabled={!isValid || isSubmitting}
-                    type="submit"
-                    width={"full"}
-                    className="flex-1 cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
-                  >
-                    {isSubmitting && <Loader2 className="animate-spin" />}
-                    {isSubmitting ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
+                <Button
+                  disabled={!isValid || isSubmitting}
+                  type="submit"
+                  width={"full"}
+                  className="flex-1 cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
+                >
+                  {isSubmitting && <Loader2 className="animate-spin" />}
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </Button>
               </div>
             </form>
           </Form>

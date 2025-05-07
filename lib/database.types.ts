@@ -38,11 +38,14 @@ declare global {
 
   // TODO[REFACTOR]: USE THIS NEW PATTERN BELOW FOR ALL OTHER DATABASE TYPES
   type UserPublic = Tables<"users">;
+
   type Credits = Tables<"credits">;
   type CreditsTransactions = Tables<"credit_transactions">;
   type Subscriptions = Tables<"subscriptions">;
   type SubscriptionsInsert = TablesInsert<"subscriptions">;
   type SubscriptionStatus = Tables<"subscriptions">["status"];
+
+  type Packages = Tables<"packages">;
 
   type Customers = Tables<"customers">;
   type CustomersInsert = TablesInsert<"customers">;

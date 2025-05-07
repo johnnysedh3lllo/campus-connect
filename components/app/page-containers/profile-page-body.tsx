@@ -12,9 +12,9 @@ import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscr
 import { ProfileHeaderSkeleton } from "../skeletons/profile-header-skeleton";
 import { ProfileInfoSkeleton } from "../skeletons/profile-info-skeleton";
 import { RoleGate } from "../role-gate";
-import { useStudentData } from "@/hooks/role-based/use-student-data";
 import { useUserStore } from "@/lib/store/user-store";
 import UserTierSummary from "../user-tier-summary";
+import { useGetPackageRecord } from "@/hooks/tanstack/use-get-current-package";
 
 export function ProfilePageBody() {
   const { userId, userRoleId } = useUserStore();
@@ -25,15 +25,17 @@ export function ProfilePageBody() {
     userId || undefined,
     userRoleId,
   );
-
-  const whois = userRoleId == 2 ? "landlord" : "student";
-
-  console.log(whois, activeSubscription);
-
-  const { packageDetails } = useStudentData(userId || undefined, userRoleId);
+  const { data: currentPackage } = useGetPackageRecord(
+    userId || undefined,
+    userRoleId,
+  );
 
   const userCurrentPlan = activeSubscription ? "Premium" : "Basic";
-  const userCurrentPackage = packageDetails ? "Silver" : "None";
+  const studentCurrentPackage = currentPackage
+    ? currentPackage.package_name
+    : "None";
+
+  const inquiriesCount = currentPackage?.remaining_inquiries;
 
   return (
     <section>
@@ -74,7 +76,13 @@ export function ProfilePageBody() {
             </RoleGate>
 
             <RoleGate userRoleId={userRoleId} role="TENANT">
-              {!packageDetails && (
+              <PremiumBanner
+                description="Find the perfect tenants in any location you choose to list & get expert support from us!"
+                buttonText="Get Premium"
+                href="/plans"
+              />
+
+              {!currentPackage && (
                 <PremiumBanner
                   description="Find the perfect off campus housing in any location Tailored to your preferences"
                   buttonText="Upgrade Package"
@@ -114,9 +122,10 @@ export function ProfilePageBody() {
           <RoleGate userRoleId={userRoleId} role="TENANT">
             <UserTierSummary
               tier="package"
-              currentTier={userCurrentPackage}
+              currentTier={studentCurrentPackage}
               buttonText="packages"
               href="/packages"
+              inquiriesCount={inquiriesCount}
             />
           </RoleGate>
         </section>

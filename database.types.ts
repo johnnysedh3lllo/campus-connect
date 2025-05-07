@@ -103,7 +103,15 @@ export type Database = {
           transaction_uuid?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       credits: {
         Row: {
@@ -130,7 +138,15 @@ export type Database = {
           used_credits?: number | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "credits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customers: {
         Row: {
@@ -151,7 +167,15 @@ export type Database = {
           stripe_customer_id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customers_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       listing_images: {
         Row: {
@@ -228,7 +252,15 @@ export type Database = {
           updated_at?: string | null
           uuid?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "listings_landlord_id_fkey"
+            columns: ["landlord_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
@@ -267,6 +299,51 @@ export type Database = {
             columns: ["conversation_id"]
             isOneToOne: false
             referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      packages: {
+        Row: {
+          created_at: string | null
+          package_name: Database["public"]["Enums"]["package_type"]
+          remaining_inquiries: number | null
+          total_inquiries: number
+          updated_at: string | null
+          used_inquiries: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          package_name: Database["public"]["Enums"]["package_type"]
+          remaining_inquiries?: number | null
+          total_inquiries?: number
+          updated_at?: string | null
+          used_inquiries?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          package_name?: Database["public"]["Enums"]["package_type"]
+          remaining_inquiries?: number | null
+          total_inquiries?: number
+          updated_at?: string | null
+          used_inquiries?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -423,7 +500,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
@@ -504,6 +589,13 @@ export type Database = {
             referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -550,6 +642,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      update_package: {
+        Args: {
+          p_user_id: string
+          table_column: string
+          increment: number
+          updated_package_name: Database["public"]["Enums"]["package_type"]
+        }
+        Returns: undefined
+      }
       update_user_settings: {
         Args: { user_id: string; new_settings: Json }
         Returns: Json
@@ -560,6 +661,7 @@ export type Database = {
       listing_payment_frequency: "daily" | "weekly" | "monthly" | "yearly"
       listing_publication_status: "published" | "unpublished" | "draft"
       listing_type: "condo" | "apartment"
+      package_type: "bronze" | "silver" | "gold"
       subscription_status:
         | "active"
         | "canceled"
@@ -688,6 +790,7 @@ export const Constants = {
       listing_payment_frequency: ["daily", "weekly", "monthly", "yearly"],
       listing_publication_status: ["published", "unpublished", "draft"],
       listing_type: ["condo", "apartment"],
+      package_type: ["bronze", "silver", "gold"],
       subscription_status: [
         "active",
         "canceled",

@@ -9,7 +9,12 @@ import {
 import { deleteCustomer } from "@/app/actions/supabase/customers";
 import { manageSubscriptions } from "@/app/actions/supabase/subscriptions";
 import { stripe } from "@/lib/stripe";
-import { PURCHASE_TYPES } from "@/lib/pricing.config";
+import { PURCHASE_TYPES, PurchaseType } from "@/lib/pricing.config";
+import {
+  createUserPackageRecord,
+  getUserPackageRecord,
+  updateUserPackageRecord,
+} from "@/app/actions/supabase/packages";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY!;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -129,8 +134,12 @@ export async function POST(req: NextRequest) {
           // to handle one-time payments
           if (session.mode === "payment" && session.payment_status === "paid") {
             const userId = session.client_reference_id;
-            const purchaseType = session.metadata?.purchaseType ?? undefined;
-            const creditAmount = +(session.metadata?.landLordCreditAmount ?? 0);
+            const purchaseType = session.metadata?.purchaseType;
+            const creditCount = +(session.metadata?.landLordCreditCount ?? 0);
+
+            const inquiryCount = +(session.metadata?.studentInquiryCount ?? 0);
+            const packageName = session.metadata
+              ?.studentPackageName as Packages["package_name"];
 
             if (
               userId &&
@@ -145,13 +154,13 @@ export async function POST(req: NextRequest) {
               if (!userCreditDetails) {
                 await createUserCreditRecord(
                   userId,
-                  creditAmount,
+                  creditCount,
                   supabaseServiceRoleKey,
                 );
               } else {
                 await updateUserCreditRecord(
                   userId,
-                  creditAmount,
+                  creditCount,
                   "total_credits",
                   supabaseServiceRoleKey,
                 );
@@ -160,9 +169,31 @@ export async function POST(req: NextRequest) {
 
             if (
               userId &&
-              purchaseType === PURCHASE_TYPES.STUDENT_PACKAGE.type
+              purchaseType === PURCHASE_TYPES.STUDENT_PACKAGE.type &&
+              packageName
             ) {
+              const userPackageDetails = await getUserPackageRecord(
+                userId,
+                supabaseServiceRoleKey,
+              );
               console.log("hey there student, ready to find some house?");
+
+              if (!userPackageDetails) {
+                await createUserPackageRecord(
+                  userId,
+                  packageName,
+                  inquiryCount,
+                  supabaseServiceRoleKey,
+                );
+              } else {
+                await updateUserPackageRecord(
+                  userId,
+                  packageName,
+                  inquiryCount,
+                  "total_inquiries",
+                  supabaseServiceRoleKey,
+                );
+              }
             }
           }
           break;

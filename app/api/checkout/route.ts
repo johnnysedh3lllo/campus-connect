@@ -11,11 +11,13 @@ import { PurchaseFormType } from "@/lib/form.types";
 
 type CheckoutRequestBody = PurchaseFormType & {
   promoCode?: string;
-  packageType?: "bronze" | "silver" | "gold";
+  packageType?: Packages["package_name"];
   interval?: "month" | "year";
 
-  studentPackagePrice?: string;
-  landLordCreditAmount?: number;
+  studentInquiryCount?: number;
+  studentPackageName?: string;
+
+  landLordCreditCount?: number;
   landlordPremiumPrice?: number;
 };
 // const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -35,8 +37,9 @@ export async function POST(request: NextRequest) {
       usersName,
       userRoleId,
       promoCode,
-      studentPackagePrice,
-      landLordCreditAmount,
+      studentInquiryCount,
+      studentPackageName,
+      landLordCreditCount,
       landlordPremiumPrice,
     } = requestBody;
 
@@ -95,7 +98,7 @@ export async function POST(request: NextRequest) {
         if (purchaseType === PURCHASE_TYPES.LANDLORD_CREDITS.type) {
           sessionParams.metadata = {
             ...sessionParams.metadata,
-            landLordCreditAmount: landLordCreditAmount ?? null,
+            landLordCreditCount: landLordCreditCount ?? null,
           };
           sessionParams.payment_intent_data = {
             setup_future_usage: "off_session", // to save payment method for future usage where the customer may not be directly involve, such as subscriptions
@@ -119,16 +122,17 @@ export async function POST(request: NextRequest) {
         break;
 
       case PURCHASE_TYPES.STUDENT_PACKAGE.type:
-        // if (+userRoleId !== ROLES.TENANT) {
-        //   return NextResponse.json(
-        //     { error: "You are not allowed to make this transaction" },
-        //     { status: 500 },
-        //   );
-        // }
+        if (+userRoleId !== ROLES.TENANT) {
+          return NextResponse.json(
+            { error: "You are not allowed to make this transaction" },
+            { status: 500 },
+          );
+        }
 
         sessionParams.metadata = {
           ...sessionParams.metadata,
-          studentPackagePrice: studentPackagePrice ?? null,
+          studentInquiryCount: studentInquiryCount ?? null,
+          studentPackageName: studentPackageName ?? null,
         };
         sessionParams.payment_intent_data = {
           setup_future_usage: "off_session", // to save payment method for future usage where the customer may not be directly involve, such as subscriptions

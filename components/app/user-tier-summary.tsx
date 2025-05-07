@@ -7,6 +7,7 @@ type UserTierSummaryProps = {
   currentTier: string;
   buttonText: string;
   href: string;
+  inquiriesCount?: number | null | undefined;
 };
 
 export default function UserTierSummary({
@@ -14,15 +15,22 @@ export default function UserTierSummary({
   currentTier,
   buttonText,
   href,
+  inquiriesCount,
 }: UserTierSummaryProps) {
   return (
-    <header className="flex items-center justify-between">
+    <header className="flex flex-col items-start justify-between gap-4 sm:flex-row">
       <section>
         <h2 className="text-2xl leading-6 font-semibold capitalize">
           Current {tier}
         </h2>
 
-        <p>{currentTier}</p>
+        <p className="capitalize">{currentTier}</p>
+
+        {inquiriesCount && (
+          <p className="text-text-secondary text-sm leading-6">
+            {inquiriesCount} Inquiries remaining
+          </p>
+        )}
       </section>
 
       <Link href={href}>

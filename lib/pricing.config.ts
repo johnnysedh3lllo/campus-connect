@@ -1,4 +1,4 @@
-import { CreditTier, PriceTier } from "./pricing.types";
+import { CreditTier, PackageTier, PriceTier } from "./pricing.types";
 
 // TODO: Consider abstracting these details to the database
 // TODO: Figure out a way to ensure this object is in sync with the Stripe Dashboard
@@ -9,16 +9,18 @@ export const PRICING = {
       tier: "bronze",
       productId: "prod_S84H1pGCYazcJf",
       priceId: "price_1RDo8rFHlFbirADWDclDqGAf",
+      inquiries: 3,
       amount: 4900,
       type: "one_time",
       features: [
         "6 listings tailored to match your specific criteria gathered from the information you provided through our form",
       ],
-    } as PriceTier,
+    } as PackageTier,
     silver: {
       tier: "silver",
       productId: "prod_S84JOZDKksgQ1B",
       priceId: "price_1RDoBUFHlFbirADW2U6aRFMo",
+      inquiries: 6,
       amount: 5000,
       type: "one_time",
       features: [
@@ -26,11 +28,12 @@ export const PRICING = {
         "Verification of the legitimacy of listings",
         "Assistance with rent negotiation to ensure a fair deal",
       ],
-    } as PriceTier,
+    } as PackageTier,
     gold: {
       tier: "gold",
       productId: "prod_S84NnHe0bgwLtp",
       priceId: "price_1RDoERFHlFbirADWiqFY5tXU",
+      inquiries: 12,
       amount: 12000,
       type: "one_time",
       features: [
@@ -38,7 +41,7 @@ export const PRICING = {
         "One-on-one virtual or telephone consultation",
         "Complementary welcome rug from our shop",
       ],
-    } as PriceTier,
+    } as PackageTier,
   },
 
   landlord: {

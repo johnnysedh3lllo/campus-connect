@@ -65,8 +65,8 @@ export function PackagesPageBody() {
     );
 
     return {
-      ...pkg,
       ...packageData,
+      ...pkg,
     };
   });
 
@@ -75,7 +75,8 @@ export function PackagesPageBody() {
 
     const priceId = values.priceId;
     const purchaseType = values.purchaseType;
-    const studentPackagePrice = values.studentPackagePrice;
+    const studentInquiryCount = values.studentInquiryCount;
+    const studentPackageName = values.studentPackageName;
     const userId = values.userId;
     const userEmail = values.userEmail;
     const usersName = values.usersName;
@@ -85,7 +86,8 @@ export function PackagesPageBody() {
       const requestBody = {
         priceId,
         purchaseType,
-        studentPackagePrice,
+        studentInquiryCount,
+        studentPackageName,
         userId,
         userEmail,
         usersName,
@@ -152,7 +154,8 @@ export function PackagesPageBody() {
             const formValues = {
               purchaseType: PURCHASE_TYPES.STUDENT_PACKAGE.type,
               priceId: pkg.priceId,
-              studentPackagePrice: pkg.amount,
+              studentInquiryCount: pkg.inquiries,
+              studentPackageName: pkg.tier,
               userId: userId ?? undefined,
               userEmail,
               usersName,

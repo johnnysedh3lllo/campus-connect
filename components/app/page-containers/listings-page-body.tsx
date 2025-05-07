@@ -7,8 +7,8 @@ import { RoleGate } from "../role-gate";
 import { PremiumBanner } from "../premium-banner";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
-import { useStudentData } from "@/hooks/role-based/use-student-data";
 import { Button } from "@/components/ui/button";
+import { useGetPackageRecord } from "@/hooks/tanstack/use-get-current-package";
 
 export default function ListingPageBody() {
   const { userId, userRoleId } = useUserStore();
@@ -17,7 +17,10 @@ export default function ListingPageBody() {
     userId || undefined,
     userRoleId,
   );
-  const { packageDetails } = useStudentData(userId || undefined, userRoleId);
+  const { data: currentPackage } = useGetPackageRecord(
+    userId || undefined,
+    userRoleId,
+  );
 
   return (
     <>
@@ -34,15 +37,15 @@ export default function ListingPageBody() {
       </RoleGate>
 
       <RoleGate userRoleId={userRoleId} role="TENANT">
-        <section className="lg:max-w-screen-max-xl px-4 py-6 sm:px-6 sm:pt-10 sm:pb-6 lg:mx-auto">
-          {!packageDetails && (
+        {!currentPackage && (
+          <section className="lg:max-w-screen-max-xl px-4 py-6 sm:px-6 sm:pt-10 sm:pb-6 lg:mx-auto">
             <PremiumBanner
               description="Find the perfect off campus housing in any location Tailored to your preferences"
               buttonText="Upgrade Package"
               href="/packages"
             />
-          )}
-        </section>
+          </section>
+        )}
       </RoleGate>
 
       <section>
