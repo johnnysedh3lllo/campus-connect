@@ -56,7 +56,7 @@ export function SubscriptionPaymentAlertModal() {
 
   const modalDescription = formattedDate ? (
     <>
-      Your current plan will be renewed on
+      Your current plan will be renewed on{" "}
       <span className="text-primary">{formattedDate}</span>. You can start
       enjoying your Campus Connect premium.
     </>
