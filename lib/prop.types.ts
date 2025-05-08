@@ -168,12 +168,12 @@ export type ModalProps = {
   modalId?: string;
   triggerButton?: React.ReactNode;
   title: string;
-  description: string;
+  description: string | React.ReactNode;
   modalImage: React.ReactNode;
   showCloseButton?: boolean;
   modalActionButton?: React.ReactNode;
   clearParamAfterOpen?: boolean;
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  open?: boolean;
+  setOpen?: (value: boolean) => void | undefined;
   children?: React.ReactNode;
 };

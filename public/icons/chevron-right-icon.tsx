@@ -12,7 +12,7 @@ export function ChevronRightIcon(props: SVGProps<SVGSVGElement>) {
     >
       <path
         d="M10 16.5532L14 12.5532L10 8.55322"
-        stroke="#E52926"
+        stroke="currentColor"
         strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -19,6 +19,10 @@ export default async function MessagesLayout({
   children: React.ReactNode;
 }) {
   const user = await getUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
+
   const userId = user?.id;
   const queryClient = new QueryClient();
 

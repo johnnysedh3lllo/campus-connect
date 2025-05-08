@@ -20,6 +20,8 @@ import TanstackQueryProvider from "@/lib/providers/tanstack-query-provider";
 import { getUser, getUserPublic } from "@/app/actions/supabase/user";
 import { Toaster } from "@/components/ui/toaster";
 import UserIdentityProvider from "@/lib/providers/user-identity-provider";
+import { WelcomeModal } from "@/components/app/modals/welcome-modal";
+import { SubscriptionPaymentAlertModal } from "@/components/app/modals/subscription-payment-alert-modal";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -36,10 +38,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   const user = await getUser();
   const queryClient = new QueryClient();
@@ -65,7 +65,8 @@ export default async function RootLayout({
 
                 <main className="relative flex-1 overflow-y-auto">
                   {children}
-                  {modal}
+                  <WelcomeModal />
+                  <SubscriptionPaymentAlertModal />
                 </main>
                 <Toaster />
               </UserIdentityProvider>

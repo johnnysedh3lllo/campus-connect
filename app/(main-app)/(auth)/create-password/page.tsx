@@ -25,16 +25,17 @@ export default function CreatePasswordPage() {
     setIsLoading(true);
     // setShowPassword(true);
     try {
-      console.log("result from createPassword:", values);
       const result = await createPassword(values);
 
       if (result.success) {
         toast({
+          variant: "success",
           title: "Success",
           description: "Password created successfully",
+          showCloseButton: false,
         });
 
-        router.replace("/listings?welcome=true");
+        router.replace("/listings?modalId=welcome");
       } else {
         throw result.error;
       }
