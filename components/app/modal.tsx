@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -16,21 +16,21 @@ import { ModalProps } from "@/lib/prop.types";
 
 const variants = {
   default: {
-    border: "border-transparent",
+    border: "border-transparent border-0 p-0",
     background: "bg-transparent",
   },
   neutral: {
-    border: "border-border-line",
+    border: "border-border-line p-4",
     background: "bg-background-secondary",
   },
   // TODO: this color below is not in the design system,
   // TODO: please find a way to incorporate it
   success: {
-    border: "border-green-700",
+    border: "border-green-700 p-4",
     background: "bg-green-700/10",
   },
   error: {
-    border: "border-primary",
+    border: "border-primary p-4",
     background: "bg-primary/10",
   },
 };
@@ -53,9 +53,9 @@ export default function Modal({
   const router = useRouter();
 
   useEffect(() => {
-    const modalParams = searchParams.get("modal");
+    const modalParams = searchParams.get("modalId");
 
-    if (modalId && modalParams === modalId) {
+    if (modalId && modalParams === modalId && setOpen) {
       setOpen(true);
       if (clearParamAfterOpen) {
         router.replace(window.location.pathname);
@@ -68,8 +68,8 @@ export default function Modal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{triggerButton && triggerButton}</DialogTrigger>
-      <DialogContent className="max-w-[542px] px-4 py-6 sm:p-12">
-        <section className="flex flex-col gap-6 sm:gap-12">
+      <DialogContent className="max-w-[550px] px-4 py-6 sm:p-8">
+        <section className="flex flex-col gap-6 sm:gap-8">
           <div className="flex flex-col items-center gap-2">
             {showCloseButton && (
               <DialogClose className="self-end">
@@ -80,10 +80,10 @@ export default function Modal({
             {/* TODO: ADD MULTIPLE VARIANTS FOR THIS DIV'S BORDER COLOR AND BACKGROUND COLOR OF THE FIGURE INSIDE IT. */}
             {/* VARIANTS: SUCCESS, ERROR, NEUTRAL, DEFAULT */}
             <div
-              className={`${styles.border} w-fit self-center rounded-full border-1 border-solid p-4`}
+              className={`w-fit self-center rounded-full border-1 border-solid ${styles.border}`}
             >
               <figure
-                className={`${styles.background} flex size-50 items-center justify-center rounded-full`}
+                className={`flex size-50 items-center justify-center rounded-full ${styles.background}`}
               >
                 {modalImage}
               </figure>
@@ -100,22 +100,21 @@ export default function Modal({
               </DialogDescription>
             </DialogHeader>
 
-            {!children ? (
+            {modalActionButton && (
               <div className="flex w-full flex-col-reverse items-center justify-between gap-4 sm:flex-row">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setOpen(false)}
-                  className="flex w-full items-center"
+                  onClick={() => setOpen && setOpen(false)}
+                  className="flex w-full flex-1 items-center px-0"
                 >
                   Cancel
                 </Button>
 
                 {modalActionButton}
               </div>
-            ) : (
-              children
             )}
+            {children && children}
           </div>
         </section>
       </DialogContent>

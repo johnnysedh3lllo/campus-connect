@@ -6,6 +6,11 @@ import { Header } from "@/components/app/header";
 import { PlansCard } from "@/components/app/plans-card";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import { useUserStore } from "@/lib/store/user-store";
+import { ModalProps } from "@/lib/prop.types";
+import Modal from "../modal";
+import { SadFaceIcon } from "@/public/icons/sad-face-icon";
+import { useSwitchToBasicModalStore } from "@/lib/store/switch-to-basic-modal-store";
+import { SwitchToBasicBtn } from "../action-buttons";
 
 type LandlordPlansType = {
   name: string;
@@ -16,6 +21,8 @@ type LandlordPlansType = {
 
 export default function PlansPageBody() {
   const { userId, userRoleId } = useUserStore();
+  const { isSwitchToBasicModalOpen, setIsSwitchToBasicModalOpen } =
+    useSwitchToBasicModalStore();
 
   const { data: userActiveSubscription } = useGetActiveSubscription(
     userId || undefined,
@@ -47,6 +54,17 @@ export default function PlansPageBody() {
     },
   ];
 
+  const switchToBasicModalProps: ModalProps = {
+    variant: "error",
+    title: "Switch to Basic Plan",
+    description:
+      "You are about to switch your account back to a basic plan, are you sure you want to continue?",
+    modalImage: <SadFaceIcon />,
+    open: isSwitchToBasicModalOpen,
+    setOpen: setIsSwitchToBasicModalOpen,
+    modalActionButton: <SwitchToBasicBtn userId={userId} />,
+  };
+
   return (
     <section className="mx-auto max-w-screen-2xl">
       <Header
@@ -58,6 +76,7 @@ export default function PlansPageBody() {
           return <PlansCard key={plan.name} plan={plan} />;
         })}
       </div>
+      <Modal {...switchToBasicModalProps} />;
     </section>
   );
 }

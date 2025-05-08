@@ -108,16 +108,16 @@ export default function BuyCredits({
     const promoCode = values.promoCode;
     const purchaseType = values.purchaseType;
     const userRoleId = values.userRoleId;
-    
+
     const creditTier = getCreditTiers(priceId) as CreditTierOption;
-    const landLordCreditAmount = creditTier?.value;
+    const landLordCreditCount = creditTier?.value;
 
     try {
       const requestBody = {
         purchaseType,
         priceId,
         promoCode,
-        landLordCreditAmount,
+        landLordCreditCount,
         userId,
         userEmail,
         usersName,
@@ -219,7 +219,7 @@ export default function BuyCredits({
               onSubmit={form.handleSubmit(handleCreditCheckout)}
               className="flex w-full flex-col items-start gap-16 px-4 pt-6 sm:px-12 lg:px-6"
             >
-              <div className="flex w-full flex-col gap-6">
+              <div className="flex w-full max-w-96 flex-col gap-6">
                 {/* AVAILABLE CREDITS */}
                 <section className="flex w-full flex-col gap-1 text-sm leading-6 font-medium">
                   <h3 className="">Your Available Credits</h3>
@@ -304,7 +304,7 @@ export default function BuyCredits({
                   onClick={closeAction}
                   disabled={isSubmitting}
                   variant="outline"
-                  className="flex w-full items-center sm:w-50"
+                  className="flex w-full items-center md:w-50"
                 >
                   Back
                 </Button>
@@ -313,7 +313,7 @@ export default function BuyCredits({
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex w-full items-center sm:w-50"
+                  className="flex w-full items-center md:w-50"
                 >
                   {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                   {isSubmitting ? "Processing..." : "Buy Credits"}

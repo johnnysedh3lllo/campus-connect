@@ -1,0 +1,304 @@
+"use client";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { loadStripe } from "@stripe/stripe-js";
+import { Form } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "../ui/toast";
+import { formatUsersName } from "@/lib/utils";
+import { User } from "@supabase/supabase-js";
+
+import { PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
+import { PurchasePremiumFormType, UserValidationType } from "@/lib/form.types";
+import { purchasePremiumFormSchema } from "@/lib/form.schemas";
+
+import { ConversationFormType } from "@/lib/form.types";
+import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
+
+const publishableKey: string | undefined =
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+// PLANS
+export function SubscribeToPremiumBtn({
+  user,
+}: {
+  user: User | null | undefined;
+}) {
+  const userId = user?.id;
+  const userRoleId: UserValidationType["roleId"] = user?.user_metadata.role_id;
+  const usersName = user?.user_metadata
+    ? formatUsersName(user.user_metadata)
+    : undefined;
+  const userEmail = user?.email;
+
+  const premiumSubscriptionForm = useForm<PurchasePremiumFormType>({
+    resolver: zodResolver(purchasePremiumFormSchema),
+    defaultValues: {
+      purchaseType: PURCHASE_TYPES.LANDLORD_PREMIUM.type,
+      priceId: PRICING.landlord.premium.monthly.priceId,
+      landlordPremiumPrice: PRICING.landlord.premium.monthly.amount,
+      userId,
+      userEmail,
+      usersName,
+      userRoleId,
+    },
+  });
+
+  const {
+    formState: { isSubmitting: isSubmittingPremium },
+  } = premiumSubscriptionForm;
+
+  async function handleSubscribeToPremium(values: PurchasePremiumFormType) {
+    const { purchaseType, userId, priceId, landlordPremiumPrice, userRoleId } =
+      values;
+
+    try {
+      const requestBody = {
+        purchaseType,
+        priceId,
+        landlordPremiumPrice,
+        userId,
+        userEmail,
+        usersName,
+        userRoleId,
+      };
+
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (response.ok) {
+        const { sessionId } = await response.json();
+
+        if (!publishableKey) {
+          throw new Error("Stripe publishable key not found");
+        }
+        const stripe = await loadStripe(publishableKey);
+
+        const stripeError = await stripe?.redirectToCheckout({
+          sessionId,
+        });
+
+        if (stripeError?.error) {
+          throw new Error(`Stripe error: ${stripeError.error}`);
+        }
+      } else {
+        const responseObj: { error: string } = await response.json();
+        toast({
+          variant: "info",
+          showCloseButton: false,
+          description: responseObj.error,
+        });
+
+        throw responseObj;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  return (
+    <Form {...premiumSubscriptionForm}>
+      <form
+        onSubmit={premiumSubscriptionForm.handleSubmit(
+          handleSubscribeToPremium,
+        )}
+      >
+        <Button
+          type="submit"
+          disabled={isSubmittingPremium}
+          className="h-full w-full px-11 py-3 text-base leading-6 sm:w-fit"
+        >
+          {isSubmittingPremium && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSubmittingPremium ? "Processing..." : "Go Premium"}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+export function SwitchToBasicBtn({ userId }: { userId: string | null }) {
+  const [billingPortalUrl, setBillingPortalUrl] = useState<string | null>(null);
+
+  const switchToBasicForm = useForm();
+  const {
+    formState: { isSubmitting },
+  } = switchToBasicForm;
+
+  // TODO: DRY this up in other places, maybe abstract into a file
+  async function createPortalSession(
+    userId: User["id"] | undefined,
+  ): Promise<string> {
+    const response = await fetch("/api/billing-portal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId }),
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        "There was an error creating the billing portal session.",
+      );
+    }
+
+    const { url } = await response.json();
+    return url;
+  }
+  // TODO: HANDLE CASE WHERE A USER IS NOT YET A CUSTOMER
+  // Preload portal session on mount
+  useEffect(() => {
+    async function preloadBillingPortal() {
+      if (!userId) return;
+
+      try {
+        const url = await createPortalSession(userId);
+        setBillingPortalUrl(url);
+      } catch (error: any) {
+        console.error(error);
+      }
+    }
+
+    preloadBillingPortal();
+  }, [userId]);
+
+  async function handleRedirect() {
+    try {
+      if (!userId) {
+        throw new Error(
+          "Some necessary details are missing. Please reload and try again later.",
+        );
+      }
+
+      let url = billingPortalUrl;
+
+      // If not preloaded, fetch on demand
+      if (!url) {
+        const portalUrl = await createPortalSession(userId);
+        url = portalUrl;
+        setBillingPortalUrl(url); // cache for future
+      }
+
+      window.location.href = url!;
+    } catch (error: any) {
+      if (error instanceof Error) {
+        toast({
+          variant: "destructive",
+          description: error.message,
+          showCloseButton: false,
+          action: <ToastAction altText="Try again">Try again</ToastAction>,
+        });
+      }
+      console.error(error);
+    }
+  }
+
+  return (
+    <Form {...switchToBasicForm}>
+      <form
+        className="h-full w-full flex-1 border-x-1 border-transparent"
+        onSubmit={switchToBasicForm.handleSubmit(handleRedirect)}
+      >
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="h-full w-full px-0 py-3 text-base leading-6"
+        >
+          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSubmitting ? "Processing..." : "Switch to Basic"}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+// MESSAGES
+export function DeleteChatBtn({
+  user,
+  conversationId,
+  chatName,
+  setIsDeleteModalOpen,
+}: {
+  user: User | null;
+  conversationId: Messages["conversation_id"];
+  chatName: string;
+  setIsDeleteModalOpen: Dispatch<SetStateAction<boolean>>;
+}) {
+  const router = useRouter();
+
+  const form = useForm<ConversationFormType>({
+    defaultValues: {
+      userId: user?.id,
+      conversationId: conversationId || undefined, // TODO: revisit this and optimize
+    },
+  });
+
+  const {
+    formState: { isSubmitting },
+    handleSubmit,
+  } = form;
+
+  const conversationParticipantsMutation = useUpdateConversationParticipants();
+
+  async function handleChatDeletion(values: ConversationFormType) {
+    try {
+      const currentDate = new Date().toISOString();
+      const result = await conversationParticipantsMutation.mutateAsync({
+        conversationData: values,
+        conversationParticipantsDetails: {
+          deleted_at: currentDate,
+          message_cutoff_at: currentDate,
+        },
+      });
+
+      if (!result.success) {
+        throw new Error(result.error?.message);
+      }
+
+      console.log(result);
+      console.log("you have successfully deleted this chat");
+
+      toast({
+        variant: "success",
+        showCloseButton: false,
+        description: `Your chat with ${chatName} has been deleted!`,
+      });
+
+      setIsDeleteModalOpen(false);
+      router.push("/messages");
+    } catch (error: any) {
+      if (error instanceof Error) {
+        console.error(error.message);
+
+        toast({
+          variant: "destructive",
+          title: "Unable to delete chat",
+          description: error.message,
+        });
+      }
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form
+        className="h-full w-full flex-1 border-x-1 border-transparent"
+        onSubmit={handleSubmit(handleChatDeletion)}
+      >
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex h-full w-full flex-1 items-center px-0"
+        >
+          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSubmitting ? "Deleting..." : "Delete"}
+        </Button>
+      </form>
+    </Form>
+  );
+}

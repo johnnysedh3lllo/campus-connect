@@ -1,10 +1,8 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { KabobIcon } from "@/public/icons/kabob-icon";
 import {
   DropdownMenu,
@@ -17,118 +15,9 @@ import { UserProfileCardMobile } from "./user-profile-card-mobile";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
 import { MessageHeaderProps, ModalProps } from "@/lib/prop.types";
 import { BinIcon } from "@/public/icons/bin-icon";
-import { useForm } from "react-hook-form";
-import { Loader2 } from "lucide-react";
-import { Form } from "../ui/form";
-import { ConversationFormType } from "@/lib/form.types";
-import { toast } from "@/hooks/use-toast";
-import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
 import Modal from "./modal";
-import { User } from "@supabase/supabase-js";
-
-function DeleteChatBtn({
-  user,
-  conversationId,
-  chatName,
-}: {
-  user: User | null;
-  conversationId: Messages["conversation_id"];
-  chatName: string;
-}) {
-  const router = useRouter();
-
-  const form = useForm<ConversationFormType>({
-    defaultValues: {
-      userId: user?.id,
-      conversationId: conversationId || undefined, // TODO: revisit this and optimize
-    },
-  });
-
-  const {
-    formState: { isSubmitting },
-    handleSubmit,
-  } = form;
-
-  const conversationParticipantsMutation = useUpdateConversationParticipants();
-
-  async function handleChatDeletion(values: ConversationFormType) {
-    try {
-      const currentDate = new Date().toISOString();
-      const result = await conversationParticipantsMutation.mutateAsync({
-        conversationData: values,
-        conversationParticipantsDetails: {
-          deleted_at: currentDate,
-          message_cutoff_at: currentDate,
-        },
-      });
-
-      if (!result.success) {
-        throw new Error(result.error?.message);
-      }
-
-      console.log(result);
-      console.log("you have successfully deleted this chat");
-
-      toast({
-        variant: "success",
-        showCloseButton: false,
-        description: `Your chat with ${chatName} has been deleted!`,
-      });
-
-      // setIsDeleteModalOpen(false);
-      router.push("/messages");
-    } catch (error: any) {
-      if (error instanceof Error) {
-        console.error(error.message);
-
-        toast({
-          variant: "destructive",
-          title: "Unable to delete chat",
-          description: error.message,
-        });
-      }
-    }
-  }
-
-  return (
-    <Form {...form}>
-      <form className="w-full" onSubmit={handleSubmit(handleChatDeletion)}>
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex w-full items-center"
-        >
-          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
-          {isSubmitting ? "Deleting..." : "Delete"}
-        </Button>
-      </form>
-    </Form>
-  );
-}
-
-function ChatHeaderDetails({
-  participant,
-}: {
-  participant: ConvoParticipant["users"] | undefined | null;
-}) {
-  const chatName = participant
-    ? `${participant?.first_name} ${participant?.last_name}`
-    : "";
-
-  return (
-    <section className="flex items-center gap-4.5">
-      <Avatar>
-        <AvatarImage
-          className="rounded-full"
-          src={participant?.avatar_url ?? undefined}
-          alt="avatar"
-        />
-        <AvatarFallback>{participant?.first_name?.[0]}</AvatarFallback>
-      </Avatar>
-      <h2 className="text-lg font-bold">{chatName}</h2>
-    </section>
-  );
-}
+import { DeleteChatBtn } from "./action-buttons";
+import { MessageHeaderDetails } from "./message-header-details";
 
 export default function MessageHeader({
   user,
@@ -160,6 +49,7 @@ export default function MessageHeader({
         user={user}
         conversationId={conversationId}
         chatName={chatName}
+        setIsDeleteModalOpen={setIsDeleteModalOpen}
       />
     ),
   };
@@ -179,7 +69,7 @@ export default function MessageHeader({
           <LeftChevonIcon />
         </Button>
 
-        <ChatHeaderDetails participant={otherUser} />
+        <MessageHeaderDetails participant={otherUser} />
       </div>
 
       <DropdownMenu

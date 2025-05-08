@@ -1,4 +1,4 @@
-import { PremiumIllustration } from "@/public/illustrations/premiumIllustration";
+import { PremiumIllustration } from "@/public/illustrations/premium-illustration";
 import premiumCardPattern from "@/public/patterns/pattern-premium-card.svg";
 import Image from "next/image";
 

@@ -121,8 +121,10 @@ export function ProfilePictureUpload({
       if (result?.success) {
         setCroppedImage(result.imageUrl ?? null);
         toast({
+          variant: "success",
           title: "Profile picture updated",
           description: "Your new profile picture has been saved",
+          showCloseButton: false,
         });
       } else {
         toast({
