@@ -79,7 +79,7 @@ export function SubscriptionPaymentAlertModal() {
         <Link href="/listings" className="w-full">
           <Button
             onClick={() => setOpen(false)}
-            className="hidden h-full w-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex"
+            className="h-full w-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex"
           >
             <p>Back to listings</p>
             <ChevronRightIcon />
