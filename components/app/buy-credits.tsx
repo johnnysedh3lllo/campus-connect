@@ -203,7 +203,7 @@ export default function BuyCredits({
               <DialogTitle className="text-start text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
                 Buy Credits
               </DialogTitle>
-              <DialogDescription className="text-text-secondary text-sm leading-6">
+              <DialogDescription className="text-start text-text-secondary text-sm leading-6">
                 Get credits to boost listings and connect with tenants!
               </DialogDescription>
             </DialogHeader>

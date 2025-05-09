@@ -103,11 +103,8 @@ export type HeaderProps = {
 export interface EmptyPageStateProps {
   imageSrc: string;
   title: string;
-  subTitle: string;
-  buttonText?: string;
-  buttonIcon?: React.ReactNode;
-  onButtonClick?: () => void;
-  showButton: boolean;
+  subTitle?: string;
+  button?: React.ReactNode;
 }
 
 export type CreditBalanceProps = {

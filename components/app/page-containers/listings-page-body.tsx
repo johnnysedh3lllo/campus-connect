@@ -1,5 +1,4 @@
 "use client";
-import { PlusIcon } from "@/public/icons/plus-icon";
 import { Header } from "../header";
 import { EmptyPageState } from "../empty-page-state";
 import listingIllustration from "@/public/illustrations/illustration-listings.svg";
@@ -7,8 +6,8 @@ import { RoleGate } from "../role-gate";
 import { PremiumBanner } from "../premium-banner";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
-import { Button } from "@/components/ui/button";
 import { useGetPackageRecord } from "@/hooks/tanstack/use-get-current-package";
+import { CreateListingsButton } from "../action-buttons";
 
 export default function ListingPageBody() {
   const { userId, userRoleId } = useUserStore();
@@ -49,31 +48,35 @@ export default function ListingPageBody() {
       </RoleGate>
 
       <section>
-        <Header
-          title="Listings"
-          subTitle="Here are all the houses you have listed"
-          button={<CreateListingsButton />}
-        />
-        <div className="flex items-center justify-center px-4 pt-4 pb-8">
-          <EmptyPageState
-            imageSrc={listingIllustration}
-            title="You have no listings yet"
-            subTitle="Kick start your journey with us by making your first listing. Clicking the button below"
-            buttonText="Create a listing"
-            buttonIcon={<PlusIcon />}
-            showButton={true}
+        <RoleGate userRoleId={userRoleId} role="LANDLORD">
+          <Header
+            title="Listings"
+            subTitle="Here are all the houses you have listed"
+            button={<CreateListingsButton />}
           />
-        </div>
+          <div className="flex items-center justify-center px-4 pt-4 pb-8">
+            <EmptyPageState
+              imageSrc={listingIllustration}
+              title="You have no listings yet"
+              subTitle="Kick start your journey with us by making your first listing. Clicking the button below"
+              button={<CreateListingsButton />}
+            />
+          </div>
+        </RoleGate>
+
+        <RoleGate userRoleId={userRoleId} role="TENANT">
+          <Header
+            title="Listings"
+            subTitle="Search and connect based on your preferences"
+          />
+          <div className="flex items-center justify-center px-4 pt-4 pb-8">
+            <EmptyPageState
+              imageSrc={listingIllustration}
+              title="There are no listings available yet"
+            />
+          </div>
+        </RoleGate>
       </section>
     </>
-  );
-}
-
-export function CreateListingsButton() {
-  return (
-    <Button className="hidden h-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex">
-      <p>Create a listing</p>
-      {<PlusIcon />}
-    </Button>
   );
 }

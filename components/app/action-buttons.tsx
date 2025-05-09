@@ -18,9 +18,23 @@ import { purchasePremiumFormSchema } from "@/lib/form.schemas";
 
 import { ConversationFormType } from "@/lib/form.types";
 import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
+import { PlusIcon } from "@/public/icons/plus-icon";
+import Link from "next/link";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+// LISTINGS
+export function CreateListingsButton() {
+  return (
+    <Link href="/listings/create">
+      <Button className="hidden h-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex">
+        <p>Create a listing</p>
+        {<PlusIcon />}
+      </Button>
+    </Link>
+  );
+}
 
 // PLANS
 export function SubscribeToPremiumBtn({

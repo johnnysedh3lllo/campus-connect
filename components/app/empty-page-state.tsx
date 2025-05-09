@@ -1,16 +1,11 @@
-import { ReactNode } from "react";
-import { Button } from "../ui/button";
-import Image from "next/image";
 import { EmptyPageStateProps } from "@/lib/prop.types";
+import Image from "next/image";
 
 export function EmptyPageState({
   imageSrc,
   title,
   subTitle,
-  buttonText,
-  buttonIcon,
-  onButtonClick,
-  showButton = true,
+  button,
 }: EmptyPageStateProps) {
   return (
     <div className="mx-auto flex max-w-145 flex-col items-center gap-10 sm:gap-12">
@@ -25,15 +20,7 @@ export function EmptyPageState({
         <p className="text-text-secondary text-sm leading-6">{subTitle}</p>
       </section>
 
-      {showButton && buttonText && (
-        <Button
-          onClick={onButtonClick}
-          className="h-full w-fit cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex"
-        >
-          <p>{buttonText} </p>
-          {buttonIcon}
-        </Button>
-      )}
+      {button && button}
     </div>
   );
 }
