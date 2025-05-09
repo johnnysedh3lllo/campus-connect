@@ -49,7 +49,6 @@ export async function POST(request: NextRequest) {
     // Setup session object
     let sessionParams: Stripe.Checkout.SessionCreateParams = {
       payment_method_types: ["card"], // TODO: update when google pay or apple pay has been added
-      success_url: `${origin}/listings?session_id={CHECKOUT_SESSION_ID}&modalId=purchase_success`, // TODO: CHANGE TO `purchase_success` AFTER SUCCESS
       cancel_url: `${referer}`,
       line_items: [{ price: priceId, quantity: 1 }],
       client_reference_id: userId,
@@ -96,6 +95,7 @@ export async function POST(request: NextRequest) {
 
         // if not, handle Credit and Premium subscription case.
         if (purchaseType === PURCHASE_TYPES.LANDLORD_CREDITS.type) {
+          sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}&modalId=land_credit_success`;
           sessionParams.metadata = {
             ...sessionParams.metadata,
             landLordCreditCount: landLordCreditCount ?? null,
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
 
         if (purchaseType === PURCHASE_TYPES.LANDLORD_PREMIUM.type) {
           sessionParams.mode = "subscription";
-          sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}&modalId=payment_success`;
+          sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}&modalId=land_premium_success`;
           sessionParams.subscription_data = {
             metadata: {
               ...sessionParams.metadata,
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
             { status: 500 },
           );
         }
-
+        sessionParams.success_url = `${origin}/messages?session_id={CHECKOUT_SESSION_ID}&modalId=stud_package_success`;
         sessionParams.metadata = {
           ...sessionParams.metadata,
           studentInquiryCount: studentInquiryCount ?? null,

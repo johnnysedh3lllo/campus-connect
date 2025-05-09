@@ -1,7 +1,6 @@
 "use client";
 
 import { ModalProps } from "@/lib/prop.types";
-import Modal from "../modal";
 import { Button } from "../../ui/button";
 import Image from "next/image";
 import { PlusIcon } from "@/public/icons/plus-icon";
@@ -11,6 +10,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useUserStore } from "@/lib/store/user-store";
 import { RoleGate } from "../role-gate";
+import Modal from "./modal";
 
 export function WelcomeModal() {
   const { userRoleId } = useUserStore();

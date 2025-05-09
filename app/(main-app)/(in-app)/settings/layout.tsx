@@ -1,4 +1,3 @@
-import { Toaster } from "@/components/ui/toaster";
 import { Metadata } from "next";
 import { ReactNode } from "react";
 

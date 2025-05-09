@@ -21,7 +21,7 @@ import { getUser, getUserPublic } from "@/app/actions/supabase/user";
 import { Toaster } from "@/components/ui/toaster";
 import UserIdentityProvider from "@/lib/providers/user-identity-provider";
 import { WelcomeModal } from "@/components/app/modals/welcome-modal";
-import { SubscriptionPaymentAlertModal } from "@/components/app/modals/subscription-payment-alert-modal";
+import { PaymentAlertModal } from "@/components/app/modals/payment-alert-modal";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -29,11 +29,22 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: {
-    template: "%s | Campus Connect",
-    default: "Dashboard",
-  },
+  title: { default: "Campus Connect", template: "%s | Campus Connect" },
   description: "Campus Connect Application",
+  // alternates: {
+  //   canonical: "https://example.com",
+  //   languages: {
+  //     "en-US": "https://example.com/en-US",
+  //     "de-DE": "https://example.com/de-DE",
+  //   },
+  // },
+  // openGraph: {
+  //   title: "My Site",
+  //   description: "Welcome to My Site",
+  //   url: "https://example.com",
+  //   siteName: "My Site",
+  //   images: [{ url: "https://example.com/og.png" }],
+  // },
 };
 
 export default async function RootLayout({
@@ -66,7 +77,7 @@ export default async function RootLayout({
                 <main className="relative flex-1 overflow-y-auto">
                   {children}
                   <WelcomeModal />
-                  <SubscriptionPaymentAlertModal />
+                  <PaymentAlertModal />
                 </main>
                 <Toaster />
               </UserIdentityProvider>

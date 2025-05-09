@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
+} from "@/components/ui/dialog";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
+import { PURCHASE_TYPES } from "@/lib/pricing.config";
 
 export type VerifySessionResponseType = {
   status: number;
   ok: boolean;
   received: boolean;
   message: string;
-  subscriptionData?: any;
+  subscriptionData?: any; // TODO: PROPERLY TYPE THIS
+  sessionMetadata?: any; // TODO: PROPERLY TYPE THIS
 };
 
 export async function POST(request: NextRequest) {
@@ -25,7 +27,10 @@ export async function POST(request: NextRequest) {
         message: "Payment Successful",
       };
 
-      if (session.mode === "subscription") {
+      if (
+        session.mode === "subscription" &&
+        session.metadata?.purchaseType === PURCHASE_TYPES.LANDLORD_PREMIUM.type
+      ) {
         const userId = session.client_reference_id;
         const activeSubscription = await getActiveSubscription(
           userId || undefined,
@@ -34,6 +39,31 @@ export async function POST(request: NextRequest) {
         responseObj = {
           ...responseObj,
           subscriptionData: activeSubscription,
+          sessionMetadata: session.metadata,
+        };
+
+        return NextResponse.json(responseObj);
+      }
+
+      if (
+        session.mode === "payment" &&
+        session.metadata?.purchaseType === PURCHASE_TYPES.LANDLORD_CREDITS.type
+      ) {
+        responseObj = {
+          ...responseObj,
+          sessionMetadata: session.metadata,
+        };
+
+        return NextResponse.json(responseObj);
+      }
+
+      if (
+        session.mode === "payment" &&
+        session.metadata?.purchaseType === PURCHASE_TYPES.STUDENT_PACKAGE.type
+      ) {
+        responseObj = {
+          ...responseObj,
+          sessionMetadata: session.metadata,
         };
 
         return NextResponse.json(responseObj);
@@ -41,6 +71,7 @@ export async function POST(request: NextRequest) {
 
       responseObj = {
         ...responseObj,
+        sessionMetadata: session.metadata,
       };
       return NextResponse.json(responseObj);
     } else {
