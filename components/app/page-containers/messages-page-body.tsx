@@ -27,7 +27,6 @@ export default function MessagesPageBody() {
           imageSrc={messageIllustration}
           title="You have no messages yet"
           subTitle="Hang tight while potential tenants view your listing"
-          showButton={false}
         />
       )}
     </div>

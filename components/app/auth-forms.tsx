@@ -56,7 +56,6 @@ import {
   LoginFormProps,
   ResetPasswordProps,
   SelectRoleProps,
-  SetPasswordProps,
   VerifyOtpProps,
 } from "@/lib/prop.types";
 import {
@@ -176,12 +175,12 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
 
         <footer className="flex w-full flex-col items-center gap-3">
           <LoginPrompt callToAction="Don't have an account?" route="/sign-up" />
-          <SeparatorMain />
+          {/* <SeparatorMain />
           <div className="flex gap-3">
             <Google />
             <Facebook />
             <Apple />
-          </div>
+          </div> */}
         </footer>
       </div>
     </section>
@@ -420,14 +419,14 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
 
       <footer className="flex flex-col items-center gap-6">
         <LoginPrompt callToAction="Already have an account?" route="/log-in" />
-
+        {/* 
         <SeparatorMain />
 
         <div className="flex gap-3">
           <Google />
           <Facebook />
           <Apple />
-        </div>
+        </div> */}
       </footer>
     </div>
   );

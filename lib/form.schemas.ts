@@ -1,6 +1,7 @@
 "use strict";
 
 import { z } from "zod";
+import { stringToNumber } from "./utils";
 
 // FORM SCHEMAS
 export const RoleEnum = z.enum(["1", "2", "3"]); // TODO: REFACTOR THIS TO BE A NUMBER INSTEAD OF STRING
@@ -185,4 +186,60 @@ export const purchasePackageFormSchema = purchaseFormSchema.extend({
 export const conversationFormSchema = z.object({
   userId: z.string(),
   conversationId: z.string(),
+});
+
+export const HomeTypeEnum = z.enum(["apartment", "condo"]);
+export const PaymentFrequencyEnum = z.enum([
+  "daily",
+  "weekly",
+  "monthly",
+  "yearly",
+]);
+
+export const createListingFormSchema = z.object({
+  title: z
+    .string({ required_error: "Title is required" })
+    .min(1, { message: "This is a required field" })
+    .max(150, { message: "Can't be longer than 150 characters" }),
+  noOfBedrooms: z
+    .number({
+      required_error: "Number of bedrooms is required",
+      invalid_type_error: "Must be a number",
+    })
+    .int({ message: "Must be a whole number" })
+    .min(1, { message: "Must be at least 1" }),
+  listingType: HomeTypeEnum,
+  location: z
+    .string({ required_error: "Location is required" })
+    .min(1, { message: "This is a required field" })
+    .max(100, { message: "Can't be longer than 100 characters" }),
+  description: z.string().optional(),
+  photos: z
+    .array(z.instanceof(File))
+    .min(1, { message: "At least one photo is required" })
+    .max(10, { message: "You can upload a maximum of 10 photos" }),
+  paymentFrequency: PaymentFrequencyEnum,
+  price: z
+    .number({
+      required_error: "Price is required",
+      invalid_type_error: "Must be a number",
+    })
+    .min(1, { message: "Price must be at least $1" }),
+});
+
+export const homeDetailsFormSchema = createListingFormSchema.pick({
+  title: true,
+  noOfBedrooms: true,
+  listingType: true,
+  location: true,
+  description: true,
+});
+
+export const photoUploadFormSchema = createListingFormSchema.pick({
+  photos: true,
+});
+
+export const pricingFormSchema = createListingFormSchema.pick({
+  paymentFrequency: true,
+  price: true,
 });

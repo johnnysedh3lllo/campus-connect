@@ -15,7 +15,7 @@ import { UserProfileCardMobile } from "./user-profile-card-mobile";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
 import { MessageHeaderProps, ModalProps } from "@/lib/prop.types";
 import { BinIcon } from "@/public/icons/bin-icon";
-import Modal from "./modal";
+import Modal from "@/components/app/modals/modal";
 import { DeleteChatBtn } from "./action-buttons";
 import { MessageHeaderDetails } from "./message-header-details";
 

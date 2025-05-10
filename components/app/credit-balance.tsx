@@ -4,7 +4,6 @@ import { CreditChipIcon } from "@/public/icons/credit-chip-icon";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils"; // assuming you have a cn() utility for classNames
 import React from "react";
-import { CreditBalanceSkeleton } from "./skeletons/credit-balance-skeleton";
 
 function CreditBalanceComponent(
   props: CreditBalanceProps,

@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import {
@@ -46,6 +46,7 @@ import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
 import { useUserStore } from "@/lib/store/user-store";
 
 type BuyCreditProps = {
+  variant?: ButtonProps["variant"];
   disabled?: boolean;
   showBalance?: boolean;
   isClickable?: boolean;
@@ -53,6 +54,7 @@ type BuyCreditProps = {
 
 // TODO: CREATE A MODAL TO SHOW A SUCCESSFUL CREDIT PURCHASE
 export default function BuyCredits({
+  variant = "default",
   disabled,
   showBalance,
   isClickable,
@@ -188,9 +190,9 @@ export default function BuyCredits({
           />
         ) : (
           <Button
-            // onClick={() => setIsMobileNavOpen(false)}
+            variant={variant}
             disabled={disabled}
-            className="h-full w-full px-6 py-3 text-base sm:w-fit"
+            className="h-full w-full px-6 py-3 text-base"
           >
             Buy Credits
           </Button>
@@ -203,7 +205,7 @@ export default function BuyCredits({
               <DialogTitle className="text-start text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
                 Buy Credits
               </DialogTitle>
-              <DialogDescription className="text-start text-text-secondary text-sm leading-6">
+              <DialogDescription className="text-text-secondary text-start text-sm leading-6">
                 Get credits to boost listings and connect with tenants!
               </DialogDescription>
             </DialogHeader>

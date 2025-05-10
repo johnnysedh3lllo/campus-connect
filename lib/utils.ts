@@ -5,6 +5,7 @@ import { CreditTierOption } from "./pricing.types";
 import { UserMetadata } from "@supabase/supabase-js";
 import { format, isBefore, subMonths, formatDistanceToNow } from "date-fns";
 import { Role, ROLES } from "./app.config";
+import { z } from "zod";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -95,14 +96,14 @@ export function formatCurrency(
 }
 
 // Intl instantiation to reduce expensive creation
-const cadFormatter = new Intl.NumberFormat("en-CA", {
+export const currencyFormatter = new Intl.NumberFormat("en-CA", {
   style: "currency",
   currency: "CAD",
 });
 
 // To display internally formatted amount in application locale
 export function formatCurrencyToLocale(amount: number): string {
-  return cadFormatter.format(formatCurrency(amount, "internal"));
+  return currencyFormatter.format(formatCurrency(amount, "internal"));
 }
 
 // TODO: REVIEW THE EFFICIENCY OF THIS APPROACH
@@ -161,3 +162,11 @@ export function hasRole(
   if (!userRoleId) return false;
   return allowedRoles.some((roleKey) => userRoleId === ROLES[roleKey]);
 }
+
+export const stringToNumber = z.string().transform((val) => {
+  const parsed = Number(val);
+  if (isNaN(parsed)) {
+    throw new Error("Not a number");
+  }
+  return parsed;
+});

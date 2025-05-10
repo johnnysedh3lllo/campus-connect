@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
 
         // if not, handle Credit and Premium subscription case.
         if (purchaseType === PURCHASE_TYPES.LANDLORD_CREDITS.type) {
-          sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}&modalId=land_credit_success`;
+          sessionParams.success_url = `${referer}?session_id={CHECKOUT_SESSION_ID}&modalId=land_credit_success`;
           sessionParams.metadata = {
             ...sessionParams.metadata,
             landLordCreditCount: landLordCreditCount ?? null,
@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
 
         if (purchaseType === PURCHASE_TYPES.LANDLORD_PREMIUM.type) {
           sessionParams.mode = "subscription";
-          sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}&modalId=land_premium_success`;
+          sessionParams.success_url = `${origin}/profile?session_id={CHECKOUT_SESSION_ID}&modalId=land_premium_success`;
           sessionParams.subscription_data = {
             metadata: {
               ...sessionParams.metadata,

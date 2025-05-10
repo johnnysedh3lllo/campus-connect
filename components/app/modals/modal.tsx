@@ -99,7 +99,6 @@ export default function Modal({
                 {description}
               </DialogDescription>
             </DialogHeader>
-
             {modalActionButton && (
               <div className="flex w-full flex-col-reverse items-center justify-between gap-4 sm:flex-row">
                 <Button
@@ -114,7 +113,11 @@ export default function Modal({
                 {modalActionButton}
               </div>
             )}
-            {children && children}
+            {children && (
+              <div className="flex w-full flex-col-reverse items-center justify-between gap-4 sm:flex-row">
+                {children}
+              </div>
+            )}
           </div>
         </section>
       </DialogContent>

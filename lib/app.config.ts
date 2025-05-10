@@ -26,4 +26,6 @@ export const navLinksMobile = [
   { href: "/settings", text: "Settings", icon: SettingsIcon },
 ];
 
+export const MIN_CREDITS = 120;
+
 export const DEFAULT_STALE_TIME = 1000 * 60 * 5;

@@ -8,6 +8,11 @@ import {
 declare global {
   interface Database extends DB {}
 
+  type Listings = Tables<"listings">;
+  type ListingsInsert = TablesInsert<"listings">;
+  type ListingImages = Tables<"listing_images">;
+  type ListingImagesInsert = TablesInsert<"listing_images">;
+
   type Messages = Tables<"visible_messages_for_user"> & {
     // Add this to track optimistic updates
     optimisticId?: string; // Temporary client-side ID for tracking

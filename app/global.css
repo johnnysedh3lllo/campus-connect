@@ -153,6 +153,7 @@
   --color-border-secondary: var(--border-secondary);
 
   --color-line: var(--line);
+  --color-line-blue: var(--line-blue);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
@@ -251,7 +252,7 @@
 
   --input: var(--color-gray-600);
   --line: var(--color-gray-600);
-  --ring: var(--color-gray-950);
+  --line-blue: var(--color-blue-700) --ring: var(--color-gray-950);
 
   --accent-secondary: var(--color-red-50);
   /* for chart */
@@ -326,6 +327,15 @@
 
   input:-moz-autofill {
     background-color: transparent !important;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    @apply m-0 appearance-none;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 
   input:-webkit-autofill,
