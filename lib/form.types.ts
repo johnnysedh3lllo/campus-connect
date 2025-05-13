@@ -22,6 +22,9 @@ import {
   homeDetailsFormSchema,
   photoUploadFormSchema,
   pricingFormSchema,
+  upsertListingSchema,
+  PaymentFrequencyEnum,
+  PublicationStatusEnum,
 } from "./form.schemas";
 
 export type RoleType = z.infer<typeof RoleEnum>;
@@ -45,7 +48,11 @@ export type PurchaseFormType = z.infer<typeof purchaseFormSchema>;
 export type PurchasePremiumFormType = z.infer<typeof purchasePremiumFormSchema>;
 export type PurchasePackageFormType = z.infer<typeof purchasePackageFormSchema>;
 
+export type PaymentFrequencyType = z.infer<typeof PaymentFrequencyEnum>;
+export type PublicationStatusType = z.infer<typeof PublicationStatusEnum>;
 export type CreateListingFormType = z.infer<typeof createListingFormSchema>;
+export type UpsertListingType = z.infer<typeof upsertListingSchema>;
+
 export type HomeDetailsFormType = z.infer<typeof homeDetailsFormSchema>;
 export type PhotoUploadFormType = z.infer<typeof photoUploadFormSchema>;
 export type PricingFormType = z.infer<typeof pricingFormSchema>;

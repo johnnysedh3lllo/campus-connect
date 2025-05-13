@@ -7,13 +7,13 @@ import { ProfileHeader } from "@/components/app/profile-header";
 import { Separator } from "@/components/ui/separator";
 // ASSETS
 import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
-import { ProfileInfo } from "../profile-info";
+import { ProfileInfo } from "@/components/app/profile-info";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
-import { ProfileHeaderSkeleton } from "../skeletons/profile-header-skeleton";
-import { ProfileInfoSkeleton } from "../skeletons/profile-info-skeleton";
-import { RoleGate } from "../role-gate";
+import { ProfileHeaderSkeleton } from "@/components/app/skeletons/profile-header-skeleton";
+import { ProfileInfoSkeleton } from "@/components/app/skeletons/profile-info-skeleton";
+import { RoleGate } from "@/components/app/role-gate";
 import { useUserStore } from "@/lib/store/user-store";
-import UserTierSummary from "../user-tier-summary";
+import UserTierSummary from "@/components/app/user-tier-summary";
 import { useGetPackageRecord } from "@/hooks/tanstack/use-get-current-package";
 
 export function ProfilePageBody() {

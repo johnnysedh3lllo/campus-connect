@@ -8,7 +8,7 @@ import { UserProfileCardWrapper } from "@/components/ui/user-profile-card-wrappe
 import { User } from "@supabase/supabase-js";
 import { useGetConversationMessages } from "@/hooks/tanstack/use-get-conversation-messages";
 import { useGetConversationParticipants } from "@/hooks/tanstack/use-get-conversation-participants";
-import { MessageContainerSkeleton } from "../skeletons/message-container-skeleton";
+import { MessageContainerSkeleton } from "../../skeletons/message-container-skeleton";
 import { useEffect } from "react";
 import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
 

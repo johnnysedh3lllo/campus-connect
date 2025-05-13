@@ -9,6 +9,11 @@ declare global {
   interface Database extends DB {}
 
   type Listings = Tables<"listings">;
+
+  type ListingWithImages = Listings & {
+    listing_images: Pick<ListingImages, "image_url">[];
+  };
+
   type ListingsInsert = TablesInsert<"listings">;
   type ListingImages = Tables<"listing_images">;
   type ListingImagesInsert = TablesInsert<"listing_images">;

@@ -75,7 +75,7 @@ export function PhotoCarousel({ photos, onRemove }: PhotoCarouselProps) {
         {/* Photos container */}
         <div className="w-full overflow-hidden">
           <div
-            className="flex transition-transform duration-300 ease-in-out"
+            className="flex gap-2 transition-transform duration-300 ease-in-out"
             style={{
               transform: `translateX(-${(currentIndex / totalPhotos) * 100}%)`,
               width: `${(totalPhotos * 100) / 3}%`,
@@ -87,12 +87,10 @@ export function PhotoCarousel({ photos, onRemove }: PhotoCarouselProps) {
                 className="w-full"
                 style={{ width: `${100 / totalPhotos}%` }}
               >
-                <div className="px-1">
-                  <PhotoPreview
-                    url={url}
-                    onRemove={handleRemove.bind(null, idx)}
-                  />
-                </div>
+                <PhotoPreview
+                  url={url}
+                  onRemove={handleRemove.bind(null, idx)}
+                />
               </div>
             ))}
           </div>

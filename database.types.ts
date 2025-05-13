@@ -209,6 +209,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: number
+          idempotency_key: string | null
           landlord_id: string
           listing_type: Database["public"]["Enums"]["listing_type"]
           location: string
@@ -224,7 +225,8 @@ export type Database = {
           availability_status?: Database["public"]["Enums"]["listing_availability_status"]
           created_at?: string
           description?: string | null
-          id?: never
+          id?: number
+          idempotency_key?: string | null
           landlord_id: string
           listing_type: Database["public"]["Enums"]["listing_type"]
           location: string
@@ -240,7 +242,8 @@ export type Database = {
           availability_status?: Database["public"]["Enums"]["listing_availability_status"]
           created_at?: string
           description?: string | null
-          id?: never
+          id?: number
+          idempotency_key?: string | null
           landlord_id?: string
           listing_type?: Database["public"]["Enums"]["listing_type"]
           location?: string

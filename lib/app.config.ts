@@ -26,6 +26,18 @@ export const navLinksMobile = [
   { href: "/settings", text: "Settings", icon: SettingsIcon },
 ];
 
-export const MIN_CREDITS = 120;
+export const MIN_CREDITS = 20;
+
+// IMAGE UPLOADS
+export const SUPPORTED_FILE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+];
+export const MAX_IMAGES = 10;
+export const MIN_IMAGE_SIZE = 1 * 1024 * 1024; // 1MB
+export const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
+export const MAX_TOTAL_SIZE = MAX_IMAGE_SIZE * MAX_IMAGES;
 
 export const DEFAULT_STALE_TIME = 1000 * 60 * 5;

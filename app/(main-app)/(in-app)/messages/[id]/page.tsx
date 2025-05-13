@@ -4,7 +4,7 @@ import {
   getConversationParticipants,
 } from "@/app/actions/supabase/messages";
 import { getUser } from "@/app/actions/supabase/user";
-import MessagesIdPageBody from "@/components/app/page-containers/messages-id-page-body";
+import MessagesIdPageBody from "@/components/app/page-containers/in-app/messages-id-page-body";
 import {
   dehydrate,
   HydrationBoundary,

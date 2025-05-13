@@ -1,6 +1,6 @@
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
 import { getUser } from "@/app/actions/supabase/user";
-import PlansPageBody from "@/components/app/page-containers/plans-page-body";
+import PlansPageBody from "@/components/app/page-containers/in-app/plans-page-body";
 import {
   dehydrate,
   HydrationBoundary,

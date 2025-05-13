@@ -1,6 +1,6 @@
 import { HeaderProps } from "@/lib/prop.types";
 
-export function Header({ title, subTitle, button }: HeaderProps) {
+export function Header({ title, subTitle, children }: HeaderProps) {
   return (
     <div className="bg-background border-border sticky top-0 z-10 border-b-1">
       <header className="max-w-screen-max-xl mx-auto flex items-center justify-between p-4 pt-6 sm:px-12 sm:pt-10 lg:px-6">
@@ -11,7 +11,7 @@ export function Header({ title, subTitle, button }: HeaderProps) {
           <p className="text-text-secondary text-sm leading-6">{subTitle}</p>
         </section>
 
-        {button}
+        {children}
       </header>
     </div>
   );

@@ -1,5 +1,6 @@
 import type React from "react";
 import { useEffect, useState } from "react";
+import { v4 as uuidv4, validate } from "uuid";
 import {
   createListingFormSchema,
   homeDetailsFormSchema,
@@ -7,6 +8,8 @@ import {
   PaymentFrequencyEnum,
   photoUploadFormSchema,
   pricingFormSchema,
+  validateFileSizes,
+  validateFileTypes,
 } from "@/lib/form.schemas";
 import {
   Form,
@@ -34,6 +37,7 @@ import {
   HomeDetailsFormType,
   PhotoUploadFormType,
   PricingFormType,
+  UpsertListingType,
 } from "@/lib/form.types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,8 +63,13 @@ import { SadFaceIcon } from "@/public/icons/sad-face-icon";
 import { ModalProps } from "@/lib/prop.types";
 import BuyCredits from "./buy-credits";
 import Link from "next/link";
-import { createListing } from "@/app/actions/supabase/listings";
 import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { useUploadListing } from "@/hooks/tanstack/mutations/use-upload-listing";
+import { SuccessShieldIcon } from "@/public/icons/success-shield-icon";
+import { useUpdateCreditRecord } from "@/hooks/tanstack/mutations/use-update-credit-record";
+import { useClearListingStore } from "@/lib/store/store-utils";
+import { useRouter } from "next/navigation";
 
 export function HomeDetailsForm() {
   const { step, steps, data, nextStep, prevStep, setData } =
@@ -276,7 +285,12 @@ export function PhotoUploadForm() {
     },
   });
 
-  const { formState, setValue, watch } = form;
+  const {
+    formState: { errors, isValid },
+    setValue,
+    watch,
+  } = form;
+
   const photos = watch("photos") || [];
   const photoCount = photos.length;
 
@@ -293,30 +307,54 @@ export function PhotoUploadForm() {
     };
   }, [data.photos, previewUrls.length]);
 
-  // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    const selectedFiles = Array.from(e.target.files);
+    const selectedFiles = Array.from(files);
 
     // Check if adding these files would exceed the maximum
     if (photos.length + selectedFiles.length > 10) {
-      alert("You can only upload a maximum of 10 photos");
+      toast({
+        variant: "destructive",
+        description: "You can only upload a maximum of 10 photos",
+        showCloseButton: false,
+      });
       return;
     }
 
-    // Create preview URLs for the selected files
+    // Check file types
+    if (!validateFileTypes.check(selectedFiles)) {
+      toast({
+        variant: "destructive",
+        description: validateFileTypes.message,
+        showCloseButton: false,
+      });
+      return;
+    }
+
+    // Combine current and new files for size validation
+    const combinedFiles = [...photos, ...selectedFiles];
+
+    // Check total size
+    if (!validateFileSizes.check(combinedFiles)) {
+      toast({
+        variant: "destructive",
+        description: validateFileSizes.message,
+        showCloseButton: false,
+      });
+      return;
+    }
+
+    // All checks passed — update state
     const newPreviewUrls = selectedFiles.map((file) =>
       URL.createObjectURL(file),
     );
 
-    // Update form value
-    const updatedPhotos = [...photos, ...selectedFiles];
-    setValue("photos", updatedPhotos, {
+    setValue("photos", combinedFiles, {
       shouldValidate: true,
     });
 
-    // Update preview URLs
     setPreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
   };
 
@@ -363,41 +401,42 @@ export function PhotoUploadForm() {
           control={form.control}
           name="photos"
           render={() => (
-            <FormItem className="border-input rounded-md border p-6">
-              <FormMessage />
+            <FormItem className="flex flex-col items-center gap-4">
+              <div className="border-input w-full rounded-md border p-6">
+                <FormControl>
+                  <div className="border-line-blue bg-background-secondary flex flex-col items-center gap-6 rounded-md border border-dashed p-4 sm:p-6 lg:p-12">
+                    <div className="mx-auto flex max-w-58 flex-col items-center gap-3">
+                      <CloudArrowUpIcon />
+                      <p className="flex flex-col text-center">
+                        Upload images of your property
+                        <span>(JPEG, PNG)</span>
+                      </p>
+                    </div>
 
-              <FormControl>
-                <div className="border-line-blue bg-background-secondary flex flex-col items-center gap-6 rounded-md border border-dashed p-4 sm:p-6 lg:p-12">
-                  <div className="mx-auto flex max-w-58 flex-col items-center gap-3">
-                    <CloudArrowUpIcon />
-                    <p className="flex flex-col text-center">
-                      Upload images of your property
-                      <span>(JPEG, PNG)</span>
-                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-line border bg-white px-10 py-2 font-medium hover:bg-gray-50"
+                      onClick={() =>
+                        document.getElementById("file-upload")?.click()
+                      }
+                    >
+                      Upload file
+                    </Button>
+
+                    <input
+                      id="file-upload"
+                      type="file"
+                      multiple
+                      accept="image/jpeg,image/png"
+                      className="sr-only"
+                      onChange={handleFileChange}
+                      onClick={(e) => e.stopPropagation()}
+                    />
                   </div>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border-line border bg-white px-10 py-2 font-medium hover:bg-gray-50"
-                    onClick={() =>
-                      document.getElementById("file-upload")?.click()
-                    }
-                  >
-                    Upload file
-                  </Button>
-
-                  <input
-                    id="file-upload"
-                    type="file"
-                    multiple
-                    accept="image/jpeg,image/png"
-                    className="sr-only"
-                    onChange={handleFileChange}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </div>
-              </FormControl>
+                </FormControl>
+              </div>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -426,7 +465,11 @@ export function PhotoUploadForm() {
           >
             Back
           </Button>
-          <Button type="submit" className="w-full sm:w-50">
+          <Button
+            disabled={!isValid}
+            type="submit"
+            className="w-full transition-all duration-150 sm:w-50"
+          >
             Next
           </Button>
         </div>
@@ -565,7 +608,12 @@ export function PricingForm() {
 
 export function PreviewPage() {
   const { userId, userRoleId } = useUserStore();
+  const { step, steps, prevStep, data, setData } = useCreateListingsStore();
+  const clearStoreStorage = useClearListingStore();
+
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const router = useRouter();
 
   const { data: creditRecord } = useGetUserCredits(
     userId || undefined,
@@ -579,9 +627,6 @@ export function PreviewPage() {
   const creditAmount = creditRecord?.remaining_credits;
   const hasActiveSubscription = userActiveSubscription?.status === "active";
   const hasEnoughCredits = creditAmount && creditAmount >= MIN_CREDITS;
-
-  const { step, steps, prevStep, data } = useCreateListingsStore();
-
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   // TODO: THESE VALUES MAY BE EMPTY DUE TO EMPTY STRINGS, HANDLE ACCORDINGLY
@@ -591,8 +636,8 @@ export function PreviewPage() {
   const noOfBedrooms = data.noOfBedrooms;
   const listingType = data.listingType;
   const description = data.description;
-
   const photos = data.photos;
+  const idempotencyKey = data.idempotencyKey;
 
   const paymentFrequency = data?.paymentFrequency;
   const price = data?.price;
@@ -619,28 +664,80 @@ export function PreviewPage() {
       photos,
       paymentFrequency,
       price,
+      publicationStatus: "draft",
     },
   });
 
   const {
     formState: { isSubmitting },
   } = form;
+  const createListingMutation = useUploadListing();
+  const updateCreditMutation = useUpdateCreditRecord();
 
-  async function handlePublish(values: any) {
+  async function handlePublish(values: CreateListingFormType) {
+    let idemKey = idempotencyKey;
     if (!hasActiveSubscription && !hasEnoughCredits) {
       console.log("this user can't upload a property");
       setIsErrorModalOpen(true);
     } else {
-      try {
-        // TODO: USER TANSTACK QUERY MUTATIONS
-        const result = await createListing(userId, values);
-      } catch (error) {}
+      if (!idemKey) {
+        idemKey = "listing-" + uuidv4();
+        setData({ idempotencyKey: idemKey });
+      }
+      if (!userId) {
+        throw new Error("User ID is required");
+      }
 
-      console.log("this user can upload a property");
-      console.log("credit amount", creditAmount);
-      console.log("min credits", MIN_CREDITS);
-      console.log("has an active sub", hasActiveSubscription);
-      console.log(values);
+      const listingDetails: UpsertListingType = {
+        title: values.title,
+        noOfBedrooms: values.noOfBedrooms,
+        listingType: values.listingType,
+        location: values.location,
+        paymentFrequency: values.paymentFrequency,
+        price: values.price,
+        publicationStatus: values.publicationStatus,
+        description: values.description,
+      };
+
+      const listingImages = values.photos;
+
+      try {
+        const createdListing = await createListingMutation.mutateAsync({
+          userId: userId,
+          idemKey: idemKey,
+          listingDetails: listingDetails,
+          images: listingImages,
+        });
+
+        if (createListingMutation.isError) {
+          toast({
+            variant: "destructive",
+            description:
+              "It seems an error occurred while creating your listing. Please try again",
+            showCloseButton: false,
+          });
+          throw createListingMutation.error;
+        }
+
+        if (!hasActiveSubscription) {
+          const updatedCredits = await updateCreditMutation.mutateAsync({
+            userId: userId,
+            addedCredits: MIN_CREDITS,
+            tableColumn: "used_credits",
+          });
+
+          if (!updateCreditMutation.isError) {
+            console.log("created listings", createdListing);
+            console.log("updated credit record", updatedCredits);
+
+            setIsSuccessModalOpen(true);
+          }
+        } else {
+          setIsSuccessModalOpen(true);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
@@ -654,17 +751,39 @@ export function PreviewPage() {
     setOpen: setIsErrorModalOpen,
   };
 
+  const listingSuccessModal: ModalProps = {
+    modalId: "land_listing_success",
+    variant: "success",
+    title: "Property listed successfully",
+    description: `${MIN_CREDITS} credits have been deducted from your balance, Now sit back and let a tenant make an inquiry`,
+    modalImage: <SuccessShieldIcon />,
+    open: isSuccessModalOpen,
+    setOpen: setIsSuccessModalOpen,
+  };
+
+  const handleBackToListing = () => {
+    clearStoreStorage();
+    setIsSuccessModalOpen(false);
+    router.push("/listings");
+  };
+
   return (
     <div className="w-full md:max-w-202">
       <h2 className="flex w-full items-center justify-between text-2xl leading-8 font-semibold">
         {steps[step]}
       </h2>
 
-      <section className="flex flex-col gap-6">
-        <PhotoCarouselGeneric photos={previewUrls} />
+      {!previewUrls || previewUrls.length === 0 ? (
+        <h3 className="px-4 py-12 text-center text-2xl leading-6 font-medium text-gray-700">
+          Please re-upload your images
+        </h3>
+      ) : (
+        <section className="flex flex-col gap-6">
+          <PhotoCarouselGeneric photos={previewUrls} />
 
-        <Separator />
-      </section>
+          <Separator />
+        </section>
+      )}
 
       <section className="grid grid-cols-2 gap-6 sm:grid-cols-3">
         <div>
@@ -699,7 +818,9 @@ export function PreviewPage() {
           <p className="text-sm text-gray-700">{description}</p>
         </div>
 
-        <div className="col-span-full">
+        <div
+          className={`col-span-full ${hasActiveSubscription && "opacity-50"}`}
+        >
           <h3 className="text-sm leading-6 font-medium">
             Your Available Credits
           </h3>
@@ -719,11 +840,14 @@ export function PreviewPage() {
         </Button>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handlePublish)}>
+          <form
+            className="w-full sm:w-50"
+            onSubmit={form.handleSubmit(handlePublish)}
+          >
             <Button
               type="submit"
               disabled={previewUrls.length === 0 || isSubmitting} // TODO: FIND A BETTER WAY TO HANDLE THIS DISABLED STATE HERE
-              className="w-full sm:w-50"
+              className="w-full transition-all duration-150 sm:w-50"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {isSubmitting ? "Publishing" : "Publish"}
@@ -739,6 +863,12 @@ export function PreviewPage() {
           <Button className="w-full">Get Premium</Button>
         </Link>
       </Modal>
+
+      <Modal {...listingSuccessModal}>
+        <Button onClick={handleBackToListing} className="w-full">
+          Back to Listings
+        </Button>
+      </Modal>
     </div>
   );
 }
@@ -748,7 +878,7 @@ function PhotoCarouselGeneric({ photos }: { photos: string[] }) {
     <div className="relative w-full">
       <Carousel className="w-full" opts={{ align: "start", slidesToScroll: 1 }}>
         {/* Left navigation button - using ShadCN's CarouselPrevious */}
-        <CarouselPrevious className="bg-background-secondary absolute -left-5 z-10 size-10 rounded-sm border-0 p-3" />
+        <CarouselPrevious className="bg-background-secondary absolute -left-5 z-5 size-10 rounded-sm border-0 p-3" />
 
         {/* Photos container */}
         <CarouselContent className="flex w-full gap-3">
@@ -766,7 +896,7 @@ function PhotoCarouselGeneric({ photos }: { photos: string[] }) {
         </CarouselContent>
 
         {/* Right navigation button - using ShadCN's CarouselNext */}
-        <CarouselNext className="bg-background-secondary absolute -right-5 z-10 size-10 rounded-sm border-0 p-3" />
+        <CarouselNext className="bg-background-secondary absolute -right-5 z-5 size-10 rounded-sm border-0 p-3" />
       </Carousel>
     </div>
   );

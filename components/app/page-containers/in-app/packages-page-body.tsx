@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Header } from "../header";
+import { Header } from "../../header";
 import { CheckFillIcon } from "@/public/icons/check-fill-icon";
 import firstPlaceIllustration from "@/public/illustrations/first-place-medal-illustration.png";
 import secondPlaceIllustration from "@/public/illustrations/second-place-medal-illustration.png";

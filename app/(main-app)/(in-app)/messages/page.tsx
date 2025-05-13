@@ -1,4 +1,4 @@
-import MessagesPageBody from "@/components/app/page-containers/messages-page-body";
+import MessagesPageBody from "@/components/app/page-containers/in-app/messages-page-body";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

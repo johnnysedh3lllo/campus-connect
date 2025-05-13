@@ -2,16 +2,22 @@ import { create } from "zustand";
 import { CreateListingFormType } from "../form.types";
 import { persist } from "zustand/middleware";
 
+type NewCreateListingFormType = Partial<
+  CreateListingFormType & {
+    idempotencyKey: string;
+  }
+>;
+
 interface CreateListingsState {
   step: number;
   steps: string[];
-  data: Partial<CreateListingFormType>;
+  data: NewCreateListingFormType;
 
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
 
-  setData: (data: Partial<CreateListingFormType>) => void;
+  setData: (data: NewCreateListingFormType) => void;
   clearData: () => void;
 }
 

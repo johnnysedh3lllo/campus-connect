@@ -1,6 +1,6 @@
 "use client";
 
-import { EmptyPageState } from "../empty-page-state";
+import { EmptyPageState } from "../../empty-page-state";
 import messageIllustration from "@/public/illustrations/illustration-messages.svg";
 import { useGetConversations } from "@/hooks/tanstack/use-get-conversations";
 import { useGetUser } from "@/hooks/tanstack/use-get-user";

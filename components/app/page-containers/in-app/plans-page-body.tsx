@@ -10,7 +10,7 @@ import { ModalProps } from "@/lib/prop.types";
 import Modal from "@/components/app/modals/modal";
 import { SadFaceIcon } from "@/public/icons/sad-face-icon";
 import { useSwitchToBasicModalStore } from "@/lib/store/switch-to-basic-modal-store";
-import { SwitchToBasicBtn } from "../action-buttons";
+import { SwitchToBasicBtn } from "../../action-buttons";
 
 type LandlordPlansType = {
   name: string;

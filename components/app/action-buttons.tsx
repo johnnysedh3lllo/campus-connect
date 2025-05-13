@@ -20,6 +20,7 @@ import { ConversationFormType } from "@/lib/form.types";
 import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
 import { PlusIcon } from "@/public/icons/plus-icon";
 import Link from "next/link";
+import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -33,6 +34,14 @@ export function CreateListingsButton() {
         {<PlusIcon />}
       </Button>
     </Link>
+  );
+}
+
+export function CancelListingButton() {
+  return (
+    <Button className="hidden h-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex">
+      <CloseIconNoBorders className="size-10" />;
+    </Button>
   );
 }
 

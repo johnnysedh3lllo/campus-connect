@@ -1,13 +1,12 @@
 "use client";
-import { Header } from "../header";
-import { EmptyPageState } from "../empty-page-state";
-import listingIllustration from "@/public/illustrations/illustration-listings.svg";
-import { RoleGate } from "../role-gate";
-import { PremiumBanner } from "../premium-banner";
+import { Header } from "../../header";
+import { EmptyPageState } from "../../empty-page-state";
+import { RoleGate } from "../../role-gate";
+import { PremiumBanner } from "../../premium-banner";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import { useGetPackageRecord } from "@/hooks/tanstack/use-get-current-package";
-import { CreateListingsButton } from "../action-buttons";
+import { ListingContainer } from "../../skeletons/listings-container";
 
 export default function ListingPageBody() {
   const { userId, userRoleId } = useUserStore();
@@ -16,6 +15,7 @@ export default function ListingPageBody() {
     userId || undefined,
     userRoleId,
   );
+
   const { data: currentPackage } = useGetPackageRecord(
     userId || undefined,
     userRoleId,
@@ -48,34 +48,7 @@ export default function ListingPageBody() {
       </RoleGate>
 
       <section>
-        <RoleGate userRoleId={userRoleId} role="LANDLORD">
-          <Header
-            title="Listings"
-            subTitle="Here are all the houses you have listed"
-            button={<CreateListingsButton />}
-          />
-          <div className="flex items-center justify-center px-4 pt-4 pb-8">
-            <EmptyPageState
-              imageSrc={listingIllustration}
-              title="You have no listings yet"
-              subTitle="Kick start your journey with us by making your first listing. Clicking the button below"
-              button={<CreateListingsButton />}
-            />
-          </div>
-        </RoleGate>
-
-        <RoleGate userRoleId={userRoleId} role="TENANT">
-          <Header
-            title="Listings"
-            subTitle="Search and connect based on your preferences"
-          />
-          <div className="flex items-center justify-center px-4 pt-4 pb-8">
-            <EmptyPageState
-              imageSrc={listingIllustration}
-              title="There are no listings available yet"
-            />
-          </div>
-        </RoleGate>
+        <ListingContainer />
       </section>
     </>
   );

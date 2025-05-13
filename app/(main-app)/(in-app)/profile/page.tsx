@@ -2,7 +2,7 @@
 import { getUserPackageRecord } from "@/app/actions/supabase/packages";
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
 import { getUser } from "@/app/actions/supabase/user";
-import { ProfilePageBody } from "@/components/app/page-containers/profile-page-body";
+import { ProfilePageBody } from "@/components/app/page-containers/in-app/profile-page-body";
 import { hasRole } from "@/lib/utils";
 import {
   dehydrate,
