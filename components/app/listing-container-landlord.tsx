@@ -1,19 +1,19 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { RoleGate } from "../role-gate";
+import { RoleGate } from "./role-gate";
 import Link from "next/link";
 import { PlusIcon } from "@/public/icons/plus-icon";
-import { CreateListingsButton } from "../action-buttons";
-import { EmptyPageState } from "../empty-page-state";
+import { CreateListingsButton } from "./action-buttons";
+import { EmptyPageState } from "./empty-page-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Header } from "../header";
+import { Header } from "./header";
 import { useUserStore } from "@/lib/store/user-store";
 import { useState } from "react";
 import { useGetPublishedListings } from "@/hooks/tanstack/use-get-published-listings";
 import { useGetUnpublishedListings } from "@/hooks/tanstack/use-get-unpublished-listings";
 import { useGetDraftListings } from "@/hooks/tanstack/use-get-draft-listings";
-import ListingCard from "../listing-card";
-import listingIllustration from "@/public/illustrations/illustration-listings.svg";
+import ListingCard from "./listing-card";
+import listingIllustration from "@/public/illustrations/illustration-listings.png";
 import { PublicationStatusType } from "@/lib/form.types";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -56,7 +56,7 @@ export function ListingContainerLandlord() {
       isLoading: isPublishedLoading,
     },
     {
-      label: "unPublished",
+      label: "unpublished",
       value: "unpublished",
       count: unPublishedListingsData?.length,
       content: unPublishedListingsData,
@@ -117,7 +117,7 @@ export function ListingContainerLandlord() {
                     <p className="">Loading.....</p>
                   </div>
                 ) : tab.content && tab.content.length > 0 ? (
-                  <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 px-4 sm:grid-cols-2 sm:px-12 md:grid-cols-3 lg:grid-cols-4">
+                  <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 px-4 sm:grid-cols-2 sm:px-12 lg:grid-cols-3 xl:grid-cols-4">
                     {tab.content.map((listing) => (
                       <ListingCard listing={listing} key={listing.uuid} />
                     ))}
@@ -133,7 +133,7 @@ export function ListingContainerLandlord() {
         ) : (
           <div className="flex items-center justify-center px-4 pt-4 pb-8">
             <EmptyPageState
-              imageSrc={listingIllustration}
+              imageSrc={listingIllustration.src}
               title="You have no listings yet"
               subTitle="Kick start your journey with us by making your first listing. Clicking the button below"
               button={<CreateListingsButton />}

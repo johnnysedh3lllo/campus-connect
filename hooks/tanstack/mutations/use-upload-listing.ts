@@ -1,4 +1,6 @@
 import {
+  ListingImageMetadata,
+  updateListing,
   upsertListing,
   upsertListingImages,
 } from "@/app/actions/supabase/listings";
@@ -35,6 +37,10 @@ export function useUploadListing() {
 
       // Step 2: Upload each image
       const uploadImage = async (image: File, index: number) => {
+        const bitmap = await createImageBitmap(image);
+        const width = bitmap.width;
+        const height = bitmap.height;
+
         const filePath = `${userId}/${listingUUID}/${index}-${image.name}`;
 
         const { data: storageData, error } = await supabase.storage
@@ -56,15 +62,19 @@ export function useUploadListing() {
           throw new Error(`Failed to retrieve public URL for ${image.name}`);
         }
 
-        return publicUrlData.publicUrl;
+        return {
+          url: publicUrlData.publicUrl,
+          width,
+          height,
+        } as ListingImageMetadata;
       };
 
-      const imageUrls = await Promise.all(images.map(uploadImage));
+      const imageMetadata = await Promise.all(images.map(uploadImage));
 
       // Step 3: Associate images with listing
       const imageInsertResult = await upsertListingImages(
         listingUUID,
-        imageUrls,
+        imageMetadata,
       );
 
       if (!imageInsertResult.success) {
@@ -72,9 +82,8 @@ export function useUploadListing() {
       }
 
       // Step 4: Update listing publication status
-      const updatedListing = await upsertListing(userId, idemKey, {
-        ...listingDetails,
-        publicationStatus: "published",
+      const updatedListing = await updateListing(userId, listingUUID, {
+        publication_status: "published",
       });
 
       if (!updatedListing?.success) {
@@ -83,7 +92,7 @@ export function useUploadListing() {
 
       return {
         listingUUID,
-        imageUrls,
+        imageMetadata,
       };
     },
     onSuccess: (_, variable) => {

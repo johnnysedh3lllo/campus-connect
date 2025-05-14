@@ -12,7 +12,7 @@ export function useGetPublishedListings(
   const isActiveView = activeView === "published";
 
   return useQuery({
-    queryKey: ["listings", userId],
+    queryKey: ["listings", userId, pubStatus],
     queryFn: async () => await getListings(userId, pubStatus),
     enabled: !!userId && isActiveView,
     staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes

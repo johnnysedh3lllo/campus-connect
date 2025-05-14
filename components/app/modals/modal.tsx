@@ -92,7 +92,7 @@ export default function Modal({
 
           <div className="flex flex-col gap-6">
             <DialogHeader className="flex flex-col gap-2 sm:text-center">
-              <DialogTitle className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+              <DialogTitle className="text-xl capitalize leading-7.5 font-semibold sm:text-4xl sm:leading-11">
                 {title}
               </DialogTitle>
               <DialogDescription className="text text-secondary-foreground text-sm">

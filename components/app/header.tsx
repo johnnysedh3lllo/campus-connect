@@ -8,7 +8,7 @@ export function Header({ title, subTitle, children }: HeaderProps) {
           <h1 className="text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
             {title}
           </h1>
-          <p className="text-text-secondary text-sm leading-6">{subTitle}</p>
+          <p className="text-text-secondary text-sm leading-6 flex gap-2">{subTitle}</p>
         </section>
 
         {children}

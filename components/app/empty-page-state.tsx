@@ -10,6 +10,7 @@ export function EmptyPageState({
   return (
     <div className="mx-auto flex max-w-145 flex-col items-center gap-10 sm:gap-12">
       <figure className="mx-auto w-1/2">
+        {/* TODO: PASS THE WIDTH AND HEIGHT HERE */}
         <Image src={imageSrc} alt="" width={300} height={300} />
       </figure>
 

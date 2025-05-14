@@ -4,7 +4,7 @@
 import MessageContainer from "@/components/app/message-container";
 import { UserProfileCard } from "@/components/app/user-profile-card";
 import { MessageBody } from "@/components/app/message-body";
-import { UserProfileCardWrapper } from "@/components/ui/user-profile-card-wrapper";
+import { UserProfileCardWrapper } from "@/components/app/user-profile-card-wrapper";
 import { User } from "@supabase/supabase-js";
 import { useGetConversationMessages } from "@/hooks/tanstack/use-get-conversation-messages";
 import { useGetConversationParticipants } from "@/hooks/tanstack/use-get-conversation-participants";

@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
-import { formatUsersName } from "@/lib/utils";
+import { cn, formatUsersName } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
 
 import { PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
@@ -21,6 +21,9 @@ import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/us
 import { PlusIcon } from "@/public/icons/plus-icon";
 import Link from "next/link";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
+import { useUpdateListing } from "@/hooks/tanstack/mutations/use-update-listing";
+import { statusVerbMap } from "@/lib/app.config";
+import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -41,6 +44,94 @@ export function CancelListingButton() {
   return (
     <Button className="hidden h-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex">
       <CloseIconNoBorders className="size-10" />;
+    </Button>
+  );
+}
+
+export function ChangeListingPubStatusButton({
+  userId,
+  listingUUID,
+  publicationStatus,
+  setIsPublishStatusModalOpen,
+}: {
+  userId: string | null;
+  listingUUID: string;
+  publicationStatus: ListingPublicationStatus | undefined;
+  setIsPublishStatusModalOpen: Dispatch<SetStateAction<boolean>>;
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const updateListing = useUpdateListing();
+
+  const handleClick = async () => {
+    try {
+      setIsLoading(true);
+      const updatedListing = await updateListing.mutateAsync({
+        userId: userId,
+        listingUUID: listingUUID,
+        listingData: {
+          publication_status: publicationStatus,
+        },
+      });
+
+      if (!updateListing.isError) {
+        setIsPublishStatusModalOpen(false);
+        toast({
+          variant: "info",
+          description: `This listing is now  ${updatedListing?.data?.publication_status}.`,
+        });
+      } else {
+        throw updatedListing.error;
+      }
+
+      console.log(updatedListing);
+    } catch (error: any) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Button
+      disabled={isLoading}
+      className="w-full flex-1 capitalize"
+      onClick={handleClick}
+    >
+      {isLoading && <Loader2 className="animate-spin" />}
+      {isLoading
+        ? "Loading..."
+        : publicationStatus && statusVerbMap[publicationStatus]}
+    </Button>
+  );
+}
+
+export function BackButton({
+  route,
+  className,
+}: {
+  route: string;
+  className?: string;
+}) {
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(route);
+    }
+  };
+
+  return (
+    <Button
+      onClick={handleBack}
+      variant="secondary"
+      className={cn(
+        "hover:bg-background-secondary hidden size-10 items-center justify-center rounded-sm p-0 lg:flex",
+        className,
+      )}
+    >
+      <LeftChevonIcon />
     </Button>
   );
 }

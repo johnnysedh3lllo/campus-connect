@@ -41,3 +41,9 @@ export const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
 export const MAX_TOTAL_SIZE = MAX_IMAGE_SIZE * MAX_IMAGES;
 
 export const DEFAULT_STALE_TIME = 1000 * 60 * 5;
+
+export const statusVerbMap: Record<ListingPublicationStatus, string> = {
+  published: "Publish",
+  unpublished: "unpublish",
+  draft: "draft",
+};

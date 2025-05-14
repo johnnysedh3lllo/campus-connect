@@ -18,7 +18,7 @@ export async function getListings(
   try {
     let query = supabase
       .from("listings")
-      .select("*, listing_images(image_url)")
+      .select("*, listing_images(image_url, width, height)")
       .eq("landlord_id", userId);
 
     if (pubStatus) query = query.eq("publication_status", pubStatus);
@@ -32,6 +32,36 @@ export async function getListings(
     }
 
     if (!data || data.length === 0) return null;
+
+    console.log("returned data", data);
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error,
+    };
+  }
+}
+
+export async function getListingByUUID(listingUUID: string) {
+  const supabase = await createClient();
+
+  try {
+    let { data, error } = await supabase
+      .from("listings")
+      .select("*, listing_images(image_url, width, height)")
+      .eq("uuid", listingUUID)
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) return null;
 
     console.log("returned data", data);
     return {
@@ -112,20 +142,68 @@ export async function upsertListing(
   }
 }
 
+export async function updateListing(
+  userId: string | null,
+  listingUUID: string | undefined,
+  listingData: ListingsUpdate,
+) {
+  if (!userId || !listingUUID) {
+    throw new Error("UserId and ListingUUID are required to update a listing");
+  }
+
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("listings")
+      .update(listingData)
+      .eq("uuid", listingUUID)
+      .eq("landlord_id", userId)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) return null;
+
+    console.log("returned data", data);
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error,
+    };
+  }
+}
+
+export type ListingImageMetadata = {
+  url: string;
+  width: number;
+  height: number;
+};
+
 export async function upsertListingImages(
   listingUUID: ListingImages["listing_uuid"] | undefined,
-  listingImageUrls: string[],
+  listingImageMetadata: ListingImageMetadata[],
 ) {
   const supabase = await createClient();
 
-  console.log("listing image urls:", listingImageUrls);
+  console.log("listing image urls:", listingImageMetadata);
 
   try {
-    const listingImageInsert: ListingImagesInsert[] = listingImageUrls.map(
-      (url) => {
+    const listingImageInsert: ListingImagesInsert[] = listingImageMetadata.map(
+      (image) => {
         return {
           listing_uuid: listingUUID,
-          image_url: url,
+          image_url: image.url,
+          width: image.width,
+          height: image.height,
         } as ListingImagesInsert;
       },
     );

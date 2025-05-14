@@ -9,14 +9,15 @@ declare global {
   interface Database extends DB {}
 
   type Listings = Tables<"listings">;
-
-  type ListingWithImages = Listings & {
-    listing_images: Pick<ListingImages, "image_url">[];
-  };
-
   type ListingsInsert = TablesInsert<"listings">;
+  type ListingsUpdate = TablesUpdate<"listings">;
+
   type ListingImages = Tables<"listing_images">;
   type ListingImagesInsert = TablesInsert<"listing_images">;
+  type ListingWithImages = Listings & {
+    listing_images: Pick<ListingImages, "image_url" | "width" | "height">[];
+  };
+  type ListingPublicationStatus = ListingWithImages["publication_status"];
 
   type Messages = Tables<"visible_messages_for_user"> & {
     // Add this to track optimistic updates

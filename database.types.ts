@@ -179,19 +179,28 @@ export type Database = {
       }
       listing_images: {
         Row: {
+          created_at: string
+          height: number | null
           id: number
           image_url: string
           listing_uuid: string
+          width: number | null
         }
         Insert: {
+          created_at?: string
+          height?: number | null
           id?: never
           image_url: string
           listing_uuid: string
+          width?: number | null
         }
         Update: {
+          created_at?: string
+          height?: number | null
           id?: never
           image_url?: string
           listing_uuid?: string
+          width?: number | null
         }
         Relationships: [
           {

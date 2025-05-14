@@ -1,12 +1,10 @@
 "use client";
-import { Header } from "../../header";
-import { EmptyPageState } from "../../empty-page-state";
 import { RoleGate } from "../../role-gate";
 import { PremiumBanner } from "../../premium-banner";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import { useGetPackageRecord } from "@/hooks/tanstack/use-get-current-package";
-import { ListingContainer } from "../../skeletons/listings-container";
+import { ListingContainer } from "../../listings-container";
 
 export default function ListingPageBody() {
   const { userId, userRoleId } = useUserStore();

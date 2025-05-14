@@ -397,51 +397,50 @@ export function PhotoUploadForm() {
           {steps[step]}
         </h2>
 
-        <FormField
-          control={form.control}
-          name="photos"
-          render={() => (
-            <FormItem className="flex flex-col items-center gap-4">
-              <div className="border-input w-full rounded-md border p-6">
-                <FormControl>
-                  <div className="border-line-blue bg-background-secondary flex flex-col items-center gap-6 rounded-md border border-dashed p-4 sm:p-6 lg:p-12">
-                    <div className="mx-auto flex max-w-58 flex-col items-center gap-3">
-                      <CloudArrowUpIcon />
-                      <p className="flex flex-col text-center">
-                        Upload images of your property
-                        <span>(JPEG, PNG)</span>
-                      </p>
+        <div className="flex flex-col gap-3 sm:gap-6">
+          <FormField
+            control={form.control}
+            name="photos"
+            render={() => (
+              <FormItem className="flex flex-col items-center gap-4">
+                <div className="border-input w-full rounded-md border p-6">
+                  <FormControl>
+                    <div className="border-line-blue bg-background-secondary flex flex-col items-center gap-6 rounded-md border border-dashed p-4 sm:p-6 lg:p-12">
+                      <div className="mx-auto flex max-w-58 flex-col items-center gap-3">
+                        <CloudArrowUpIcon />
+                        <p className="flex flex-col text-center">
+                          Upload images of your property
+                          <span>(JPEG, PNG)</span>
+                        </p>
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="border-line border bg-white px-10 py-2 font-medium hover:bg-gray-50"
+                        onClick={() =>
+                          document.getElementById("file-upload")?.click()
+                        }
+                      >
+                        Upload file
+                      </Button>
+
+                      <input
+                        id="file-upload"
+                        type="file"
+                        multiple
+                        accept="image/jpeg,image/png"
+                        className="sr-only"
+                        onChange={handleFileChange}
+                        onClick={(e) => e.stopPropagation()}
+                      />
                     </div>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="border-line border bg-white px-10 py-2 font-medium hover:bg-gray-50"
-                      onClick={() =>
-                        document.getElementById("file-upload")?.click()
-                      }
-                    >
-                      Upload file
-                    </Button>
-
-                    <input
-                      id="file-upload"
-                      type="file"
-                      multiple
-                      accept="image/jpeg,image/png"
-                      className="sr-only"
-                      onChange={handleFileChange}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </div>
-                </FormControl>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="flex flex-col gap-3">
+                  </FormControl>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Separator />
 
           {/* Photo count */}
@@ -671,6 +670,7 @@ export function PreviewPage() {
   const {
     formState: { isSubmitting },
   } = form;
+
   const createListingMutation = useUploadListing();
   const updateCreditMutation = useUpdateCreditRecord();
 

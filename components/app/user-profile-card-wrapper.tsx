@@ -1,8 +1,8 @@
 "use client";
 
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import { Button } from "./button";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
+import { Button } from "../ui/button";
 
 export function UserProfileCardWrapper({
   children,

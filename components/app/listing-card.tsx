@@ -23,20 +23,21 @@ export default function ListingCard({
   const formattedPrice = formatNumberWithSuffix(price);
   const listingId = listing.uuid;
 
-  console.log("formatted price", formattedPrice);
-
-  const imgSrc =
-    listing.listing_images[0]?.image_url ||
+  const firstImage = listing.listing_images[0];
+  const imageSrc =
+    firstImage?.image_url ||
     "/illustrations/illustration-house-placeholder.jpg";
+  const width = firstImage.width ?? 0;
+  const height = firstImage.height ?? 0;
 
   return (
-    <article className="flex w-full max-w-79 flex-col items-stretch gap-4 rounded-md border px-3 pt-3 pb-4">
+    <article className="flex w-full flex-col items-stretch gap-4 rounded-md border px-3 pt-3 pb-4">
       <figure className="group aspect-auto h-50 w-full overflow-hidden rounded-md">
         <Image
-          src={imgSrc}
+          src={imageSrc}
           alt={listing.title || "Listing Image"}
-          width={292}
-          height={200}
+          width={width}
+          height={height}
           onError={(e) => {
             e.currentTarget.src =
               "/illustrations/illustration-house-placeholder.jpg";
@@ -48,18 +49,18 @@ export default function ListingCard({
         {listing.location && (
           <div className="text-text-secondary flex gap-2">
             <LocationIcon />
-            <p className="w-[14ch] truncate">{listing.location}</p>
+            <p className="w-full truncate">{listing.location}</p>
           </div>
         )}
         {listing.title && (
-          <h2 className="text-text-primary w-[14ch] truncate text-2xl font-semibold capitalize">
+          <h2 className="text-text-primary w-full truncate text-2xl font-semibold capitalize">
             {listing.title}
           </h2>
         )}
       </section>
-      <section className="grid grid-cols-2 items-center text-sm">
+      <section className="flex items-center justify-between gap-2 text-sm">
         <p>
-          <span className="text-xl font-semibold">${price}</span>/
+          <span className="text-xl font-semibold">${formattedPrice}</span>/
           {paymentFrequency}
         </p>
 

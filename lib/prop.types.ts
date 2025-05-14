@@ -96,7 +96,7 @@ export type LoginPromptProps = {
 
 export type HeaderProps = {
   title: string;
-  subTitle: string;
+  subTitle: string | React.ReactNode;
   children?: React.ReactNode;
 };
 
