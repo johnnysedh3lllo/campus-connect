@@ -96,9 +96,9 @@ export default function ListingIdPageBody({
   };
 
   return (
-    <section className="max-w-screen-max-xl mx-auto px-4 py-5 sm:px-12 sm:py-10 lg:px-6 lg:py-12">
+    <section className="max-w-screen-max-xl mx-auto z-10 bg-background px-4 pb-5 sm:px-12 sm:pb-10 lg:px-6 lg:pb-12">
       <div className="flex flex-col gap-6">
-        <section className="flex flex-col-reverse items-center justify-between gap-3 lg:flex-row">
+        <section className="flex flex-col-reverse items-center justify-between gap-3 sticky z-20 py-6 top-0 left-0 right-0 bg-background lg:flex-row">
           <section className="flex w-full gap-3">
             <BackButton route="/listings" />
             <header className="flex flex-col gap-3">
@@ -163,7 +163,7 @@ export default function ListingIdPageBody({
           </div>
         </section>
 
-        <section className="grid grid-cols-1 gap-6 sm:grid-cols-[3fr_1fr]">
+        <section className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_1fr]">
           <section className="flex flex-3 flex-col gap-6">
             <ListingImageGallery imageMetadata={images} />
 

@@ -185,6 +185,7 @@
   /* SPACING */
   --spacing-0.6: 0.6px --spacing-30: 7.5rem;
   --spacing-30.5: 7.75rem;
+  ---z-15: 15;
 }
 
 :root {
@@ -271,6 +272,7 @@
   --chart-5: hsl(27 87% 67%);
 
   --radius: 0.5rem;
+  ---z-15: var(---z-15);
 }
 
 /* .dark {
