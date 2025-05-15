@@ -6,8 +6,6 @@ import { UserMetadata } from "@supabase/supabase-js";
 import { format, isBefore, subMonths, formatDistanceToNow } from "date-fns";
 import { Role, ROLES } from "./app.config";
 import { z } from "zod";
-import { useCreateListingsStore } from "./store/create-listings-store";
-import { PaymentFrequencyType } from "./form.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -224,4 +222,10 @@ export const stringToNumber = z.string().transform((val) => {
 
 export const clearLocalStorage = (storageName: string) => {
   localStorage.removeItem(storageName);
+};
+
+export const getImageUrls = (
+  images: Pick<ListingImages, "image_url" | "height" | "width">[],
+) => {
+  return images.map((image) => image.image_url);
 };

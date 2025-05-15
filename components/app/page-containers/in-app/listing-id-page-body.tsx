@@ -17,7 +17,11 @@ import Modal from "../../modals/modal";
 import { ModalProps } from "@/lib/prop.types";
 import Image from "next/image";
 import { useUserStore } from "@/lib/store/user-store";
-import { BackButton, ChangeListingPubStatusButton } from "../../action-buttons";
+import {
+  BackButton,
+  ChangeListingPubStatusButton,
+  DeleteListingButton,
+} from "../../action-buttons";
 import { statusVerbMap } from "@/lib/app.config";
 import { Separator } from "@/components/ui/separator";
 import { BedIcon } from "@/public/icons/bed-icon";
@@ -27,8 +31,12 @@ import {
   formatCurrency,
   formatNumberWithSuffix,
   frequencyMap,
+  getImageUrls,
 } from "@/lib/utils";
 import { ListingImageGallery } from "../../listing-image-gallery";
+import { BinIcon } from "@/public/icons/bin-icon";
+import { ListingImageMetadata } from "@/app/actions/supabase/listings";
+import { ListingDetailSkeleton } from "../../skeletons/listing-details-skeleton";
 
 export default function ListingIdPageBody({
   listingUUID,
@@ -39,6 +47,8 @@ export default function ListingIdPageBody({
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
   const [isPublishStatusModalOpen, setIsPublishStatusModalOpen] =
     useState(false);
+  const [isDeleteListingModalOpen, setIsDeleteListingModalOpen] =
+    useState(false);
   const [selectedOption, setSelectedOption] = useState<
     ListingPublicationStatus | undefined
   >(undefined);
@@ -47,7 +57,7 @@ export default function ListingIdPageBody({
 
   type ListingPublicationStatus = "published" | "unpublished";
 
-  const { data } = useGetListingByUUID(listingUUID);
+  const { data, isLoading } = useGetListingByUUID(listingUUID);
 
   const listingData = data?.data;
   const title = listingData?.title;
@@ -57,10 +67,15 @@ export default function ListingIdPageBody({
     listingData?.payment_frequency &&
     frequencyMap[listingData?.payment_frequency];
   const price = formatCurrency(listingData?.price ?? 0, "internal");
-  const noOfBedrooms = listingData?.no_of_bedrooms;
+  const noOfBedrooms =
+    listingData?.no_of_bedrooms && listingData?.no_of_bedrooms > 1
+      ? `${listingData?.no_of_bedrooms} Rooms`
+      : `${listingData?.no_of_bedrooms} Room`;
+
   const homeType = listingData?.listing_type;
   const description = listingData?.description;
   const images = listingData?.listing_images;
+  const imageUrls = getImageUrls(images ?? []);
 
   const formattedPrice = formatNumberWithSuffix(price);
 
@@ -71,7 +86,7 @@ export default function ListingIdPageBody({
   }
 
   const publicationStatusModalProps: ModalProps = {
-    modalId: "land_publication_status",
+    modalId: "land_listings_publication_status",
     variant: "neutral",
     title: `${selectedOption && statusVerbMap[selectedOption]} Listing`,
     description: `You are about to change the status of this property, you can always change it anytime you want.`,
@@ -95,10 +110,34 @@ export default function ListingIdPageBody({
     ),
   };
 
+  const deleteListingModalProps: ModalProps = {
+    modalId: "land_listing_delete",
+    variant: "error",
+    title: "Delete Listing",
+    description:
+      "You are about to delete this property from your listing, are you sure you want to continue?",
+    modalImage: <BinIcon />,
+    open: isDeleteListingModalOpen,
+    setOpen: setIsDeleteListingModalOpen,
+    modalActionButton: (
+      <DeleteListingButton
+        userId={userId}
+        listingUUID={listingUUID}
+        publicationStatus={currentPubStatus}
+        imageUrls={imageUrls}
+        setIsDeleteListingModalOpen={setIsDeleteListingModalOpen}
+      />
+    ),
+  };
+
+  if (isLoading) {
+    return <ListingDetailSkeleton />;
+  }
+
   return (
-    <section className="max-w-screen-max-xl mx-auto z-10 bg-background px-4 pb-5 sm:px-12 sm:pb-10 lg:px-6 lg:pb-12">
+    <section className="max-w-screen-max-xl bg-background z-10 mx-auto px-4 pb-5 sm:px-12 sm:pb-10 lg:px-6 lg:pb-12">
       <div className="flex flex-col gap-6">
-        <section className="flex flex-col-reverse items-center justify-between gap-3 sticky z-20 py-6 top-0 left-0 right-0 bg-background lg:flex-row">
+        <section className="bg-background flex flex-col-reverse items-center justify-between gap-3 py-6 lg:flex-row">
           <section className="flex w-full gap-3">
             <BackButton route="/listings" />
             <header className="flex flex-col gap-3">
@@ -152,7 +191,10 @@ export default function ListingIdPageBody({
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild>
-                    <button className="text-text-accent flex w-full items-center gap-2 p-2">
+                    <button
+                      onClick={() => setIsDeleteListingModalOpen(true)}
+                      className="text-text-accent flex w-full items-center gap-2 p-2"
+                    >
                       <BinStrokeIcon className="text-text-accent" />
                       <span className="text-sm leading-6">Delete</span>
                     </button>
@@ -208,9 +250,7 @@ export default function ListingIdPageBody({
                   </h3>
 
                   <p className="text-text-primary text-base leading-6 font-semibold">
-                    {noOfBedrooms && noOfBedrooms > 1
-                      ? `${noOfBedrooms} Rooms`
-                      : `${noOfBedrooms} Room`}
+                    {noOfBedrooms}
                   </p>
                 </section>
               </div>
@@ -237,6 +277,7 @@ export default function ListingIdPageBody({
       </div>
 
       <Modal {...publicationStatusModalProps} />
+      <Modal {...deleteListingModalProps} />
     </section>
   );
 }

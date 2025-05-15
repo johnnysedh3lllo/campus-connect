@@ -159,6 +159,7 @@ export type CreatePasswordProps = {
   handleCreatePassword: (values: CreatePasswordFormType) => void;
 };
 
+// TODO: CHANGE ERROR TO DESTRUCTIVE
 export type ModalVariants = "default" | "neutral" | "success" | "error";
 export type ModalProps = {
   variant?: ModalVariants;

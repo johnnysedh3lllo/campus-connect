@@ -24,6 +24,7 @@ import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useUpdateListing } from "@/hooks/tanstack/mutations/use-update-listing";
 import { statusVerbMap } from "@/lib/app.config";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
+import { useDeleteListing } from "@/hooks/tanstack/mutations/use-delete-listing";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -62,7 +63,7 @@ export function ChangeListingPubStatusButton({
   const [isLoading, setIsLoading] = useState(false);
   const updateListing = useUpdateListing();
 
-  const handleClick = async () => {
+  const handleStatusChange = async () => {
     try {
       setIsLoading(true);
       const updatedListing = await updateListing.mutateAsync({
@@ -95,12 +96,70 @@ export function ChangeListingPubStatusButton({
     <Button
       disabled={isLoading}
       className="w-full flex-1 capitalize"
-      onClick={handleClick}
+      onClick={handleStatusChange}
     >
       {isLoading && <Loader2 className="animate-spin" />}
       {isLoading
         ? "Loading..."
         : publicationStatus && statusVerbMap[publicationStatus]}
+    </Button>
+  );
+}
+
+export function DeleteListingButton({
+  userId,
+  listingUUID,
+  publicationStatus,
+  setIsDeleteListingModalOpen,
+  imageUrls,
+}: {
+  userId: string | null;
+  listingUUID: string;
+  publicationStatus: ListingPublicationStatus | undefined;
+  setIsDeleteListingModalOpen: Dispatch<SetStateAction<boolean>>;
+  imageUrls: string[];
+}) {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const deleteListing = useDeleteListing();
+
+  const handleDelete = async () => {
+    try {
+      setIsLoading(true);
+      const deletedListing = await deleteListing.mutateAsync({
+        userId: userId,
+        listingUUID: listingUUID,
+        publicationStatus: publicationStatus,
+        imageUrls,
+      });
+
+      if (!deleteListing.isError) {
+        setIsDeleteListingModalOpen(false);
+        toast({
+          variant: "info",
+          title: "Property Deleted!",
+          description: `You have successfully deleted the ${deletedListing?.data?.title} property from your listings`,
+        });
+        router.push("/listings");
+      } else {
+        throw deletedListing.error;
+      }
+    } catch (error: any) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Button
+      disabled={isLoading}
+      className="w-full flex-1 capitalize"
+      onClick={handleDelete}
+    >
+      {isLoading && <Loader2 className="animate-spin" />}
+      {isLoading ? "Loading..." : "Delete"}
     </Button>
   );
 }

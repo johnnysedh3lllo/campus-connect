@@ -182,6 +182,69 @@ export async function updateListing(
   }
 }
 
+export async function deleteListing(
+  userId: string | null,
+  listingUUID: string | undefined,
+) {
+  if (!userId || !listingUUID) {
+    throw new Error("UserId and ListingUUID are required to delete a listing");
+  }
+
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase
+      .from("listings")
+      .delete()
+      .eq("uuid", listingUUID)
+      .eq("landlord_id", userId)
+      .select()
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) return null;
+
+    console.log("returned data", data);
+    return {
+      success: true,
+      data,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error,
+    };
+  }
+}
+
+export async function deleteListingImagesInStorage(imageUrls: string[]) {
+  const supabase = await createClient();
+
+  try {
+    const { error } = await supabase.storage.from("avatars").remove(imageUrls);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log("Images have be deleted successfully");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error,
+    };
+  }
+}
+
 export type ListingImageMetadata = {
   url: string;
   width: number;

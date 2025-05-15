@@ -16,6 +16,7 @@ import ListingCard from "./listing-card";
 import listingIllustration from "@/public/illustrations/illustration-listings.png";
 import { PublicationStatusType } from "@/lib/form.types";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ListingsCardGridSkeleton } from "./skeletons/listings-card-grid-skeleton";
 
 export function ListingContainerLandlord() {
   const { userId, userRoleId } = useUserStore();
@@ -38,14 +39,14 @@ export function ListingContainerLandlord() {
   const unPublishedListingsData = unPublishedListings?.data;
   const draftListingsData = draftListings?.data;
 
-  const hasPublishedListings =
-    publishedListingsData && publishedListingsData.length > 0;
-  const hasUnPublishedListings =
-    unPublishedListingsData && unPublishedListingsData.length > 0;
-  const hasDraftListings = draftListingsData && draftListingsData.length > 0;
+  const isAnyLoading =
+    isPublishedLoading || isUnpublishedLoading || isDraftLoading;
 
-  const hasListings =
-    hasPublishedListings || hasUnPublishedListings || hasDraftListings;
+  const allQueriesFinished = !isAnyLoading;
+  const allTabsEmpty =
+    (!publishedListingsData || publishedListingsData.length === 0) &&
+    (!unPublishedListingsData || unPublishedListingsData.length === 0) &&
+    (!draftListingsData || draftListingsData.length === 0);
 
   const tabData = [
     {
@@ -84,53 +85,33 @@ export function ListingContainerLandlord() {
         <CreateListingsButton />
       </Header>
 
-      <>
-        {hasListings ? (
-          <Tabs
-            value={activeTab}
-            onValueChange={(value: string) =>
-              updateActiveTab(value as PublicationStatusType)
-            }
-            className="w-full gap-6 pb-6"
-          >
-            {/* TODO: DEVISE A WAY TO REMOVE ACHIEVE STICKY WITHOUT THIS ARBITRARY top-[125px] */}
-            <TabsList className="bg-background-secondary sticky top-[105px] z-20 w-full items-end justify-start gap-3 rounded-none border-b p-0 pt-6 sm:top-[125px]">
-              <div className="max-w-screen-max-xl mx-auto w-full">
-                <div className="listing-image-preview-container flex h-full w-full max-w-fit items-end gap-3 overflow-x-auto px-4 sm:px-6">
-                  {tabData.map((tab) => (
-                    <TabsTrigger
-                      className="cursor-pointer capitalize"
-                      key={tab.value}
-                      value={tab.value}
-                    >
-                      {tab.label} {tab.count ? `(${tab.count})` : "(-)"}
-                    </TabsTrigger>
-                  ))}
-                </div>
-              </div>
-            </TabsList>
+      <Tabs
+        value={activeTab}
+        onValueChange={(value: string) =>
+          updateActiveTab(value as PublicationStatusType)
+        }
+        className="w-full gap-6 pb-6"
+      >
+        {/* TODO: DEVISE A WAY TO REMOVE ACHIEVE STICKY WITHOUT THIS ARBITRARY top-[105px] */}
+        <TabsList className="bg-background-secondary sticky top-[105px] z-20 w-full items-end justify-start gap-3 rounded-none border-b p-0 pt-6 sm:top-[125px]">
+          <div className="max-w-screen-max-xl mx-auto w-full">
+            <div className="listing-image-preview-container flex h-full w-full max-w-fit items-end gap-3 overflow-x-auto px-4 sm:px-6">
+              {tabData.map((tab) => (
+                <TabsTrigger
+                  className="cursor-pointer capitalize"
+                  key={tab.value}
+                  value={tab.value}
+                >
+                  {tab.label} {tab.count ? `(${tab.count})` : "(-)"}
+                </TabsTrigger>
+              ))}
+            </div>
+          </div>
+        </TabsList>
 
-            {tabData.map((tab) => (
-              <TabsContent key={tab.value} value={tab.value}>
-                {tab.isLoading ? (
-                  <div className="max-w-screen-max-xl mx-auto w-full text-center">
-                    <p className="">Loading.....</p>
-                  </div>
-                ) : tab.content && tab.content.length > 0 ? (
-                  <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 px-4 sm:grid-cols-2 sm:px-12 lg:grid-cols-3 xl:grid-cols-4">
-                    {tab.content.map((listing) => (
-                      <ListingCard listing={listing} key={listing.uuid} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="max-w-screen-max-xl mx-auto w-full text-center">
-                    <p className="">You don't have any listings here</p>
-                  </div>
-                )}
-              </TabsContent>
-            ))}
-          </Tabs>
-        ) : (
+        {isAnyLoading ? (
+          <ListingsCardGridSkeleton />
+        ) : allQueriesFinished && allTabsEmpty ? (
           <div className="flex items-center justify-center px-4 pt-4 pb-8">
             <EmptyPageState
               imageSrc={listingIllustration.src}
@@ -139,8 +120,24 @@ export function ListingContainerLandlord() {
               button={<CreateListingsButton />}
             />
           </div>
+        ) : (
+          tabData.map((tab) => (
+            <TabsContent key={tab.value} value={tab.value}>
+              {tab.content && tab.content.length > 0 ? (
+                <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 px-4 sm:grid-cols-2 sm:px-12 lg:grid-cols-3 xl:grid-cols-4">
+                  {tab.content.map((listing) => (
+                    <ListingCard listing={listing} key={listing.uuid} />
+                  ))}
+                </div>
+              ) : (
+                <div className="max-w-screen-max-xl mx-auto w-full text-center">
+                  <p className="">You don't have any listings here</p>
+                </div>
+              )}
+            </TabsContent>
+          ))
         )}
-      </>
+      </Tabs>
 
       <Link href="/listings/create">
         <Button className="fixed right-4 bottom-4 z-20 rounded-md p-4 sm:hidden">

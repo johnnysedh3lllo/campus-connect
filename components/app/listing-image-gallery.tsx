@@ -1,22 +1,14 @@
 "use strict";
 
 import Image from "next/image";
-import { ListingImage } from "./listing-image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import {
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from "@/components/ui/carousel";
-import { Carousel, CarouselContent, CarouselItem } from "../ui/carousel";
 import { ListingImageCarousel } from "./listing-image-carousel";
 
 export function ListingImageGallery({
@@ -27,12 +19,18 @@ export function ListingImageGallery({
   const [open, setOpen] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
 
-  const limitedImages = imageMetadata?.slice(0, 3) ?? [];
+  const imagesToShow = imageMetadata?.slice(0, 3) ?? [];
+  const layoutClass =
+    imagesToShow.length === 3
+      ? "grid-cols-[3fr_1.5fr] grid-rows-2"
+      : imagesToShow.length === 2
+        ? "grid-cols-[3fr_1.5fr]"
+        : "grid-cols-1";
 
   const getImageProps = (index: number) => {
-    const img = limitedImages[index];
+    const img = imagesToShow[index];
     return {
-      src: img?.image_url ?? "/placeholder-image.jpg",
+      src: img?.image_url ?? "https://placehold.co/600x400",
       width: img?.width ?? 0,
       height: img?.height ?? 0,
     };
@@ -51,7 +49,8 @@ export function ListingImageGallery({
         className="sm:hidden"
       />
 
-      <div className="hidden w-full grid-cols-[3fr_1.5fr] grid-rows-2 sm:grid">
+      <div className={`hidden w-full ${layoutClass} sm:grid`}>
+        {/* Main image */}
         <figure className="col-start-1 col-end-2 row-span-3 cursor-pointer pr-2">
           <Image
             {...getImageProps(1)}
@@ -61,23 +60,31 @@ export function ListingImageGallery({
           />
         </figure>
 
-        <figure className="col-start-2 row-start-1 row-end-2 cursor-pointer pb-2">
-          <Image
-            {...getImageProps(0)}
-            alt=""
-            className="h-full w-full object-cover"
-            onClick={() => handleOpen(0)}
-          />
-        </figure>
+        {/* 2nd image */}
+        {imagesToShow.length >= 2 && (
+          <figure
+            className={`col-start-2 row-start-1 ${imagesToShow.length === 3 ? "row-end-2" : "row-end-5"} cursor-pointer pb-2`}
+          >
+            <Image
+              {...getImageProps(0)}
+              alt=""
+              className="h-full w-full object-cover"
+              onClick={() => handleOpen(0)}
+            />
+          </figure>
+        )}
 
-        <figure className="col-start-2 row-start-2 row-end-3 cursor-pointer">
-          <Image
-            {...getImageProps(2)}
-            alt=""
-            className="h-full w-full object-cover"
-            onClick={() => handleOpen(2)}
-          />
-        </figure>
+        {/* 3rd image */}
+        {imagesToShow.length === 3 && (
+          <figure className="col-start-2 row-start-2 row-end-3 cursor-pointer">
+            <Image
+              {...getImageProps(2)}
+              alt=""
+              className="h-full w-full object-cover"
+              onClick={() => handleOpen(2)}
+            />
+          </figure>
+        )}
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
