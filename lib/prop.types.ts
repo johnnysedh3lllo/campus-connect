@@ -97,7 +97,9 @@ export type LoginPromptProps = {
 export type HeaderProps = {
   title: string;
   subTitle: string | React.ReactNode;
+  subTitleIcon?: React.ReactNode;
   children?: React.ReactNode;
+  className?: string
 };
 
 export interface EmptyPageStateProps {

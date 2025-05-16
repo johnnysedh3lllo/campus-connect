@@ -25,6 +25,7 @@ import { useUpdateListing } from "@/hooks/tanstack/mutations/use-update-listing"
 import { statusVerbMap } from "@/lib/app.config";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 import { useDeleteListing } from "@/hooks/tanstack/mutations/use-delete-listing";
+import { useBackToLastPage } from "@/hooks/use-back-to-last-page";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -139,7 +140,7 @@ export function DeleteListingButton({
         toast({
           variant: "info",
           title: "Property Deleted!",
-          description: `You have successfully deleted the ${deletedListing?.data?.title} property from your listings`,
+          description: `You have successfully deleted the "${deletedListing?.data?.title}" property from your listings`,
         });
         router.push("/listings");
       } else {
@@ -171,22 +172,14 @@ export function BackButton({
   route: string;
   className?: string;
 }) {
-  const router = useRouter();
-
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      router.push(route);
-    }
-  };
+  const backToLastPage = useBackToLastPage("/listings");
 
   return (
     <Button
-      onClick={handleBack}
+      onClick={backToLastPage}
       variant="secondary"
       className={cn(
-        "hover:bg-background-secondary hidden size-10 items-center justify-center rounded-sm p-0 lg:flex",
+        "hover:bg-background-secondary  size-10 items-center justify-center rounded-sm p-0",
         className,
       )}
     >

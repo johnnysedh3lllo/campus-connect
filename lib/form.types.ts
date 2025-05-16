@@ -18,7 +18,7 @@ import {
   conversationFormSchema,
   purchasePackageFormSchema,
   purchaseFormSchema,
-  createListingFormSchema,
+  listingFormSchema,
   homeDetailsFormSchema,
   photoUploadFormSchema,
   pricingFormSchema,
@@ -50,7 +50,10 @@ export type PurchasePackageFormType = z.infer<typeof purchasePackageFormSchema>;
 
 export type PaymentFrequencyType = z.infer<typeof PaymentFrequencyEnum>;
 export type PublicationStatusType = z.infer<typeof PublicationStatusEnum>;
-export type CreateListingFormType = z.infer<typeof createListingFormSchema>;
+
+export type CreateListingFormType = z.infer<typeof listingFormSchema>;
+export type EditListingFormType = z.infer<typeof listingFormSchema>;
+
 export type UpsertListingType = z.infer<typeof upsertListingSchema>;
 
 export type HomeDetailsFormType = z.infer<typeof homeDetailsFormSchema>;

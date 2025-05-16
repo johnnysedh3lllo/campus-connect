@@ -1,8 +1,8 @@
+"use client";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4, validate } from "uuid";
 import {
-  createListingFormSchema,
+  listingFormSchema,
   homeDetailsFormSchema,
   HomeTypeEnum,
   PaymentFrequencyEnum,
@@ -31,7 +31,10 @@ import {
 import { LocationIcon } from "@/public/icons/location-icon";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { useCreateListingsStore } from "@/lib/store/create-listings-store";
+import {
+  CreateListingsState,
+  useCreateListingsStore,
+} from "@/lib/store/create-listings-store";
 import {
   CreateListingFormType,
   HomeDetailsFormType,
@@ -54,58 +57,27 @@ import Image from "next/image";
 
 import { PhotoCarousel } from "./listing-photo-preview-carousel";
 import { CreditBalance } from "./credit-balance";
-import { useUserStore } from "@/lib/store/user-store";
-import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
-import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
-import { MIN_CREDITS } from "@/lib/app.config";
-import Modal from "./modals/modal";
-import { SadFaceIcon } from "@/public/icons/sad-face-icon";
-import { ModalProps } from "@/lib/prop.types";
-import BuyCredits from "./buy-credits";
-import Link from "next/link";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { useUploadListing } from "@/hooks/tanstack/mutations/use-upload-listing";
-import { SuccessShieldIcon } from "@/public/icons/success-shield-icon";
-import { useUpdateCreditRecord } from "@/hooks/tanstack/mutations/use-update-credit-record";
-import { useClearListingStore } from "@/lib/store/store-utils";
-import { useRouter } from "next/navigation";
+import { EditListingsState } from "@/lib/store/edit-listings-store";
 
-export function HomeDetailsForm() {
-  const { step, steps, data, nextStep, prevStep, setData } =
-    useCreateListingsStore();
+export function HomeDetailsForm({
+  defaultValues,
+  onSubmit,
+  useListingStore,
+}: {
+  defaultValues: HomeDetailsFormType;
+  onSubmit: (values: HomeDetailsFormType) => void;
+  useListingStore: () => CreateListingsState | EditListingsState;
+}) {
+  const { step, steps, prevStep } = useListingStore();
 
   // Define the form
   const form = useForm<HomeDetailsFormType>({
     resolver: zodResolver(homeDetailsFormSchema),
-    defaultValues: {
-      title: data.title ?? "",
-      noOfBedrooms: data.noOfBedrooms ?? 1,
-      listingType: data.listingType ?? undefined,
-      location: data.listingType ?? "",
-      description: data.description ?? "",
-    },
+    defaultValues: defaultValues,
     mode: "onChange",
   });
-
-  //   useEffect(() => {
-  //     if (homeDetails) {
-  //       form.reset({
-  //         title: homeDetails.title || "",
-  //         noOfBedRooms: homeDetails.noOfBedRooms || "",
-  //         listingType: homeDetails.listingType || "condo",
-  //         location: homeDetails.location || "",
-  //         description: homeDetails.description || "",
-  //       });
-  //     }
-  //   }, [homeDetails, form]);
-
-  // Handle form submission
-
-  function onSubmit(values: HomeDetailsFormType) {
-    setData(values);
-    nextStep();
-  }
 
   // Handle back button
   function handleBack() {
@@ -272,17 +244,22 @@ export function HomeDetailsForm() {
   );
 }
 
-export function PhotoUploadForm() {
-  const { step, steps, data, setData, nextStep, prevStep } =
-    useCreateListingsStore();
+export function PhotoUploadForm({
+  defaultValues,
+  onSubmit,
+  useListingStore,
+}: {
+  defaultValues: PhotoUploadFormType;
+  onSubmit: (values: PhotoUploadFormType) => void;
+  useListingStore: () => CreateListingsState | EditListingsState;
+}) {
+  const { step, steps, data, prevStep } = useListingStore();
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   // Initialize form with React Hook Form and Zod validation
   const form = useForm<PhotoUploadFormType>({
     resolver: zodResolver(photoUploadFormSchema),
-    defaultValues: {
-      photos: data.photos || [],
-    },
+    defaultValues: defaultValues,
   });
 
   const {
@@ -379,14 +356,6 @@ export function PhotoUploadForm() {
     setPreviewUrls(updatedPreviewUrls);
   };
 
-  // Handle form submission
-  function onSubmit(values: PhotoUploadFormType) {
-    setData(values);
-
-    // Move to the next step in the form
-    nextStep();
-  }
-
   return (
     <Form {...form}>
       <form
@@ -477,24 +446,22 @@ export function PhotoUploadForm() {
   );
 }
 
-export function PricingForm() {
-  const { setData, nextStep, prevStep, steps, data, step } =
-    useCreateListingsStore();
+export function PricingForm({
+  defaultValues,
+  onSubmit,
+  useListingStore,
+}: {
+  defaultValues: PricingFormType;
+  onSubmit: (values: PricingFormType) => void;
+  useListingStore: () => CreateListingsState | EditListingsState;
+}) {
+  const { prevStep, steps, step } = useListingStore();
 
   const form = useForm<PricingFormType>({
     resolver: zodResolver(pricingFormSchema),
-    defaultValues: {
-      paymentFrequency: data.paymentFrequency ?? undefined,
-      price: data.price ?? 1,
-    },
+    defaultValues: defaultValues,
     mode: "onChange",
   });
-
-  // Handle form submission
-  function onSubmit(values: PricingFormType) {
-    setData(values);
-    nextStep();
-  }
 
   function handleBack() {
     prevStep();
@@ -605,27 +572,22 @@ export function PricingForm() {
   );
 }
 
-export function PreviewPage() {
-  const { userId, userRoleId } = useUserStore();
-  const { step, steps, prevStep, data, setData } = useCreateListingsStore();
-  const clearStoreStorage = useClearListingStore();
-
-  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const router = useRouter();
-
-  const { data: creditRecord } = useGetUserCredits(
-    userId || undefined,
-    userRoleId,
-  );
-  const { data: userActiveSubscription } = useGetActiveSubscription(
-    userId || undefined,
-    userRoleId,
-  );
-
-  const creditAmount = creditRecord?.remaining_credits;
-  const hasActiveSubscription = userActiveSubscription?.status === "active";
-  const hasEnoughCredits = creditAmount && creditAmount >= MIN_CREDITS;
+export function PreviewPage({
+  displayCreditBalance,
+  creditAmount,
+  hasActiveSubscription,
+  defaultValues,
+  onSubmit,
+  useListingStore,
+}: {
+  displayCreditBalance?: boolean;
+  creditAmount?: number | null | undefined;
+  hasActiveSubscription?: boolean;
+  defaultValues: CreateListingFormType;
+  onSubmit: (values: CreateListingFormType) => Promise<void>;
+  useListingStore: () => CreateListingsState | EditListingsState;
+}) {
+  const { step, steps, prevStep, data } = useListingStore();
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   // TODO: THESE VALUES MAY BE EMPTY DUE TO EMPTY STRINGS, HANDLE ACCORDINGLY
@@ -636,8 +598,6 @@ export function PreviewPage() {
   const listingType = data.listingType;
   const description = data.description;
   const photos = data.photos;
-  const idempotencyKey = data.idempotencyKey;
-
   const paymentFrequency = data?.paymentFrequency;
   const price = data?.price;
 
@@ -653,119 +613,13 @@ export function PreviewPage() {
   }, [photos]);
 
   const form = useForm<CreateListingFormType>({
-    resolver: zodResolver(createListingFormSchema),
-    defaultValues: {
-      title,
-      location,
-      noOfBedrooms,
-      listingType,
-      description,
-      photos,
-      paymentFrequency,
-      price,
-      publicationStatus: "draft",
-    },
+    resolver: zodResolver(listingFormSchema),
+    defaultValues: defaultValues,
   });
 
   const {
     formState: { isSubmitting },
   } = form;
-
-  const createListingMutation = useUploadListing();
-  const updateCreditMutation = useUpdateCreditRecord();
-
-  async function handlePublish(values: CreateListingFormType) {
-    let idemKey = idempotencyKey;
-    if (!hasActiveSubscription && !hasEnoughCredits) {
-      console.log("this user can't upload a property");
-      setIsErrorModalOpen(true);
-    } else {
-      if (!idemKey) {
-        idemKey = "listing-" + uuidv4();
-        setData({ idempotencyKey: idemKey });
-      }
-      if (!userId) {
-        throw new Error("User ID is required");
-      }
-
-      const listingDetails: UpsertListingType = {
-        title: values.title,
-        noOfBedrooms: values.noOfBedrooms,
-        listingType: values.listingType,
-        location: values.location,
-        paymentFrequency: values.paymentFrequency,
-        price: values.price,
-        publicationStatus: values.publicationStatus,
-        description: values.description,
-      };
-
-      const listingImages = values.photos;
-
-      try {
-        const createdListing = await createListingMutation.mutateAsync({
-          userId: userId,
-          idemKey: idemKey,
-          listingDetails: listingDetails,
-          images: listingImages,
-        });
-
-        if (createListingMutation.isError) {
-          toast({
-            variant: "destructive",
-            description:
-              "It seems an error occurred while creating your listing. Please try again",
-            showCloseButton: false,
-          });
-          throw createListingMutation.error;
-        }
-
-        if (!hasActiveSubscription) {
-          const updatedCredits = await updateCreditMutation.mutateAsync({
-            userId: userId,
-            addedCredits: MIN_CREDITS,
-            tableColumn: "used_credits",
-          });
-
-          if (!updateCreditMutation.isError) {
-            console.log("created listings", createdListing);
-            console.log("updated credit record", updatedCredits);
-
-            setIsSuccessModalOpen(true);
-          }
-        } else {
-          setIsSuccessModalOpen(true);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }
-
-  const listingErrorModal: ModalProps = {
-    modalId: "land_listing_error",
-    variant: "error",
-    title: "You are unable to list a property",
-    description: "Buy credits now, or join our premium plan",
-    modalImage: <SadFaceIcon />,
-    open: isErrorModalOpen,
-    setOpen: setIsErrorModalOpen,
-  };
-
-  const listingSuccessModal: ModalProps = {
-    modalId: "land_listing_success",
-    variant: "success",
-    title: "Property listed successfully",
-    description: `${MIN_CREDITS} credits have been deducted from your balance, Now sit back and let a tenant make an inquiry`,
-    modalImage: <SuccessShieldIcon />,
-    open: isSuccessModalOpen,
-    setOpen: setIsSuccessModalOpen,
-  };
-
-  const handleBackToListing = () => {
-    clearStoreStorage();
-    setIsSuccessModalOpen(false);
-    router.push("/listings");
-  };
 
   return (
     <div className="w-full md:max-w-202">
@@ -817,15 +671,16 @@ export function PreviewPage() {
           <h3 className="text-sm leading-6 font-medium">Description</h3>
           <p className="text-sm text-gray-700">{description}</p>
         </div>
-
-        <div
-          className={`col-span-full ${hasActiveSubscription && "opacity-50"}`}
-        >
-          <h3 className="text-sm leading-6 font-medium">
-            Your Available Credits
-          </h3>
-          <CreditBalance disabled creditAmount={creditAmount} />
-        </div>
+        {displayCreditBalance && (
+          <div
+            className={`col-span-full ${hasActiveSubscription && "opacity-50"}`}
+          >
+            <h3 className="text-sm leading-6 font-medium">
+              Your Available Credits
+            </h3>
+            <CreditBalance disabled creditAmount={creditAmount} />
+          </div>
+        )}
       </section>
 
       <div className="mt-16 flex w-full flex-col-reverse items-center justify-between gap-4 sm:flex-row">
@@ -842,7 +697,7 @@ export function PreviewPage() {
         <Form {...form}>
           <form
             className="w-full sm:w-50"
-            onSubmit={form.handleSubmit(handlePublish)}
+            onSubmit={form.handleSubmit(onSubmit)}
           >
             <Button
               type="submit"
@@ -855,20 +710,6 @@ export function PreviewPage() {
           </form>
         </Form>
       </div>
-
-      <Modal {...listingErrorModal}>
-        <BuyCredits variant="outline" />
-
-        <Link className="w-full" href="/plans">
-          <Button className="w-full">Get Premium</Button>
-        </Link>
-      </Modal>
-
-      <Modal {...listingSuccessModal}>
-        <Button onClick={handleBackToListing} className="w-full">
-          Back to Listings
-        </Button>
-      </Modal>
     </div>
   );
 }

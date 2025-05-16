@@ -221,7 +221,7 @@ export const validateFileSizes = {
   message: "Total image size must not exceed 40MB",
 };
 
-export const createListingFormSchema = z.object({
+export const listingFormSchema = z.object({
   title: z
     .string({ required_error: "Title is required" })
     .min(1, { message: "This is a required field" })
@@ -259,11 +259,11 @@ export const createListingFormSchema = z.object({
   publicationStatus: PublicationStatusEnum,
 });
 
-export const upsertListingSchema = createListingFormSchema.omit({
+export const upsertListingSchema = listingFormSchema.omit({
   photos: true,
 });
 
-export const homeDetailsFormSchema = createListingFormSchema.pick({
+export const homeDetailsFormSchema = listingFormSchema.pick({
   title: true,
   noOfBedrooms: true,
   listingType: true,
@@ -271,11 +271,11 @@ export const homeDetailsFormSchema = createListingFormSchema.pick({
   description: true,
 });
 
-export const photoUploadFormSchema = createListingFormSchema.pick({
+export const photoUploadFormSchema = listingFormSchema.pick({
   photos: true,
 });
 
-export const pricingFormSchema = createListingFormSchema.pick({
+export const pricingFormSchema = listingFormSchema.pick({
   paymentFrequency: true,
   price: true,
 });

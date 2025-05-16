@@ -4,17 +4,17 @@ import { PublicationStatusType } from "@/lib/form.types";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetPublishedListings(
-  userId: string | undefined,
+  userId?: string | undefined,
   activeView: PublicationStatusType = "published",
 ) {
   const pubStatus: Listings["publication_status"] = "published";
 
-  const isActiveView = activeView === "published";
+  const isActiveView = activeView === pubStatus;
 
   return useQuery({
-    queryKey: ["listings", userId, pubStatus],
+    queryKey: ["listings", pubStatus],
     queryFn: async () => await getListings(userId, pubStatus),
-    enabled: !!userId && isActiveView,
+    enabled: isActiveView,
     staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes
   });
 }

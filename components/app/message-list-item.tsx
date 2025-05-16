@@ -12,14 +12,16 @@ export function MessageListItem({ conversation }: MessageListItemProps) {
 
   const lastMessage = conversation.last_message;
   const lastMessageSender = conversation.last_message_sender_id;
-  const lastMessageSent = customRelativeTime(
-    conversation.last_message_sent_at ?? "",
-  );
+  const lastMessageSent = conversation.last_message_sent_at
+    ? customRelativeTime(conversation.last_message_sent_at)
+    : "-";
   const unreadMessagesCount = conversation.unread_count;
 
-  const lastMessageDisplay = lastMessageSender
-    ? lastMessage
-    : `You: ${lastMessage}`;
+  const lastMessageDisplay = lastMessage
+    ? lastMessageSender
+      ? lastMessage
+      : `You: ${lastMessage}`
+    : "-";
 
   const participant =
     participants && participants.length > 0 ? participants[0] : null;
@@ -64,7 +66,7 @@ export function MessageListItem({ conversation }: MessageListItemProps) {
             <div></div>
           )}
           <p className="text-text-secondary text-sm leading-6">
-            {lastMessageSent}
+            {lastMessageSent ? lastMessageSent : "-"}
           </p>
         </div>
       </div>

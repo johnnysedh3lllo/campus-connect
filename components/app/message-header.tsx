@@ -76,14 +76,11 @@ export default function MessageHeader({
         open={isOpenDropDown}
         onOpenChange={() => setIsOpenDropDown(false)}
       >
-        <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none">
-          <Button
-            variant={"ghost"}
-            className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm"
-            onClick={() => setIsOpenDropDown(true)}
-          >
-            <KabobIcon />
-          </Button>
+        <DropdownMenuTrigger
+          className="hover:bg-background-secondary flex size-10 cursor-pointer items-center justify-center gap-2 rounded-sm p-0 select-none"
+          onClick={() => setIsOpenDropDown(true)}
+        >
+          <KabobIcon />
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-40">

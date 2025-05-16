@@ -1,27 +1,27 @@
 import { create } from "zustand";
-import { CreateListingFormType } from "../form.types";
+import { EditListingFormType } from "../form.types";
 import { persist } from "zustand/middleware";
 
-type NewCreateListingFormType = Partial<
-  CreateListingFormType & {
+type NewEditListingFormType = Partial<
+  EditListingFormType & {
     idempotencyKey: string;
   }
 >;
 
-export interface CreateListingsState {
+export interface EditListingsState {
   step: number;
   steps: string[];
-  data: NewCreateListingFormType;
+  data: NewEditListingFormType;
 
   setStep: (step: number) => void;
   nextStep: () => void;
   prevStep: () => void;
 
-  setData: (data: NewCreateListingFormType) => void;
+  setData: (data: NewEditListingFormType) => void;
   clearData: () => void;
 }
 
-export const useCreateListingsStore = create<CreateListingsState>()(
+export const useEditListingsStore = create<EditListingsState>()(
   persist(
     (set) => ({
       step: 0,
@@ -59,7 +59,7 @@ export const useCreateListingsStore = create<CreateListingsState>()(
         })),
     }),
     {
-      name: "create-listings-storage",
+      name: "edit-listings-storage",
       partialize: (state) => ({
         step: state.step,
         steps: state.steps,

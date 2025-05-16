@@ -20,6 +20,7 @@ export function ListingImageGallery({
   const [startIndex, setStartIndex] = useState(0);
 
   const imagesToShow = imageMetadata?.slice(0, 3) ?? [];
+
   const layoutClass =
     imagesToShow.length === 3
       ? "grid-cols-[3fr_1.5fr] grid-rows-2"
@@ -30,7 +31,7 @@ export function ListingImageGallery({
   const getImageProps = (index: number) => {
     const img = imagesToShow[index];
     return {
-      src: img?.image_url ?? "https://placehold.co/600x400",
+      src: img?.image_url,
       width: img?.width ?? 0,
       height: img?.height ?? 0,
     };
@@ -51,32 +52,32 @@ export function ListingImageGallery({
 
       <div className={`hidden w-full ${layoutClass} sm:grid`}>
         {/* Main image */}
-        <figure className="col-start-1 col-end-2 row-span-3 cursor-pointer pr-2">
+        <figure className="col-start-1 col-end-2 row-span-3 max-h-[440px] cursor-pointer pr-2">
           <Image
-            {...getImageProps(1)}
+            {...getImageProps(0)}
             alt=""
             className="h-full w-full object-cover"
-            onClick={() => handleOpen(1)}
+            onClick={() => handleOpen(0)}
           />
         </figure>
 
         {/* 2nd image */}
         {imagesToShow.length >= 2 && (
           <figure
-            className={`col-start-2 row-start-1 ${imagesToShow.length === 3 ? "row-end-2" : "row-end-5"} cursor-pointer pb-2`}
+            className={`col-start-2 row-start-1 ${imagesToShow.length === 3 ? "row-end-2" : "row-end-5"} max-h-[440px] cursor-pointer pb-2`}
           >
             <Image
-              {...getImageProps(0)}
+              {...getImageProps(1)}
               alt=""
               className="h-full w-full object-cover"
-              onClick={() => handleOpen(0)}
+              onClick={() => handleOpen(1)}
             />
           </figure>
         )}
 
         {/* 3rd image */}
         {imagesToShow.length === 3 && (
-          <figure className="col-start-2 row-start-2 row-end-3 cursor-pointer">
+          <figure className="col-start-2 row-start-2 row-end-3 max-h-[440px] cursor-pointer">
             <Image
               {...getImageProps(2)}
               alt=""

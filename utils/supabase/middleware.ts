@@ -1,6 +1,6 @@
 import { ROLES } from "@/lib/app.config";
 import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse, URLPattern } from "next/server";
 
 export const updateSession = async (request: NextRequest) => {
   // Create an unmodified response
@@ -49,6 +49,8 @@ export const updateSession = async (request: NextRequest) => {
   ];
   const unProtectedPaths: string[] = ["/log-in", "/sign-up"];
 
+  const landlordAllowedPaths: string[] = ["/listings/create", "/listing/edit/"];
+
   const isProtected = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path),
   );
@@ -56,8 +58,6 @@ export const updateSession = async (request: NextRequest) => {
   const isUnprotected = unProtectedPaths.some(
     (path) => request.nextUrl.pathname === path,
   );
-
-  // console.log(user.data.user);
 
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/log-in", request.url));
@@ -83,6 +83,31 @@ export const updateSession = async (request: NextRequest) => {
       return NextResponse.redirect(new URL("/plans", request.url));
     }
   }
+
+  const landlordAllowedRegex = /^\/listings\/(create|edit(\/[^\/]*)?)$/;
+  if (landlordAllowedRegex.test(request.nextUrl.pathname)) {
+    if (user.error) {
+      return NextResponse.redirect(new URL("/log-in", request.url));
+    }
+
+    if (userRoleId === ROLES.TENANT) {
+      return NextResponse.redirect(new URL("/listings", request.url));
+    }
+  }
+
+  // const tenantAllowedRegex: RegExp = /^\/listings\/[^\/]+\/[^\/]+$/;
+  // if (tenantAllowedRegex.test(request.nextUrl.pathname)) {
+  //   if (user.error) {
+  //     return NextResponse.redirect(new URL("/log-in", request.url));
+  //   }
+
+  //   if (userRoleId === ROLES.LANDLORD) {
+  //     // Strip off landlordId from the end and redirect
+  //     const pathParts = request.nextUrl.pathname.split("/");
+  //     const newPath = `/listings/${pathParts[2]}`;
+  //     return NextResponse.redirect(new URL(newPath, request.url));
+  //   }
+  // }
 
   if (request.nextUrl.pathname === "/plans") {
     if (user.error) {

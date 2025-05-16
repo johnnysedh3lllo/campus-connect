@@ -4,7 +4,8 @@ import { PremiumBanner } from "../../premium-banner";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import { useGetPackageRecord } from "@/hooks/tanstack/use-get-current-package";
-import { ListingContainer } from "../../listings-container";
+import { ListingContainerLandlord } from "../../listing-container-landlord";
+import { ListingContainerTenant } from "../../listing-container-tenant";
 
 export default function ListingPageBody() {
   const { userId, userRoleId } = useUserStore();
@@ -46,7 +47,8 @@ export default function ListingPageBody() {
       </RoleGate>
 
       <section>
-        <ListingContainer />
+        <ListingContainerLandlord />
+        <ListingContainerTenant />
       </section>
     </>
   );

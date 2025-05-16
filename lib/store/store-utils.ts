@@ -1,9 +1,13 @@
-import { useCreateListingsStore } from "./create-listings-store";
-
-export function useClearListingStore() {
+export function clearStorage<T extends { clearData: () => void }>(store: {
+  getState: () => T;
+  persist: {
+    clearStorage?: () => void;
+    rehydrate: () => void | Promise<void>;
+  };
+}) {
   return async function clearStoreStorage() {
-    useCreateListingsStore.getState().clearData();
-    useCreateListingsStore.persist.clearStorage?.();
-    await useCreateListingsStore.persist.rehydrate();
+    store.getState().clearData();
+    store.persist.clearStorage?.();
+    await store.persist.rehydrate();
   };
 }

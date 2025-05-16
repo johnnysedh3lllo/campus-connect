@@ -144,6 +144,7 @@ export async function updateConversationParticipants(
   conversationData: ConversationFormType,
   conversationParticipantsDetails: ConversationParticipantsUpdate,
 ): Promise<{ success: boolean; data?: any; error?: { message: string } }> {
+  // TODO: TYPE THIS ABOVE
   const supabase = await createClient();
 
   try {
@@ -166,6 +167,35 @@ export async function updateConversationParticipants(
         message:
           "Something went wrong while deleting this chat, please try again.",
       },
+    };
+  }
+}
+
+export async function createConversation(tenantId: string, landlordId: string) {
+  const supabase = await createClient();
+
+  if (!tenantId || !landlordId) {
+    throw new Error(
+      "TenantID and Landlord ID is required to create a conversation",
+    );
+  }
+
+  try {
+    let { data, error } = await supabase.rpc("create_conversation", {
+      user1_id: tenantId,
+      user2_id: landlordId,
+    });
+
+    if (error) {
+      throw error;
+    }
+
+    return { success: true, data };
+  } catch (error: any) {
+    console.error(error);
+    return {
+      success: false,
+      error,
     };
   }
 }

@@ -22,7 +22,7 @@ import {
   ChangeListingPubStatusButton,
   DeleteListingButton,
 } from "../../action-buttons";
-import { statusVerbMap } from "@/lib/app.config";
+import { ROLES, statusVerbMap } from "@/lib/app.config";
 import { Separator } from "@/components/ui/separator";
 import { BedIcon } from "@/public/icons/bed-icon";
 import { TagIcon } from "@/public/icons/tag-icon";
@@ -35,9 +35,16 @@ import {
 } from "@/lib/utils";
 import { ListingImageGallery } from "../../listing-image-gallery";
 import { BinIcon } from "@/public/icons/bin-icon";
-import { ListingImageMetadata } from "@/app/actions/supabase/listings";
 import { ListingDetailSkeleton } from "../../skeletons/listing-details-skeleton";
+import Link from "next/link";
+import { RoleGate } from "../../role-gate";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserIcon } from "@/public/icons/user-icon";
+import { ListingLandlordProfileCard } from "../../listing-landlord-profile-card";
+import { Header } from "../../header";
 
+type ListingPublicationStatus = "published" | "unpublished";
 export default function ListingIdPageBody({
   listingUUID,
 }: {
@@ -53,11 +60,9 @@ export default function ListingIdPageBody({
     ListingPublicationStatus | undefined
   >(undefined);
 
-  const pubStatuses: ListingPublicationStatus[] = ["published", "unpublished"];
-
-  type ListingPublicationStatus = "published" | "unpublished";
-
   const { data, isLoading } = useGetListingByUUID(listingUUID);
+
+  const pubStatuses: ListingPublicationStatus[] = ["published", "unpublished"];
 
   const listingData = data?.data;
   const title = listingData?.title;
@@ -77,10 +82,11 @@ export default function ListingIdPageBody({
   const images = listingData?.listing_images;
   const imageUrls = getImageUrls(images ?? []);
 
+  const landlord = listingData?.users;
+
   const formattedPrice = formatNumberWithSuffix(price);
 
   async function handleStatusChange(status: ListingPublicationStatus) {
-    console.log(status);
     setSelectedOption(status);
     setIsPublishStatusModalOpen(true);
   }
@@ -139,7 +145,7 @@ export default function ListingIdPageBody({
       <div className="flex flex-col gap-6">
         <section className="bg-background flex flex-col-reverse items-center justify-between gap-3 py-6 lg:flex-row">
           <section className="flex w-full gap-3">
-            <BackButton route="/listings" />
+            <BackButton className="hidden lg:flex" route="/listings" />
             <header className="flex flex-col gap-3">
               <h1 className="text-2xl leading-10 font-semibold capitalize sm:text-4xl sm:leading-11">
                 {title}
@@ -150,59 +156,63 @@ export default function ListingIdPageBody({
             </header>
           </section>
 
-          <div className="flex w-full items-center justify-between gap-6 lg:w-fit">
-            <BackButton route="/listings" className="flex lg:hidden" />
+          <RoleGate userRoleId={userRoleId} role="LANDLORD">
+            <div className="flex w-full items-center justify-between gap-6 lg:w-fit">
+              <BackButton route="/listings" className="flex lg:hidden" />
 
-            <div className="flex gap-3">
-              <div className="border-line flex gap-3 rounded-sm border p-1">
-                {pubStatuses.map((status) => {
-                  const isActiveStatus = currentPubStatus === status;
-                  return (
-                    <button
-                      key={status}
-                      className={`cursor-pointer rounded-sm px-4 py-2 text-sm leading-6 capitalize transition-all duration-200 disabled:cursor-not-allowed ${isActiveStatus ? "text-text-inverse bg-background-accent font-medium" : "text-text-secondary hover:bg-background-secondary font-normal"}`}
-                      disabled={isActiveStatus}
-                      onClick={() => handleStatusChange(status)}
-                    >
-                      {status}
-                    </button>
-                  );
-                })}
-              </div>
+              <div className="flex gap-3">
+                <div className="border-line flex gap-3 rounded-sm border p-1">
+                  {pubStatuses.map((status) => {
+                    const isActiveStatus = currentPubStatus === status;
+                    return (
+                      <button
+                        key={status}
+                        className={`cursor-pointer rounded-sm px-4 py-2 text-sm leading-6 capitalize transition-all duration-200 disabled:cursor-not-allowed ${isActiveStatus ? "text-text-inverse bg-background-accent font-medium" : "text-text-secondary hover:bg-background-secondary font-normal"}`}
+                        disabled={isActiveStatus}
+                        onClick={() => handleStatusChange(status)}
+                      >
+                        {status}
+                      </button>
+                    );
+                  })}
+                </div>
 
-              <DropdownMenu
-                open={isOpenDropDown}
-                onOpenChange={() => setIsOpenDropDown(false)}
-              >
-                <DropdownMenuTrigger
-                  className="hover:bg-background-secondary flex cursor-pointer items-center justify-center gap-2 rounded-sm p-0 p-1 select-none"
-                  onClick={() => setIsOpenDropDown(true)}
+                <DropdownMenu
+                  open={isOpenDropDown}
+                  onOpenChange={() => setIsOpenDropDown(false)}
                 >
-                  <KabobIcon />
-                </DropdownMenuTrigger>
+                  <DropdownMenuTrigger
+                    className="hover:bg-background-secondary flex cursor-pointer items-center justify-center gap-2 rounded-sm p-0 p-1 select-none"
+                    onClick={() => setIsOpenDropDown(true)}
+                  >
+                    <KabobIcon />
+                  </DropdownMenuTrigger>
 
-                <DropdownMenuContent align="end" className="w-40">
-                  {/* THIS TRIGGERS THE SHEET COMPONENT FOR THE USER PROFILE ON MOBILE */}
-                  <DropdownMenuItem asChild>
-                    <button className="flex w-full items-center gap-2 p-2">
-                      <EditIcon className="text-text-primary" />
-                      <span className="text-sm leading-6">Edit</span>
-                    </button>
-                  </DropdownMenuItem>
+                  <DropdownMenuContent align="end" className="w-40">
+                    {/* THIS TRIGGERS THE SHEET COMPONENT FOR THE USER PROFILE ON MOBILE */}
+                    <DropdownMenuItem asChild>
+                      <Link href={`/listings/edit/${listingUUID}`}>
+                        <button className="flex w-full items-center gap-2 p-2">
+                          <EditIcon className="text-text-primary" />
+                          <span className="text-sm leading-6">Edit</span>
+                        </button>
+                      </Link>
+                    </DropdownMenuItem>
 
-                  <DropdownMenuItem asChild>
-                    <button
-                      onClick={() => setIsDeleteListingModalOpen(true)}
-                      className="text-text-accent flex w-full items-center gap-2 p-2"
-                    >
-                      <BinStrokeIcon className="text-text-accent" />
-                      <span className="text-sm leading-6">Delete</span>
-                    </button>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <DropdownMenuItem asChild>
+                      <button
+                        onClick={() => setIsDeleteListingModalOpen(true)}
+                        className="text-text-accent flex w-full items-center gap-2 p-2"
+                      >
+                        <BinStrokeIcon className="text-text-accent" />
+                        <span className="text-sm leading-6">Delete</span>
+                      </button>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-          </div>
+          </RoleGate>
         </section>
 
         <section className="grid grid-cols-1 gap-6 lg:grid-cols-[3fr_1fr]">
@@ -213,8 +223,11 @@ export default function ListingIdPageBody({
           </section>
 
           <section className="flex flex-1 flex-col gap-6">
-            {/* PROPERTY DETAILS */}
+            <RoleGate userRoleId={userRoleId} role="TENANT">
+              <ListingLandlordProfileCard landlord={landlord} />
+            </RoleGate>
 
+            {/* PROPERTY DETAILS */}
             <div className="border-line w-full min-w-fit overflow-hidden rounded-md border bg-white">
               <div className="bg-background-secondary p-4">
                 <h2 className="text-text-primary text-2xl leading-8 font-bold whitespace-nowrap">
@@ -271,7 +284,7 @@ export default function ListingIdPageBody({
               </div>
             </div>
 
-            <div>map</div>
+            {/* <div>map</div> */}
           </section>
         </section>
       </div>

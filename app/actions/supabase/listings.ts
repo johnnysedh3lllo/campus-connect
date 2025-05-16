@@ -9,24 +9,23 @@ export async function getListings(
   userId: string | undefined,
   pubStatus: Listings["publication_status"],
 ) {
-  if (!userId) {
-    throw new Error("UserId is required to upload a listing");
-  }
-
   const supabase = await createClient();
 
   try {
     let query = supabase
       .from("listings")
-      .select("*, listing_images(image_url, width, height)")
-      .eq("landlord_id", userId);
+      .select("*, listing_images(image_url, width, height)");
 
+    console.log("landlordId", userId);
+
+    if (userId) query = query.eq("landlord_id", userId);
     if (pubStatus) query = query.eq("publication_status", pubStatus);
 
     const { data, error } = await query.order("created_at", {
       ascending: false,
     });
 
+    console.log("any errors?", data);
     if (error) {
       throw error;
     }
@@ -53,9 +52,15 @@ export async function getListingByUUID(listingUUID: string) {
   try {
     let { data, error } = await supabase
       .from("listings")
-      .select("*, listing_images(image_url, width, height)")
+      .select(
+        `*, 
+        listing_images(image_url, width, height), 
+        users(id, first_name, last_name, role_id, avatar_url)`,
+      )
       .eq("uuid", listingUUID)
       .single();
+
+    console.log("new listings", data);
 
     if (error) {
       throw error;

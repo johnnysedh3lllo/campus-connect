@@ -50,6 +50,11 @@ export function useUpdateListing() {
         },
       );
 
+      // Invalidate the user's published listings
+      queryClient.invalidateQueries({
+        queryKey: ["listings", variables.listingData.publication_status],
+      });
+
       // Invalidate the user's draft, unpublished or published listings
       queryClient.invalidateQueries({
         queryKey: [
