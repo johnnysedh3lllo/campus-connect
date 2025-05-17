@@ -1,5 +1,4 @@
 import { getListings } from "@/app/actions/supabase/listings";
-import { DEFAULT_STALE_TIME } from "@/lib/app.config";
 import { PublicationStatusType } from "@/lib/form.types";
 import { useQuery } from "@tanstack/react-query";
 
@@ -15,6 +14,6 @@ export function useGetPublishedListings(
     queryKey: ["listings", pubStatus],
     queryFn: async () => await getListings(userId, pubStatus),
     enabled: isActiveView,
-    staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes
+    staleTime: Infinity, // cache data for 5 minutes
   });
 }

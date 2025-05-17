@@ -1,8 +1,7 @@
 "use client";
 
 import { Separator } from "@/components/ui/separator";
-import { BackButton } from "../../action-buttons";
-import { Button } from "@/components/ui/button";
+import { BackButton, MessageLandlordButton } from "../../action-buttons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserIcon } from "@/public/icons/user-icon";
 import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
@@ -10,22 +9,12 @@ import { useGetPublishedListings } from "@/hooks/tanstack/use-get-published-list
 import ListingCard from "../../listing-card";
 import { ListingLandlordProfileSkeleton } from "../../skeletons/listing-landlord-id-page-skeleton";
 import { ListingsCardSkeleton } from "../../skeletons/listings-card-skeleton";
-import { useUserStore } from "@/lib/store/user-store";
-import { useCreateConversation } from "@/hooks/tanstack/mutations/use-create-conversation";
-import { useState } from "react";
-import { toast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 
 export function ListingLandlordIdPageBody({
   landlordId,
 }: {
   landlordId: string;
 }) {
-  const { userId, userRoleId } = useUserStore();
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-
   const { data: landlordProfile, isLoading: isUserProfileLoading } =
     useGetUserPublic(landlordId || undefined);
 
@@ -36,34 +25,8 @@ export function ListingLandlordIdPageBody({
   const avatarUrl = landlordProfile?.avatar_url;
 
   const publishedListings = listingData?.data;
-
   const numOfListings = publishedListings?.length;
 
-  const createConversationMutation = useCreateConversation();
-
-  async function handleMessage() {
-    if (!userId) return;
-    setIsLoading(true);
-    try {
-      const createdConversation = await createConversationMutation.mutateAsync({
-        tenantId: userId,
-        landlordId: landlordId,
-      });
-
-      if (!createConversationMutation.isError) {
-        toast({
-          variant: "success",
-          description: "Success!",
-        });
-
-        router.push(`/messages/${createdConversation}`);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
   return (
     <section>
       <section className="max-w-screen-max-xl mx-auto flex w-full gap-3 p-4">
@@ -111,14 +74,7 @@ export function ListingLandlordIdPageBody({
               <Separator className="hidden lg:block" />
 
               <div className="flex flex-col gap-4 sm:flex-row lg:flex-col">
-                <Button
-                  disabled={isLoading}
-                  onClick={handleMessage}
-                  className="w-full"
-                >
-                  {isLoading && <Loader2 className="animate-spin" />}
-                  {isLoading ? "Processing...." : "Message"}
-                </Button>
+                <MessageLandlordButton landlordId={landlordId} />
 
                 {/* <Link href={`/listings/landlord/${landlordId}`} className="w-full">
               <Button variant="outline" className="w-full">
@@ -143,7 +99,7 @@ export function ListingLandlordIdPageBody({
               ))}
             </div>
           ) : (
-            <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            <div className="max-w-screen-max-xl mx-auto grid w-full grid-cols-1 justify-items-center gap-4 lg:grid-cols-2 xl:grid-cols-3">
               {publishedListings?.map((listing) => (
                 <ListingCard listing={listing} key={listing.uuid} />
               ))}

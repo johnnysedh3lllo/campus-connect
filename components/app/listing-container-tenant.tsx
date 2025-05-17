@@ -15,8 +15,6 @@ export function ListingContainerTenant() {
 
   const publishedListings = data?.data;
 
-  console.log("student view of published listings", publishedListings);
-
   return (
     <RoleGate userRoleId={userRoleId} role="TENANT">
       <Header

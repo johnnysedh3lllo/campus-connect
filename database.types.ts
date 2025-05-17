@@ -180,27 +180,27 @@ export type Database = {
       listing_images: {
         Row: {
           created_at: string
-          height: number | null
+          height: number
           id: number
           image_url: string
           listing_uuid: string
-          width: number | null
+          width: number
         }
         Insert: {
           created_at?: string
-          height?: number | null
+          height: number
           id?: never
           image_url: string
           listing_uuid: string
-          width?: number | null
+          width: number
         }
         Update: {
           created_at?: string
-          height?: number | null
+          height?: number
           id?: never
           image_url?: string
           listing_uuid?: string
-          width?: number | null
+          width?: number
         }
         Relationships: [
           {
@@ -629,7 +629,10 @@ export type Database = {
       }
       create_conversation: {
         Args: { user1_id: string; user2_id: string }
-        Returns: string
+        Returns: {
+          conversation_id: string
+          is_new_conversation: boolean
+        }[]
       }
       get_conversations_for_user: {
         Args: { pid: string }

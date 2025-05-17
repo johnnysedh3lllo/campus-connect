@@ -22,7 +22,7 @@ import {
   ChangeListingPubStatusButton,
   DeleteListingButton,
 } from "../../action-buttons";
-import { ROLES, statusVerbMap } from "@/lib/app.config";
+import { statusVerbMap } from "@/lib/app.config";
 import { Separator } from "@/components/ui/separator";
 import { BedIcon } from "@/public/icons/bed-icon";
 import { TagIcon } from "@/public/icons/tag-icon";
@@ -38,11 +38,7 @@ import { BinIcon } from "@/public/icons/bin-icon";
 import { ListingDetailSkeleton } from "../../skeletons/listing-details-skeleton";
 import Link from "next/link";
 import { RoleGate } from "../../role-gate";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserIcon } from "@/public/icons/user-icon";
 import { ListingLandlordProfileCard } from "../../listing-landlord-profile-card";
-import { Header } from "../../header";
 
 type ListingPublicationStatus = "published" | "unpublished";
 export default function ListingIdPageBody({
@@ -52,10 +48,13 @@ export default function ListingIdPageBody({
 }) {
   const { userId, userRoleId } = useUserStore();
   const [isOpenDropDown, setIsOpenDropDown] = useState(false);
+
+  // MODAL STATUS
   const [isPublishStatusModalOpen, setIsPublishStatusModalOpen] =
     useState(false);
   const [isDeleteListingModalOpen, setIsDeleteListingModalOpen] =
     useState(false);
+
   const [selectedOption, setSelectedOption] = useState<
     ListingPublicationStatus | undefined
   >(undefined);

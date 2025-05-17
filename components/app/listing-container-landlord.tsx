@@ -8,7 +8,6 @@ import { EmptyPageState } from "./empty-page-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Header } from "./header";
 import { useUserStore } from "@/lib/store/user-store";
-import { useState } from "react";
 import { useGetPublishedListings } from "@/hooks/tanstack/use-get-published-listings";
 import { useGetUnpublishedListings } from "@/hooks/tanstack/use-get-unpublished-listings";
 import { useGetDraftListings } from "@/hooks/tanstack/use-get-draft-listings";

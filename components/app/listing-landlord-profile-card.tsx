@@ -3,6 +3,13 @@ import { UserIcon } from "@/public/icons/user-icon";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { MessageLandlordButton } from "./action-buttons";
+import { BadgeIcon } from "@/public/illustrations/badge-icon";
+import { ModalProps } from "@/lib/prop.types";
+import { useState } from "react";
+import Modal from "./modals/modal";
+import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
+import { useUserStore } from "@/lib/store/user-store";
 
 export function ListingLandlordProfileCard({
   landlord,
@@ -31,15 +38,15 @@ export function ListingLandlordProfileCard({
           </AvatarFallback>
         </Avatar>
         <section className="flex flex-col lg:items-center">
-          <h3 className="text-text-primary capitalize text-2xl leading-8 font-semibold">
+          <h3 className="text-text-primary text-2xl leading-8 font-semibold capitalize">
             {landlordName}
           </h3>
 
           <p className="text-text-secondary text-sm leading-6">Landlord</p>
         </section>
       </div>
-      <div className="flex flex-col sm:flex-row lg:flex-col gap-4">
-        <Button className="w-full">Message</Button>
+      <div className="flex flex-col gap-4 sm:flex-row lg:flex-col">
+        <MessageLandlordButton landlordId={landlordId} />
 
         <Link href={`/listings/landlord/${landlordId}`} className="w-full">
           <Button variant="outline" className="w-full">

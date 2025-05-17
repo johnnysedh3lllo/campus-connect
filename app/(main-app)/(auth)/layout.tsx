@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: { default: "Campus Connect", template: "%s | Campus Connect" },
   description: "Campus Connect Application",
+  icons: {
+    icon: "/favicon.svg",
+  },
   // alternates: {
   //   canonical: "https://example.com",
   //   languages: {

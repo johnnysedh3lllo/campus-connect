@@ -26,6 +26,13 @@ import { statusVerbMap } from "@/lib/app.config";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 import { useDeleteListing } from "@/hooks/tanstack/mutations/use-delete-listing";
 import { useBackToLastPage } from "@/hooks/use-back-to-last-page";
+import { useUserStore } from "@/lib/store/user-store";
+import { useCreateConversation } from "@/hooks/tanstack/mutations/use-create-conversation";
+import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
+import { BadgeIcon } from "@/public/illustrations/badge-icon";
+import { ModalProps } from "@/lib/prop.types";
+import Modal from "./modals/modal";
+import { Skeleton } from "../ui/skeleton";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -165,6 +172,93 @@ export function DeleteListingButton({
   );
 }
 
+export function MessageLandlordButton({
+  landlordId,
+}: {
+  landlordId: string | undefined;
+}) {
+  const { userId, userRoleId } = useUserStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isUpgradePackageModalOpen, setIsUpgradePackageModalOpen] =
+    useState(false);
+  const router = useRouter();
+
+  const { data: currentPackage, isLoading: isPackageLoading } =
+    useGetPackageRecord(userId || undefined, userRoleId);
+
+  const createConversationMutation = useCreateConversation();
+
+  async function handleMessage() {
+    console.log("user id", userId);
+    console.log("landlord id", landlordId);
+
+    if (!userId || !landlordId) return;
+    setIsLoading(true);
+
+    try {
+      const createdConversation = await createConversationMutation.mutateAsync({
+        tenantId: userId,
+        landlordId: landlordId,
+      });
+
+      if (!createConversationMutation.isError) {
+        toast({
+          variant: "success",
+          description: "Success!",
+        });
+
+        router.push(`/messages/${createdConversation?.conversation_id}`);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const upgradePackageModalProps: ModalProps = {
+    modalId: "stud_listing_landlord_message",
+    variant: "error",
+    title: "Upgrade your package",
+    description:
+      "Upgrade your plan and you’ll be able to message landlords anytime you want",
+    modalImage: <BadgeIcon />,
+    showCloseButton: true,
+    open: isUpgradePackageModalOpen,
+    setOpen: setIsUpgradePackageModalOpen,
+  };
+
+  const hasPackageInquires =
+    !currentPackage || (currentPackage?.remaining_inquiries ?? 0) <= 0;
+
+  return (
+    <>
+      {isPackageLoading ? (
+        <Skeleton className="h-12 w-full" />
+      ) : !hasPackageInquires ? (
+        <Button disabled={isLoading} onClick={handleMessage} className="w-full">
+          {isLoading && <Loader2 className="animate-spin" />}
+          {isLoading ? "Processing...." : "Message"}
+        </Button>
+      ) : (
+        <Button
+          onClick={() => setIsUpgradePackageModalOpen(true)}
+          className="w-full"
+        >
+          Message
+        </Button>
+      )}
+
+      <Modal {...upgradePackageModalProps}>
+        <Link className="w-full" href="/packages">
+          <Button className="w-full">View Packages</Button>
+        </Link>
+      </Modal>
+    </>
+  );
+}
+
+// GENERAL
 export function BackButton({
   route,
   className,
@@ -179,7 +273,7 @@ export function BackButton({
       onClick={backToLastPage}
       variant="secondary"
       className={cn(
-        "hover:bg-background-secondary  size-10 items-center justify-center rounded-sm p-0",
+        "hover:bg-background-secondary size-10 items-center justify-center rounded-sm p-0",
         className,
       )}
     >

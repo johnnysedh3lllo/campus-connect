@@ -50,13 +50,15 @@ export function ListingImageGallery({
         className="sm:hidden"
       />
 
-      <div className={`hidden w-full ${layoutClass} sm:grid`}>
+      <div className={`hidden w-full ${layoutClass} gap-2 sm:grid`}>
         {/* Main image */}
-        <figure className="col-start-1 col-end-2 row-span-3 max-h-[440px] cursor-pointer pr-2">
+        <figure
+          className={`col-start-1 col-end-2 row-span-3 ${imagesToShow.length === 1 ? "max-h-[440px]" : ""} group cursor-pointer overflow-hidden`}
+        >
           <Image
             {...getImageProps(0)}
             alt=""
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-all duration-400 group-hover:scale-105"
             onClick={() => handleOpen(0)}
           />
         </figure>
@@ -64,12 +66,12 @@ export function ListingImageGallery({
         {/* 2nd image */}
         {imagesToShow.length >= 2 && (
           <figure
-            className={`col-start-2 row-start-1 ${imagesToShow.length === 3 ? "row-end-2" : "row-end-5"} max-h-[440px] cursor-pointer pb-2`}
+            className={`col-start-2 row-start-1 ${imagesToShow.length === 3 ? "row-end-2" : "row-end-5"} group max-h-[440px] cursor-pointer overflow-hidden`}
           >
             <Image
               {...getImageProps(1)}
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-all duration-400 group-hover:scale-105"
               onClick={() => handleOpen(1)}
             />
           </figure>
@@ -77,11 +79,11 @@ export function ListingImageGallery({
 
         {/* 3rd image */}
         {imagesToShow.length === 3 && (
-          <figure className="col-start-2 row-start-2 row-end-3 max-h-[440px] cursor-pointer">
+          <figure className="group col-start-2 row-start-2 row-end-3 max-h-[440px] cursor-pointer overflow-hidden">
             <Image
               {...getImageProps(2)}
               alt=""
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-all duration-400 group-hover:scale-105"
               onClick={() => handleOpen(2)}
             />
           </figure>

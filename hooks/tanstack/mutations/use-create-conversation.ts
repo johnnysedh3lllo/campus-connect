@@ -9,14 +9,16 @@ export function useCreateConversation() {
       tenantId,
       landlordId,
     }: {
-      tenantId: string;
-      landlordId: string;
+      tenantId: string | undefined;
+      landlordId: string | undefined;
     }) => {
       const { data, error } = await createConversation(tenantId, landlordId);
 
       if (error) {
         throw error;
       }
+
+      console.log("created or existing conversation:", data);
       return data;
     },
 

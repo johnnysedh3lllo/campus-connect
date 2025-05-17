@@ -23,7 +23,7 @@ import { OnboardingFlowWrapper } from "@/lib/providers/onboarding-flow-wrapper";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 
 export default function Signup() {
-  const { step, setTotalSteps, nextStep, formData, updateFields } =
+  const { step, setTotalSteps, totalSteps, nextStep, formData, updateFields } =
     useMultiStepFormStore();
   const onboardingFormWrapperRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -102,7 +102,7 @@ export default function Signup() {
   ];
 
   return (
-    <OnboardingFlowWrapper currentStep={step} totalSteps={steps.length}>
+    <OnboardingFlowWrapper currentStep={step} totalSteps={totalSteps}>
       <AnimationWrapper
         variants={formVariants}
         transition={animationConfig}

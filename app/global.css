@@ -322,13 +322,16 @@
     @apply bg-background text-foreground;
   }
 
-  input:-webkit-autofill {
-    background-color: transparent !important; /* Removes the default autofill color */
-    transition: background-color 5000s ease-in-out 0s; /* Prevents immediate color flash */
-  }
-
   input:-moz-autofill {
     background-color: transparent !important;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: hsla(0, 0%, 6%, 1) !important;
+    box-shadow: 0 0 0px 1000px white inset !important;
   }
 
   input[type="number"]::-webkit-inner-spin-button,
@@ -338,15 +341,6 @@
 
   input[type="number"] {
     -moz-appearance: textfield;
-  }
-
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
-    background-color: transparent !important;
-    color: inherit !important;
-    box-shadow: 0 0 0px 1000px white inset !important; /* Ensures background remains white */
   }
 
   [data-radix-collection-item] {
@@ -389,6 +383,12 @@
   @media (min-height: 900px) {
     .onboarding-form {
       @apply items-center;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    input {
+      color: white;
     }
   }
 }

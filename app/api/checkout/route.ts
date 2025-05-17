@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
             { status: 500 },
           );
         }
-        sessionParams.success_url = `${origin}/messages?session_id={CHECKOUT_SESSION_ID}&modalId=stud_package_success`;
+        sessionParams.success_url = `${origin}/listings?session_id={CHECKOUT_SESSION_ID}&modalId=stud_package_success`;
         sessionParams.metadata = {
           ...sessionParams.metadata,
           studentInquiryCount: studentInquiryCount ?? null,

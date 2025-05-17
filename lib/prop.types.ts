@@ -99,7 +99,7 @@ export type HeaderProps = {
   subTitle: string | React.ReactNode;
   subTitleIcon?: React.ReactNode;
   children?: React.ReactNode;
-  className?: string
+  className?: string;
 };
 
 export interface EmptyPageStateProps {
@@ -173,7 +173,7 @@ export type ModalProps = {
   showCloseButton?: boolean;
   modalActionButton?: React.ReactNode;
   clearParamAfterOpen?: boolean;
-  open?: boolean;
+  open?: boolean | undefined;
   setOpen?: (value: boolean) => void | undefined;
   children?: React.ReactNode;
 };

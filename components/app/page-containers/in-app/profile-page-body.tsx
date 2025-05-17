@@ -14,7 +14,7 @@ import { ProfileInfoSkeleton } from "@/components/app/skeletons/profile-info-ske
 import { RoleGate } from "@/components/app/role-gate";
 import { useUserStore } from "@/lib/store/user-store";
 import UserTierSummary from "@/components/app/user-tier-summary";
-import { useGetPackageRecord } from "@/hooks/tanstack/use-get-current-package";
+import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
 
 export function ProfilePageBody() {
   const { userId, userRoleId } = useUserStore();

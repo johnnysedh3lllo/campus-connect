@@ -493,7 +493,7 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
           </h1>
 
           <p className="text text-secondary-foreground text-sm">
-            Enter the code we sent over SMS to your email address{" "}
+            Enter the code we sent to your email address{" "}
             <span className="text-primary font-semibold">{userEmail}:</span>
           </p>
         </section>
@@ -507,34 +507,48 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
           <FormField
             control={form.control}
             name="otp"
-            render={({ field }) => (
-              <FormItem className="flex max-w-[304px] flex-col gap-3 pt-10 sm:pt-12">
-                <FormControl>
-                  <InputOTP maxLength={6} {...field}>
-                    <InputOTPGroup className="flex w-full justify-between">
-                      {[...Array(6)].map((_, i) => {
-                        return <InputOTPSlot key={i} index={i} />;
-                      })}
-                    </InputOTPGroup>
-                  </InputOTP>
-                </FormControl>
+            render={({ field, fieldState }) => {
+              const hasError = fieldState.invalid;
 
-                <FormDescription>
-                  <Button
-                    type="button"
-                    disabled={timeLeft > 0}
-                    className="text-primary p-1 font-medium"
-                    variant={"link"}
-                    onClick={handleResendOtp} // refactor this
-                  >
-                    Resend Code
-                  </Button>
-                  in {formatTime(timeLeft)}
-                </FormDescription>
+              return (
+                <FormItem className="flex max-w-[304px] flex-col gap-3 pt-10 sm:pt-12">
+                  <FormControl>
+                    <InputOTP maxLength={6} {...field}>
+                      <InputOTPGroup className="flex w-full justify-between">
+                        {[...Array(6)].map((_, i) => {
+                          return (
+                            <InputOTPSlot
+                              key={i}
+                              index={i}
+                              className={
+                                hasError
+                                  ? "text-text-primary border-alert-error-line"
+                                  : "text-text-accent border-input"
+                              }
+                            />
+                          );
+                        })}
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </FormControl>
 
-                <FormMessage />
-              </FormItem>
-            )}
+                  <FormDescription>
+                    <Button
+                      type="button"
+                      disabled={timeLeft > 0}
+                      className="text-primary p-1 font-medium"
+                      variant={"link"}
+                      onClick={handleResendOtp} // refactor this
+                    >
+                      Resend Code
+                    </Button>
+                    in {formatTime(timeLeft)}
+                  </FormDescription>
+
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
 
           <Button

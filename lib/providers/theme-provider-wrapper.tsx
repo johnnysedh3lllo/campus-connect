@@ -9,7 +9,6 @@ export default function ThemeProviderWrapper({
     <ThemeProvider
       attribute="class"
       defaultTheme="system"
-      enableSystem
       disableTransitionOnChange
     >
       {children}

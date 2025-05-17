@@ -19,7 +19,7 @@ export default function CreatePasswordPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { showPassword, setShowPassword } = useShowPasswordState();
-  const { step } = useMultiStepFormStore();
+  const { step, totalSteps } = useMultiStepFormStore();
 
   async function handleCreatePassword(values: CreatePasswordFormType) {
     setIsLoading(true);
@@ -53,7 +53,7 @@ export default function CreatePasswordPage() {
   }
 
   return (
-    <OnboardingFlowWrapper currentStep={step} totalSteps={step + 1}>
+    <OnboardingFlowWrapper currentStep={totalSteps - 1} totalSteps={totalSteps}>
       <AnimationWrapper
         variants={formVariants}
         transition={animationConfig}

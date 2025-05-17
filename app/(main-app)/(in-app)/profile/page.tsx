@@ -38,7 +38,7 @@ export default async function ProfilePage() {
 
   if (isStudent) {
     await queryClient.prefetchQuery({
-      queryKey: ["currentPackage", userId],
+      queryKey: ["package", userId],
       queryFn: async () => await getUserPackageRecord(userId),
     });
   }

@@ -171,7 +171,10 @@ export async function updateConversationParticipants(
   }
 }
 
-export async function createConversation(tenantId: string, landlordId: string) {
+export async function createConversation(
+  tenantId: string | undefined,
+  landlordId: string | undefined,
+) {
   const supabase = await createClient();
 
   if (!tenantId || !landlordId) {
@@ -181,10 +184,12 @@ export async function createConversation(tenantId: string, landlordId: string) {
   }
 
   try {
-    let { data, error } = await supabase.rpc("create_conversation", {
-      user1_id: tenantId,
-      user2_id: landlordId,
-    });
+    let { data, error } = await supabase
+      .rpc("create_conversation", {
+        user1_id: tenantId,
+        user2_id: landlordId,
+      })
+      .maybeSingle();
 
     if (error) {
       throw error;

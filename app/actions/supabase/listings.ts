@@ -60,15 +60,12 @@ export async function getListingByUUID(listingUUID: string) {
       .eq("uuid", listingUUID)
       .single();
 
-    console.log("new listings", data);
-
     if (error) {
       throw error;
     }
 
     if (!data) return null;
 
-    console.log("returned data", data);
     return {
       success: true,
       data,
@@ -133,7 +130,6 @@ export async function upsertListing(
 
     if (!data || data.length === 0) return null;
 
-    console.log("returned data", data[0]);
     return {
       success: true,
       data: data[0],

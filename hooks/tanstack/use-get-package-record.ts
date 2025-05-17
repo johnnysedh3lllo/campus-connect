@@ -10,7 +10,7 @@ export function useGetPackageRecord(
   const isStudent = hasRole(userRoleId ?? 0, "TENANT");
 
   return useQuery({
-    queryKey: ["currentPackage", userId],
+    queryKey: ["package", userId],
     queryFn: async () => await getUserPackageRecord(userId),
     enabled: isStudent && !!userId,
     staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes
