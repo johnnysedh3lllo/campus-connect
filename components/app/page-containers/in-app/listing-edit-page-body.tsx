@@ -31,7 +31,7 @@ export default function ListingEditPageBody({
 }: {
   listingUUID: string;
 }) {
-  const { step, steps, setData, nextStep } = useEditListingsStore();
+  const { step, steps, setData, nextStep, setStep } = useEditListingsStore();
   const clearStoreStorage = clearStorage(useEditListingsStore);
   const [photos, setPhotos] = useState<File[]>([]);
   const { data, isLoading } = useGetListingByUUID(listingUUID);
@@ -208,19 +208,25 @@ export default function ListingEditPageBody({
         <div>
           <div className="hidden auto-cols-auto grid-flow-col items-center gap-3 sm:grid md:grid-flow-row md:auto-rows-auto md:items-start">
             {steps.map((item, index) => (
+              // TODO: ABSTRACT THIS
               <div
                 key={index}
                 className="grid auto-cols-auto grid-flow-col items-center gap-3 md:grid-flow-row md:items-start md:self-start"
               >
                 <div className="grid grid-flow-col items-center gap-3 md:justify-start">
-                  <span
-                    className={`bg-line inline-grid aspect-square w-7 place-items-center rounded-full ${
-                      step === index &&
-                      "border-primary text-primary border bg-transparent"
-                    } ${step > index && "bg-primary text-white"}`}
+                  <button
+                    className="cursor-pointer"
+                    onClick={() => setStep(index)}
                   >
-                    {index + 1}
-                  </span>
+                    <span
+                      className={`bg-line inline-grid aspect-square w-7 place-items-center rounded-full ${
+                        step === index &&
+                        "border-primary text-primary border bg-transparent"
+                      } ${step > index && "bg-primary text-white"}`}
+                    >
+                      {index + 1}
+                    </span>
+                  </button>
                   <span
                     className={`text-text-secondary ${step === index && "text-text-primary! font-semibold"}`}
                   >

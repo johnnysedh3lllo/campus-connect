@@ -385,10 +385,4 @@
       @apply items-center;
     }
   }
-
-  @media (prefers-color-scheme: dark) {
-    input {
-      color: white;
-    }
-  }
 }

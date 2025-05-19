@@ -18,7 +18,7 @@ export default async function Page({
   });
 
   await queryClient.prefetchQuery({
-    queryKey: ["listings", "published"],
+    queryKey: ["listings", id ?? "public", "published"],
     queryFn: async () => await getListings(id, "published"),
   });
 

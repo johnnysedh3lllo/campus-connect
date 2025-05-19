@@ -1,4 +1,5 @@
 import { updateUserCreditRecord } from "@/app/actions/supabase/credits";
+import { queryKeys } from "@/lib/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateCreditRecord() {
@@ -15,9 +16,9 @@ export function useUpdateCreditRecord() {
     }) => {
       return await updateUserCreditRecord(userId, addedCredits, tableColumn);
     },
-    onSuccess: (_, variable) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["userCredits", variable.userId],
+        queryKey: queryKeys.credits(variables.userId),
       });
     },
   });

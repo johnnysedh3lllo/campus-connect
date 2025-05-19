@@ -11,12 +11,17 @@ export async function getListings(
 ) {
   const supabase = await createClient();
 
+  console.log(
+    "[GET LISTINGS] userId:",
+    userId,
+    "Called from:",
+    typeof window === "undefined" ? "Server" : "Client",
+  );
+
   try {
     let query = supabase
       .from("listings")
       .select("*, listing_images(image_url, width, height)");
-
-    console.log("landlordId", userId);
 
     if (userId) query = query.eq("landlord_id", userId);
     if (pubStatus) query = query.eq("publication_status", pubStatus);
@@ -25,14 +30,13 @@ export async function getListings(
       ascending: false,
     });
 
-    console.log("any errors?", data);
+    // console.log("any errors?", data);
     if (error) {
       throw error;
     }
 
     if (!data || data.length === 0) return null;
 
-    console.log("returned data", data);
     return {
       success: true,
       data,
@@ -169,7 +173,6 @@ export async function updateListing(
 
     if (!data) return null;
 
-    console.log("returned data", data);
     return {
       success: true,
       data,
@@ -208,7 +211,6 @@ export async function deleteListing(
 
     if (!data) return null;
 
-    console.log("returned data", data);
     return {
       success: true,
       data,

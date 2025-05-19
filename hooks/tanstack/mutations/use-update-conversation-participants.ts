@@ -1,5 +1,6 @@
 import { updateConversationParticipants } from "@/app/actions/supabase/messages";
 import { ConversationFormType } from "@/lib/form.types";
+import { queryKeys } from "@/lib/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateConversationParticipants() {
@@ -22,11 +23,10 @@ export function useUpdateConversationParticipants() {
       const variables = variable.conversationData;
 
       queryClient.invalidateQueries({
-        queryKey: [
-          "conversationParticipants",
+        queryKey: queryKeys.conversations.participants(
           variables.userId,
           variables.conversationId,
-        ],
+        ),
       });
     },
   });

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "@/hooks/use-toast";
-import { settingsFormSchema} from "@/lib/form.schemas";
+import { settingsFormSchema } from "@/lib/form.schemas";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,25 +18,76 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
 import { SettingsFormType } from "@/lib/form.types";
+import { useUserStore } from "@/lib/store/user-store";
+import { useGetUserSettings } from "@/hooks/tanstack/use-get-user-settings";
+import { useUpdateUserSettings } from "@/hooks/tanstack/mutations/use-update-user-settings";
 
 export default function Notifications() {
+  const { userId } = useUserStore();
   const [isLoading, setIsLoading] = useState(false);
+
+  const { data, isLoading: isLoadingSettings } = useGetUserSettings(
+    userId ?? undefined,
+  );
+
+  const settingsData = data?.data.settings as SettingsFormType;
+  const notifications = settingsData?.notification;
 
   const form = useForm<SettingsFormType>({
     resolver: zodResolver(settingsFormSchema),
-    defaultValues: {
-      emailNotification: false,
-      smsNotification: false,
-    },
+    mode: "onChange",
   });
 
   const {
     formState: { isValid },
   } = form;
 
-  function onSubmit(values: SettingsFormType) {
-    console.log(values);
-    // setIsLoading(true);
+  useEffect(() => {
+    if (notifications) {
+      form.reset({
+        notification: {
+          email: notifications.email,
+          newsletter: notifications.newsletter,
+        },
+      });
+    }
+  }, [notifications]);
+
+  const upsertSettingsMutation = useUpdateUserSettings();
+
+  const onSubmit = async (values: SettingsFormType) => {
+    setIsLoading(true);
+    try {
+      const result = await upsertSettingsMutation.mutateAsync({
+        userId: userId ?? undefined,
+        newSettings: values,
+      });
+
+      console.log(result);
+      if (result?.success) {
+        toast({
+          variant: "success",
+          description: "Settings updated successfully",
+        });
+      } else {
+        throw new Error(
+          "There was an issue updating setting, please reload an try again",
+        );
+      }
+    } catch (error: any) {
+      if (error instanceof Error) {
+        toast({
+          title: "Settings update failed",
+          description: error.message,
+        });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoadingSettings) {
+    return <p className="italic">Loading...</p>;
   }
 
   return (
@@ -53,11 +104,15 @@ export default function Notifications() {
           <div className="flex flex-col gap-6">
             <FormField
               control={form.control}
-              name="emailNotification"
+              name="notification.email"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center gap-3">
                   <FormControl>
-                    <Switch onCheckedChange={field.onChange} />
+                    <Switch
+                      className="cursor-pointer"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
 
                   <div className="flex flex-col gap-1">
@@ -66,28 +121,34 @@ export default function Notifications() {
                     </FormLabel>
 
                     <FormDescription className="text-text-secondary text-sm leading-6">
-                      Send me notification for new leads via email
+                      Send me notifications for new leads via email
                     </FormDescription>
                   </div>
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
-              name="smsNotification"
+              name="notification.newsletter"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center gap-3">
                   <FormControl>
-                    <Switch onCheckedChange={field.onChange} aria-readonly />
+                    <Switch
+                      className="cursor-pointer"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      aria-readonly
+                    />
                   </FormControl>
 
                   <div className="flex flex-col gap-1">
                     <FormLabel className="text-text-primary text-base leading-6 font-semibold">
-                      SMS Notification
+                      Newsletter
                     </FormLabel>
 
                     <FormDescription className="text-text-secondary text-sm leading-6">
-                      Send me notification for new leads via email
+                      Send me updates and news regarding Campus Connect
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -98,7 +159,7 @@ export default function Notifications() {
         <Button
           disabled={isLoading || !isValid}
           type="submit"
-          className="w-fit cursor-pointer p-6 text-center text-base leading-6 font-semibold transition-all duration-500"
+          className="w-fit cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
         >
           {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {isLoading ? "Saving changes..." : "Save changes"}

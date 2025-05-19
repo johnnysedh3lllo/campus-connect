@@ -1,4 +1,5 @@
 import { updateProfilePicture } from "@/app/actions/supabase/user";
+import { queryKeys } from "@/lib/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateUserAvatar() {
@@ -13,9 +14,9 @@ export function useUpdateUserAvatar() {
     }) => {
       return await updateProfilePicture(base64Image, userId);
     },
-    onSuccess: (_, variable) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["userPublic", variable.userId],
+        queryKey: queryKeys.user.public(variables.userId),
       });
     },
   });

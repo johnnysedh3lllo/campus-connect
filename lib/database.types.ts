@@ -79,4 +79,7 @@ declare global {
 
   type ConversationParticipantsUpdate =
     TablesUpdate<"conversation_participants">;
+
+  type Settings = Tables<"settings">;
+  type SettingsInsert = TablesInsert<"settings">;
 }

@@ -4,11 +4,11 @@ import { MessageListItem } from "./message-list-item";
 import { useGetConversations } from "@/hooks/tanstack/use-get-conversations";
 import { MessageListItemSkeleton } from "./skeletons/message-list-item-skeleton";
 import React from "react";
-import { useGetUser } from "@/hooks/tanstack/use-get-user";
+import { useUserStore } from "@/lib/store/user-store";
 
 export function MessageList() {
-  const { data: user } = useGetUser();
-  const { data: conversations, isLoading } = useGetConversations(user?.id);
+  const { userId } = useUserStore();
+  const { data: conversations, isLoading } = useGetConversations(userId ?? "");
 
   return (
     <div className="flex max-h-[calc(80vh-100px)] w-full flex-1 flex-col gap-4 overflow-y-auto">

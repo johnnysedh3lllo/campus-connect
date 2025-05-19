@@ -143,8 +143,10 @@ export const loginSchema = userValidationSchema.pick({
 });
 
 export const settingsFormSchema = z.object({
-  emailNotification: z.boolean().default(false).optional(),
-  smsNotification: z.boolean(),
+  notification: z.object({
+    email: z.boolean().optional(),
+    newsletter: z.boolean().optional(),
+  }),
 });
 
 export const profileInfoFormSchema = userValidationSchema.pick({

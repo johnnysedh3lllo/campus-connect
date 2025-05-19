@@ -1,5 +1,6 @@
 import { getUserCreditRecord } from "@/app/actions/supabase/credits";
 import { DEFAULT_STALE_TIME } from "@/lib/app.config";
+import { queryKeys } from "@/lib/query-keys.config";
 import { hasRole } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 
@@ -10,7 +11,7 @@ export function useGetUserCredits(
   const isLandlord = hasRole(userRoleId ?? 0, "LANDLORD");
 
   return useQuery({
-    queryKey: ["userCredits", userId],
+    queryKey: queryKeys.credits(userId),
     queryFn: async () => await getUserCreditRecord(userId),
     enabled: isLandlord && !!userId,
     staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes

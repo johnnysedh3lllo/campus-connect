@@ -2,16 +2,16 @@ import { getConversationParticipants } from "@/app/actions/supabase/messages";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/utils/supabase/client";
+import { queryKeys } from "@/lib/query-keys.config";
 
 export function useGetConversationParticipants(
   userId: string,
   conversationId: string,
 ) {
-  const conversationParticipantsQueryKey = [
-    "conversationParticipants",
+  const conversationParticipantsQueryKey = queryKeys.conversations.participants(
     userId,
     conversationId,
-  ];
+  );
 
   const queryClient = useQueryClient();
   const query = useQuery({

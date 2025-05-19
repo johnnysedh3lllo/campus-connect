@@ -1,5 +1,6 @@
 import { getListings } from "@/app/actions/supabase/listings";
 import { PublicationStatusType } from "@/lib/form.types";
+import { queryKeys } from "@/lib/query-keys.config";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetPublishedListings(
@@ -10,8 +11,10 @@ export function useGetPublishedListings(
 
   const isActiveView = activeView === pubStatus;
 
+  console.log("get published listings", userId);
+
   return useQuery({
-    queryKey: ["listings", pubStatus],
+    queryKey: queryKeys.listings.published(userId ?? "public"),
     queryFn: async () => await getListings(userId, pubStatus),
     enabled: isActiveView,
     staleTime: Infinity, // cache data for 5 minutes

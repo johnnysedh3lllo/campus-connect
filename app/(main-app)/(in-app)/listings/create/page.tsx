@@ -42,7 +42,8 @@ import { clearStorage } from "@/lib/store/store-utils";
 
 export default function CreateListingPage() {
   const { userId, userRoleId } = useUserStore();
-  const { step, steps, data, setData, nextStep } = useCreateListingsStore();
+  const { step, steps, data, setData, nextStep, setStep } =
+    useCreateListingsStore();
   const clearStoreStorage = clearStorage(useCreateListingsStore);
   const [isDraftModalOpen, setIsDraftModalOpen] = useState<boolean>(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -106,6 +107,8 @@ export default function CreateListingPage() {
     publicationStatus: "draft",
   };
   async function handlePublish(values: CreateListingFormType) {
+    console.log("create listing form", values);
+
     let idemKey = idempotencyKey;
     if (!hasActiveSubscription && !hasEnoughCredits) {
       console.log("this user can't upload a property");
@@ -292,20 +295,26 @@ export default function CreateListingPage() {
                 className="grid auto-cols-auto grid-flow-col items-center gap-3 md:grid-flow-row md:items-start md:self-start"
               >
                 <div className="grid grid-flow-col items-center gap-3 md:justify-start">
-                  <span
-                    className={`bg-line inline-grid aspect-square w-7 place-items-center rounded-full ${
-                      step === index &&
-                      "border-primary text-primary border bg-transparent"
-                    } ${step > index && "bg-primary text-white"}`}
+                  <button
+                    className="cursor-pointer"
+                    onClick={() => setStep(index)}
                   >
-                    {index + 1}
-                  </span>
-                  <span
+                    <span
+                      className={`bg-line inline-grid aspect-square w-7 place-items-center rounded-full ${
+                        step === index &&
+                        "border-primary text-primary border bg-transparent"
+                      } ${step > index && "bg-primary text-white"}`}
+                    >
+                      {index + 1}
+                    </span>
+                  </button>
+                  <p
                     className={`text-text-secondary ${step === index && "text-text-primary! font-semibold"}`}
                   >
                     {item}
-                  </span>
+                  </p>
                 </div>
+
                 {index !== steps.length - 1 && (
                   <Separator className="bg-line h-[2px] w-10 md:h-10 md:w-[2px] md:translate-x-3" />
                 )}

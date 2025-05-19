@@ -5,6 +5,7 @@ import {
   upsertListingImages,
 } from "@/app/actions/supabase/listings";
 import { UpsertListingType } from "@/lib/form.types";
+import { queryKeys } from "@/lib/query-keys.config";
 import { supabase } from "@/utils/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -43,7 +44,7 @@ export function useUploadListing() {
 
         const filePath = `${userId}/${listingUUID}/${index}-${image.name}`;
 
-        const { data: storageData, error } = await supabase.storage
+        const { error } = await supabase.storage
           .from("listing-images")
           .upload(filePath, image, {
             cacheControl: "3600",
@@ -93,11 +94,13 @@ export function useUploadListing() {
       return {
         listingUUID,
         imageMetadata,
+        pubStatus: updatedListing.data?.publication_status,
       };
     },
-    onSuccess: (_, variable) => {
-      queryClient.invalidateQueries({
-        queryKey: ["listings", variable.userId],
+    onSuccess: (data, variables) => {
+      queryClient.refetchQueries({
+        queryKey: queryKeys.listings.published(variables.userId ?? "public"),
+        exact: true,
       });
     },
   });

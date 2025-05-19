@@ -1,5 +1,6 @@
 import { updateUser } from "@/app/actions/supabase/user";
 import { ProfileInfoFormType } from "@/lib/form.types";
+import { queryKeys } from "@/lib/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateUserMetadata() {
@@ -15,12 +16,12 @@ export function useUpdateUserMetadata() {
     }) => {
       return await updateUser(values, userId);
     },
-    onSuccess: (_, variable) => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["user"],
+        queryKey: queryKeys.user.main,
       });
       queryClient.invalidateQueries({
-        queryKey: ["userPublic", variable.userId],
+        queryKey: queryKeys.user.public(variables.userId),
       });
     },
   });

@@ -42,23 +42,23 @@ export default function Security() {
   const onSubmit = async (values: ChangePasswordFormType) => {
     setIsLoading(true);
     try {
-      // const result = await changePassword(values);
+      const result = await changePassword(values);
 
       console.log(values);
-      // console.log(result, "Result");
-      // if (result?.success) {
-      //   toast({
-      //     title: "Password changed successfully",
-      //     description: "Your password has been updated.",
-      //   });
-      //   // router.replace("/profile") // Redirect to profile or another appropriate page
-      // } else {
-      //   toast({
-      //     title: "Password changed successfully",
-      //     description: "Your password has been updated.",
-      //   });
-      //   throw result?.error;
-      // }
+      console.log(result, "Result");
+      if (result?.success) {
+        toast({
+          title: "Password changed successfully",
+          description: "Your password has been updated.",
+        });
+        // router.replace("/profile") // Redirect to profile or another appropriate page
+      } else {
+        toast({
+          title: "Password changed successfully",
+          description: "Your password has been updated.",
+        });
+        throw result?.error;
+      }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -110,7 +110,7 @@ export default function Security() {
                     </FormLabel>
                     <Link
                       href="/reset-password"
-                      className="text-primary underline hover:no-underline cursor-pointer text-sm"
+                      className="text-primary cursor-pointer text-sm underline hover:no-underline"
                     >
                       Forgot Password?
                     </Link>
@@ -164,7 +164,7 @@ export default function Security() {
               <Button
                 disabled={isLoading}
                 type="submit"
-                className="w-fit cursor-pointer p-6 text-center text-base leading-6 font-semibold transition-all duration-500"
+                className="w-fit cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? "Saving changes..." : "Save changes"}

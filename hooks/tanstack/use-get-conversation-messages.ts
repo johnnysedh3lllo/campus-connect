@@ -2,18 +2,18 @@ import { getConversationMessages } from "@/app/actions/supabase/messages";
 import { notifyManager, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase/client";
 import { useEffect } from "react";
+import { queryKeys } from "@/lib/query-keys.config";
 
 export function useGetConversationMessages(
   conversationId: string,
   userId: string,
 ) {
   const queryClient = useQueryClient();
-  const conversationMessagesQueryKey = [
-    "conversationMessages",
+
+  const conversationMessagesQueryKey = queryKeys.conversations.messages(
     conversationId,
     userId,
-  ];
-
+  );
   const query = useQuery({
     queryKey: conversationMessagesQueryKey,
     queryFn: async () => await getConversationMessages(conversationId, userId),

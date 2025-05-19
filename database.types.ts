@@ -448,7 +448,7 @@ export type Database = {
           {
             foreignKeyName: "settings_user_id_fkey"
             columns: ["user_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -666,9 +666,15 @@ export type Database = {
         }
         Returns: undefined
       }
-      update_user_settings: {
-        Args: { user_id: string; new_settings: Json }
-        Returns: Json
+      update_settings: {
+        Args: { u_id: string; new_settings: Json }
+        Returns: {
+          created_at: string
+          id: string
+          settings: Json | null
+          updated_at: string
+          user_id: string
+        }
       }
     }
     Enums: {

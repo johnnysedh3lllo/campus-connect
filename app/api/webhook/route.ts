@@ -9,7 +9,7 @@ import {
 import { deleteCustomer } from "@/app/actions/supabase/customers";
 import { manageSubscriptions } from "@/app/actions/supabase/subscriptions";
 import { stripe } from "@/lib/stripe";
-import { PURCHASE_TYPES, PurchaseType } from "@/lib/pricing.config";
+import { PURCHASE_TYPES } from "@/lib/pricing.config";
 import {
   createUserPackageRecord,
   getUserPackageRecord,

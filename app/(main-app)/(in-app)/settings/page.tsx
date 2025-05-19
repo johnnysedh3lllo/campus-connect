@@ -6,9 +6,9 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { motion, AnimatePresence } from "framer-motion";
 
 // COMPONENTS
-import Notifications from "./notifications";
-import Security from "./security";
-import Support from "./support";
+import Notifications from "./(tabs)/notifications";
+import Security from "./(tabs)/security";
+import Support from "./(tabs)/support";
 
 // ASSETS
 import { Button } from "@/components/ui/button";

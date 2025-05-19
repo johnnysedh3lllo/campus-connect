@@ -28,6 +28,8 @@ export const navLinksMobile = [
 
 export const MIN_CREDITS = 20;
 
+export const MIN_INQUIRIES = 1;
+
 // IMAGE UPLOADS
 export const SUPPORTED_FILE_TYPES = [
   "image/jpeg",

@@ -2,6 +2,7 @@ import { getUserPackageRecord } from "@/app/actions/supabase/packages";
 import { DEFAULT_STALE_TIME } from "@/lib/app.config";
 import { useQuery } from "@tanstack/react-query";
 import { hasRole } from "@/lib/utils";
+import { queryKeys } from "@/lib/query-keys.config";
 
 export function useGetPackageRecord(
   userId: string | undefined,
@@ -10,7 +11,7 @@ export function useGetPackageRecord(
   const isStudent = hasRole(userRoleId ?? 0, "TENANT");
 
   return useQuery({
-    queryKey: ["package", userId],
+    queryKey: queryKeys.packages(userId),
     queryFn: async () => await getUserPackageRecord(userId),
     enabled: isStudent && !!userId,
     staleTime: DEFAULT_STALE_TIME, // cache data for 5 minutes

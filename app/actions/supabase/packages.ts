@@ -61,12 +61,12 @@ export async function createUserPackageRecord(
 }
 
 export async function updateUserPackageRecord(
-  userId: string,
+  userId: string | undefined,
   packageName: Packages["package_name"],
   addedInquires: number,
   tableColumn: "total_inquiries" | "used_inquiries",
   SUPABASE_SECRET_KEY?: ENVType,
-): Promise<Packages | null> {
+): Promise<{ success: boolean; data: Packages } | null> {
   const supabase = await createClient(SUPABASE_SECRET_KEY);
 
   try {
@@ -88,8 +88,42 @@ export async function updateUserPackageRecord(
       throw error;
     }
     if (!data) return null;
-    return data;
+    return { success: true, data };
   } catch (error) {
-    throw error;
+    throw { success: false, error };
+  }
+}
+
+// CLIENT
+export async function updateUserPackageInquiries(
+  userId: string | undefined,
+  addedInquires: number,
+  tableColumn: "total_inquiries" | "used_inquiries",
+  SUPABASE_SECRET_KEY?: ENVType,
+): Promise<{ success: boolean; data: Packages } | null> {
+  const supabase = await createClient(SUPABASE_SECRET_KEY);
+
+  try {
+    if (!userId) {
+      throw new Error("User ID is required!");
+    }
+
+    // TODO: THIS MAY NOT BE COMPLETELY TYPE-SAFE, PLEASE REMEMBER TO REVISIT.
+    const { data, error } = await supabase
+      .rpc("increment_column_value", {
+        table_name: "packages",
+        table_column: tableColumn,
+        increment: addedInquires,
+        user_id: userId,
+      })
+      .single();
+
+    if (error) {
+      throw error;
+    }
+    if (!data) return null;
+    return { success: true, data };
+  } catch (error) {
+    throw { success: false, error };
   }
 }

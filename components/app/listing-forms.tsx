@@ -31,10 +31,7 @@ import {
 import { LocationIcon } from "@/public/icons/location-icon";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import {
-  CreateListingsState,
-  useCreateListingsStore,
-} from "@/lib/store/create-listings-store";
+import { CreateListingsState } from "@/lib/store/create-listings-store";
 import {
   CreateListingFormType,
   HomeDetailsFormType,
@@ -46,20 +43,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CloudArrowUpIcon } from "@/public/icons/cloud-arrow-up-icon";
 import { Separator } from "../ui/separator";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselPrevious,
-  CarouselNext,
-} from "@/components/ui/carousel";
-import Image from "next/image";
 
 import { PhotoCarousel } from "./listing-photo-preview-carousel";
 import { CreditBalance } from "./credit-balance";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { EditListingsState } from "@/lib/store/edit-listings-store";
+import { PhotoCarouselGeneric } from "./photo-carousel-generic";
 
 export function HomeDetailsForm({
   defaultValues,
@@ -100,7 +90,9 @@ export function HomeDetailsForm({
           name="title"
           render={({ field }) => (
             <FormItem className="flex flex-col gap-1">
-              <FormLabel className="leading-6 font-medium">Title</FormLabel>
+              <FormLabel className="leading-6 font-medium">
+                Name of Listing
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Enter Title"
@@ -618,19 +610,30 @@ export function PreviewPage({
   });
 
   const {
-    formState: { isSubmitting },
+    formState: { isSubmitting, isSubmitted, isValid },
   } = form;
 
+  // TODO: MOVE TO RESPECTIVE FORMS (CREATE OR EDIT LISTINGS)
+  // if (isSubmitted && !isValid) {
+  //   toast({
+  //     variant: "destructive",
+  //     title: "Incomplete form",
+  //     description: "Please review form before submission",
+  //   });
+  // }
+
   return (
-    <div className="w-full md:max-w-202">
+    <div className="flex w-full flex-col gap-6 md:max-w-202">
       <h2 className="flex w-full items-center justify-between text-2xl leading-8 font-semibold">
         {steps[step]}
       </h2>
 
       {!previewUrls || previewUrls.length === 0 ? (
-        <h3 className="px-4 py-12 text-center text-2xl leading-6 font-medium text-gray-700">
-          Please re-upload your images
-        </h3>
+        <div className="border-0.6 border-input/50 rounded-sm px-4 py-12">
+          <h3 className="text-center text-2xl leading-6 font-medium text-gray-700">
+            Please re-upload your images
+          </h3>
+        </div>
       ) : (
         <section className="flex flex-col gap-6">
           <PhotoCarouselGeneric photos={previewUrls} />
@@ -641,7 +644,7 @@ export function PreviewPage({
 
       <section className="grid grid-cols-2 gap-6 sm:grid-cols-3">
         <div>
-          <h3 className="text-sm leading-6 font-medium">Title</h3>
+          <h3 className="text-sm leading-6 font-medium">Name of Listing</h3>
           <p className="text-sm text-gray-700 capitalize">{title}</p>
         </div>
 
@@ -683,7 +686,7 @@ export function PreviewPage({
         )}
       </section>
 
-      <div className="mt-16 flex w-full flex-col-reverse items-center justify-between gap-4 sm:flex-row">
+      <div className="flex w-full flex-col-reverse items-center justify-between gap-4 pt-6 sm:flex-row lg:pt-10">
         <Button
           type="button"
           variant="outline"
@@ -701,7 +704,7 @@ export function PreviewPage({
           >
             <Button
               type="submit"
-              disabled={previewUrls.length === 0 || isSubmitting} // TODO: FIND A BETTER WAY TO HANDLE THIS DISABLED STATE HERE
+              disabled={isSubmitting} // TODO: FIND A BETTER WAY TO HANDLE THIS DISABLED STATE HERE
               className="w-full transition-all duration-150 sm:w-50"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -710,35 +713,6 @@ export function PreviewPage({
           </form>
         </Form>
       </div>
-    </div>
-  );
-}
-
-function PhotoCarouselGeneric({ photos }: { photos: string[] }) {
-  return (
-    <div className="relative w-full">
-      <Carousel className="w-full" opts={{ align: "start", slidesToScroll: 1 }}>
-        {/* Left navigation button - using ShadCN's CarouselPrevious */}
-        <CarouselPrevious className="bg-background-secondary absolute -left-5 z-5 size-10 rounded-sm border-0 p-3" />
-
-        {/* Photos container */}
-        <CarouselContent className="flex w-full gap-3">
-          {photos.map((url, idx) => (
-            <CarouselItem key={idx} className="p-0 sm:basis-1/3">
-              <Image
-                width={200}
-                height={200}
-                src={url}
-                className="aspect-square h-full w-full overflow-hidden rounded-sm object-cover"
-                alt={url}
-              />
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-
-        {/* Right navigation button - using ShadCN's CarouselNext */}
-        <CarouselNext className="bg-background-secondary absolute -right-5 z-5 size-10 rounded-sm border-0 p-3" />
-      </Carousel>
     </div>
   );
 }

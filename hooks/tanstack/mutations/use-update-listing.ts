@@ -1,4 +1,5 @@
 import { updateListing } from "@/app/actions/supabase/listings";
+import { queryKeys } from "@/lib/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateListing() {
@@ -26,14 +27,14 @@ export function useUpdateListing() {
 
       return updatedListing;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (_, variables) => {
       console.log(
         "before the mutation",
         variables.userId,
         variables.listingData.publication_status,
       );
 
-      //   Set the individual listing if you're usi;ng that query somewhere
+      //   Set the individual listing if you're using that query somewhere
       queryClient.setQueryData(
         ["listings", variables.listingUUID],
         (old: any) => {
@@ -50,18 +51,19 @@ export function useUpdateListing() {
         },
       );
 
+      // TODO: REDUCE THIS TO ONE INVALIDATION INSTANCE THAT HANDLES WHICH EVER AFFECTED STATUS
+
       // Invalidate the user's published listings
       queryClient.invalidateQueries({
-        queryKey: ["listings", variables.listingData.publication_status],
+        queryKey: queryKeys.listings.published(variables.userId! ?? "public"),
       });
 
-      // Invalidate the user's draft, unpublished or published listings
+      // Invalidate the user's draft, unpublished listings
       queryClient.invalidateQueries({
-        queryKey: [
-          "listings",
-          variables.userId,
-          variables.listingData.publication_status,
-        ],
+        queryKey: queryKeys.listings.unpublished(variables.userId!),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.listings.drafts(variables.userId!),
       });
     },
   });

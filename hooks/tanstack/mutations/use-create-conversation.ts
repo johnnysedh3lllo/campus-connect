@@ -1,4 +1,7 @@
 import { createConversation } from "@/app/actions/supabase/messages";
+import { updateUserPackageInquiries } from "@/app/actions/supabase/packages";
+import { MIN_INQUIRIES } from "@/lib/app.config";
+import { queryKeys } from "@/lib/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useCreateConversation() {
@@ -18,13 +21,25 @@ export function useCreateConversation() {
         throw error;
       }
 
-      console.log("created or existing conversation:", data);
+      if (data?.is_new_conversation) {
+        await updateUserPackageInquiries(
+          tenantId,
+          MIN_INQUIRIES,
+          "used_inquiries",
+        );
+      }
+
       return data;
     },
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["conversations", variables.tenantId],
+        queryKey: queryKeys.conversations.list(variables.tenantId),
+      });
+
+      queryClient.refetchQueries({
+        queryKey: queryKeys.packages(variables.tenantId),
+        exact: true,
       });
     },
   });

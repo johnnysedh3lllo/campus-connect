@@ -2,6 +2,7 @@ import {
   deleteListing,
   deleteListingImagesInStorage,
 } from "@/app/actions/supabase/listings";
+import { queryKeys } from "@/lib/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useDeleteListing() {
@@ -11,7 +12,6 @@ export function useDeleteListing() {
     mutationFn: async ({
       userId,
       listingUUID,
-      publicationStatus,
       imageUrls,
     }: {
       userId: string | null;
@@ -50,14 +50,19 @@ export function useDeleteListing() {
       //   },
       // );
 
+      // TODO: REDUCE THIS TO ONE INVALIDATION INSTANCE THAT HANDLES WHICH EVER AFFECTED STATUS
+
       // Invalidate the user's published listings
       queryClient.invalidateQueries({
-        queryKey: ["listings", variables.publicationStatus],
+        queryKey: queryKeys.listings.published(variables.userId ?? "public"),
       });
 
-      // Invalidate the user's draft, unpublished or published listings
+      // Invalidate the user's draft, unpublished listings
       queryClient.invalidateQueries({
-        queryKey: ["listings", variables.userId, variables.publicationStatus],
+        queryKey: queryKeys.listings.unpublished(variables.userId!),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.listings.drafts(variables.userId!),
       });
     },
   });

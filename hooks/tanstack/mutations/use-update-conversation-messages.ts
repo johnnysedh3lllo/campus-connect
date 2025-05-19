@@ -4,6 +4,7 @@ import {
   updateConversations,
 } from "@/app/actions/supabase/messages";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys.config";
 
 export function useUpdateConversationMessages(
   conversationId: string,
@@ -11,11 +12,10 @@ export function useUpdateConversationMessages(
 ) {
   const queryClient = useQueryClient();
 
-  const conversationMessagesQueryKey = [
-    "conversationMessages",
+  const conversationMessagesQueryKey = queryKeys.conversations.messages(
     conversationId,
     userId,
-  ];
+  );
 
   return useMutation({
     mutationFn: async ({

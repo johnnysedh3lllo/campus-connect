@@ -3,11 +3,12 @@
 import { EmptyPageState } from "../../empty-page-state";
 import messageIllustration from "@/public/illustrations/illustration-messages.svg";
 import { useGetConversations } from "@/hooks/tanstack/use-get-conversations";
-import { useGetUser } from "@/hooks/tanstack/use-get-user";
+import { useUserStore } from "@/lib/store/user-store";
+import { RoleGate } from "../../role-gate";
 
 export default function MessagesPageBody() {
-  const { data: user } = useGetUser();
-  const { data: conversations } = useGetConversations(user?.id);
+  const { userId, userRoleId } = useUserStore();
+  const { data: conversations } = useGetConversations(userId ?? undefined);
 
   return (
     <div className="flex w-full flex-2 items-center justify-center rounded-sm">
@@ -17,17 +18,35 @@ export default function MessagesPageBody() {
             Messages will Appear Here
           </h2>
 
-          <p className="text-text-secondary text-sm leading-6">
-            Send and receive message from tenants who are making enquiries about
-            your properties here
-          </p>
+          <RoleGate userRoleId={userRoleId} role="LANDLORD">
+            <p className="text-text-secondary text-sm leading-6">
+              Send and receive message from tenants who are making enquiries
+              about your properties here
+            </p>
+          </RoleGate>
+          <RoleGate userRoleId={userRoleId} role="TENANT">
+            <p className="text-text-secondary text-sm leading-6">
+              Send and receive message from landlords here
+            </p>
+          </RoleGate>
         </section>
       ) : (
-        <EmptyPageState
-          imageSrc={messageIllustration}
-          title="You have no messages yet"
-          subTitle="Hang tight while potential tenants view your listing"
-        />
+        <>
+          <RoleGate userRoleId={userRoleId} role="LANDLORD">
+            <EmptyPageState
+              imageSrc={messageIllustration}
+              title="You have no messages yet"
+              subTitle="Hang tight while potential tenants view your listing"
+            />
+          </RoleGate>
+          <RoleGate userRoleId={userRoleId} role="TENANT">
+            <EmptyPageState
+              imageSrc={messageIllustration}
+              title="You have no messages yet"
+              subTitle="Your conversations will appear here."
+            />
+          </RoleGate>
+        </>
       )}
     </div>
   );

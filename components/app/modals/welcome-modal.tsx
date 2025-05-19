@@ -59,13 +59,15 @@ export function WelcomeModal() {
       <RoleGate userRoleId={userRoleId} role="LANDLORD">
         <Modal {...LandlordWelcomeModalProps}>
           <div className="flex flex-col gap-6">
-            <Button
-              onClick={() => setOpen(false)}
-              className="hidden h-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex"
-            >
-              <p>Create a listing</p>
-              {<PlusIcon />}
-            </Button>
+            <Link href="/listings/create" className="w-full">
+              <Button
+                onClick={() => setOpen(false)}
+                className="hidden h-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex"
+              >
+                <p>Create a listing</p>
+                {<PlusIcon />}
+              </Button>
+            </Link>
 
             <div className="flex flex-col items-center gap-2">
               <p className="text-text-primary text-sm leading-6">
@@ -86,6 +88,7 @@ export function WelcomeModal() {
           </div>
         </Modal>
       </RoleGate>
+
       <RoleGate userRoleId={userRoleId} role="TENANT">
         <Modal {...StudentWelcomeModalProps}>
           <Link href="/listings" className="w-full">
