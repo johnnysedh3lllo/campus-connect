@@ -35,7 +35,7 @@ export default function CreatePasswordPage() {
           showCloseButton: false,
         });
 
-        router.replace("/listings?modalId=welcome");
+        router.replace("/listings?modalId=welcome&status=onboarding_success");
       } else {
         throw result.error;
       }

@@ -29,6 +29,13 @@ const confirmPasswordSchema = z.string().min(8, {
   message: "Password must be at least 8 characters.",
 });
 
+export const settingsFormSchema = z.object({
+  notifications: z.object({
+    email: z.boolean().optional(),
+    newsletter: z.boolean().optional(),
+  }),
+});
+
 export const userValidationSchema = z.object({
   roleId: RoleEnum.describe("User role selection"),
   firstName: z
@@ -50,7 +57,7 @@ export const userValidationSchema = z.object({
     .string()
     .nonempty({ message: "This is a required field" })
     .email({ message: "Please enter a valid email address." }),
-  newsletter: z.boolean().default(false).optional(),
+  settings: settingsFormSchema,
   otp: z
     .string()
     .length(6, "OTP must be exactly 6 digits")
@@ -67,7 +74,7 @@ export const multiStepFormSchema = userValidationSchema.pick({
   lastName: true,
   emailAddress: true,
   password: true,
-  newsletter: true,
+  settings: true,
 });
 
 // SIGN UP ACTION
@@ -76,7 +83,7 @@ export const signUpFormSchema = userValidationSchema.pick({
   lastName: true,
   emailAddress: true,
   roleId: true,
-  newsletter: true,
+  settings: true,
 });
 
 // SIGN UP FORM STEPS
@@ -140,13 +147,6 @@ export const resetPasswordFormSchema = userValidationSchema.pick({
 export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
   password: true,
-});
-
-export const settingsFormSchema = z.object({
-  notification: z.object({
-    email: z.boolean().optional(),
-    newsletter: z.boolean().optional(),
-  }),
 });
 
 export const profileInfoFormSchema = userValidationSchema.pick({

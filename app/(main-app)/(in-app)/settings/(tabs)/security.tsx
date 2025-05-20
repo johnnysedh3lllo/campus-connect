@@ -48,15 +48,11 @@ export default function Security() {
       console.log(result, "Result");
       if (result?.success) {
         toast({
+          variant: "success",
           title: "Password changed successfully",
           description: "Your password has been updated.",
         });
-        // router.replace("/profile") // Redirect to profile or another appropriate page
       } else {
-        toast({
-          title: "Password changed successfully",
-          description: "Your password has been updated.",
-        });
         throw result?.error;
       }
     } catch (error) {

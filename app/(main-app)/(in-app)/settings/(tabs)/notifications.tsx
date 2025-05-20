@@ -21,6 +21,7 @@ import { SettingsFormType } from "@/lib/form.types";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetUserSettings } from "@/hooks/tanstack/use-get-user-settings";
 import { useUpdateUserSettings } from "@/hooks/tanstack/mutations/use-update-user-settings";
+import { NotificationsTabSkeleton } from "@/components/app/skeletons/notifications-tab-skeleton";
 
 export default function Notifications() {
   const { userId } = useUserStore();
@@ -31,7 +32,7 @@ export default function Notifications() {
   );
 
   const settingsData = data?.data.settings as SettingsFormType;
-  const notifications = settingsData?.notification;
+  const notifications = settingsData?.notifications;
 
   const form = useForm<SettingsFormType>({
     resolver: zodResolver(settingsFormSchema),
@@ -45,7 +46,7 @@ export default function Notifications() {
   useEffect(() => {
     if (notifications) {
       form.reset({
-        notification: {
+        notifications: {
           email: notifications.email,
           newsletter: notifications.newsletter,
         },
@@ -87,7 +88,7 @@ export default function Notifications() {
   };
 
   if (isLoadingSettings) {
-    return <p className="italic">Loading...</p>;
+    return <NotificationsTabSkeleton />;
   }
 
   return (
@@ -104,7 +105,7 @@ export default function Notifications() {
           <div className="flex flex-col gap-6">
             <FormField
               control={form.control}
-              name="notification.email"
+              name="notifications.email"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center gap-3">
                   <FormControl>
@@ -130,7 +131,7 @@ export default function Notifications() {
 
             <FormField
               control={form.control}
-              name="notification.newsletter"
+              name="notifications.newsletter"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center gap-3">
                   <FormControl>

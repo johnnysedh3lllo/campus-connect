@@ -4,8 +4,7 @@ import { ReactNode } from "react";
 export const metadata: Metadata = {
   title: "Settings",
 };
-const SettingsLayout = ({ children }: { children: ReactNode }) => {
-  return <>{children}</>;
-};
 
-export default SettingsLayout;
+export default function SettingsLayout({ children }: { children: ReactNode }) {
+  return <>{children}</>;
+}

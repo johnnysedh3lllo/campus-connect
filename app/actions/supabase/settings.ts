@@ -48,7 +48,6 @@ export async function upsertUserSettings(
 
     if (!data) return null;
 
-    console.log(data);
     return { success: true, data };
   } catch (error) {
     return { success: false, error };

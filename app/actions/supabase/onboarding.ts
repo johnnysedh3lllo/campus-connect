@@ -34,42 +34,46 @@ export async function signUpWithOtp(userInfo: SignUpFormType) {
       error: { message: validatedFields.error.format() },
     };
   }
-
   const validFields = validatedFields.data;
 
-  // check if a user already exists
-  const { data: existingUser } = await supabase.rpc("check_user_existence", {
-    user_email_address: validFields.emailAddress,
-  });
+  try {
+    // check if a user already exists
+    const { data: existingUser } = await supabase.rpc("check_user_existence", {
+      user_email_address: validFields.emailAddress,
+    });
 
-  if (existingUser && existingUser.length > 0) {
-    return {
-      success: false,
-      error: { message: "User with this email already exists" },
-    };
-  }
+    if (existingUser && existingUser.length > 0) {
+      return {
+        success: false,
+        error: { message: "User with this email already exists" },
+      };
+    }
 
-  // sign up user with otp to supabase
-  let { error } = await supabase.auth.signInWithOtp({
-    email: validFields.emailAddress,
+    // sign up user with otp to supabase
+    let { data, error: signUpError } = await supabase.auth.signInWithOtp({
+      email: validFields.emailAddress,
 
-    options: {
-      data: {
-        first_name: validFields.firstName,
-        last_name: validFields.lastName,
-        role_id: validFields.roleId,
+      options: {
+        data: {
+          first_name: validFields.firstName,
+          last_name: validFields.lastName,
+          role_id: validFields.roleId,
+          settings: validFields.settings,
+        },
       },
-    },
-  });
+    });
 
-  // TODO: STORE THIS IN A SETTINGS TABLE
-  // newsletter: validFields.newsletter,
+    if (signUpError) {
+      throw signUpError;
+    }
 
-  if (error) {
-    console.log(error);
-    return { success: false, error };
-  } else {
-    return { success: true, userEmail: validFields.emailAddress };
+    return { success: true, data: { userEmail: validFields.emailAddress } };
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof Error) {
+      return { success: false, error };
+    }
   }
 }
 
@@ -181,7 +185,7 @@ export async function login(formData: LoginFormType) {
     return {
       success: false,
       error: { message: error.message, code: error.code },
-    }; 
+    };
   }
 }
 

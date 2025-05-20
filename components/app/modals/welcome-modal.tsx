@@ -58,11 +58,11 @@ export function WelcomeModal() {
     <>
       <RoleGate userRoleId={userRoleId} role="LANDLORD">
         <Modal {...LandlordWelcomeModalProps}>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col w-full gap-6">
             <Link href="/listings/create" className="w-full">
               <Button
                 onClick={() => setOpen(false)}
-                className="hidden h-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex"
+                className="hidden h-full w-full cursor-pointer gap-3 px-7.5 py-3 text-base leading-6 sm:flex"
               >
                 <p>Create a listing</p>
                 {<PlusIcon />}

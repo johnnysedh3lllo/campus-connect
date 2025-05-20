@@ -2,7 +2,7 @@
 
 // UTILITIES
 import { toast } from "@/hooks/use-toast";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   OtpFormType,
   RoleFormType,
@@ -23,7 +23,8 @@ import { OnboardingFlowWrapper } from "@/lib/providers/onboarding-flow-wrapper";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 
 export default function Signup() {
-  const { step, setTotalSteps, totalSteps, nextStep, formData, updateFields } =
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { step, totalSteps, nextStep, formData, updateFields } =
     useMultiStepFormStore();
   const onboardingFormWrapperRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -48,15 +49,12 @@ export default function Signup() {
 
     try {
       const result = await signUpWithOtp(userInfo);
-      console.log("result from SignUpWithOtp:", result);
 
-      if (result && result?.success) {
-        updateFields({ emailAddress: result.userEmail });
+      if (result?.success) {
+        updateFields({ emailAddress: result.data?.userEmail });
         nextStep();
       } else {
-        throw new Error(
-          (result?.error?.message as string) || "An error occurred",
-        );
+        throw result?.error;
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -69,19 +67,19 @@ export default function Signup() {
   }
 
   async function handleVerifyOtp(values: OtpFormType) {
+    setIsLoading(true);
     try {
-      // if the otp CreatePasswordFormType incorrect it should throw an error
-      // if correct, go to the next UserDetailsFormType
       const result = await verifyOtp(formData.emailAddress, values.otp);
       console.log("result from verifyOtp:", result);
 
       if (result.success) {
-        nextStep();
         router.push("/create-password");
       } else {
         throw result.error;
       }
     } catch (error) {
+      setIsLoading(false);
+
       toast({
         variant: "destructive",
         title: "Invalid Otp",
@@ -98,6 +96,7 @@ export default function Signup() {
     <VerifyOtp
       handleVerifyOtp={handleVerifyOtp}
       userEmail={formData?.emailAddress}
+      isLoading={isLoading}
     />,
   ];
 

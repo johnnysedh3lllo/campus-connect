@@ -115,7 +115,7 @@ export function ListingsPageLandlord() {
               <div className="listing-image-preview-container flex h-full w-full max-w-fit items-end gap-3 overflow-x-auto px-4 sm:px-6">
                 {tabData.map((tab) => (
                   <TabsTrigger
-                    className="cursor-pointer capitalize"
+                    className="data-[state=active]:bg-background-accent-secondary focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring hover:bg-background-accent-secondary/50 data-[state=active]:border-text-disabled data-[state=active]:text-text-accent text-text-secondary p-3 capitalize focus-visible:ring-[3px] focus-visible:outline-1"
                     key={tab.value}
                     value={tab.value}
                   >

@@ -7,7 +7,11 @@ const initialData: MultiStepFormType = {
   lastName: "",
   emailAddress: "",
   password: "",
-  newsletter: true,
+  settings: {
+    notifications: {
+      newsletter: true,
+    },
+  },
 };
 
 type MultiStepFormStore<T> = {

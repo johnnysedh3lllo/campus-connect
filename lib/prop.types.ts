@@ -143,6 +143,7 @@ export type GetUserInfoProps = {
 export type VerifyOtpProps = {
   handleVerifyOtp: (values: OtpFormType) => void;
   userEmail: string;
+  isLoading: boolean;
 };
 export type SetPasswordProps = {
   isLoading: boolean;

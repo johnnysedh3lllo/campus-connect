@@ -297,7 +297,11 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
       firstName: "",
       lastName: "",
       emailAddress: "",
-      newsletter: true,
+      settings: {
+        notifications: {
+          newsletter: true,
+        },
+      },
     },
   });
 
@@ -388,7 +392,7 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
 
             <FormField
               control={form.control}
-              name="newsletter"
+              name="settings.notifications.newsletter"
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-1">
                   <FormLabel className="text-secondary-foreground flex gap-2 text-sm leading-6">
@@ -432,7 +436,11 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
   );
 }
 
-export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
+export function VerifyOtp({
+  handleVerifyOtp,
+  userEmail,
+  isLoading,
+}: VerifyOtpProps) {
   let { timeLeft, resetTimer } = useCountdownTimer(60);
 
   const form = useForm<OtpFormType>({
@@ -552,12 +560,12 @@ export function VerifyOtp({ handleVerifyOtp, userEmail }: VerifyOtpProps) {
           />
 
           <Button
-            disabled={!isValid || isSubmitting}
+            disabled={!isValid || isSubmitting || isLoading}
             type="submit"
             width={"full"}
             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
           >
-            {isSubmitting ? (
+            {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Verifying...
