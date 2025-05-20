@@ -46,8 +46,7 @@ export default async function Page({ searchParams }: WelcomeProps) {
       // const { data, error } = await supabase.auth.updateUser({
       //   data: metadata,
       // });
-
-      console.log("user setting updated successfully, ", userMetadata);
+      console.log("user setting updated successfully, ", result.data);
     }
   }
 

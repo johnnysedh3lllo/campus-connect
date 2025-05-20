@@ -1,3 +1,4 @@
+"use client";
 import { CameraIcon } from "@/public/icons/camera-icon";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserIcon } from "@/public/icons/user-icon";
@@ -8,7 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -19,8 +19,6 @@ import { Button } from "../ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { ProfilePictureUploadProps } from "@/lib/prop.types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateProfilePicture } from "@/app/actions/supabase/user";
 import { useUpdateUserAvatar } from "@/hooks/tanstack/mutations/use-update-user-avatar";
 
 export function ProfilePictureUpload({
@@ -62,7 +60,6 @@ export function ProfilePictureUpload({
     }
   };
 
-  // TODO: ANALYZE THIS FUNCTION
   const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
     imageRef.current = e.currentTarget;
 
@@ -80,7 +77,6 @@ export function ProfilePictureUpload({
     });
   };
 
-  // TODO: ANALYZE THIS FUNCTION
   const getCroppedImg = async () => {
     if (!imageRef.current) return;
 
@@ -180,39 +176,41 @@ export function ProfilePictureUpload({
       </Label>
 
       <Dialog open={isCropOpen} onOpenChange={setIsCropOpen}>
-        <DialogContent className="max-w-3xl px-4 py-8 sm:p-12">
+        <DialogContent className="max-w-[550px] px-4 py-8 sm:p-12">
           <DialogHeader>
             <DialogTitle className="text-left text-2xl leading-8 font-semibold">
               Profile Picture
             </DialogTitle>
 
-            <DialogDescription>
+            <DialogDescription className="sr-only">
               Drag to adjust the crop area. The image will be cropped as a
               square.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-center overflow-hidden">
+
+          <div className="relative flex w-full h-[350px] overflow-x-hidden max-w-[450px] justify-center overflow-y-auto">
             {selectedImage && (
               <ReactCrop
                 crop={crop}
                 onChange={(c) => setCrop(c)}
                 aspect={1}
-                circularCrop={false}
+                circularCrop={true}
                 keepSelection
+                className="max-w-full"
               >
                 <img
                   src={selectedImage || "/placeholder.svg"}
                   alt="Crop preview"
                   onLoad={onImageLoad}
-                  className="max-h-[30vh] object-contain"
+                  className="pointer-events-none"
                 />
               </ReactCrop>
             )}
           </div>
-          <DialogFooter className="flex w-full gap-4 sm:flex-row">
+
+          <DialogFooter className="mt-4 flex w-full gap-4 sm:flex-row">
             <Button
-              className="border-border"
-              width={"full"}
+              className="border-border w-full"
               variant="outline"
               onClick={() => {
                 setIsCropOpen(false);
@@ -221,7 +219,7 @@ export function ProfilePictureUpload({
             >
               Cancel
             </Button>
-            <Button width={"full"} onClick={getCroppedImg}>
+            <Button className="w-full" onClick={getCroppedImg}>
               Change
             </Button>
           </DialogFooter>
