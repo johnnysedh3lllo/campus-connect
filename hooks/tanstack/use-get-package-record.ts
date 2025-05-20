@@ -1,5 +1,5 @@
 import { getUserPackageRecord } from "@/app/actions/supabase/packages";
-import { DEFAULT_STALE_TIME } from "@/lib/app.config";
+import { DEFAULT_STALE_TIME } from "@/lib/constants";
 import { useQuery } from "@tanstack/react-query";
 import { hasRole } from "@/lib/utils";
 import { queryKeys } from "@/lib/query-keys.config";

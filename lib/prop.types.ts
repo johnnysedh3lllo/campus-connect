@@ -27,7 +27,6 @@ export type UserMenuBarProps = {
 };
 
 export type ProfilePictureUploadProps = {
-  userId: UserPublic["id"];
   initialAvatarUrl: UserPublic["avatar_url"] | undefined;
 };
 

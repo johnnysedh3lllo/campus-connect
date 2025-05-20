@@ -1,8 +1,8 @@
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
-import { DEFAULT_STALE_TIME } from "@/lib/app.config";
 import { useQuery } from "@tanstack/react-query";
 import { hasRole } from "@/lib/utils";
 import { queryKeys } from "@/lib/query-keys.config";
+import { DEFAULT_STALE_TIME } from "@/lib/constants";
 
 export function useGetActiveSubscription(
   userId: string | undefined,

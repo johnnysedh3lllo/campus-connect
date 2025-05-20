@@ -2,146 +2,54 @@
 import { CameraIcon } from "@/public/icons/camera-icon";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserIcon } from "@/public/icons/user-icon";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { useRef, useState } from "react";
-import { Button } from "../ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { ProfilePictureUploadProps } from "@/lib/prop.types";
-import { useUpdateUserAvatar } from "@/hooks/tanstack/mutations/use-update-user-avatar";
+import { ProfilePictureUploadModal } from "./modals/profile-picture-upload-modal";
+import { toast } from "@/hooks/use-toast";
+import { validateFileSizes } from "@/lib/app.config";
+import { MAX_PROFILE_IMAGE_SIZE, MIN_PROFILE_IMAGE_SIZE } from "@/lib/constants";
 
 export function ProfilePictureUpload({
-  userId,
   initialAvatarUrl,
 }: ProfilePictureUploadProps) {
   const [isCropOpen, setIsCropOpen] = useState<boolean>(false);
-  const [originalImage, setOriginalImage] = useState<string | null>(
-    initialAvatarUrl || null,
-  );
+
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(
     initialAvatarUrl || null,
   );
-  const [crop, setCrop] = useState<Crop>({
-    unit: "%",
-    width: 100,
-    height: 100,
-    x: 0,
-    y: 0,
-  });
-
-  const { toast } = useToast();
-
-  const userAvatarMutation = useUpdateUserAvatar();
-
-  const imageRef = useRef<HTMLImageElement | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedImage(reader.result as string);
-        setIsCropOpen(true);
-      };
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
+    const fileList = Array.from(files);
 
-  const onImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    imageRef.current = e.currentTarget;
+    const isValidImageSize =
+      fileList[0].size >= MIN_PROFILE_IMAGE_SIZE &&
+      fileList[0].size <= MAX_PROFILE_IMAGE_SIZE;
 
-    const { width, height } = e.currentTarget;
-    const cropSize = Math.min(width, height);
-    const x = (width - cropSize) / 2;
-    const y = (height - cropSize) / 2;
-
-    setCrop({
-      unit: "px",
-      width: cropSize,
-      height: cropSize,
-      x,
-      y,
-    });
-  };
-
-  const getCroppedImg = async () => {
-    if (!imageRef.current) return;
-
-    const canvas = document.createElement("canvas");
-    const scaleX = imageRef.current.naturalWidth / imageRef.current.width;
-    const scaleY = imageRef.current.naturalHeight / imageRef.current.height;
-
-    canvas.width = crop.width! * scaleX;
-    canvas.height = crop.height! * scaleY;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    ctx.drawImage(
-      imageRef.current,
-      crop.x! * scaleX,
-      crop.y! * scaleY,
-      crop.width! * scaleX,
-      crop.height! * scaleY,
-      0,
-      0,
-      crop.width! * scaleX,
-      crop.height! * scaleY,
-    );
-
-    const base64Image = canvas.toDataURL("image/jpeg");
-
-    setOriginalImage(croppedImage);
-    setIsCropOpen(false);
-    setIsUploading(true);
-
-    try {
-      const result = await userAvatarMutation.mutateAsync({
-        base64Image,
-        userId,
-      });
-
-      if (result?.success) {
-        setCroppedImage(result.imageUrl ?? null);
-        toast({
-          variant: "success",
-          title: "Profile picture updated",
-          description: "Your new profile picture has been saved",
-          showCloseButton: false,
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Upload failed",
-          description:
-            result.error || "Failed to upload image. Please try again.",
-        });
-        setCroppedImage(originalImage);
-      }
-    } catch (error) {
-      // Handle any unexpected errors
+    if (!isValidImageSize) {
       toast({
         variant: "destructive",
-        title: "Something went wrong",
-        description: "An unexpected error occurred. Please try again.",
+        description: validateFileSizes.message.profile,
+        showCloseButton: false,
       });
-      setCroppedImage(originalImage);
-    } finally {
-      setIsUploading(false);
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(reader.result as string);
+      setIsCropOpen(true);
+    };
+
+    reader.readAsDataURL(fileList[0]);
   };
 
   return (
@@ -170,61 +78,21 @@ export function ProfilePictureUpload({
           onChange={handleFileChange}
           id="profile-image-upload"
           type="file"
-          accept="image/*"
+          accept="image/jpg, image/png, image/webp"
           className="hidden"
         />
       </Label>
 
-      <Dialog open={isCropOpen} onOpenChange={setIsCropOpen}>
-        <DialogContent className="max-w-[550px] px-4 py-8 sm:p-12">
-          <DialogHeader>
-            <DialogTitle className="text-left text-2xl leading-8 font-semibold">
-              Profile Picture
-            </DialogTitle>
-
-            <DialogDescription className="sr-only">
-              Drag to adjust the crop area. The image will be cropped as a
-              square.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="relative flex w-full max-h-[350px] overflow-x-hidden max-w-[450px] justify-center overflow-y-auto">
-            {selectedImage && (
-              <ReactCrop
-                crop={crop}
-                onChange={(c) => setCrop(c)}
-                aspect={1}
-                circularCrop={true}
-                keepSelection
-                className="max-w-full"
-              >
-                <img
-                  src={selectedImage || "/placeholder.svg"}
-                  alt="Crop preview"
-                  onLoad={onImageLoad}
-                  className="pointer-events-none"
-                />
-              </ReactCrop>
-            )}
-          </div>
-
-          <DialogFooter className="mt-4 flex w-full gap-4 sm:flex-row">
-            <Button
-              className="border-border w-full"
-              variant="outline"
-              onClick={() => {
-                setIsCropOpen(false);
-                setSelectedImage(null);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button className="w-full" onClick={getCroppedImg}>
-              Change
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ProfilePictureUploadModal
+        initialAvatarUrl={initialAvatarUrl}
+        croppedImage={croppedImage}
+        isCropOpen={isCropOpen}
+        setIsCropOpen={setIsCropOpen}
+        setIsUploading={setIsUploading}
+        setCroppedImage={setCroppedImage}
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+      />
     </>
   );
 }

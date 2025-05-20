@@ -8,8 +8,6 @@ import {
   PaymentFrequencyEnum,
   photoUploadFormSchema,
   pricingFormSchema,
-  validateFileSizes,
-  validateFileTypes,
 } from "@/lib/form.schemas";
 import {
   Form,
@@ -50,6 +48,12 @@ import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { EditListingsState } from "@/lib/store/edit-listings-store";
 import { PhotoCarouselGeneric } from "./photo-carousel-generic";
+import { validateFileSizes, validateFileTypes } from "@/lib/app.config";
+import {
+  MAX_LISTING_IMAGES,
+  MAX_TOTAL_LISTING_IMAGE_SIZE,
+  MIN_LISTING_IMAGE_SIZE,
+} from "@/lib/constants";
 
 export function HomeDetailsForm({
   defaultValues,
@@ -282,8 +286,21 @@ export function PhotoUploadForm({
 
     const selectedFiles = Array.from(files);
 
+    // Combine current and new files for size validation
+    const combinedFiles = [...photos, ...selectedFiles];
+    
+    const areMaxImages =
+      photos.length + selectedFiles.length > MAX_LISTING_IMAGES;
+
+    const areValidFileTypes = validateFileTypes.check(selectedFiles);
+    const areValidFileSizes = validateFileSizes.check(
+      combinedFiles,
+      MIN_LISTING_IMAGE_SIZE,
+      MAX_TOTAL_LISTING_IMAGE_SIZE,
+    );
+
     // Check if adding these files would exceed the maximum
-    if (photos.length + selectedFiles.length > 10) {
+    if (areMaxImages) {
       toast({
         variant: "destructive",
         description: "You can only upload a maximum of 10 photos",
@@ -293,7 +310,7 @@ export function PhotoUploadForm({
     }
 
     // Check file types
-    if (!validateFileTypes.check(selectedFiles)) {
+    if (!areValidFileTypes) {
       toast({
         variant: "destructive",
         description: validateFileTypes.message,
@@ -302,14 +319,11 @@ export function PhotoUploadForm({
       return;
     }
 
-    // Combine current and new files for size validation
-    const combinedFiles = [...photos, ...selectedFiles];
-
     // Check total size
-    if (!validateFileSizes.check(combinedFiles)) {
+    if (!areValidFileSizes) {
       toast({
         variant: "destructive",
-        description: validateFileSizes.message,
+        description: validateFileSizes.message.listings,
         showCloseButton: false,
       });
       return;

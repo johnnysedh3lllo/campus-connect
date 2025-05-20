@@ -10,7 +10,7 @@ export function useUpdateUserAvatar() {
       userId,
     }: {
       base64Image: string;
-      userId: string;
+      userId: string | undefined;
     }) => {
       return await updateProfilePicture(base64Image, userId);
     },

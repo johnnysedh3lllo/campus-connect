@@ -1,5 +1,5 @@
 import { getListings } from "@/app/actions/supabase/listings";
-import { DEFAULT_STALE_TIME } from "@/lib/app.config";
+import { DEFAULT_STALE_TIME } from "@/lib/constants";
 import { PublicationStatusType } from "@/lib/form.types";
 import { queryKeys } from "@/lib/query-keys.config";
 import { hasRole } from "@/lib/utils";

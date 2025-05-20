@@ -4,6 +4,8 @@ import { ListingIcon } from "@/public/icons/listing-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIcon } from "@/public/icons/profile-icon";
 import { SettingsIcon } from "@/public/icons/settings-icon";
+// import { areValidFileTypes, areValidFileSizes } from "./utils";
+import { SUPPORTED_FILE_TYPES } from "./constants";
 
 export const ROLES = {
   ADMIN: 1,
@@ -26,23 +28,30 @@ export const navLinksMobile = [
   { href: "/settings", text: "Settings", icon: SettingsIcon },
 ];
 
-export const MIN_CREDITS = 20;
+const areValidFileTypes = (files: File[]) =>
+  files.every((file) => SUPPORTED_FILE_TYPES.includes(file.type));
 
-export const MIN_INQUIRIES = 1;
+const areValidFileSizes = (
+  files: File[],
+  minImageSize: number,
+  maxImageSize: number,
+) => {
+  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+  return totalSize >= minImageSize && totalSize <= maxImageSize;
+};
 
-// IMAGE UPLOADS
-export const SUPPORTED_FILE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/heic",
-];
-export const MAX_IMAGES = 10;
-export const MIN_IMAGE_SIZE = 1 * 1024 * 1024; // 1MB
-export const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
-export const MAX_TOTAL_SIZE = MAX_IMAGE_SIZE * MAX_IMAGES;
+export const validateFileTypes = {
+  check: areValidFileTypes,
+  message: "Only upload supported file formats (JPEG, PNG, WEBP)",
+};
 
-export const DEFAULT_STALE_TIME = 1000 * 60 * 5;
+export const validateFileSizes = {
+  check: areValidFileSizes,
+  message: {
+    profile: "Image size must be at least 1MB and not exceed 4MB",
+    listings: "Total image size must not exceed 40MB",
+  },
+};
 
 export const statusVerbMap: Record<ListingPublicationStatus, string> = {
   published: "Publish",

@@ -1,5 +1,5 @@
 import { getUserCreditRecord } from "@/app/actions/supabase/credits";
-import { DEFAULT_STALE_TIME } from "@/lib/app.config";
+import { DEFAULT_STALE_TIME } from "@/lib/constants";
 import { queryKeys } from "@/lib/query-keys.config";
 import { hasRole } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";

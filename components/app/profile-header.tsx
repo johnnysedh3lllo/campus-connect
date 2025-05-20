@@ -7,11 +7,11 @@ export function ProfileHeader({ userProfile }: ProfileHeaderProps) {
   const lastName = userProfile?.last_name;
   const emailAddress = userProfile?.email;
   const avatarUrl = userProfile?.avatar_url;
-  const userId = userProfile?.id;
+  // const userId = userProfile?.id;
 
   return (
     <div className="flex flex-1 shrink-0 items-center gap-7 sm:gap-5">
-      <ProfilePictureUpload userId={userId} initialAvatarUrl={avatarUrl} />
+      <ProfilePictureUpload initialAvatarUrl={avatarUrl} />
 
       <section>
         <h1 className="text-2xl leading-10 font-semibold capitalize sm:text-4xl sm:leading-11">

@@ -1,8 +1,8 @@
 "use strict";
 
 import { z } from "zod";
-import { stringToNumber } from "./utils";
-import { MAX_IMAGES, MAX_TOTAL_SIZE, SUPPORTED_FILE_TYPES } from "./app.config";
+import { validateFileSizes, validateFileTypes } from "./app.config";
+import { MAX_LISTING_IMAGES, MIN_LISTING_IMAGE_SIZE, MAX_TOTAL_LISTING_IMAGE_SIZE } from "./constants";
 
 // FORM SCHEMAS
 export const RoleEnum = z.enum(["1", "2", "3"]); // TODO: REFACTOR THIS TO BE A NUMBER INSTEAD OF STRING
@@ -204,25 +204,6 @@ export const PublicationStatusEnum = z.enum([
   "draft",
 ]);
 
-const areValidFileTypes = (files: File[]) =>
-  files.every((file) => SUPPORTED_FILE_TYPES.includes(file.type));
-
-const areValidFileSizes = (files: File[]) => {
-  const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-  // totalSize >= MIN_IMAGE_SIZE
-  return totalSize <= MAX_TOTAL_SIZE;
-};
-
-export const validateFileTypes = {
-  check: areValidFileTypes,
-  message: "Only upload supported file formats (JPEG, PNG)",
-};
-
-export const validateFileSizes = {
-  check: areValidFileSizes,
-  message: "Total image size must not exceed 40MB",
-};
-
 export const listingFormSchema = z.object({
   title: z
     .string({ required_error: "Title is required" })
@@ -244,13 +225,23 @@ export const listingFormSchema = z.object({
   photos: z
     .array(z.instanceof(File))
     .min(1, { message: "At least one photo is required" })
-    .max(MAX_IMAGES, { message: "You can upload a maximum of 10 photos" })
+    .max(MAX_LISTING_IMAGES, {
+      message: "You can upload a maximum of 10 photos",
+    })
     .refine(validateFileTypes.check, {
       message: validateFileTypes.message,
     })
-    .refine(validateFileSizes.check, {
-      message: validateFileSizes.message,
-    }),
+    .refine(
+      (files): files is File[] =>
+        validateFileSizes.check(
+          files,
+          MIN_LISTING_IMAGE_SIZE,
+          MAX_TOTAL_LISTING_IMAGE_SIZE,
+        ),
+      {
+        message: validateFileSizes.message.listings,
+      },
+    ),
   paymentFrequency: PaymentFrequencyEnum,
   price: z
     .number({

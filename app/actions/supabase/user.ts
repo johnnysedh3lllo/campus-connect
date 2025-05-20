@@ -141,8 +141,16 @@ export async function updateUser(
   }
 }
 
-export async function updateProfilePicture(imageData: string, userId: string) {
+export async function updateProfilePicture(
+  imageData: string,
+  userId: string | undefined,
+) {
   const supabase = await createClient();
+
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+
   try {
     const base64Data = imageData.split(",")[1];
     const imageBuffer = Buffer.from(base64Data, "base64");

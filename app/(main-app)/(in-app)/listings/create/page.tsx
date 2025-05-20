@@ -30,7 +30,6 @@ import { useUploadListing } from "@/hooks/tanstack/mutations/use-upload-listing"
 import { useUpdateCreditRecord } from "@/hooks/tanstack/mutations/use-update-credit-record";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
-import { MIN_CREDITS } from "@/lib/app.config";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
@@ -39,6 +38,7 @@ import Link from "next/link";
 import { SuccessShieldIcon } from "@/public/icons/success-shield-icon";
 import { SadFaceIcon } from "@/public/icons/sad-face-icon";
 import { clearStorage } from "@/lib/store/store-utils";
+import { MIN_CREDITS } from "@/lib/constants";
 
 export default function CreateListingPage() {
   const { userId, userRoleId } = useUserStore();

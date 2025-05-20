@@ -1,6 +1,6 @@
 import { createConversation } from "@/app/actions/supabase/messages";
 import { updateUserPackageInquiries } from "@/app/actions/supabase/packages";
-import { MIN_INQUIRIES } from "@/lib/app.config";
+import { MIN_INQUIRIES } from "@/lib/constants";
 import { queryKeys } from "@/lib/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 

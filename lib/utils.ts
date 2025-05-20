@@ -6,6 +6,7 @@ import { UserMetadata } from "@supabase/supabase-js";
 import { format, isBefore, subMonths, formatDistanceToNow } from "date-fns";
 import { Role, ROLES } from "./app.config";
 import { z } from "zod";
+import { SUPPORTED_FILE_TYPES } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
