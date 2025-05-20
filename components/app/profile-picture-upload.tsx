@@ -188,7 +188,7 @@ export function ProfilePictureUpload({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="relative flex w-full h-[350px] overflow-x-hidden max-w-[450px] justify-center overflow-y-auto">
+          <div className="relative flex w-full max-h-[350px] overflow-x-hidden max-w-[450px] justify-center overflow-y-auto">
             {selectedImage && (
               <ReactCrop
                 crop={crop}
