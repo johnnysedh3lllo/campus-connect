@@ -54,6 +54,7 @@ import {
   MAX_TOTAL_LISTING_IMAGE_SIZE,
   MIN_LISTING_IMAGE_SIZE,
 } from "@/lib/constants";
+import { Skeleton } from "../ui/skeleton";
 
 export function HomeDetailsForm({
   defaultValues,
@@ -116,7 +117,7 @@ export function HomeDetailsForm({
           render={({ field }) => (
             <FormItem className="flex flex-col gap-1">
               <FormLabel className="leading-6 font-medium">
-                Number of Bedrooms
+                Number of Bedrooms Available
               </FormLabel>
 
               <FormControl>
@@ -249,13 +250,11 @@ export function PhotoUploadForm({
   onSubmit: (values: PhotoUploadFormType) => void;
   useListingStore: () => CreateListingsState | EditListingsState;
 }) {
-  const { step, steps, data, prevStep } = useListingStore();
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const { step, steps, prevStep } = useListingStore();
 
-  // Initialize form with React Hook Form and Zod validation
   const form = useForm<PhotoUploadFormType>({
     resolver: zodResolver(photoUploadFormSchema),
-    defaultValues: defaultValues,
+    defaultValues,
   });
 
   const {
@@ -264,101 +263,92 @@ export function PhotoUploadForm({
     watch,
   } = form;
 
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const photos = watch("photos") || [];
-  const photoCount = photos.length;
 
-  // Initialize preview URLs from existing photos in store
+  // TODO: REVIEW TO FULLY UNDERSTAND HOW THIS ENTIRE COMPONENT HANDLES UPLOADING PHOTOS FOR BOTH SCENARIOS
+  // Handle resetting form with new default values (e.g. during edit)
   useEffect(() => {
-    if (data.photos && data.photos.length > 0 && previewUrls.length === 0) {
-      const urls = data.photos.map((file) => URL.createObjectURL(file));
-      setPreviewUrls(urls);
-    }
+    form.reset(defaultValues);
 
-    // Cleanup function to revoke object URLs when component unmounts
+    // Initialize preview URLs (convert File -> objectURL, or use string directly)
+    const urls = defaultValues.photos.map((photo) => {
+      return typeof photo === "string" ? photo : URL.createObjectURL(photo);
+    });
+    setPreviewUrls(urls);
+
+    // Clean up object URLs
     return () => {
-      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      urls.forEach((url, i) => {
+        if (typeof defaultValues.photos[i] !== "string") {
+          URL.revokeObjectURL(url);
+        }
+      });
     };
-  }, [data.photos, previewUrls.length]);
+  }, [defaultValues]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     const selectedFiles = Array.from(files);
-
-    // Combine current and new files for size validation
-    const combinedFiles = [...photos, ...selectedFiles];
-    
-    const areMaxImages =
-      photos.length + selectedFiles.length > MAX_LISTING_IMAGES;
-
-    const areValidFileTypes = validateFileTypes.check(selectedFiles);
-    const areValidFileSizes = validateFileSizes.check(
-      combinedFiles,
-      MIN_LISTING_IMAGE_SIZE,
-      MAX_TOTAL_LISTING_IMAGE_SIZE,
+    const currentFiles = photos.filter((p) => p instanceof File) as File[];
+    const currentUrls = previewUrls.filter(
+      (_, i) => typeof photos[i] === "string",
     );
 
-    // Check if adding these files would exceed the maximum
-    if (areMaxImages) {
+    const combinedFiles = [...currentFiles, ...selectedFiles];
+
+    if (combinedFiles.length + currentUrls.length > MAX_LISTING_IMAGES) {
       toast({
         variant: "destructive",
         description: "You can only upload a maximum of 10 photos",
-        showCloseButton: false,
       });
       return;
     }
 
-    // Check file types
-    if (!areValidFileTypes) {
+    if (!validateFileTypes.check(selectedFiles)) {
       toast({
         variant: "destructive",
         description: validateFileTypes.message,
-        showCloseButton: false,
       });
       return;
     }
 
-    // Check total size
-    if (!areValidFileSizes) {
+    if (
+      !validateFileSizes.check(
+        combinedFiles,
+        MIN_LISTING_IMAGE_SIZE,
+        MAX_TOTAL_LISTING_IMAGE_SIZE,
+      )
+    ) {
       toast({
         variant: "destructive",
         description: validateFileSizes.message.listings,
-        showCloseButton: false,
       });
       return;
     }
 
-    // All checks passed — update state
-    const newPreviewUrls = selectedFiles.map((file) =>
-      URL.createObjectURL(file),
-    );
+    const newUrls = selectedFiles.map((file) => URL.createObjectURL(file));
+    const newPhotos = [...photos, ...selectedFiles];
 
-    setValue("photos", combinedFiles, {
-      shouldValidate: true,
-    });
-
-    setPreviewUrls((prevUrls) => [...prevUrls, ...newPreviewUrls]);
+    setValue("photos", newPhotos, { shouldValidate: true });
+    setPreviewUrls([...previewUrls, ...newUrls]);
   };
 
-  // Remove a photo
   const removePhoto = (index: number) => {
-    // Revoke the object URL to prevent memory leaks
-    URL.revokeObjectURL(previewUrls[index]);
-
-    // Create new arrays without the removed photo
+    const removedPhoto = photos[index];
     const updatedPhotos = [...photos];
     const updatedPreviewUrls = [...previewUrls];
+
+    if (removedPhoto instanceof File) {
+      URL.revokeObjectURL(previewUrls[index]);
+    }
 
     updatedPhotos.splice(index, 1);
     updatedPreviewUrls.splice(index, 1);
 
-    // Update form value
-    setValue("photos", updatedPhotos, {
-      shouldValidate: true,
-    });
-
-    // Update preview URLs
+    setValue("photos", updatedPhotos, { shouldValidate: true });
     setPreviewUrls(updatedPreviewUrls);
   };
 
@@ -418,14 +408,13 @@ export function PhotoUploadForm({
           />
           <Separator />
 
-          {/* Photo count */}
-          <div className="pt-3 text-sm font-medium">
-            {photoCount}/10 Photos uploaded
-          </div>
-
-          {/* Photo carousel - only show if there are photos */}
-          {photoCount > 0 && (
+          {photos.length > 0 ? (
             <PhotoCarousel photos={previewUrls} onRemove={removePhoto} />
+          ) : (
+            <div className="flex flex-col gap-6">
+              <Skeleton className="h-6 w-32 rounded-md" />
+              <Skeleton className="h-70 w-full rounded-md" />
+            </div>
           )}
         </div>
 
@@ -612,6 +601,7 @@ export function PreviewPage({
       const photoPreviewUrls = photos.map((file) => URL.createObjectURL(file));
       setPreviewUrls(photoPreviewUrls);
 
+      console.log(photos);
       return () => {
         photoPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
       };

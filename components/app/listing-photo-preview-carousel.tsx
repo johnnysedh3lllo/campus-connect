@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhotoPreview } from "@/components/app/listing-photo-preview";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "../ui/skeleton";
 
 interface PhotoCarouselProps {
   photos: string[];
@@ -55,7 +56,11 @@ export function PhotoCarousel({ photos, onRemove }: PhotoCarouselProps) {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative flex w-full flex-col gap-6">
+      <div className="text-sm font-medium">
+        {totalPhotos}/10 Photos uploaded
+      </div>
+
       <div className="flex items-center">
         {/* Left navigation button */}
         <Button

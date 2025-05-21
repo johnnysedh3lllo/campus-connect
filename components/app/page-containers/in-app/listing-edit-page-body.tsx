@@ -31,7 +31,14 @@ export default function ListingEditPageBody({
 }: {
   listingUUID: string;
 }) {
-  const { step, steps, setData, nextStep, setStep } = useEditListingsStore();
+  const {
+    step,
+    steps,
+    setData,
+    data: storeData,
+    nextStep,
+    setStep,
+  } = useEditListingsStore();
   const clearStoreStorage = clearStorage(useEditListingsStore);
   const [photos, setPhotos] = useState<File[]>([]);
   const { data, isLoading } = useGetListingByUUID(listingUUID);
@@ -45,6 +52,7 @@ export default function ListingEditPageBody({
 
       const files = await Promise.all(imageUrls.map((url) => fileFromUrl(url)));
 
+      setData({ photos: files });
       setPhotos(files);
     };
 
@@ -81,7 +89,9 @@ export default function ListingEditPageBody({
     photos: photos || [],
   };
   function handlePhotoUploadOnSubmit(values: PhotoUploadFormType) {
+    console.log(values);
     setData(values);
+    setPhotos(values.photos);
     nextStep();
   }
 
@@ -97,57 +107,19 @@ export default function ListingEditPageBody({
 
   // PREVIEW FORM
   const previewDefaultValues: EditListingFormType = {
-    ...(homeDetailsDefaultValue as HomeDetailsFormType),
-    ...(photoUploadDefaultValues as PhotoUploadFormType),
-    ...(pricingDefaultValues as PricingFormType),
+    title: title ?? "",
+    noOfBedrooms: noOfBedrooms ?? 1,
+    listingType: homeType ?? "apartment",
+    location: location ?? "",
+    description: description ?? "",
+    photos: photos,
+    paymentFrequency: paymentFrequency ?? "daily",
+    price: price ?? 1,
     publicationStatus: currentPubStatus ?? "published",
   };
 
-  async function handlePublish(values: EditListingFormType) {
-    //     const listingDetails: UpsertListingType = {
-    //       title: values.title,
-    //       noOfBedrooms: values.noOfBedrooms,
-    //       listingType: values.listingType,
-    //       location: values.location,
-    //       paymentFrequency: values.paymentFrequency,
-    //       price: values.price,
-    //       publicationStatus: values.publicationStatus,
-    //       description: values.description,
-    //     };
-    //     const listingImages = values.photos;
-    //     try {
-    //       const createdListing = await createListingMutation.mutateAsync({
-    //         userId: userId,
-    //         idemKey: idemKey,
-    //         listingDetails: listingDetails,
-    //         images: listingImages,
-    //       });
-    //       if (createListingMutation.isError) {
-    //         toast({
-    //           variant: "destructive",
-    //           description:
-    //             "It seems an error occurred while creating your listing. Please try again",
-    //           showCloseButton: false,
-    //         });
-    //         throw createListingMutation.error;
-    //       }
-    //       if (!hasActiveSubscription) {
-    //         const updatedCredits = await updateCreditMutation.mutateAsync({
-    //           userId: userId,
-    //           addedCredits: MIN_CREDITS,
-    //           tableColumn: "used_credits",
-    //         });
-    //         if (!updateCreditMutation.isError) {
-    //           console.log("created listings", createdListing);
-    //           console.log("updated credit record", updatedCredits);
-    //           setIsSuccessModalOpen(true);
-    //         }
-    //       } else {
-    //         setIsSuccessModalOpen(true);
-    //       }
-    //     } catch (error) {
-    //       console.error(error);
-    //     }
+  async function handlePublishEdit(values: EditListingFormType) {
+    console.log(values);
   }
 
   const editListingSteps = [
@@ -168,7 +140,7 @@ export default function ListingEditPageBody({
     />,
     <PreviewPage
       defaultValues={previewDefaultValues}
-      onSubmit={handlePublish}
+      onSubmit={handlePublishEdit}
       useListingStore={useEditListingsStore}
     />,
   ];

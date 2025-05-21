@@ -38,7 +38,8 @@ const areValidFileSizes = (
   maxImageSize: number,
 ) => {
   const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-  return totalSize >= minImageSize && totalSize <= maxImageSize;
+  // totalSize >= minImageSize &&
+  return totalSize <= maxImageSize;
 };
 
 export const validateFileTypes = {

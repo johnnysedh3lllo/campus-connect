@@ -42,8 +42,14 @@ import { MIN_CREDITS } from "@/lib/constants";
 
 export default function CreateListingPage() {
   const { userId, userRoleId } = useUserStore();
-  const { step, steps, data, setData, nextStep, setStep } =
-    useCreateListingsStore();
+  const {
+    step,
+    steps,
+    data: storeData,
+    setData,
+    nextStep,
+    setStep,
+  } = useCreateListingsStore();
   const clearStoreStorage = clearStorage(useCreateListingsStore);
   const [isDraftModalOpen, setIsDraftModalOpen] = useState<boolean>(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
@@ -65,11 +71,11 @@ export default function CreateListingPage() {
 
   // HOME DETAILS FORM
   const homeDetailsDefaultValue: HomeDetailsFormType = {
-    title: data.title ?? "",
-    noOfBedrooms: data.noOfBedrooms ?? 1,
-    listingType: data.listingType ?? "apartment",
-    location: data.location ?? "",
-    description: data.description ?? "",
+    title: storeData.title ?? "",
+    noOfBedrooms: storeData.noOfBedrooms ?? 1,
+    listingType: storeData.listingType ?? "apartment",
+    location: storeData.location ?? "",
+    description: storeData.description ?? "",
   };
   function handleHomeDetailsOnSubmit(values: HomeDetailsFormType) {
     setData(values);
@@ -78,7 +84,7 @@ export default function CreateListingPage() {
 
   // PHOTO UPLOAD FORM
   const photoUploadDefaultValues: PhotoUploadFormType = {
-    photos: data.photos || [],
+    photos: storeData.photos || [],
   };
   function handlePhotoUploadOnSubmit(values: PhotoUploadFormType) {
     setData(values);
@@ -87,8 +93,8 @@ export default function CreateListingPage() {
 
   // PRICING FORM
   const pricingDefaultValues: PricingFormType = {
-    paymentFrequency: data.paymentFrequency ?? "monthly",
-    price: data.price ?? 1,
+    paymentFrequency: storeData.paymentFrequency ?? "monthly",
+    price: storeData.price ?? 1,
   };
   function handlePricingOnSubmit(values: PricingFormType) {
     setData(values);
@@ -98,12 +104,17 @@ export default function CreateListingPage() {
   // PREVIEW FORM
   const createListingMutation = useUploadListing();
   const updateCreditMutation = useUpdateCreditRecord();
-  const idempotencyKey = data.idempotencyKey;
+  const idempotencyKey = storeData.idempotencyKey;
 
   const previewDefaultValues: CreateListingFormType = {
-    ...(homeDetailsDefaultValue as HomeDetailsFormType),
-    ...(photoUploadDefaultValues as PhotoUploadFormType),
-    ...(pricingDefaultValues as PricingFormType),
+    title: storeData.title ?? "",
+    noOfBedrooms: storeData.noOfBedrooms ?? 1,
+    listingType: storeData.listingType ?? "apartment",
+    location: storeData.location ?? "",
+    description: storeData.description ?? "",
+    photos: storeData.photos || [],
+    paymentFrequency: storeData.paymentFrequency ?? "daily",
+    price: storeData.price ?? 1,
     publicationStatus: "draft",
   };
   async function handlePublish(values: CreateListingFormType) {
