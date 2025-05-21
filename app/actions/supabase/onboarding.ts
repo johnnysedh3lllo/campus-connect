@@ -5,6 +5,7 @@ import {
   createPasswordFormSchema,
   resetPasswordFormSchema,
   changePasswordSchema,
+  loginSchema,
 } from "@/lib/form.schemas";
 
 import {
@@ -168,7 +169,32 @@ export async function createPassword(formData: CreatePasswordFormType) {
 export async function login(formData: LoginFormType) {
   const supabase = await createClient();
 
+  const validatedFields = loginSchema.safeParse(formData);
+
+  if (!validatedFields.success) {
+    return {
+      success: false,
+      error: { message: validatedFields.error.format() },
+    };
+  }
+  const validFields = validatedFields.data;
+
   try {
+    // check if a user does not exist
+    const { data: existingUser } = await supabase.rpc("check_user_existence", {
+      user_email_address: validFields.emailAddress,
+    });
+
+    if (!existingUser || existingUser.length <= 0) {
+      return {
+        success: false,
+        error: {
+          message: "This User does not exist.",
+          code: "user_does_not_exist",
+        },
+      };
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email: formData.emailAddress,
       password: formData.password,

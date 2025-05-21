@@ -32,17 +32,27 @@ export default function LoginPage() {
     } catch (error: any) {
       console.error(error);
 
-      const errorMessage =
-        error.code === "invalid_credentials"
-          ? "Please enter your correct email and password to login to your account"
-          : error.message;
-      toast({
-        variant: "destructive",
-        title: "Please confirm email and password",
-        description:
-          errorMessage ||
-          "An error occurred, please reload and try again later.",
-      });
+      if (error.code === "invalid_credentials") {
+        toast({
+          variant: "destructive",
+          title: "Please confirm email and password",
+          description:
+            "Please enter your correct email and password to login to your account",
+        });
+      } else if (error.code === "user_does_not_exist") {
+        toast({
+          variant: "destructive",
+          title: "Your account does not exist",
+          description:
+            "It seems you don't have an account. Please create an account",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          description: error.message,
+        });
+      }
+
       setIsLoading(false);
     }
   };

@@ -68,7 +68,6 @@ import {
 } from "@/lib/form.types";
 import { resendSignUpOtp, signOut } from "@/app/actions/supabase/onboarding";
 
-//
 const roleDetails = [
   {
     title: "Landlord",
@@ -85,7 +84,6 @@ const roleDetails = [
 ];
 
 // MAIN FORM COMPONENTS
-
 export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
   const form = useForm<LoginFormType>({
     resolver: zodResolver(loginSchema),

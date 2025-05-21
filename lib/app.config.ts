@@ -28,6 +28,7 @@ export const navLinksMobile = [
   { href: "/settings", text: "Settings", icon: SettingsIcon },
 ];
 
+// TODO: FIND OUT WHY THIS IS THROWING ERRORS
 const areValidFileTypes = (files: File[]) =>
   files.every((file) => SUPPORTED_FILE_TYPES.includes(file.type));
 
