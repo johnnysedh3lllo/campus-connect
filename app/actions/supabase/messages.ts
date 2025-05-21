@@ -1,6 +1,8 @@
 "use server";
 import { ConversationFormType } from "@/lib/form.types";
 import { createClient } from "@/utils/supabase/server";
+import { updateUserPackageInquiries } from "./packages";
+import { MIN_INQUIRIES } from "@/lib/constants";
 
 // TODO: SETUP A GUARD CLAUSE FOR BOTH FUNCTION PARAMETERS
 export async function getConversationMessages(
@@ -114,6 +116,62 @@ export async function getConversations(userId: string | undefined) {
     }
   }
 }
+
+export async function createConversation(
+  tenantId: string | undefined,
+  landlordId: string | undefined,
+) {
+  const supabase = await createClient();
+
+  if (!tenantId || !landlordId) {
+    throw new Error(
+      "TenantID and Landlord ID is required to create a conversation",
+    );
+  }
+
+  // TODO: in the future, the check if a student has a package and has package inquires should be handled here on the server
+  try {
+    let { data, error } = await supabase
+      .rpc("create_conversation", {
+        initiator_id: tenantId,
+        recipient_id: landlordId,
+      })
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    // if there is no error and a conversation was found, then handled package deduction
+    if (data?.is_new_conversation) {
+      // deduct package inquire from student
+      await updateUserPackageInquiries(
+        tenantId,
+        MIN_INQUIRIES,
+        "used_inquiries",
+      );
+    } else {
+      if (data?.was_deleted) {
+        // restore deleted conversation
+        await updateConversationParticipants(
+          { userId: tenantId, conversationId: data?.conversation_id! },
+          {
+            deleted_at: null,
+          },
+        );
+      }
+    }
+
+    return { success: true, data };
+  } catch (error: any) {
+    console.error(error);
+    return {
+      success: false,
+      error,
+    };
+  }
+}
+
 export async function updateConversations(
   conversationId: string,
   conversationDetails: ConversationsInsert,
@@ -150,7 +208,10 @@ export async function updateConversationParticipants(
   try {
     const { data, error } = await supabase
       .from("conversation_participants")
-      .update(conversationParticipantsDetails)
+      .update({
+        ...conversationParticipantsDetails,
+        updated_at: new Date().toISOString(),
+      })
       .eq("user_id", conversationData.userId)
       .eq("conversation_id", conversationData.conversationId);
 
@@ -167,40 +228,6 @@ export async function updateConversationParticipants(
         message:
           "Something went wrong while deleting this chat, please try again.",
       },
-    };
-  }
-}
-
-export async function createConversation(
-  tenantId: string | undefined,
-  landlordId: string | undefined,
-) {
-  const supabase = await createClient();
-
-  if (!tenantId || !landlordId) {
-    throw new Error(
-      "TenantID and Landlord ID is required to create a conversation",
-    );
-  }
-
-  try {
-    let { data, error } = await supabase
-      .rpc("create_conversation", {
-        user1_id: tenantId,
-        user2_id: landlordId,
-      })
-      .maybeSingle();
-
-    if (error) {
-      throw error;
-    }
-
-    return { success: true, data };
-  } catch (error: any) {
-    console.error(error);
-    return {
-      success: false,
-      error,
     };
   }
 }

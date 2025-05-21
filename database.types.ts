@@ -16,6 +16,7 @@ export type Database = {
           deleted_at: string | null
           last_read_at: string | null
           message_cutoff_at: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -24,6 +25,7 @@ export type Database = {
           deleted_at?: string | null
           last_read_at?: string | null
           message_cutoff_at?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -32,6 +34,7 @@ export type Database = {
           deleted_at?: string | null
           last_read_at?: string | null
           message_cutoff_at?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -628,10 +631,11 @@ export type Database = {
         }[]
       }
       create_conversation: {
-        Args: { user1_id: string; user2_id: string }
+        Args: { initiator_id: string; recipient_id: string }
         Returns: {
           conversation_id: string
           is_new_conversation: boolean
+          was_deleted: boolean
         }[]
       }
       get_conversations_for_user: {
