@@ -2,8 +2,13 @@ import { getListingByUUID } from "@/app/actions/supabase/listings";
 import { getUserPackageRecord } from "@/app/actions/supabase/packages";
 import { getUser } from "@/app/actions/supabase/user";
 import ListingIdPageBody from "@/components/app/page-containers/in-app/listing-id-page-body";
+import { queryKeys } from "@/lib/query-keys.config";
 import { hasRole } from "@/lib/utils";
-import { QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
 export default async function Page({
   params,
@@ -26,15 +31,19 @@ export default async function Page({
 
   if (isStudent) {
     await queryClient.prefetchQuery({
-      queryKey: ["package", userId],
+      queryKey: queryKeys.packages(userId),
       queryFn: async () => await getUserPackageRecord(userId),
     });
   }
 
   await queryClient.prefetchQuery({
-    queryKey: ["listings", listingId],
+    queryKey: queryKeys.listings.byId(listingId),
     queryFn: async () => await getListingByUUID(listingId),
   });
 
-  return <ListingIdPageBody listingUUID={listingId} />;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ListingIdPageBody listingUUID={listingId} />
+    </HydrationBoundary>
+  );
 }

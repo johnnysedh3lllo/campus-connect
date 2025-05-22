@@ -1,7 +1,12 @@
 import { getListings } from "@/app/actions/supabase/listings";
 import { getUserPublic } from "@/app/actions/supabase/user";
 import { ListingLandlordIdPageBody } from "@/components/app/page-containers/in-app/listing-landlord-id-page-body";
-import { QueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/query-keys.config";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
 export default async function Page({
   params,
@@ -13,14 +18,18 @@ export default async function Page({
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["userPublic"],
+    queryKey: queryKeys.user.public(id),
     queryFn: async () => await getUserPublic(id),
   });
 
   await queryClient.prefetchQuery({
-    queryKey: ["listings", id ?? "public", "published"],
+    queryKey: queryKeys.listings.published(id ?? "public"),
     queryFn: async () => await getListings(id, "published"),
   });
 
-  return <ListingLandlordIdPageBody landlordId={id} />;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ListingLandlordIdPageBody landlordId={id} />
+    </HydrationBoundary>
+  );
 }

@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { getConversations } from "@/app/actions/supabase/messages";
 import { getUser } from "@/app/actions/supabase/user";
+import { queryKeys } from "@/lib/query-keys.config";
 
 export const metadata: Metadata = {
   title: "Messages",
@@ -27,7 +28,7 @@ export default async function MessagesLayout({
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["conversations", userId],
+    queryKey: queryKeys.conversations.list(userId),
     queryFn: async () => await getConversations(userId),
   });
 

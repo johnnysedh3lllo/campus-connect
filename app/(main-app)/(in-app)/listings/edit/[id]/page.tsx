@@ -1,6 +1,11 @@
-import { QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import { getListingByUUID } from "@/app/actions/supabase/listings";
 import ListingEditPageBody from "@/components/app/page-containers/in-app/listing-edit-page-body";
+import { queryKeys } from "@/lib/query-keys.config";
 
 export default async function Page({
   params,
@@ -12,9 +17,13 @@ export default async function Page({
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["listings", id],
+    queryKey: queryKeys.listings.byId(id),
     queryFn: async () => await getListingByUUID(id),
   });
 
-  return <ListingEditPageBody listingUUID={id} />;
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ListingEditPageBody listingUUID={id} />;
+    </HydrationBoundary>
+  );
 }

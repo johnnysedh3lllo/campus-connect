@@ -1,12 +1,17 @@
 import { Metadata } from "next";
 import { getListings } from "@/app/actions/supabase/listings";
-import { QueryClient } from "@tanstack/react-query";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 import { getUser } from "@/app/actions/supabase/user";
 import { ListingsPageLandlord } from "@/components/app/page-containers/in-app/listings-page-landlord";
 import { ListingsPageTenant } from "@/components/app/page-containers/in-app/listings-page-tenant";
 import { hasRole } from "@/lib/utils";
 import { upsertUserSettings } from "@/app/actions/supabase/settings";
 import { createClient } from "@/utils/supabase/server";
+import { queryKeys } from "@/lib/query-keys.config";
 
 export const metadata: Metadata = {
   title: "Listings",
@@ -55,23 +60,22 @@ export default async function Page({ searchParams }: WelcomeProps) {
 
   if (isLandlord) {
     await queryClient.prefetchQuery({
-      queryKey: ["listings", userId, "published"],
+      queryKey: queryKeys.listings.published(userId),
       queryFn: async () => await getListings(userId, "published"),
     });
   }
 
   if (isStudent) {
     await queryClient.prefetchQuery({
-      queryKey: ["listings", "public", "published"],
+      queryKey: queryKeys.listings.published(userId),
       queryFn: async () => await getListings(undefined, "published"),
     });
   }
 
   return (
-    <>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <ListingsPageLandlord />
-
       <ListingsPageTenant />
-    </>
+    </HydrationBoundary>
   );
 }

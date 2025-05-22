@@ -22,6 +22,7 @@ import { Toaster } from "@/components/ui/toaster";
 import UserIdentityProvider from "@/lib/providers/user-identity-provider";
 import { WelcomeModal } from "@/components/app/modals/welcome-modal";
 import { PaymentAlertModal } from "@/components/app/modals/payment-alert-modal";
+import { queryKeys } from "@/lib/query-keys.config";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -56,16 +57,21 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const user = await getUser();
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const userId = user?.id;
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["user"],
+    queryKey: queryKeys.user.main,
     queryFn: getUser,
   });
 
   await queryClient.prefetchQuery({
-    queryKey: ["userPublic"],
-    queryFn: async () => await getUserPublic(user?.id),
+    queryKey: queryKeys.user.public(userId),
+    queryFn: async () => await getUserPublic(userId),
   });
 
   return (

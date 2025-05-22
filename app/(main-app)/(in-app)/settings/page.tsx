@@ -1,140 +1,37 @@
-"use client";
+import { getUserSettings } from "@/app/actions/supabase/settings";
+import { getUser } from "@/app/actions/supabase/user";
+import SettingsPageBody from "@/components/app/page-containers/in-app/settings-page-body";
+import { queryKeys } from "@/lib/query-keys.config";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { Metadata } from "next";
 
-import { Fragment, type JSX } from "react";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import { motion, AnimatePresence } from "framer-motion";
-import { useRouter, useSearchParams } from "next/navigation";
-
-// COMPONENTS
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
-import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
-import Security from "./(tabs)/security";
-import Notifications from "./(tabs)/notifications";
-import Support from "./(tabs)/support";
-
-// TYPES
-export type Tab = {
-  value: string;
-  title: string;
-  component: JSX.Element;
+export const metadata: Metadata = {
+  title: "Settings",
 };
 
-// CONFIG
-const tabs: Tab[] = [
-  { value: "security", title: "Security", component: <Security /> },
-  {
-    value: "notifications",
-    title: "Notifications",
-    component: <Notifications />,
-  },
-  { value: "support", title: "Support", component: <Support /> },
-];
+export default async function SettingsPage() {
+  const user = await getUser();
 
-export default function Page() {
-  const mobile = useMediaQuery("(max-width: 40rem)");
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const activeTab = searchParams.get("active-tab");
-  const currentTab = tabs.find((tab) => tab.value === activeTab) ?? tabs[0];
+  if (!user) {
+    throw new Error("User not found");
+  }
 
-  const updateActiveTab = (value: string | null) => {
-    const path = value ? `?active-tab=${value}` : "/settings";
-    router.replace(path);
-  };
+  const queryClient = new QueryClient();
+
+  const userId = user?.id;
+
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.user.settings,
+    queryFn: async () => await getUserSettings(userId),
+  });
 
   return (
-    <section className="relative flex min-h-screen flex-col gap-6 overflow-hidden px-4 py-6 sm:p-12">
-      <header className="flex w-full items-center gap-4">
-        {/* Mobile back button */}
-        {mobile && activeTab && (
-          <Button
-            variant="ghost"
-            onClick={() => updateActiveTab(null)}
-            className="hover:bg-background-secondary flex w-fit items-center justify-center rounded-sm p-2 sm:hidden"
-          >
-            <LeftChevonIcon />
-          </Button>
-        )}
-
-        <h1 className="text-text-primary text-2xl leading-8 font-semibold sm:text-4xl sm:leading-11">
-          {mobile && activeTab ? currentTab.title : "Settings"}
-        </h1>
-      </header>
-
-      {mobile ? (
-        <AnimatePresence mode="wait">
-          {activeTab ? (
-            <motion.section
-              key="component"
-              initial={{ opacity: 0, x: 300 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 300 }}
-              transition={{ duration: 0.3 }}
-              className="h-full w-full px-1"
-            >
-              {currentTab.component}
-            </motion.section>
-          ) : (
-            <motion.section
-              key="tabs"
-              initial={{ opacity: 0, x: -300 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -300 }}
-              transition={{ duration: 0.3 }}
-              className="flex h-full w-full flex-col gap-3"
-            >
-              {tabs.map((tab) => (
-                <div
-                  key={tab.value}
-                  onClick={() => updateActiveTab(tab.value)}
-                  className="text-text-primary border-border flex w-full cursor-pointer items-center justify-between border-b py-4 text-sm leading-6"
-                >
-                  {tab.title}
-                  <ChevronRightIcon />
-                </div>
-              ))}
-            </motion.section>
-          )}
-        </AnimatePresence>
-      ) : (
-        <Tabs
-          defaultValue={currentTab.value}
-          className="flex w-full flex-col gap-6"
-        >
-          <div className="sticky top-0 w-full border-b bg-transparent">
-            <TabsList className="h-auto w-fit justify-start gap-6 rounded-none p-0 sm:gap-16">
-              {tabs.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  onClick={() =>
-                    updateActiveTab(
-                      tab.value === currentTab.value ? null : tab.value,
-                    )
-                  }
-                  className="data-[state=active]:after:bg-background-accent text-text-accent flex flex-col items-center gap-3 text-sm leading-6 font-medium transition-all duration-150 after:h-0.5 after:w-[80%] after:rounded-xs after:transition-all after:duration-200"
-                >
-                  {tab.title}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {tabs.map((tab) => (
-              <TabsContent
-                key={tab.value}
-                value={tab.value}
-                className="mt-0 border-none pt-0"
-              >
-                {tab.component}
-              </TabsContent>
-            ))}
-          </AnimatePresence>
-        </Tabs>
-      )}
-    </section>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <SettingsPageBody />;
+    </HydrationBoundary>
   );
 }

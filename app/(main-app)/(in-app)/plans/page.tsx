@@ -1,6 +1,7 @@
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
 import { getUser } from "@/app/actions/supabase/user";
 import PlansPageBody from "@/components/app/page-containers/in-app/plans-page-body";
+import { queryKeys } from "@/lib/query-keys.config";
 import {
   dehydrate,
   HydrationBoundary,
@@ -24,7 +25,7 @@ export default async function PlansPage() {
   const userId = user?.id;
 
   await queryClient.prefetchQuery({
-    queryKey: ["activeSubscription", userId],
+    queryKey: queryKeys.subscription(userId),
     queryFn: async () => await getActiveSubscription(userId),
   });
 

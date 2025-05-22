@@ -3,6 +3,7 @@ import { getUserPackageRecord } from "@/app/actions/supabase/packages";
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
 import { getUser } from "@/app/actions/supabase/user";
 import { ProfilePageBody } from "@/components/app/page-containers/in-app/profile-page-body";
+import { queryKeys } from "@/lib/query-keys.config";
 import { hasRole } from "@/lib/utils";
 import {
   dehydrate,
@@ -31,14 +32,14 @@ export default async function ProfilePage() {
 
   if (isLandlord) {
     await queryClient.prefetchQuery({
-      queryKey: ["activeSubscription", userId],
+      queryKey: queryKeys.subscription(userId),
       queryFn: async () => await getActiveSubscription(userId),
     });
   }
 
   if (isStudent) {
     await queryClient.prefetchQuery({
-      queryKey: ["package", userId],
+      queryKey: queryKeys.packages(userId),
       queryFn: async () => await getUserPackageRecord(userId),
     });
   }
