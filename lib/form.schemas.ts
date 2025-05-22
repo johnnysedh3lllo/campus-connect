@@ -2,7 +2,12 @@
 
 import { z } from "zod";
 import { validateFileSizes, validateFileTypes } from "./app.config";
-import { MAX_LISTING_IMAGES, MIN_LISTING_IMAGE_SIZE, MAX_TOTAL_LISTING_IMAGE_SIZE } from "./constants";
+import {
+  MAX_LISTING_IMAGES,
+  MIN_LISTING_IMAGE_SIZE,
+  MAX_TOTAL_LISTING_IMAGE_SIZE,
+} from "./constants";
+import { PhotoType } from "./form.types";
 
 // FORM SCHEMAS
 export const RoleEnum = z.enum(["1", "2", "3"]); // TODO: REFACTOR THIS TO BE A NUMBER INSTEAD OF STRING
@@ -191,6 +196,7 @@ export const conversationFormSchema = z.object({
   conversationId: z.string(),
 });
 
+// LISTINGS
 export const HomeTypeEnum = z.enum(["apartment", "condo"]);
 export const PaymentFrequencyEnum = z.enum([
   "daily",
@@ -204,6 +210,12 @@ export const PublicationStatusEnum = z.enum([
   "draft",
 ]);
 
+export const photoSchema = z.object({
+  id: z.number().optional(), // DB ID (optional)
+  file: z.instanceof(File),
+  path: z.string().optional(), // Supabase path (for existing images)
+  previewUrl: z.string().optional(), // for rendering preview
+});
 export const listingFormSchema = z.object({
   title: z
     .string({ required_error: "Title is required" })
@@ -223,18 +235,18 @@ export const listingFormSchema = z.object({
     .max(100, { message: "Can't be longer than 100 characters" }),
   description: z.string().optional(),
   photos: z
-    .array(z.instanceof(File))
+    .array(photoSchema)
     .min(1, { message: "At least one photo is required" })
     .max(MAX_LISTING_IMAGES, {
       message: "You can upload a maximum of 10 photos",
     })
-    .refine(validateFileTypes.check, {
+    .refine((photos) => validateFileTypes.check(photos.map((p) => p.file)), {
       message: validateFileTypes.message,
     })
     .refine(
-      (files): files is File[] =>
+      (photos): photos is PhotoType[] =>
         validateFileSizes.check(
-          files,
+          photos.map((p) => p.file),
           MIN_LISTING_IMAGE_SIZE,
           MAX_TOTAL_LISTING_IMAGE_SIZE,
         ),
@@ -251,11 +263,9 @@ export const listingFormSchema = z.object({
     .min(1, { message: "Price must be at least $1" }),
   publicationStatus: PublicationStatusEnum,
 });
-
 export const upsertListingSchema = listingFormSchema.omit({
   photos: true,
 });
-
 export const homeDetailsFormSchema = listingFormSchema.pick({
   title: true,
   noOfBedrooms: true,
@@ -263,11 +273,9 @@ export const homeDetailsFormSchema = listingFormSchema.pick({
   location: true,
   description: true,
 });
-
-export const photoUploadFormSchema = listingFormSchema.pick({
+export const photosFormSchema = listingFormSchema.pick({
   photos: true,
 });
-
 export const pricingFormSchema = listingFormSchema.pick({
   paymentFrequency: true,
   price: true,

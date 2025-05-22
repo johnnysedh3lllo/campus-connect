@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import { CreateListingFormType } from "../form.types";
+import { ListingFormType } from "../form.types";
 import { persist } from "zustand/middleware";
 
 type NewCreateListingFormType = Partial<
-  CreateListingFormType & {
+  ListingFormType & {
     idempotencyKey: string;
   }
 >;

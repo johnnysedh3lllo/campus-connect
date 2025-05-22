@@ -6,8 +6,8 @@ import {
   homeDetailsFormSchema,
   HomeTypeEnum,
   PaymentFrequencyEnum,
-  photoUploadFormSchema,
   pricingFormSchema,
+  photosFormSchema,
 } from "@/lib/form.schemas";
 import {
   Form,
@@ -31,11 +31,11 @@ import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { CreateListingsState } from "@/lib/store/create-listings-store";
 import {
-  CreateListingFormType,
   HomeDetailsFormType,
-  PhotoUploadFormType,
   PricingFormType,
-  UpsertListingType,
+  ListingFormType,
+  PhotosFormType,
+  PhotoType,
 } from "@/lib/form.types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -58,14 +58,12 @@ import { Skeleton } from "../ui/skeleton";
 
 export function HomeDetailsForm({
   defaultValues,
-  onSubmit,
   useListingStore,
 }: {
   defaultValues: HomeDetailsFormType;
-  onSubmit: (values: HomeDetailsFormType) => void;
   useListingStore: () => CreateListingsState | EditListingsState;
 }) {
-  const { step, steps, prevStep } = useListingStore();
+  const { step, steps, prevStep, setData, nextStep } = useListingStore();
 
   // Define the form
   const form = useForm<HomeDetailsFormType>({
@@ -77,6 +75,11 @@ export function HomeDetailsForm({
   // Handle back button
   function handleBack() {
     prevStep();
+  }
+
+  function onSubmit(values: HomeDetailsFormType) {
+    setData(values);
+    nextStep();
   }
 
   return (
@@ -243,17 +246,15 @@ export function HomeDetailsForm({
 
 export function PhotoUploadForm({
   defaultValues,
-  onSubmit,
   useListingStore,
 }: {
-  defaultValues: PhotoUploadFormType;
-  onSubmit: (values: PhotoUploadFormType) => void;
+  defaultValues: PhotosFormType;
   useListingStore: () => CreateListingsState | EditListingsState;
 }) {
-  const { step, steps, prevStep } = useListingStore();
+  const { step, steps, prevStep, setData, nextStep } = useListingStore();
 
-  const form = useForm<PhotoUploadFormType>({
-    resolver: zodResolver(photoUploadFormSchema),
+  const form = useForm<PhotosFormType>({
+    resolver: zodResolver(photosFormSchema),
     defaultValues,
   });
 
@@ -273,7 +274,9 @@ export function PhotoUploadForm({
 
     // Initialize preview URLs (convert File -> objectURL, or use string directly)
     const urls = defaultValues.photos.map((photo) => {
-      return typeof photo === "string" ? photo : URL.createObjectURL(photo);
+      return typeof photo === "string"
+        ? photo
+        : URL.createObjectURL(photo.file);
     });
     setPreviewUrls(urls);
 
@@ -292,12 +295,23 @@ export function PhotoUploadForm({
     if (!files || files.length === 0) return;
 
     const selectedFiles = Array.from(files);
-    const currentFiles = photos.filter((p) => p instanceof File) as File[];
+
+    const selectedFilesTransformed = selectedFiles.map(
+      (file) =>
+        ({
+          id: undefined,
+          file,
+          path: undefined,
+          previewUrl: undefined,
+        }) as PhotoType,
+    );
+
+    const currentFiles = photos.filter((p) => p.file instanceof File);
     const currentUrls = previewUrls.filter(
       (_, i) => typeof photos[i] === "string",
     );
 
-    const combinedFiles = [...currentFiles, ...selectedFiles];
+    const combinedFiles = [...currentFiles, ...selectedFilesTransformed];
 
     if (combinedFiles.length + currentUrls.length > MAX_LISTING_IMAGES) {
       toast({
@@ -317,7 +331,7 @@ export function PhotoUploadForm({
 
     if (
       !validateFileSizes.check(
-        combinedFiles,
+        combinedFiles.map((file) => file.file),
         MIN_LISTING_IMAGE_SIZE,
         MAX_TOTAL_LISTING_IMAGE_SIZE,
       )
@@ -330,14 +344,14 @@ export function PhotoUploadForm({
     }
 
     const newUrls = selectedFiles.map((file) => URL.createObjectURL(file));
-    const newPhotos = [...photos, ...selectedFiles];
+    const newPhotos = [...photos, ...selectedFilesTransformed];
 
     setValue("photos", newPhotos, { shouldValidate: true });
     setPreviewUrls([...previewUrls, ...newUrls]);
   };
 
   const removePhoto = (index: number) => {
-    const removedPhoto = photos[index];
+    const removedPhoto = photos[index].file;
     const updatedPhotos = [...photos];
     const updatedPreviewUrls = [...previewUrls];
 
@@ -351,6 +365,11 @@ export function PhotoUploadForm({
     setValue("photos", updatedPhotos, { shouldValidate: true });
     setPreviewUrls(updatedPreviewUrls);
   };
+
+  function onSubmit(values: PhotosFormType) {
+    setData(values);
+    nextStep();
+  }
 
   return (
     <Form {...form}>
@@ -443,14 +462,12 @@ export function PhotoUploadForm({
 
 export function PricingForm({
   defaultValues,
-  onSubmit,
   useListingStore,
 }: {
   defaultValues: PricingFormType;
-  onSubmit: (values: PricingFormType) => void;
   useListingStore: () => CreateListingsState | EditListingsState;
 }) {
-  const { prevStep, steps, step } = useListingStore();
+  const { prevStep, steps, step, setData, nextStep } = useListingStore();
 
   const form = useForm<PricingFormType>({
     resolver: zodResolver(pricingFormSchema),
@@ -460,6 +477,11 @@ export function PricingForm({
 
   function handleBack() {
     prevStep();
+  }
+
+  function onSubmit(values: PricingFormType) {
+    setData(values);
+    nextStep();
   }
 
   return (
@@ -578,37 +600,37 @@ export function PreviewPage({
   displayCreditBalance?: boolean;
   creditAmount?: number | null | undefined;
   hasActiveSubscription?: boolean;
-  defaultValues: CreateListingFormType;
-  onSubmit: (values: CreateListingFormType) => Promise<void>;
+  defaultValues: ListingFormType;
+  onSubmit: (values: ListingFormType) => Promise<void>;
   useListingStore: () => CreateListingsState | EditListingsState;
 }) {
-  const { step, steps, prevStep, data } = useListingStore();
-  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const { step, steps, prevStep } = useListingStore();
+  const [previewUrls, setPreviewUrls] = useState<string[] | undefined>([]);
 
-  // TODO: THESE VALUES MAY BE EMPTY DUE TO EMPTY STRINGS, HANDLE ACCORDINGLY
-  const defaultValue = "Not Defined";
-  const title = data.title;
-  const location = data.location;
-  const noOfBedrooms = data.noOfBedrooms;
-  const listingType = data.listingType;
-  const description = data.description;
-  const photos = data.photos;
-  const paymentFrequency = data?.paymentFrequency;
-  const price = data?.price;
+  const title = defaultValues.title;
+  const location = defaultValues.location;
+  const noOfBedrooms = defaultValues.noOfBedrooms;
+  const listingType = defaultValues.listingType;
+  const description = defaultValues.description;
+  const photos = defaultValues.photos;
+  const paymentFrequency = defaultValues?.paymentFrequency;
+  const price = defaultValues?.price;
 
   useEffect(() => {
     if (photos?.length) {
-      const photoPreviewUrls = photos.map((file) => URL.createObjectURL(file));
+      const photoPreviewUrls = photos?.map((photo) =>
+        URL.createObjectURL(photo?.file),
+      );
       setPreviewUrls(photoPreviewUrls);
 
       console.log(photos);
       return () => {
-        photoPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+        photoPreviewUrls?.forEach((url) => URL.revokeObjectURL(url));
       };
     }
-  }, [photos]);
+  }, [defaultValues]);
 
-  const form = useForm<CreateListingFormType>({
+  const form = useForm<ListingFormType>({
     resolver: zodResolver(listingFormSchema),
     defaultValues: defaultValues,
   });

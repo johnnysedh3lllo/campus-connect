@@ -14,10 +14,11 @@ import { animationConfig, formVariants } from "@/hooks/animations";
 import { useGetListingByUUID } from "@/hooks/tanstack/use-get-listing-by-uuid";
 import { useBackToLastPage } from "@/hooks/use-back-to-last-page";
 import {
-  EditListingFormType,
   HomeDetailsFormType,
-  PhotoUploadFormType,
   PricingFormType,
+  PhotoType,
+  PhotosFormType,
+  ListingFormType,
 } from "@/lib/form.types";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { useEditListingsStore } from "@/lib/store/edit-listings-store";
@@ -40,7 +41,7 @@ export default function ListingEditPageBody({
     setStep,
   } = useEditListingsStore();
   const clearStoreStorage = clearStorage(useEditListingsStore);
-  const [photos, setPhotos] = useState<File[]>([]);
+  const [photos, setPhotos] = useState<PhotoType[]>([]);
   const { data, isLoading } = useGetListingByUUID(listingUUID);
   const backToLastPage = useBackToLastPage("/listings");
 
@@ -48,12 +49,21 @@ export default function ListingEditPageBody({
     if (!data?.data?.listing_images) return;
 
     const fetchPhotos = async () => {
-      const imageUrls = getImageUrls(data.data.listing_images);
+      const photosFromDB = await Promise.all(
+        data.data.listing_images.map(async (image) => {
+          const url = image.image_url;
+          const file = await fileFromUrl(url);
+          return {
+            id: image.id,
+            file,
+            path: url,
+            previewUrl: url,
+          };
+        }),
+      );
 
-      const files = await Promise.all(imageUrls.map((url) => fileFromUrl(url)));
-
-      setData({ photos: files });
-      setPhotos(files);
+      setData({ photos: photosFromDB });
+      setPhotos(photosFromDB);
     };
 
     fetchPhotos();
@@ -68,10 +78,9 @@ export default function ListingEditPageBody({
 
   const paymentFrequency = listingData?.payment_frequency;
   const price = listingData?.price;
-
   const currentPubStatus = listingData?.publication_status;
 
-  // HOME DETAILS FORM
+  // DEFAULT VALUES
   const homeDetailsDefaultValue: HomeDetailsFormType = {
     title: title ?? "",
     noOfBedrooms: noOfBedrooms ?? 1,
@@ -79,63 +88,41 @@ export default function ListingEditPageBody({
     location: location ?? "",
     description: description ?? "",
   };
-  function handleHomeDetailsOnSubmit(values: HomeDetailsFormType) {
-    setData(values);
-    nextStep();
-  }
-
-  // PHOTO UPLOAD FORM
-  const photoUploadDefaultValues: PhotoUploadFormType = {
-    photos: photos || [],
+  const photoUploadDefaultValues: PhotosFormType = {
+    photos: storeData.photos || [],
   };
-  function handlePhotoUploadOnSubmit(values: PhotoUploadFormType) {
-    console.log(values);
-    setData(values);
-    setPhotos(values.photos);
-    nextStep();
-  }
-
-  // PRICING FORM
   const pricingDefaultValues: PricingFormType = {
     paymentFrequency: paymentFrequency ?? "monthly",
     price: price ?? 1,
   };
-  function handlePricingOnSubmit(values: PricingFormType) {
-    setData(values);
-    nextStep();
-  }
-
-  // PREVIEW FORM
-  const previewDefaultValues: EditListingFormType = {
-    title: title ?? "",
-    noOfBedrooms: noOfBedrooms ?? 1,
-    listingType: homeType ?? "apartment",
-    location: location ?? "",
-    description: description ?? "",
-    photos: photos,
-    paymentFrequency: paymentFrequency ?? "daily",
-    price: price ?? 1,
+  const previewDefaultValues: ListingFormType = {
+    title: storeData.title ?? "",
+    noOfBedrooms: storeData.noOfBedrooms ?? 1,
+    listingType: storeData.listingType ?? "apartment",
+    location: storeData.location ?? "",
+    description: storeData.description ?? "",
+    photos: storeData.photos || [],
+    paymentFrequency: storeData.paymentFrequency ?? "daily",
+    price: storeData.price ?? 1,
     publicationStatus: currentPubStatus ?? "published",
   };
 
-  async function handlePublishEdit(values: EditListingFormType) {
-    console.log(values);
+  async function handlePublishEdit(values: ListingFormType) {
+    console.log("original photos", photos);
+    console.log("current photos", values.photos);
   }
 
   const editListingSteps = [
     <HomeDetailsForm
       defaultValues={homeDetailsDefaultValue}
-      onSubmit={handleHomeDetailsOnSubmit}
       useListingStore={useEditListingsStore}
     />,
     <PhotoUploadForm
       defaultValues={photoUploadDefaultValues}
-      onSubmit={handlePhotoUploadOnSubmit}
       useListingStore={useEditListingsStore}
     />,
     <PricingForm
       defaultValues={pricingDefaultValues}
-      onSubmit={handlePricingOnSubmit}
       useListingStore={useEditListingsStore}
     />,
     <PreviewPage

@@ -21,7 +21,7 @@ export async function getListings(
   try {
     let query = supabase
       .from("listings")
-      .select("*, listing_images(image_url, width, height)");
+      .select("*, listing_images(id, image_url, width, height)");
 
     if (userId) query = query.eq("landlord_id", userId);
     if (pubStatus) query = query.eq("publication_status", pubStatus);
@@ -58,7 +58,7 @@ export async function getListingByUUID(listingUUID: string) {
       .from("listings")
       .select(
         `*, 
-        listing_images(image_url, width, height), 
+        listing_images(id ,image_url, width, height), 
         users(id, first_name, last_name, role_id, avatar_url)`,
       )
       .eq("uuid", listingUUID)

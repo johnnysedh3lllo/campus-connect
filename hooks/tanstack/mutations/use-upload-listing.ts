@@ -4,7 +4,11 @@ import {
   upsertListing,
   upsertListingImages,
 } from "@/app/actions/supabase/listings";
-import { UpsertListingType } from "@/lib/form.types";
+import {
+  ListingFormType,
+  PhotoType,
+  UpsertListingType,
+} from "@/lib/form.types";
 import { queryKeys } from "@/lib/query-keys.config";
 import { supabase } from "@/utils/supabase/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +25,7 @@ export function useUploadListing() {
       userId: string;
       idemKey: string;
       listingDetails: UpsertListingType;
-      images: File[];
+      images: PhotoType[];
     }) => {
       // Step 1: Upsert the Listing
       const listingResult = await upsertListing(
@@ -70,7 +74,9 @@ export function useUploadListing() {
         } as ListingImageMetadata;
       };
 
-      const imageMetadata = await Promise.all(images.map(uploadImage));
+      const imageMetadata = await Promise.all(
+        images.map((image, index) => uploadImage(image.file, index)),
+      );
 
       // Step 3: Associate images with listing
       const imageInsertResult = await upsertListingImages(
