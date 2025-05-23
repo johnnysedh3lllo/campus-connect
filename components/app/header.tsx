@@ -1,4 +1,4 @@
-import { HeaderProps } from "@/lib/prop.types";
+import { HeaderProps } from "@/types/prop.types";
 import { cn } from "@/lib/utils";
 
 export function Header({

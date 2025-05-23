@@ -1,7 +1,7 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { formatDate } from "@/lib/utils";
-import type { MessageBubbleProps } from "@/lib/prop.types";
+import type { MessageBubbleProps } from "@/types/prop.types";
 
 export default function MessageBubble({
   user,

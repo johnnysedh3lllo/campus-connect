@@ -1,6 +1,6 @@
 import { updateUser } from "@/app/actions/supabase/user";
-import { ProfileInfoFormType } from "@/lib/form.types";
-import { queryKeys } from "@/lib/query-keys.config";
+import { ProfileInfoFormType } from "@/types/form.types";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateUserMetadata() {

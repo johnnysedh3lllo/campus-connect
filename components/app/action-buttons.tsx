@@ -12,17 +12,20 @@ import { ToastAction } from "../ui/toast";
 import { cn, formatUsersName } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
 
-import { PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
-import { PurchasePremiumFormType, UserValidationType } from "@/lib/form.types";
+import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
+import {
+  PurchasePremiumFormType,
+  UserValidationType,
+} from "@/types/form.types";
 import { purchasePremiumFormSchema } from "@/lib/form.schemas";
 
-import { ConversationFormType } from "@/lib/form.types";
+import { ConversationFormType } from "@/types/form.types";
 import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
 import { PlusIcon } from "@/public/icons/plus-icon";
 import Link from "next/link";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useUpdateListing } from "@/hooks/tanstack/mutations/use-update-listing";
-import { statusVerbMap } from "@/lib/app.config";
+import { statusVerbMap } from "@/lib/config/app.config";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
 import { useDeleteListing } from "@/hooks/tanstack/mutations/use-delete-listing";
 import { useBackToLastPage } from "@/hooks/use-back-to-last-page";
@@ -30,7 +33,7 @@ import { useUserStore } from "@/lib/store/user-store";
 import { useCreateConversation } from "@/hooks/tanstack/mutations/use-create-conversation";
 import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
 import { BadgeIcon } from "@/public/illustrations/badge-icon";
-import { ModalProps } from "@/lib/prop.types";
+import { ModalProps } from "@/types/prop.types";
 import Modal from "./modals/modal";
 import { Skeleton } from "../ui/skeleton";
 
@@ -119,13 +122,13 @@ export function DeleteListingButton({
   listingUUID,
   publicationStatus,
   setIsDeleteListingModalOpen,
-  imageUrls,
+  imagePaths,
 }: {
   userId: string | null;
   listingUUID: string;
   publicationStatus: ListingPublicationStatus | undefined;
   setIsDeleteListingModalOpen: Dispatch<SetStateAction<boolean>>;
-  imageUrls: string[];
+  imagePaths: string[];
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -139,7 +142,7 @@ export function DeleteListingButton({
         userId: userId,
         listingUUID: listingUUID,
         publicationStatus: publicationStatus,
-        imageUrls,
+        imagePaths,
       });
 
       if (!deleteListing.isError) {

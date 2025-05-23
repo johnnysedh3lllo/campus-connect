@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
-import { SettingsFormType } from "@/lib/form.types";
+import { SettingsFormType } from "@/types/form.types";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetUserSettings } from "@/hooks/tanstack/use-get-user-settings";
 import { useUpdateUserSettings } from "@/hooks/tanstack/mutations/use-update-user-settings";

@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { MessageLandlordButton } from "./action-buttons";
 import { BadgeIcon } from "@/public/illustrations/badge-icon";
-import { ModalProps } from "@/lib/prop.types";
+import { ModalProps } from "@/types/prop.types";
 import { useState } from "react";
 import Modal from "./modals/modal";
 import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";

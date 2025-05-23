@@ -11,19 +11,22 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { animationConfig, formVariants } from "@/hooks/animations";
+import { useEditListing } from "@/hooks/tanstack/mutations/use-edit-listing";
 import { useGetListingByUUID } from "@/hooks/tanstack/use-get-listing-by-uuid";
 import { useBackToLastPage } from "@/hooks/use-back-to-last-page";
+import { toast } from "@/hooks/use-toast";
 import {
   HomeDetailsFormType,
   PricingFormType,
   PhotoType,
   PhotosFormType,
   ListingFormType,
-} from "@/lib/form.types";
+} from "@/types/form.types";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { useEditListingsStore } from "@/lib/store/edit-listings-store";
 import { clearStorage } from "@/lib/store/store-utils";
-import { fileFromUrl, getImageUrls } from "@/lib/utils";
+import { useUserStore } from "@/lib/store/user-store";
+import { fileFromUrl } from "@/lib/utils";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useEffect, useState } from "react";
 
@@ -32,6 +35,8 @@ export default function ListingEditPageBody({
 }: {
   listingUUID: string;
 }) {
+  const { userId } = useUserStore();
+
   const {
     step,
     steps,
@@ -51,12 +56,14 @@ export default function ListingEditPageBody({
     const fetchPhotos = async () => {
       const photosFromDB = await Promise.all(
         data.data.listing_images.map(async (image) => {
-          const url = image.image_url;
+          const url = image.url;
           const file = await fileFromUrl(url);
           return {
             id: image.id,
             file,
-            path: url,
+            url: url,
+            path: image.path,
+            fullPath: image.full_path,
             previewUrl: url,
           };
         }),
@@ -107,9 +114,54 @@ export default function ListingEditPageBody({
     publicationStatus: currentPubStatus ?? "published",
   };
 
+  const editListingMutation = useEditListing();
+
   async function handlePublishEdit(values: ListingFormType) {
-    console.log("original photos", photos);
-    console.log("current photos", values.photos);
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
+
+    const listingDetails: ListingsUpdate = {
+      title: values.title,
+      no_of_bedrooms: values.noOfBedrooms,
+      listing_type: values.listingType,
+      location: values.location,
+      payment_frequency: values.paymentFrequency,
+      price: values.price,
+      publication_status: values.publicationStatus,
+      description: values.description,
+    };
+    const listingImages = values.photos;
+
+    try {
+      await editListingMutation.mutateAsync({
+        userId: userId,
+        listingUUID: listingUUID,
+        listingData: listingDetails,
+        originalImages: photos,
+        currentImages: listingImages,
+      });
+
+      if (editListingMutation.isError) {
+        toast({
+          variant: "destructive",
+          description:
+            "It seems an error occurred while editing your listing. Please try again",
+          showCloseButton: false,
+        });
+        throw editListingMutation.error;
+      } else {
+        toast({
+          variant: "success",
+          description: "Your Edits have been published successful.",
+          showCloseButton: false,
+        });
+
+        cancelListingEdit();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   const editListingSteps = [

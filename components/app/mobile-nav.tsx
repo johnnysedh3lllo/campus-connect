@@ -1,6 +1,6 @@
 "use client";
 
-import { MobileNavProps } from "@/lib/prop.types";
+import { MobileNavProps } from "@/types/prop.types";
 import {
   Sheet,
   SheetClose,
@@ -15,7 +15,7 @@ import { UserPill } from "./user-pill";
 import { Separator } from "../ui/separator";
 
 import { usePathname } from "next/navigation";
-import { navLinksMobile } from "@/lib/app.config";
+import { navLinksMobile } from "@/lib/config/app.config";
 import Link from "next/link";
 import { LogOut } from "@/public/icons/log-out-icon";
 import { CreditDisplayCard } from "./credit-display-card";
@@ -69,7 +69,7 @@ export function MobileNav({ userProfile }: MobileNavProps) {
           </div>
 
           <div className="flex h-full flex-col justify-between gap-6">
-            <ul className="flex h-fit gap-4 flex-col justify-between">
+            <ul className="flex h-fit flex-col justify-between gap-4">
               {navLinksMobile.map((link, index) => {
                 const LinkIcon = link.icon;
                 return (

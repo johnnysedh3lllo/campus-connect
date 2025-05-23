@@ -45,3 +45,5 @@ schema.sql
 stripe-products-and-prices.txt
 /refactors
 left-to-do.md
+/tree
+generate-tree.js

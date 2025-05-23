@@ -1,6 +1,6 @@
 import { upsertUserSettings } from "@/app/actions/supabase/settings";
-import { SettingsFormType } from "@/lib/form.types";
-import { queryKeys } from "@/lib/query-keys.config";
+import { SettingsFormType } from "@/types/form.types";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateUserSettings() {

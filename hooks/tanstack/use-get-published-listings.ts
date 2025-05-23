@@ -1,6 +1,6 @@
 import { getListings } from "@/app/actions/supabase/listings";
-import { PublicationStatusType } from "@/lib/form.types";
-import { queryKeys } from "@/lib/query-keys.config";
+import { PublicationStatusType } from "@/types/form.types";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetPublishedListings(

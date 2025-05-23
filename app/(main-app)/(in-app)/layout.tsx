@@ -22,7 +22,7 @@ import { Toaster } from "@/components/ui/toaster";
 import UserIdentityProvider from "@/lib/providers/user-identity-provider";
 import { WelcomeModal } from "@/components/app/modals/welcome-modal";
 import { PaymentAlertModal } from "@/components/app/modals/payment-alert-modal";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

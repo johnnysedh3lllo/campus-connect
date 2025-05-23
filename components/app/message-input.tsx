@@ -1,7 +1,7 @@
 "use client";
 import type React from "react";
 import { Button } from "../ui/button";
-import { MessageInputProps } from "@/lib/prop.types";
+import { MessageInputProps } from "@/types/prop.types";
 import {
   Form,
   FormControl,

@@ -8,7 +8,7 @@ import { SettingsIcon } from "@/public/icons/settings-icon";
 
 import iconDown from "@/public/icons/icon-arrow-down.svg";
 import { UserPill } from "./user-pill";
-import type { UserMenuBarProps } from "@/lib/prop.types";
+import type { UserMenuBarProps } from "@/types/prop.types";
 import {
   DropdownMenu,
   DropdownMenuContent,

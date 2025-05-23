@@ -1,7 +1,7 @@
 import { getUserSettings } from "@/app/actions/supabase/settings";
 import { getUser } from "@/app/actions/supabase/user";
 import SettingsPageBody from "@/components/app/page-containers/in-app/settings-page-body";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import {
   dehydrate,
   HydrationBoundary,

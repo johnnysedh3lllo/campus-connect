@@ -8,7 +8,7 @@ import {
   RoleFormType,
   CreatePasswordFormType,
   UserDetailsFormType,
-} from "./form.types";
+} from "@/types/form.types";
 
 export type NavigationProps = {
   user: User | null | undefined;

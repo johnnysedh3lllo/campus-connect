@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-query";
 import { getConversations } from "@/app/actions/supabase/messages";
 import { getUser } from "@/app/actions/supabase/user";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 
 export const metadata: Metadata = {
   title: "Messages",

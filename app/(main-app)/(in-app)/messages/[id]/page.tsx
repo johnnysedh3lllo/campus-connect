@@ -5,7 +5,7 @@ import {
 } from "@/app/actions/supabase/messages";
 import { getUser } from "@/app/actions/supabase/user";
 import MessagesIdPageBody from "@/components/app/page-containers/in-app/messages-id-page-body";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import {
   dehydrate,
   HydrationBoundary,

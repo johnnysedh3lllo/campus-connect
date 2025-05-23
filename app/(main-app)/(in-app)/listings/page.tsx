@@ -11,7 +11,7 @@ import { ListingsPageTenant } from "@/components/app/page-containers/in-app/list
 import { hasRole } from "@/lib/utils";
 import { upsertUserSettings } from "@/app/actions/supabase/settings";
 import { createClient } from "@/utils/supabase/server";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 
 export const metadata: Metadata = {
   title: "Listings",

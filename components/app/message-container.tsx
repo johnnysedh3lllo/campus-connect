@@ -5,7 +5,7 @@ import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
 import { getMessageDateLabel } from "@/lib/utils";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import type { MessageContainerProps } from "@/lib/prop.types";
+import type { MessageContainerProps } from "@/types/prop.types";
 
 export default function MessageContainer({
   conversationId,

@@ -14,7 +14,7 @@ import { LocationIcon } from "@/public/icons/location-icon";
 import listingIllustration from "@/public/illustrations/illustration-listings.png";
 import { useEffect, useState } from "react";
 import Modal from "../../modals/modal";
-import { ModalProps } from "@/lib/prop.types";
+import { ModalProps } from "@/types/prop.types";
 import Image from "next/image";
 import { useUserStore } from "@/lib/store/user-store";
 import {
@@ -22,7 +22,7 @@ import {
   ChangeListingPubStatusButton,
   DeleteListingButton,
 } from "../../action-buttons";
-import { statusVerbMap } from "@/lib/app.config";
+import { statusVerbMap } from "@/lib/config/app.config";
 import { Separator } from "@/components/ui/separator";
 import { BedIcon } from "@/public/icons/bed-icon";
 import { TagIcon } from "@/public/icons/tag-icon";
@@ -31,7 +31,6 @@ import {
   formatCurrency,
   formatNumberWithSuffix,
   frequencyMap,
-  getImageUrls,
 } from "@/lib/utils";
 import { ListingImageGallery } from "../../listing-image-gallery";
 import { BinIcon } from "@/public/icons/bin-icon";
@@ -79,7 +78,7 @@ export default function ListingIdPageBody({
   const homeType = listingData?.listing_type;
   const description = listingData?.description;
   const images = listingData?.listing_images;
-  const imageUrls = getImageUrls(images ?? []);
+  const imagePaths = images?.map((image) => image.path) ?? [];
 
   const landlord = listingData?.users;
 
@@ -129,7 +128,7 @@ export default function ListingIdPageBody({
         userId={userId}
         listingUUID={listingUUID}
         publicationStatus={currentPubStatus}
-        imageUrls={imageUrls}
+        imagePaths={imagePaths}
         setIsDeleteListingModalOpen={setIsDeleteListingModalOpen}
       />
     ),

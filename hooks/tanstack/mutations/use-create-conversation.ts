@@ -1,5 +1,5 @@
 import { createConversation } from "@/app/actions/supabase/messages";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useCreateConversation() {

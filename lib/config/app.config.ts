@@ -5,7 +5,7 @@ import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIcon } from "@/public/icons/profile-icon";
 import { SettingsIcon } from "@/public/icons/settings-icon";
 // import { areValidFileTypes, areValidFileSizes } from "./utils";
-import { SUPPORTED_FILE_TYPES } from "./constants";
+import { SUPPORTED_FILE_TYPES } from "../constants";
 
 export const ROLES = {
   ADMIN: 1,
@@ -38,8 +38,8 @@ const areValidFileSizes = (
   maxImageSize: number,
 ) => {
   const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-  // totalSize >= minImageSize &&
-  return totalSize <= maxImageSize;
+
+  return totalSize >= minImageSize && totalSize <= maxImageSize;
 };
 
 export const validateFileTypes = {
@@ -50,8 +50,8 @@ export const validateFileTypes = {
 export const validateFileSizes = {
   check: areValidFileSizes,
   message: {
-    profile: "Image size must be at least 1MB and not exceed 4MB",
-    listings: "Total image size must not exceed 40MB",
+    profile: "Image size must be at least 1MB and must not exceed 4MB",
+    listings: "Image sizes must be at least 1MB and must not exceed 4MB",
   },
 };
 

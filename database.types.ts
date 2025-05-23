@@ -183,26 +183,32 @@ export type Database = {
       listing_images: {
         Row: {
           created_at: string
+          full_path: string
           height: number
           id: number
-          image_url: string
           listing_uuid: string
+          path: string
+          url: string
           width: number
         }
         Insert: {
           created_at?: string
+          full_path: string
           height: number
           id?: never
-          image_url: string
           listing_uuid: string
+          path: string
+          url: string
           width: number
         }
         Update: {
           created_at?: string
+          full_path?: string
           height?: number
           id?: never
-          image_url?: string
           listing_uuid?: string
+          path?: string
+          url?: string
           width?: number
         }
         Relationships: [

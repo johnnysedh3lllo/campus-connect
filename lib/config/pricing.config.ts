@@ -1,4 +1,4 @@
-import { CreditTier, PackageTier, PriceTier } from "./pricing.types";
+import { CreditTier, PackageTier, PriceTier } from "@/types/pricing.types";
 
 // TODO: Consider abstracting these details to the database
 // TODO: Figure out a way to ensure this object is in sync with the Stripe Dashboard

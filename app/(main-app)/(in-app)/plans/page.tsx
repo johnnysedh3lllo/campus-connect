@@ -1,7 +1,7 @@
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
 import { getUser } from "@/app/actions/supabase/user";
 import PlansPageBody from "@/components/app/page-containers/in-app/plans-page-body";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import {
   dehydrate,
   HydrationBoundary,

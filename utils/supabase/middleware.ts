@@ -1,4 +1,4 @@
-import { ROLES } from "@/lib/app.config";
+import { ROLES } from "@/lib/config/app.config";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse, URLPattern } from "next/server";
 

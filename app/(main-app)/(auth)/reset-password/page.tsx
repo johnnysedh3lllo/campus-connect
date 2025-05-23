@@ -6,7 +6,7 @@ import { useEmailState } from "@/lib/store/email-state-store";
 import { toast } from "@/hooks/use-toast";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
-import { ResetPasswordFormType } from "@/lib/form.types";
+import { ResetPasswordFormType } from "@/types/form.types";
 import { resetPassword } from "@/app/actions/supabase/onboarding";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 

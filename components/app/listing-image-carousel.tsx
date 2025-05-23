@@ -11,6 +11,7 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { cn } from "@/lib/utils";
+import imagePlaceholder from "@/public/illustrations/illustration-image-placeholder.png";
 
 export function ListingImageCarousel({
   startIndex,
@@ -53,7 +54,7 @@ export function ListingImageCarousel({
           <CarouselItem key={idx} className="flex justify-center">
             <div className="relative aspect-[4/3] w-full">
               <Image
-                src={img.image_url || "https://placehold.co/600x400"}
+                src={img.url || imagePlaceholder.src}
                 alt={`Image ${idx}`}
                 fill
                 className="rounded object-contain"

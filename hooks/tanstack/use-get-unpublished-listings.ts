@@ -1,7 +1,7 @@
 import { getListings } from "@/app/actions/supabase/listings";
 import { DEFAULT_STALE_TIME } from "@/lib/constants";
-import { PublicationStatusType } from "@/lib/form.types";
-import { queryKeys } from "@/lib/query-keys.config";
+import { PublicationStatusType } from "@/types/form.types";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { hasRole } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 

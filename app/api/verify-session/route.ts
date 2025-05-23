@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
-import { PURCHASE_TYPES } from "@/lib/pricing.config";
+import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 
 export type VerifySessionResponseType = {
   status: number;

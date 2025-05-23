@@ -1,5 +1,5 @@
 "use server";
-import { ConversationFormType } from "@/lib/form.types";
+import { ConversationFormType } from "@/types/form.types";
 import { createClient } from "@/utils/supabase/server";
 import { updateUserPackageInquiries } from "./packages";
 import { MIN_INQUIRIES } from "@/lib/constants";

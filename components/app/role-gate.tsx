@@ -1,4 +1,4 @@
-import { Role } from "@/lib/app.config";
+import { Role } from "@/lib/config/app.config";
 import { hasRole } from "@/lib/utils";
 
 type RoleGateProps = {

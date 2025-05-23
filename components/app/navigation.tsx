@@ -3,7 +3,7 @@
 // UTILITIES
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { navLinks } from "@/lib/app.config";
+import { navLinks } from "@/lib/config/app.config";
 
 // COMPONENTS
 import Link from "next/link";
@@ -41,7 +41,7 @@ export default function Navigation() {
 
   const pathName = usePathname();
   return (
-    <nav className="bg-background border-b-foreground/10 sticky z-30 top-0 flex h-16 w-full justify-center border-b">
+    <nav className="bg-background border-b-foreground/10 sticky top-0 z-30 flex h-16 w-full justify-center border-b">
       <div className="flex w-full max-w-screen-2xl items-center justify-between p-4 text-sm lg:px-6 lg:pt-6 lg:pb-0">
         <div className="flex items-center gap-5 font-semibold">
           <Link href="/listings">

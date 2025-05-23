@@ -1,4 +1,4 @@
-import { EmptyPageStateProps } from "@/lib/prop.types";
+import { EmptyPageStateProps } from "@/types/prop.types";
 import Image from "next/image";
 
 export function EmptyPageState({

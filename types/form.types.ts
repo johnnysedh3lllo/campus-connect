@@ -26,7 +26,7 @@ import {
   photoSchema,
   photosFormSchema,
   upsertListingSchema,
-} from "./form.schemas";
+} from "../lib/form.schemas";
 
 export type RoleType = z.infer<typeof RoleEnum>;
 export type UserValidationType = z.infer<typeof userValidationSchema>;

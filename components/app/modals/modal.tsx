@@ -12,7 +12,7 @@ import {
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { ModalProps } from "@/lib/prop.types";
+import { ModalProps } from "@/types/prop.types";
 
 const variants = {
   default: {
@@ -92,7 +92,7 @@ export default function Modal({
 
           <div className="flex flex-col gap-6">
             <DialogHeader className="flex flex-col gap-2 sm:text-center">
-              <DialogTitle className="text-xl capitalize leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+              <DialogTitle className="text-xl leading-7.5 font-semibold capitalize sm:text-4xl sm:leading-11">
                 {title}
               </DialogTitle>
               <DialogDescription className="text text-secondary-foreground text-sm">

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { MessageListItemProps } from "@/lib/prop.types";
+import { MessageListItemProps } from "@/types/prop.types";
 import { usePathname } from "next/navigation";
 import { customRelativeTime } from "@/lib/utils";
 

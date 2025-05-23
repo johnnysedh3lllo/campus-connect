@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-query";
 import { getListingByUUID } from "@/app/actions/supabase/listings";
 import ListingEditPageBody from "@/components/app/page-containers/in-app/listing-edit-page-body";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 
 export default async function Page({
   params,

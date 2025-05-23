@@ -1,5 +1,5 @@
 "use client";
-import { ProfileInfoProps } from "@/lib/prop.types";
+import { ProfileInfoProps } from "@/types/prop.types";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIconSmall } from "@/public/icons/profile-icon-small";
 import { EditIcon } from "@/public/icons/edit-icon";
@@ -19,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { profileInfoFormSchema } from "@/lib/form.schemas";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { ProfileInfoFormType } from "@/lib/form.types";
+import { ProfileInfoFormType } from "@/types/form.types";
 import { useUpdateUserMetadata } from "@/hooks/tanstack/mutations/use-update-user-metadata";
 import { Textarea } from "../ui/textarea";
 import { RoleGate } from "./role-gate";

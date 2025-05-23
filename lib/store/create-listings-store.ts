@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ListingFormType } from "../form.types";
+import { ListingFormType } from "@/types/form.types";
 import { persist } from "zustand/middleware";
 
 type NewCreateListingFormType = Partial<

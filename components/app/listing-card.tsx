@@ -8,6 +8,8 @@ import {
 } from "@/lib/utils";
 import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
 import { LocationIcon } from "@/public/icons/location-icon";
+import imagePlaceholder from "@/public/illustrations/illustration-image-placeholder.png";
+
 import Link from "next/link";
 
 export default function ListingCard({
@@ -24,11 +26,9 @@ export default function ListingCard({
   const listingId = listing.uuid;
 
   const firstImage = listing.listing_images[0];
-  const imageSrc =
-    firstImage?.image_url ||
-    "/illustrations/illustration-house-placeholder.jpg";
-  const width = firstImage.width ?? 0;
-  const height = firstImage.height ?? 0;
+  const imageSrc = firstImage?.url || imagePlaceholder.src;
+  const width = firstImage?.width ?? 200;
+  const height = firstImage?.height ?? 200;
 
   return (
     <article className="flex w-full flex-col items-stretch gap-4 rounded-md border px-3 pt-3 pb-4">

@@ -4,7 +4,7 @@ import {
   updateConversations,
 } from "@/app/actions/supabase/messages";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 
 export function useUpdateConversationMessages(
   conversationId: string,

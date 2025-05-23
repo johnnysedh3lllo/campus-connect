@@ -14,7 +14,7 @@ import {
   LoginFormType,
   ResetPasswordFormType,
   ChangePasswordFormType,
-} from "@/lib/form.types";
+} from "@/types/form.types";
 
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";

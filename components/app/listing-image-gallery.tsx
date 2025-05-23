@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { ListingImageCarousel } from "./listing-image-carousel";
+import imagePlaceholder from "@/public/illustrations/illustration-image-placeholder.png";
 
 export function ListingImageGallery({
   imageMetadata,
@@ -31,9 +32,9 @@ export function ListingImageGallery({
   const getImageProps = (index: number) => {
     const img = imagesToShow[index];
     return {
-      src: img?.image_url,
-      width: img?.width ?? 0,
-      height: img?.height ?? 0,
+      src: img?.url ?? imagePlaceholder.src,
+      width: img?.width ?? 800,
+      height: img?.height ?? 400,
     };
   };
 
@@ -50,7 +51,9 @@ export function ListingImageGallery({
         className="sm:hidden"
       />
 
-      <div className={`hidden w-full ${layoutClass} gap-2 sm:grid`}>
+      <div
+        className={`hidden w-full overflow-hidden ${layoutClass} gap-2 sm:grid`}
+      >
         {/* Main image */}
         <figure
           className={`col-start-1 col-end-2 row-span-3 ${imagesToShow.length === 1 ? "max-h-[440px]" : ""} group cursor-pointer overflow-hidden`}

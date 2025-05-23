@@ -7,10 +7,10 @@ import { Label } from "../ui/label";
 import "react-image-crop/dist/ReactCrop.css";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { ProfilePictureUploadProps } from "@/lib/prop.types";
+import { ProfilePictureUploadProps } from "@/types/prop.types";
 import { ProfilePictureUploadModal } from "./modals/profile-picture-upload-modal";
 import { toast } from "@/hooks/use-toast";
-import { validateFileSizes, validateFileTypes } from "@/lib/app.config";
+import { validateFileSizes, validateFileTypes } from "@/lib/config/app.config";
 import {
   MAX_PROFILE_IMAGE_SIZE,
   MIN_PROFILE_IMAGE_SIZE,

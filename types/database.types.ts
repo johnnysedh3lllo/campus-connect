@@ -15,10 +15,7 @@ declare global {
   type ListingImages = Tables<"listing_images">;
   type ListingImagesInsert = TablesInsert<"listing_images">;
   type ListingWithImages = Listings & {
-    listing_images: Pick<
-      ListingImages,
-      "id" | "image_url" | "width" | "height"
-    >[];
+    listing_images: Omit<ListingImages, "created_at" | "listing_uuid">[];
   };
   type ListingPublicationStatus = ListingWithImages["publication_status"];
 

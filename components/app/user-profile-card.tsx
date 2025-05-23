@@ -1,7 +1,7 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { UserProfileCardProps } from "@/lib/prop.types";
+import { UserProfileCardProps } from "@/types/prop.types";
 import { RoleGate } from "./role-gate";
 
 export function UserProfileCard({ participants }: UserProfileCardProps) {
@@ -17,7 +17,7 @@ export function UserProfileCard({ participants }: UserProfileCardProps) {
   return (
     <main className="profile-card-details flex h-[75vh] flex-col gap-6 overflow-y-auto">
       <figure className="flex flex-col items-center gap-6">
-        <div className="border-border-secondary border p-1 rounded-full">
+        <div className="border-border-secondary rounded-full border p-1">
           <Avatar className="size-32.5 text-2xl">
             <AvatarImage
               className="rounded-full"

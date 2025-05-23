@@ -1,13 +1,13 @@
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-import { PURCHASE_TYPES } from "@/lib/pricing.config";
+import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import {
   retrieveActiveSubscription,
   fetchOrCreateCustomer,
 } from "@/app/actions";
 import { stripe } from "@/lib/stripe";
-import { ROLES } from "@/lib/app.config";
-import { PurchaseFormType } from "@/lib/form.types";
+import { ROLES } from "@/lib/config/app.config";
+import { PurchaseFormType } from "@/types/form.types";
 
 type CheckoutRequestBody = PurchaseFormType & {
   promoCode?: string;

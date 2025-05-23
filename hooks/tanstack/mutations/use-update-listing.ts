@@ -1,5 +1,5 @@
 import { updateListing } from "@/app/actions/supabase/listings";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateListing() {
@@ -28,12 +28,6 @@ export function useUpdateListing() {
       return updatedListing;
     },
     onSuccess: (_, variables) => {
-      console.log(
-        "before the mutation",
-        variables.userId,
-        variables.listingData.publication_status,
-      );
-
       //   Set the individual listing if you're using that query somewhere
       queryClient.setQueryData(
         ["listings", variables.listingUUID],
@@ -52,7 +46,6 @@ export function useUpdateListing() {
       );
 
       // TODO: REDUCE THIS TO ONE INVALIDATION INSTANCE THAT HANDLES WHICH EVER AFFECTED STATUS
-
       // Invalidate the user's published listings
       queryClient.invalidateQueries({
         queryKey: queryKeys.listings.published(variables.userId! ?? "public"),

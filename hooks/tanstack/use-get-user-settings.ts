@@ -1,5 +1,5 @@
 import { getUserSettings } from "@/app/actions/supabase/settings";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { useQuery } from "@tanstack/react-query";
 
 export function useGetUserSettings(userId: string | undefined) {

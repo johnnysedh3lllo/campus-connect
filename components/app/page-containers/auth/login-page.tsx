@@ -12,7 +12,7 @@ import { login } from "@/app/actions/supabase/onboarding";
 import { LoginForm } from "@/components/app/auth-forms";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
-import { LoginFormType } from "@/lib/form.types";
+import { LoginFormType } from "@/types/form.types";
 
 export default function LoginPage() {
   const router = useRouter();

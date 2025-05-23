@@ -1,6 +1,6 @@
 "use client";
 
-import { ModalProps } from "@/lib/prop.types";
+import { ModalProps } from "@/types/prop.types";
 import { Button } from "../../ui/button";
 import Image from "next/image";
 import { PlusIcon } from "@/public/icons/plus-icon";
@@ -58,7 +58,7 @@ export function WelcomeModal() {
     <>
       <RoleGate userRoleId={userRoleId} role="LANDLORD">
         <Modal {...LandlordWelcomeModalProps}>
-          <div className="flex flex-col w-full gap-6">
+          <div className="flex w-full flex-col gap-6">
             <Link href="/listings/create" className="w-full">
               <Button
                 onClick={() => setOpen(false)}

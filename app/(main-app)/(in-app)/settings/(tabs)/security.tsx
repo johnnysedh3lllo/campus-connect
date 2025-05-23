@@ -22,7 +22,7 @@ import { PasswordInput } from "@/components/app/password-input";
 
 // ASSETS
 import { Loader2 } from "lucide-react";
-import { ChangePasswordFormType } from "@/lib/form.types";
+import { ChangePasswordFormType } from "@/types/form.types";
 import { changePassword } from "@/app/actions/supabase/onboarding";
 import Link from "next/link";
 

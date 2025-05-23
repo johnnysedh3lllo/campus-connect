@@ -1,12 +1,12 @@
 "use client";
-import { PRICING } from "@/lib/pricing.config";
+import { PRICING } from "@/lib/config/pricing.config";
 import { formatCurrencyToLocale } from "@/lib/utils";
 
 import { Header } from "@/components/app/header";
 import { PlansCard } from "@/components/app/plans-card";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import { useUserStore } from "@/lib/store/user-store";
-import { ModalProps } from "@/lib/prop.types";
+import { ModalProps } from "@/types/prop.types";
 import Modal from "@/components/app/modals/modal";
 import { SadFaceIcon } from "@/public/icons/sad-face-icon";
 import { useSwitchToBasicModalStore } from "@/lib/store/switch-to-basic-modal-store";

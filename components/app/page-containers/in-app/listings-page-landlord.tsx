@@ -13,7 +13,7 @@ import { useGetUnpublishedListings } from "@/hooks/tanstack/use-get-unpublished-
 import { useGetDraftListings } from "@/hooks/tanstack/use-get-draft-listings";
 import ListingCard from "../../listing-card";
 import listingIllustration from "@/public/illustrations/illustration-listings.png";
-import { PublicationStatusType } from "@/lib/form.types";
+import { PublicationStatusType } from "@/types/form.types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ListingsCardGridSkeleton } from "../../skeletons/listings-card-grid-skeleton";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";

@@ -1,12 +1,11 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { PRICING } from "./pricing.config";
-import { CreditTierOption } from "./pricing.types";
+import { PRICING } from "@/lib/config/pricing.config";
+import { CreditTierOption } from "@/types/pricing.types";
 import { UserMetadata } from "@supabase/supabase-js";
 import { format, isBefore, subMonths, formatDistanceToNow } from "date-fns";
-import { Role, ROLES } from "./app.config";
+import { Role, ROLES } from "./config/app.config";
 import { z } from "zod";
-import { SUPPORTED_FILE_TYPES } from "./constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -225,11 +224,11 @@ export const clearLocalStorage = (storageName: string) => {
   localStorage.removeItem(storageName);
 };
 
-export const getImageUrls = (
-  images: Pick<ListingImages, "image_url" | "height" | "width">[],
-) => {
-  return images.map((image) => image.image_url);
-};
+// export const getImagePaths = (
+//   images: Omit<ListingImages, "created_at" | "listing_uuid">[],
+// ) => {
+//   return images.map((image) => image.url);
+// };
 
 export function getFilenameFromUrl(url: string): string {
   const pathname = new URL(url).pathname;

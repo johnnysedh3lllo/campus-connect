@@ -57,7 +57,7 @@ import {
   ResetPasswordProps,
   SelectRoleProps,
   VerifyOtpProps,
-} from "@/lib/prop.types";
+} from "@/types/prop.types";
 import {
   LoginFormType,
   RoleFormType,
@@ -65,7 +65,7 @@ import {
   OtpFormType,
   CreatePasswordFormType,
   ResetPasswordFormType,
-} from "@/lib/form.types";
+} from "@/types/form.types";
 import { resendSignUpOtp, signOut } from "@/app/actions/supabase/onboarding";
 
 const roleDetails = [

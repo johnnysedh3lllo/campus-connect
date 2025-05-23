@@ -3,7 +3,7 @@
 // UTILITIES
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { CreatePasswordFormType } from "@/lib/form.types";
+import { CreatePasswordFormType } from "@/types/form.types";
 import { useRouter } from "next/navigation";
 
 // COMPONENTS

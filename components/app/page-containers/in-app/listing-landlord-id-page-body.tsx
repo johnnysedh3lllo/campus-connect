@@ -36,7 +36,7 @@ export function ListingLandlordIdPageBody({
             Landlord’s Profile
           </h1>
           <p className="text-text-secondary flex gap-2 text-sm leading-6">
-            Have look at this landlord’s property listings
+            Have a look at this landlord’s property listings
           </p>
         </header>
       </section>

@@ -13,7 +13,7 @@ import {
 } from "@/components/app/auth-forms";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
-import { CreatePasswordFormType } from "@/lib/form.types";
+import { CreatePasswordFormType } from "@/types/form.types";
 import {
   // changePassword,
   createPassword,

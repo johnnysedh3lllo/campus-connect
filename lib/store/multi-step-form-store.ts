@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { MultiStepFormType } from "../form.types";
+import { MultiStepFormType } from "@/types/form.types";
 
 const initialData: MultiStepFormType = {
   roleId: "3",

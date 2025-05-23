@@ -13,7 +13,7 @@ import {
 
 import { UserProfileCardMobile } from "./user-profile-card-mobile";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import { MessageHeaderProps, ModalProps } from "@/lib/prop.types";
+import { MessageHeaderProps, ModalProps } from "@/types/prop.types";
 import { BinIcon } from "@/public/icons/bin-icon";
 import Modal from "@/components/app/modals/modal";
 import { DeleteChatBtn } from "./action-buttons";

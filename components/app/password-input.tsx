@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "../ui/input";
 import { Eye, EyeOff } from "lucide-react";
-import { PasswordInputProps } from "@/lib/prop.types";
+import { PasswordInputProps } from "@/types/prop.types";
 import { useShowPasswordState } from "@/lib/store/password-visibility-store";
 
 export function PasswordInput({ field, ...props }: PasswordInputProps) {

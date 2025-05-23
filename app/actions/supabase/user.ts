@@ -1,7 +1,7 @@
 "use server";
 import { createClient, ENVType } from "@/utils/supabase/server";
 import { User, UserResponse } from "@supabase/supabase-js";
-import { ProfileInfoFormType } from "@/lib/form.types";
+import { ProfileInfoFormType } from "@/types/form.types";
 
 export async function getUser() {
   const supabase = await createClient();

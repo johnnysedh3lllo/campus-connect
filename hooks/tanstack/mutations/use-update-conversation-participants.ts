@@ -1,6 +1,6 @@
 import { updateConversationParticipants } from "@/app/actions/supabase/messages";
-import { ConversationFormType } from "@/lib/form.types";
-import { queryKeys } from "@/lib/query-keys.config";
+import { ConversationFormType } from "@/types/form.types";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateConversationParticipants() {

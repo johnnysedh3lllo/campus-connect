@@ -1,13 +1,13 @@
 "use strict";
 
 import { z } from "zod";
-import { validateFileSizes, validateFileTypes } from "./app.config";
+import { validateFileSizes, validateFileTypes } from "./config/app.config";
 import {
   MAX_LISTING_IMAGES,
   MIN_LISTING_IMAGE_SIZE,
   MAX_TOTAL_LISTING_IMAGE_SIZE,
 } from "./constants";
-import { PhotoType } from "./form.types";
+import { PhotoType } from "@/types/form.types";
 
 // FORM SCHEMAS
 export const RoleEnum = z.enum(["1", "2", "3"]); // TODO: REFACTOR THIS TO BE A NUMBER INSTEAD OF STRING
@@ -213,7 +213,9 @@ export const PublicationStatusEnum = z.enum([
 export const photoSchema = z.object({
   id: z.number().optional(), // DB ID (optional)
   file: z.instanceof(File),
+  url: z.string().optional(), // Supabase url (for existing images)
   path: z.string().optional(), // Supabase path (for existing images)
+  fullPath: z.string().optional(), // Supabase fullPath (for existing images)
   previewUrl: z.string().optional(), // for rendering preview
 });
 export const listingFormSchema = z.object({

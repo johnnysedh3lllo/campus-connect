@@ -6,14 +6,17 @@ import firstPlaceIllustration from "@/public/illustrations/first-place-medal-ill
 import secondPlaceIllustration from "@/public/illustrations/second-place-medal-illustration.png";
 import thirdPlaceIllustration from "@/public/illustrations/third-place-medal-illustration.png";
 import Image from "next/image";
-import { PRICING, PURCHASE_TYPES } from "@/lib/pricing.config";
+import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { formatCurrencyToLocale, formatUsersName } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useGetUser } from "@/hooks/tanstack/use-get-user";
 import { purchasePackageFormSchema } from "@/lib/form.schemas";
-import { PurchasePackageFormType, UserValidationType } from "@/lib/form.types";
+import {
+  PurchasePackageFormType,
+  UserValidationType,
+} from "@/types/form.types";
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";

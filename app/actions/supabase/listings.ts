@@ -1,9 +1,10 @@
 "use server";
 
 import { upsertListingSchema } from "@/lib/form.schemas";
-import { UpsertListingType } from "@/lib/form.types";
+import { UpsertListingType } from "@/types/form.types";
 import { formatCurrency } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/server";
+import { ListingImageMetadata } from "@/types/config.types";
 
 export async function getListings(
   userId: string | undefined,
@@ -21,7 +22,7 @@ export async function getListings(
   try {
     let query = supabase
       .from("listings")
-      .select("*, listing_images(id, image_url, width, height)");
+      .select("*, listing_images(id, url, path, full_path, width, height)");
 
     if (userId) query = query.eq("landlord_id", userId);
     if (pubStatus) query = query.eq("publication_status", pubStatus);
@@ -58,7 +59,7 @@ export async function getListingByUUID(listingUUID: string) {
       .from("listings")
       .select(
         `*, 
-        listing_images(id ,image_url, width, height), 
+        listing_images(id, url, path, full_path, width, height), 
         users(id, first_name, last_name, role_id, avatar_url)`,
       )
       .eq("uuid", listingUUID)
@@ -159,6 +160,8 @@ export async function updateListing(
   const supabase = await createClient();
 
   try {
+    // console.log("update listing", listingData);
+
     const { data, error } = await supabase
       .from("listings")
       .update(listingData)
@@ -224,11 +227,14 @@ export async function deleteListing(
   }
 }
 
-export async function deleteListingImagesInStorage(imageUrls: string[]) {
+export async function deleteListingImages(imageIds: number[]) {
   const supabase = await createClient();
 
   try {
-    const { error } = await supabase.storage.from("avatars").remove(imageUrls);
+    const { error } = await supabase
+      .from("listing_images")
+      .delete()
+      .in("id", imageIds);
 
     if (error) {
       throw error;
@@ -240,19 +246,41 @@ export async function deleteListingImagesInStorage(imageUrls: string[]) {
       success: true,
     };
   } catch (error) {
-    console.log(error);
+    console.log("error deleting listing images", error);
     return {
       success: false,
-      error,
+      error: "There was an error deleting listing images",
     };
   }
 }
 
-export type ListingImageMetadata = {
-  url: string;
-  width: number;
-  height: number;
-};
+export async function deleteListingImagesInStorage(imagePaths: string[]) {
+  const supabase = await createClient();
+
+  try {
+    console.log("to be deleted images", imagePaths);
+
+    const { error } = await supabase.storage
+      .from("listing-images")
+      .remove(imagePaths);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log("Images have be deleted successfully");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    console.log("error deleting listing images", error);
+    return {
+      success: false,
+      error: "There was an error deleting listing images",
+    };
+  }
+}
 
 export async function upsertListingImages(
   listingUUID: ListingImages["listing_uuid"] | undefined,
@@ -267,7 +295,9 @@ export async function upsertListingImages(
       (image) => {
         return {
           listing_uuid: listingUUID,
-          image_url: image.url,
+          url: image.url,
+          path: image.path,
+          full_path: image.fullPath,
           width: image.width,
           height: image.height,
         } as ListingImagesInsert;
@@ -277,7 +307,7 @@ export async function upsertListingImages(
     const { data, error } = await supabase
       .from("listing_images")
       .upsert(listingImageInsert, {
-        onConflict: "listing_uuid,image_url",
+        onConflict: "listing_uuid,url",
         ignoreDuplicates: true,
       })
       .select();

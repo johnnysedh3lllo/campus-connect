@@ -18,15 +18,15 @@ import {
   ListingFormType,
   PhotosFormType,
   UpsertListingType,
-} from "@/lib/form.types";
-import { ModalProps } from "@/lib/prop.types";
+} from "@/types/form.types";
+import { ModalProps } from "@/types/prop.types";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { useCreateListingsStore } from "@/lib/store/create-listings-store";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { XLarge } from "@/public/icons/x-large-icon";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useUploadListing } from "@/hooks/tanstack/mutations/use-upload-listing";
+import { useCreateListing } from "@/hooks/tanstack/mutations/use-create-listing";
 import { useUpdateCreditRecord } from "@/hooks/tanstack/mutations/use-update-credit-record";
 import { toast } from "@/hooks/use-toast";
 import { v4 as uuidv4 } from "uuid";
@@ -97,7 +97,7 @@ export default function CreateListingPage() {
   };
 
   // PREVIEW FORM
-  const createListingMutation = useUploadListing();
+  const createListingMutation = useCreateListing();
   const updateCreditMutation = useUpdateCreditRecord();
   const idempotencyKey = storeData.idempotencyKey;
 

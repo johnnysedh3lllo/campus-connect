@@ -7,7 +7,7 @@ import {
   OtpFormType,
   RoleFormType,
   UserDetailsFormType,
-} from "@/lib/form.types";
+} from "@/types/form.types";
 import { useRouter } from "next/navigation";
 
 // COMPONENTS

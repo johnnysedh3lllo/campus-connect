@@ -31,11 +31,11 @@ import {
 } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { buyCreditsFormSchema } from "@/lib/form.schemas";
-import { BuyCreditsFormSchemaType } from "@/lib/form.types";
+import { BuyCreditsFormSchemaType } from "@/types/form.types";
 import { formatUsersName, getCreditTiers } from "@/lib/utils";
-import { CreditTierOption } from "@/lib/pricing.types";
+import { CreditTierOption } from "@/types/pricing.types";
 import { Loader2 } from "lucide-react";
-import { PURCHASE_TYPES } from "@/lib/pricing.config";
+import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { loadStripe } from "@stripe/stripe-js";
 import { CreditBalance } from "@/components/app/credit-balance";
 import { useGetUser } from "@/hooks/tanstack/use-get-user";

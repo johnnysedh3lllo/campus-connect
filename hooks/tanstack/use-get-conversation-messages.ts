@@ -2,7 +2,7 @@ import { getConversationMessages } from "@/app/actions/supabase/messages";
 import { notifyManager, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/utils/supabase/client";
 import { useEffect } from "react";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 
 export function useGetConversationMessages(
   conversationId: string,

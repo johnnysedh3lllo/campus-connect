@@ -2,7 +2,7 @@ import {
   deleteListing,
   deleteListingImagesInStorage,
 } from "@/app/actions/supabase/listings";
-import { queryKeys } from "@/lib/query-keys.config";
+import { queryKeys } from "@/lib/config/query-keys.config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useDeleteListing() {
@@ -12,18 +12,21 @@ export function useDeleteListing() {
     mutationFn: async ({
       userId,
       listingUUID,
-      imageUrls,
+      imagePaths,
     }: {
       userId: string | null;
       listingUUID: string | undefined;
       publicationStatus: ListingPublicationStatus | undefined;
-      imageUrls: string[];
+      imagePaths: string[];
     }) => {
       // delete images in storage
-      const deletedImages = await deleteListingImagesInStorage(imageUrls);
 
-      if (!deletedImages.success) {
-        throw deletedImages?.error || "Failed to delete listing images";
+      if (imagePaths.length > 0) {
+        const deletedImages = await deleteListingImagesInStorage(imagePaths);
+
+        if (!deletedImages.success) {
+          throw deletedImages?.error || "Failed to delete listing images";
+        }
       }
 
       // delete listing

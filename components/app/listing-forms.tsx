@@ -36,7 +36,7 @@ import {
   ListingFormType,
   PhotosFormType,
   PhotoType,
-} from "@/lib/form.types";
+} from "@/types/form.types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CloudArrowUpIcon } from "@/public/icons/cloud-arrow-up-icon";
@@ -48,7 +48,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { EditListingsState } from "@/lib/store/edit-listings-store";
 import { PhotoCarouselGeneric } from "./photo-carousel-generic";
-import { validateFileSizes, validateFileTypes } from "@/lib/app.config";
+import { validateFileSizes, validateFileTypes } from "@/lib/config/app.config";
 import {
   MAX_LISTING_IMAGES,
   MAX_TOTAL_LISTING_IMAGE_SIZE,
@@ -301,7 +301,9 @@ export function PhotoUploadForm({
         ({
           id: undefined,
           file,
+          url: undefined,
           path: undefined,
+          fullPath: undefined,
           previewUrl: undefined,
         }) as PhotoType,
     );
@@ -623,7 +625,6 @@ export function PreviewPage({
       );
       setPreviewUrls(photoPreviewUrls);
 
-      console.log(photos);
       return () => {
         photoPreviewUrls?.forEach((url) => URL.revokeObjectURL(url));
       };
