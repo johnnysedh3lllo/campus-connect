@@ -1,6 +1,6 @@
 import { LoginPrompt } from "./log-in-prompt";
+import { OAuthButtons } from "./oauth-buttons";
 import { SeparatorMain } from "./separator-main";
-import { Apple, Facebook, Google } from "./social-logos";
 
 export function OnboardingFooter() {
   return (
@@ -9,11 +9,7 @@ export function OnboardingFooter() {
 
       <SeparatorMain />
 
-      <div className="flex gap-3">
-        <Google />
-        <Facebook />
-        <Apple />
-      </div>
+      <OAuthButtons />
     </footer>
   );
 }

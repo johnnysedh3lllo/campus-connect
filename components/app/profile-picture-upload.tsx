@@ -42,6 +42,8 @@ export function ProfilePictureUpload({
     );
 
     if (!isValidImageFileType) {
+
+      console.log(fileList[0].size)
       toast({
         variant: "destructive",
         description: validateFileTypes.message,

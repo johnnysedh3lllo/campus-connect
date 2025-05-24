@@ -12,7 +12,7 @@ import { EditIcon } from "@/public/icons/edit-icon";
 import { KabobIcon } from "@/public/icons/kabob-icon";
 import { LocationIcon } from "@/public/icons/location-icon";
 import listingIllustration from "@/public/illustrations/illustration-listings.png";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "../../modals/modal";
 import { ModalProps } from "@/types/prop.types";
 import Image from "next/image";

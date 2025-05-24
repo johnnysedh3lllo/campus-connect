@@ -202,6 +202,7 @@ export default function ListingEditPageBody({
       </Header>
 
       <div className="max-w-screen-max-xl mx-auto grid w-full grid-cols-1 gap-6 p-4 sm:gap-12 sm:px-12 sm:pt-10 md:grid-cols-[.7fr_4fr] md:px-12 lg:overflow-x-hidden lg:overflow-y-auto">
+        {/* TODO: ABSTRACT THIS TO A FORM STEP INDICATOR COMPONENT */}
         <div className="bg-background sticky top-0 flex gap-1 py-4 sm:hidden lg:pe-4">
           <Badge variant="outline">{`${step + 1}/${steps.length}`}</Badge>
 
@@ -215,11 +216,9 @@ export default function ListingEditPageBody({
             ))}
           </div>
         </div>
-
         <div>
           <div className="hidden auto-cols-auto grid-flow-col items-center gap-3 sm:grid md:grid-flow-row md:auto-rows-auto md:items-start">
             {steps.map((item, index) => (
-              // TODO: ABSTRACT THIS
               <div
                 key={index}
                 className="grid auto-cols-auto grid-flow-col items-center gap-3 md:grid-flow-row md:items-start md:self-start"
@@ -251,6 +250,7 @@ export default function ListingEditPageBody({
             ))}
           </div>
         </div>
+        {/* TODO: .... */}
 
         <AnimationWrapper
           variants={formVariants}

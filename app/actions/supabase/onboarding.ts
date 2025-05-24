@@ -22,6 +22,7 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { Provider } from "@supabase/supabase-js";
 
 export async function signUpWithOtp(userInfo: SignUpFormType) {
   const supabase = await createClient();
@@ -75,6 +76,25 @@ export async function signUpWithOtp(userInfo: SignUpFormType) {
     if (error instanceof Error) {
       return { success: false, error };
     }
+  }
+}
+
+export async function signInWithOAuth(provider: Provider) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: provider,
+    options: {
+      // redirectTo: `${process.env.SITE_URL}/auth/callback/?redirect_to=/listings?modalId=welcome`,
+      // scopes: "/auth/userinfo.email, /auth/userinfo.profile, openid",
+    },
+  });
+
+  console.log("oauth data:", data);
+  console.log("oauth error:", error);
+
+  if (data.url) {
+    redirect(data.url);
   }
 }
 
@@ -245,6 +265,7 @@ export async function resetPassword(formData: ResetPasswordFormType) {
       };
     }
 
+    // TODO: USE ENV INSTEAD
     const origin = (await headers()).get("origin");
 
     if (!email) {

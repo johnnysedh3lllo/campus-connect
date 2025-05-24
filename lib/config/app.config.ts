@@ -50,7 +50,7 @@ export const validateFileTypes = {
 export const validateFileSizes = {
   check: areValidFileSizes,
   message: {
-    profile: "Image size must be at least 1MB and must not exceed 4MB",
+    profile: "Image size must be at least 500KB and must not exceed 1MB",
     listings: "Image sizes must be at least 1MB and must not exceed 4MB",
   },
 };

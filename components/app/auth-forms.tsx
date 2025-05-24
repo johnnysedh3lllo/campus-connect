@@ -39,7 +39,6 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 
 // ASSETS
-import { Apple, Facebook, Google } from "@/components/app/social-logos";
 import houseIcon from "@/public/icons/icon-house.svg";
 import tenantIcon from "@/public/icons/icon-tenant.svg";
 import { Loader2 } from "lucide-react";
@@ -67,6 +66,7 @@ import {
   ResetPasswordFormType,
 } from "@/types/form.types";
 import { resendSignUpOtp, signOut } from "@/app/actions/supabase/onboarding";
+import { OAuthButtons } from "./oauth-buttons";
 
 const roleDetails = [
   {
@@ -173,12 +173,8 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
 
         <footer className="flex w-full flex-col items-center gap-3">
           <LoginPrompt callToAction="Don't have an account?" route="/sign-up" />
-          {/* <SeparatorMain />
-          <div className="flex gap-3">
-            <Google />
-            <Facebook />
-            <Apple />
-          </div> */}
+          <SeparatorMain />
+          {/* <OAuthButtons /> */}
         </footer>
       </div>
     </section>
@@ -421,14 +417,8 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
 
       <footer className="flex flex-col items-center gap-6">
         <LoginPrompt callToAction="Already have an account?" route="/log-in" />
-        {/* 
         <SeparatorMain />
-
-        <div className="flex gap-3">
-          <Google />
-          <Facebook />
-          <Apple />
-        </div> */}
+        {/* <OAuthButtons /> */}
       </footer>
     </div>
   );

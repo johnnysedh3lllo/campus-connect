@@ -1,6 +1,6 @@
 import { ROLES } from "@/lib/config/app.config";
 import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse, URLPattern } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 export const updateSession = async (request: NextRequest) => {
   // Create an unmodified response
@@ -36,6 +36,9 @@ export const updateSession = async (request: NextRequest) => {
   // This will refresh session if expired - required for Server Components
   // https://supabase.com/docs/guides/auth/server-side/nextjs
   const user = await supabase.auth.getUser();
+
+  // console.log("in middleware:", user);
+
   const userRoleId = +user?.data?.user?.user_metadata.role_id;
 
   // ROUTE PROTECTION
@@ -94,20 +97,6 @@ export const updateSession = async (request: NextRequest) => {
       return NextResponse.redirect(new URL("/listings", request.url));
     }
   }
-
-  // const tenantAllowedRegex: RegExp = /^\/listings\/[^\/]+\/[^\/]+$/;
-  // if (tenantAllowedRegex.test(request.nextUrl.pathname)) {
-  //   if (user.error) {
-  //     return NextResponse.redirect(new URL("/log-in", request.url));
-  //   }
-
-  //   if (userRoleId === ROLES.LANDLORD) {
-  //     // Strip off landlordId from the end and redirect
-  //     const pathParts = request.nextUrl.pathname.split("/");
-  //     const newPath = `/listings/${pathParts[2]}`;
-  //     return NextResponse.redirect(new URL(newPath, request.url));
-  //   }
-  // }
 
   if (request.nextUrl.pathname === "/plans") {
     if (user.error) {
