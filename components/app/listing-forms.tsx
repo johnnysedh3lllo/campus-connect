@@ -48,13 +48,20 @@ import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { EditListingsState } from "@/lib/store/edit-listings-store";
 import { PhotoCarouselGeneric } from "./photo-carousel-generic";
-import { validateFileSizes, validateFileTypes } from "@/lib/config/app.config";
+import { validateImages } from "@/lib/config/app.config";
 import {
+  ASPECT_RATIO_TOLERANCE,
+  LISTING_IMAGE_ASPECT_RATIO,
+  MAX_LISTING_IMAGE_HEIGHT,
+  MAX_LISTING_IMAGE_SIZE,
+  MAX_LISTING_IMAGE_WIDTH,
   MAX_LISTING_IMAGES,
   MAX_TOTAL_LISTING_IMAGE_SIZE,
+  MIN_LISTING_IMAGE_HEIGHT,
   MIN_LISTING_IMAGE_SIZE,
+  MIN_LISTING_IMAGE_WIDTH,
 } from "@/lib/constants";
-import { Skeleton } from "../ui/skeleton";
+import { EmptyImageCarousel } from "./empty-image-carousel";
 
 export function HomeDetailsForm({
   defaultValues,
@@ -144,7 +151,7 @@ export function HomeDetailsForm({
           )}
         />
 
-        {/* Home Type Select */}
+        {/* Home Type Selection */}
         <FormField
           control={form.control}
           name="listingType"
@@ -235,7 +242,10 @@ export function HomeDetailsForm({
           >
             Back
           </Button>
-          <Button type="submit" className="w-full sm:w-50">
+          <Button
+            type="submit"
+            className="w-full transition-all duration-150 sm:w-50"
+          >
             Next
           </Button>
         </div>
@@ -259,7 +269,7 @@ export function PhotoUploadForm({
   });
 
   const {
-    formState: { errors, isValid },
+    formState: { isValid },
     setValue,
     watch,
   } = form;
@@ -290,12 +300,66 @@ export function PhotoUploadForm({
     };
   }, [defaultValues]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     const selectedFiles = Array.from(files);
 
+    // CHECK 1: if each selected file is a valid file type
+    const areValidFileTypes = validateImages.types.check(selectedFiles);
+
+    if (!areValidFileTypes) {
+      toast({
+        variant: "destructive",
+        description: validateImages.types.message.default,
+      });
+      return;
+    }
+
+    // CHECK 2: if each selected file matches individual size constraint
+    const areEachValidFileSize = validateImages.sizes.single.check(
+      selectedFiles,
+      MIN_LISTING_IMAGE_SIZE,
+      MAX_LISTING_IMAGE_SIZE,
+    );
+
+    if (!areEachValidFileSize) {
+      toast({
+        variant: "destructive",
+        description: validateImages.sizes.single.message.listings,
+      });
+      return;
+    }
+
+    // CHECK 3: if each selected file matches image dimension constraints
+    const validateDimensionResult = await Promise.all(
+      selectedFiles.map((file) =>
+        validateImages.dimensions.check(
+          file,
+          LISTING_IMAGE_ASPECT_RATIO,
+          ASPECT_RATIO_TOLERANCE,
+          MIN_LISTING_IMAGE_WIDTH,
+          MAX_LISTING_IMAGE_WIDTH,
+          MIN_LISTING_IMAGE_HEIGHT,
+          MAX_LISTING_IMAGE_HEIGHT,
+        ),
+      ),
+    );
+
+    const areValidDimensions = validateDimensionResult.every(
+      (isValid) => isValid,
+    );
+
+    if (!areValidDimensions) {
+      toast({
+        variant: "destructive",
+        description: validateImages.dimensions.message.default,
+      });
+      return;
+    }
+
+    // CHECK 4: if total file size does exceeds total size constraint
     const selectedFilesTransformed = selectedFiles.map(
       (file) =>
         ({
@@ -307,48 +371,35 @@ export function PhotoUploadForm({
           previewUrl: undefined,
         }) as PhotoType,
     );
+    const combinedFiles = [...photos, ...selectedFilesTransformed];
 
-    const currentFiles = photos.filter((p) => p.file instanceof File);
-    const currentUrls = previewUrls.filter(
-      (_, i) => typeof photos[i] === "string",
+    const isValidTotalSize = validateImages.sizes.multiple.check(
+      combinedFiles.map((file) => file.file),
+      MIN_LISTING_IMAGE_SIZE,
+      MAX_TOTAL_LISTING_IMAGE_SIZE,
     );
 
-    const combinedFiles = [...currentFiles, ...selectedFilesTransformed];
-
-    if (combinedFiles.length + currentUrls.length > MAX_LISTING_IMAGES) {
+    if (!isValidTotalSize) {
       toast({
         variant: "destructive",
-        description: "You can only upload a maximum of 10 photos",
+        description: validateImages.sizes.multiple.message.listings,
       });
       return;
     }
 
-    if (!validateFileTypes.check(selectedFiles)) {
+    // CHECK 5: if total amount of images do not exceed constraint
+    if (combinedFiles.length > MAX_LISTING_IMAGES) {
+      console.log();
       toast({
         variant: "destructive",
-        description: validateFileTypes.message,
-      });
-      return;
-    }
-
-    if (
-      !validateFileSizes.check(
-        combinedFiles.map((file) => file.file),
-        MIN_LISTING_IMAGE_SIZE,
-        MAX_TOTAL_LISTING_IMAGE_SIZE,
-      )
-    ) {
-      toast({
-        variant: "destructive",
-        description: validateFileSizes.message.listings,
+        description: `You can only upload a maximum of ${MAX_LISTING_IMAGES} photos`,
       });
       return;
     }
 
     const newUrls = selectedFiles.map((file) => URL.createObjectURL(file));
-    const newPhotos = [...photos, ...selectedFilesTransformed];
 
-    setValue("photos", newPhotos, { shouldValidate: true });
+    setValue("photos", combinedFiles, { shouldValidate: true });
     setPreviewUrls([...previewUrls, ...newUrls]);
   };
 
@@ -415,7 +466,7 @@ export function PhotoUploadForm({
                         id="file-upload"
                         type="file"
                         multiple
-                        accept="image/jpeg,image/png"
+                        accept="image/jpg, image/jpeg ,image/png"
                         className="sr-only"
                         onChange={handleFileChange}
                         onClick={(e) => e.stopPropagation()}
@@ -432,10 +483,7 @@ export function PhotoUploadForm({
           {photos.length > 0 ? (
             <PhotoCarousel photos={previewUrls} onRemove={removePhoto} />
           ) : (
-            <div className="flex flex-col gap-6">
-              <Skeleton className="h-6 w-32 rounded-md" />
-              <Skeleton className="h-70 w-full rounded-md" />
-            </div>
+            <EmptyImageCarousel text="Uploaded images will appear here" />
           )}
         </div>
 
@@ -450,7 +498,6 @@ export function PhotoUploadForm({
             Back
           </Button>
           <Button
-            disabled={!isValid}
             type="submit"
             className="w-full transition-all duration-150 sm:w-50"
           >
@@ -582,7 +629,10 @@ export function PricingForm({
           >
             Back
           </Button>
-          <Button type="submit" className="w-full sm:w-50">
+          <Button
+            type="submit"
+            className="w-full transition-all duration-150 sm:w-50"
+          >
             Next
           </Button>
         </div>
@@ -637,17 +687,19 @@ export function PreviewPage({
   });
 
   const {
-    formState: { isSubmitting, isSubmitted, isValid },
+    formState: { isSubmitting, isValid },
   } = form;
 
-  // TODO: MOVE TO RESPECTIVE FORMS (CREATE OR EDIT LISTINGS)
-  // if (isSubmitted && !isValid) {
-  //   toast({
-  //     variant: "destructive",
-  //     title: "Incomplete form",
-  //     description: "Please review form before submission",
-  //   });
-  // }
+  const handleClick = () => {
+    // TODO: MOVE TO RESPECTIVE FORMS (CREATE OR EDIT LISTINGS)
+    if (!isValid) {
+      toast({
+        variant: "destructive",
+        title: "Incomplete form",
+        description: "Please review form before submitting",
+      });
+    }
+  };
 
   return (
     <div className="flex w-full flex-col gap-6 md:max-w-202">
@@ -656,11 +708,7 @@ export function PreviewPage({
       </h2>
 
       {!previewUrls || previewUrls.length === 0 ? (
-        <div className="border-0.6 border-input/50 rounded-sm px-4 py-12">
-          <h3 className="text-center text-2xl leading-6 font-medium text-gray-700">
-            Please re-upload your images
-          </h3>
-        </div>
+        <EmptyImageCarousel text="Please re-upload your images" />
       ) : (
         <section className="flex flex-col gap-6">
           <PhotoCarouselGeneric photos={previewUrls} />
@@ -731,7 +779,7 @@ export function PreviewPage({
           >
             <Button
               type="submit"
-              disabled={isSubmitting} // TODO: FIND A BETTER WAY TO HANDLE THIS DISABLED STATE HERE
+              onClick={handleClick} // TODO: FIND A BETTER WAY TO HANDLE THIS DISABLED STATE HERE
               className="w-full transition-all duration-150 sm:w-50"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}

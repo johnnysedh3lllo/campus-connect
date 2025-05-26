@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 import { ProfilePictureUploadProps } from "@/types/prop.types";
 import { ProfilePictureUploadModal } from "./modals/profile-picture-upload-modal";
 import { toast } from "@/hooks/use-toast";
-import { validateFileSizes, validateFileTypes } from "@/lib/config/app.config";
+import { validateImages } from "@/lib/config/app.config";
 import {
   MAX_PROFILE_IMAGE_SIZE,
   MIN_PROFILE_IMAGE_SIZE,
@@ -33,20 +33,18 @@ export function ProfilePictureUpload({
 
     const fileList = Array.from(files);
 
-    const isValidImageFileType = validateFileTypes.check(fileList);
+    const isValidImageFileType = validateImages.types.check(fileList);
 
-    const isValidImageSize = validateFileSizes.check(
+    const isValidImageSize = validateImages.sizes.single.check(
       fileList,
       MIN_PROFILE_IMAGE_SIZE,
       MAX_PROFILE_IMAGE_SIZE,
     );
 
     if (!isValidImageFileType) {
-
-      console.log(fileList[0].size)
       toast({
         variant: "destructive",
-        description: validateFileTypes.message,
+        description: validateImages.types.message.default,
         showCloseButton: false,
       });
       return;
@@ -55,7 +53,7 @@ export function ProfilePictureUpload({
     if (!isValidImageSize) {
       toast({
         variant: "destructive",
-        description: validateFileSizes.message.profile,
+        description: validateImages.sizes.single.message.profile,
         showCloseButton: false,
       });
       return;

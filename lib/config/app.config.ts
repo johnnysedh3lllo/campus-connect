@@ -28,9 +28,19 @@ export const navLinksMobile = [
   { href: "/settings", text: "Settings", icon: SettingsIcon },
 ];
 
-// TODO: FIND OUT WHY THIS IS THROWING ERRORS
+// TODO: FIND OUT WHY THIS IS THROWING ERRORS: Something to do with dependency graphs
 const areValidFileTypes = (files: File[]) =>
   files.every((file) => SUPPORTED_FILE_TYPES.includes(file.type));
+
+const isValidFileSize = (
+  files: File[],
+  minImageSize: number,
+  maxImageSize: number,
+) => {
+  return files.every(
+    (file) => file.size >= minImageSize && file.size <= maxImageSize,
+  );
+};
 
 const areValidFileSizes = (
   files: File[],
@@ -42,16 +52,71 @@ const areValidFileSizes = (
   return totalSize >= minImageSize && totalSize <= maxImageSize;
 };
 
-export const validateFileTypes = {
-  check: areValidFileTypes,
-  message: "Only upload supported file formats (JPEG, PNG, WEBP)",
+const isValidDimension = (
+  file: File,
+  aspRatio: number,
+  ratioTolerance: number,
+  minImageWidth: number,
+  maxImageWidth: number,
+  minImageHeight: number,
+  maxImageHeight: number,
+): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      img.onload = () => {
+        const width = img.width;
+        const height = img.height;
+        const aspectRatio = width / height;
+
+        const isValidAspectRatio =
+          Math.abs(aspectRatio - aspRatio) < ratioTolerance;
+
+        const isValidDimension =
+          width >= minImageWidth &&
+          width <= maxImageWidth &&
+          height >= minImageHeight &&
+          height <= maxImageHeight;
+
+        resolve(isValidDimension && isValidAspectRatio);
+      };
+
+      img.src = e.target?.result as string;
+    };
+
+    reader.readAsDataURL(file);
+  });
 };
 
-export const validateFileSizes = {
-  check: areValidFileSizes,
-  message: {
-    profile: "Image size must be at least 500KB and must not exceed 1MB",
-    listings: "Image sizes must be at least 1MB and must not exceed 4MB",
+export const validateImages = {
+  types: {
+    check: areValidFileTypes,
+    message: {
+      default: "Ensure only supported formats are uploaded (JPEG, PNG, WEBP)",
+    },
+  },
+  sizes: {
+    single: {
+      check: isValidFileSize,
+      message: {
+        profile: "Ensure image size is between 1MB to 2MB",
+        listings: "Ensure each image size is between 1MB to 4MB",
+      },
+    },
+    multiple: {
+      check: areValidFileSizes,
+      message: {
+        listings: "Total Image size must not exceed 40MB",
+      },
+    },
+  },
+  dimensions: {
+    check: isValidDimension,
+    message: {
+      default: "Ensure image dimensions are between 1200x800 to 2400x1600.",
+    },
   },
 };
 

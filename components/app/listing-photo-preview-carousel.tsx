@@ -58,7 +58,7 @@ export function PhotoCarousel({ photos, onRemove }: PhotoCarouselProps) {
   return (
     <div className="relative flex w-full flex-col gap-6">
       <div className="text-sm font-medium">
-        {totalPhotos}/10 Photos uploaded
+        {totalPhotos}/10 Photos
       </div>
 
       <div className="flex items-center">

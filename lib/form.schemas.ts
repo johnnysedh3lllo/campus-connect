@@ -1,7 +1,7 @@
 "use strict";
 
 import { z } from "zod";
-import { validateFileSizes, validateFileTypes } from "./config/app.config";
+import { validateImages } from "./config/app.config";
 import {
   MAX_LISTING_IMAGES,
   MIN_LISTING_IMAGE_SIZE,
@@ -221,8 +221,8 @@ export const photoSchema = z.object({
 export const listingFormSchema = z.object({
   title: z
     .string({ required_error: "Title is required" })
-    .min(1, { message: "This is a required field" })
-    .max(150, { message: "Can't be longer than 150 characters" }),
+    .min(20, { message: "A minimum of 20 characters is required." })
+    .max(150, { message: "Title cannot exceed 150 characters" }),
   noOfBedrooms: z
     .number({
       required_error: "Number of bedrooms is required",
@@ -242,18 +242,18 @@ export const listingFormSchema = z.object({
     .max(MAX_LISTING_IMAGES, {
       message: "You can upload a maximum of 10 photos",
     })
-    .refine((photos) => validateFileTypes.check(photos.map((p) => p.file)), {
-      message: validateFileTypes.message,
+    .refine((photos) => validateImages.types.check(photos.map((p) => p.file)), {
+      message: validateImages.types.message.default,
     })
     .refine(
       (photos): photos is PhotoType[] =>
-        validateFileSizes.check(
+        validateImages.sizes.multiple.check(
           photos.map((p) => p.file),
           MIN_LISTING_IMAGE_SIZE,
           MAX_TOTAL_LISTING_IMAGE_SIZE,
         ),
       {
-        message: validateFileSizes.message.listings,
+        message: validateImages.sizes.multiple.message.listings,
       },
     ),
   paymentFrequency: PaymentFrequencyEnum,

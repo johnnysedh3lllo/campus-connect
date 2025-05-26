@@ -9,7 +9,7 @@ export function OnboardingFooter() {
 
       <SeparatorMain />
 
-      <OAuthButtons />
+      {/* <OAuthButtons /> */}
     </footer>
   );
 }
