@@ -73,6 +73,7 @@ export default function CreateListingPage() {
   const homeDetailsDefaultValue: HomeDetailsFormType = {
     title: storeData.title ?? "",
     noOfBedrooms: storeData.noOfBedrooms ?? 1,
+    noOfBathrooms: storeData.noOfBathrooms ?? 1,
     listingType: storeData.listingType ?? "apartment",
     location: storeData.location ?? "",
     description: storeData.description ?? "",
@@ -87,6 +88,7 @@ export default function CreateListingPage() {
   const previewDefaultValues: ListingFormType = {
     title: storeData.title ?? "",
     noOfBedrooms: storeData.noOfBedrooms ?? 1,
+    noOfBathrooms: storeData.noOfBathrooms ?? 1,
     listingType: storeData.listingType ?? "apartment",
     location: storeData.location ?? "",
     description: storeData.description ?? "",
@@ -120,6 +122,7 @@ export default function CreateListingPage() {
       const listingDetails: UpsertListingType = {
         title: values.title,
         noOfBedrooms: values.noOfBedrooms,
+        noOfBathrooms: values.noOfBathrooms,
         listingType: values.listingType,
         location: values.location,
         paymentFrequency: values.paymentFrequency,

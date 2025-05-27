@@ -241,3 +241,9 @@ export async function fileFromUrl(url: string): Promise<File> {
   const filename = getFilenameFromUrl(url);
   return new File([blob], filename, { type: blob.type });
 }
+
+export const pluralize = (data: number | undefined, noun: string) => {
+  if (typeof data !== "number") return "";
+  const pluralNoun = data !== 1 ? `${noun}s` : noun;
+  return `${data} ${pluralNoun}`;
+};

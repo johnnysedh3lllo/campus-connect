@@ -18,6 +18,7 @@ declare global {
     listing_images: Omit<ListingImages, "created_at" | "listing_uuid">[];
   };
   type ListingPublicationStatus = ListingWithImages["publication_status"];
+  type ListingType = ListingWithImages["listing_type"];
 
   type Messages = Tables<"visible_messages_for_user"> & {
     // Add this to track optimistic updates

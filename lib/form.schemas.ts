@@ -1,6 +1,6 @@
 "use strict";
 
-import { z } from "zod";
+import { object, z } from "zod";
 import { validateImages } from "./config/app.config";
 import {
   MAX_LISTING_IMAGES,
@@ -197,7 +197,12 @@ export const conversationFormSchema = z.object({
 });
 
 // LISTINGS
-export const HomeTypeEnum = z.enum(["apartment", "condo"]);
+export const HomeTypeEnum = z.enum([
+  "apartment",
+  "condo",
+  "room in family house",
+  "basement unit",
+]);
 export const PaymentFrequencyEnum = z.enum([
   "daily",
   "weekly",
@@ -226,7 +231,14 @@ export const listingFormSchema = z.object({
   noOfBedrooms: z
     .number({
       required_error: "Number of bedrooms is required",
-      invalid_type_error: "Must be a number",
+      invalid_type_error: "Must be a  number",
+    })
+    .int({ message: "Must be a whole number" })
+    .min(1, { message: "Must be at least 1" }),
+  noOfBathrooms: z
+    .number({
+      required_error: "Number of bathrooms is required",
+      invalid_type_error: "Must be a  number",
     })
     .int({ message: "Must be a whole number" })
     .min(1, { message: "Must be at least 1" }),
@@ -271,6 +283,7 @@ export const upsertListingSchema = listingFormSchema.omit({
 export const homeDetailsFormSchema = listingFormSchema.pick({
   title: true,
   noOfBedrooms: true,
+  noOfBathrooms: true,
   listingType: true,
   location: true,
   description: true,

@@ -110,7 +110,7 @@ export function HomeDetailsForm({
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Enter Title"
+                  placeholder="Write a short name for your listing..."
                   {...field}
                   className="w-full"
                 />
@@ -120,20 +120,51 @@ export function HomeDetailsForm({
           )}
         />
 
-        {/* Number of Bedrooms Input */}
+        {/* No. of Bedrooms Input */}
         <FormField
           control={form.control}
           name="noOfBedrooms"
           render={({ field }) => (
             <FormItem className="flex flex-col gap-1">
               <FormLabel className="leading-6 font-medium">
-                Number of Bedrooms Available
+                No. of Bedrooms Available
               </FormLabel>
 
               <FormControl>
                 <Input
                   type="number"
-                  placeholder="Enter number of bedrooms"
+                  placeholder="Enter no. of bedrooms"
+                  value={
+                    field.value === undefined || field.value === null
+                      ? ""
+                      : `${field.value}`
+                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Let user type freely (including an empty string)
+                    field.onChange(value === "" ? null : +value);
+                  }}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* No. of Bathrooms Input */}
+        <FormField
+          control={form.control}
+          name="noOfBathrooms"
+          render={({ field }) => (
+            <FormItem className="flex flex-col gap-1">
+              <FormLabel className="leading-6 font-medium">
+                No. of Bathrooms Available
+              </FormLabel>
+
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="Enter no. of bathrooms"
                   value={
                     field.value === undefined || field.value === null
                       ? ""
@@ -662,6 +693,7 @@ export function PreviewPage({
   const title = defaultValues.title;
   const location = defaultValues.location;
   const noOfBedrooms = defaultValues.noOfBedrooms;
+  const noOfBathrooms = defaultValues.noOfBathrooms;
   const listingType = defaultValues.listingType;
   const description = defaultValues.description;
   const photos = defaultValues.photos;
@@ -741,8 +773,13 @@ export function PreviewPage({
         </div>
 
         <div>
-          <h3 className="text-sm leading-6 font-medium">No of Bedrooms</h3>
+          <h3 className="text-sm leading-6 font-medium">No. of Bedrooms</h3>
           <p className="text-sm text-gray-700 capitalize">{noOfBedrooms}</p>
+        </div>
+
+        <div>
+          <h3 className="text-sm leading-6 font-medium">No. of Bathrooms</h3>
+          <p className="text-sm text-gray-700 capitalize">{noOfBathrooms}</p>
         </div>
 
         <div className="col-span-full">

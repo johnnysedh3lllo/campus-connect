@@ -31,6 +31,7 @@ import {
   formatCurrency,
   formatNumberWithSuffix,
   frequencyMap,
+  pluralize,
 } from "@/lib/utils";
 import { ListingImageGallery } from "../../listing-image-gallery";
 import { BinIcon } from "@/public/icons/bin-icon";
@@ -70,10 +71,12 @@ export default function ListingIdPageBody({
     listingData?.payment_frequency &&
     frequencyMap[listingData?.payment_frequency];
   const price = formatCurrency(listingData?.price ?? 0, "internal");
-  const noOfBedrooms =
-    listingData?.no_of_bedrooms && listingData?.no_of_bedrooms > 1
-      ? `${listingData?.no_of_bedrooms} Rooms`
-      : `${listingData?.no_of_bedrooms} Room`;
+  const noOfBedrooms = pluralize(
+    listingData?.no_of_bedrooms ?? undefined,
+    "room",
+  );
+  const noOfBathrooms =
+    listingData?.no_of_bathrooms && listingData.no_of_bathrooms;
 
   const homeType = listingData?.listing_type;
   const description = listingData?.description;
@@ -234,6 +237,7 @@ export default function ListingIdPageBody({
               </div>
               <Separator className="w-full" />
 
+              {/* PAYMENT FREQUENCY */}
               <div className="flex items-center gap-3 p-4">
                 <TagIcon />
 
@@ -252,21 +256,39 @@ export default function ListingIdPageBody({
               </div>
               <Separator className="w-full" />
 
+              {/* NUMBER OF BEDROOMS */}
               <div className="flex items-center gap-3 p-4">
                 <BedIcon />
 
                 <section className="flex flex-col">
                   <h3 className="text-text-secondary text-sm leading-6">
-                    No of Bedrooms
+                    No. of Bedrooms
                   </h3>
 
-                  <p className="text-text-primary text-base leading-6 font-semibold">
+                  <p className="text-text-primary text-base leading-6 font-semibold capitalize">
                     {noOfBedrooms}
                   </p>
                 </section>
               </div>
               <Separator className="w-full" />
 
+              {/* NUMBER OF BATHROOMS */}
+              <div className="flex items-center gap-3 p-4">
+                <BedIcon />
+
+                <section className="flex flex-col">
+                  <h3 className="text-text-secondary text-sm leading-6">
+                    No. of Bathrooms
+                  </h3>
+
+                  <p className="text-text-primary text-base leading-6 font-semibold capitalize">
+                    {noOfBathrooms}
+                  </p>
+                </section>
+              </div>
+              <Separator className="w-full" />
+
+              {/* HOME TYPE */}
               <div className="flex items-center gap-3 p-4">
                 <HomeIcon />
 

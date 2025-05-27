@@ -231,6 +231,7 @@ export type Database = {
           landlord_id: string
           listing_type: Database["public"]["Enums"]["listing_type"]
           location: string
+          no_of_bathrooms: number
           no_of_bedrooms: number | null
           payment_frequency: Database["public"]["Enums"]["listing_payment_frequency"]
           price: number
@@ -248,6 +249,7 @@ export type Database = {
           landlord_id: string
           listing_type: Database["public"]["Enums"]["listing_type"]
           location: string
+          no_of_bathrooms?: number
           no_of_bedrooms?: number | null
           payment_frequency?: Database["public"]["Enums"]["listing_payment_frequency"]
           price: number
@@ -265,6 +267,7 @@ export type Database = {
           landlord_id?: string
           listing_type?: Database["public"]["Enums"]["listing_type"]
           location?: string
+          no_of_bathrooms?: number
           no_of_bedrooms?: number | null
           payment_frequency?: Database["public"]["Enums"]["listing_payment_frequency"]
           price?: number
@@ -691,7 +694,11 @@ export type Database = {
       listing_availability_status: "available" | "taken"
       listing_payment_frequency: "daily" | "weekly" | "monthly" | "yearly"
       listing_publication_status: "published" | "unpublished" | "draft"
-      listing_type: "condo" | "apartment"
+      listing_type:
+        | "condo"
+        | "apartment"
+        | "room in family house"
+        | "basement unit"
       package_type: "bronze" | "silver" | "gold"
       subscription_status:
         | "active"
@@ -820,7 +827,12 @@ export const Constants = {
       listing_availability_status: ["available", "taken"],
       listing_payment_frequency: ["daily", "weekly", "monthly", "yearly"],
       listing_publication_status: ["published", "unpublished", "draft"],
-      listing_type: ["condo", "apartment"],
+      listing_type: [
+        "condo",
+        "apartment",
+        "room in family house",
+        "basement unit",
+      ],
       package_type: ["bronze", "silver", "gold"],
       subscription_status: [
         "active",

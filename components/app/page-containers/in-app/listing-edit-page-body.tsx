@@ -79,6 +79,7 @@ export default function ListingEditPageBody({
   const listingData = data?.data;
   const title = listingData?.title;
   const noOfBedrooms = listingData?.no_of_bedrooms;
+  const noOfBathrooms = listingData?.no_of_bathrooms;
   const homeType = listingData?.listing_type;
   const location = listingData?.location;
   const description = listingData?.description;
@@ -91,6 +92,7 @@ export default function ListingEditPageBody({
   const homeDetailsDefaultValue: HomeDetailsFormType = {
     title: title ?? "",
     noOfBedrooms: noOfBedrooms ?? 1,
+    noOfBathrooms: noOfBathrooms ?? 1,
     listingType: homeType ?? "apartment",
     location: location ?? "",
     description: description ?? "",
@@ -105,6 +107,7 @@ export default function ListingEditPageBody({
   const previewDefaultValues: ListingFormType = {
     title: storeData.title ?? "",
     noOfBedrooms: storeData.noOfBedrooms ?? 1,
+    noOfBathrooms: storeData.noOfBathrooms ?? 1,
     listingType: storeData.listingType ?? "apartment",
     location: storeData.location ?? "",
     description: storeData.description ?? "",

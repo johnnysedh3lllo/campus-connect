@@ -23,7 +23,7 @@ export default async function Page({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ListingEditPageBody listingUUID={id} />;
+      <ListingEditPageBody listingUUID={id} />
     </HydrationBoundary>
   );
 }
