@@ -21,10 +21,10 @@ import { createClient } from "@/utils/supabase/server";
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Provider, ResendParams } from "@supabase/supabase-js";
 import { z } from "zod";
-import { Provider } from "@supabase/supabase-js";
 
-export async function signUpWithOtp(userInfo: SignUpFormType) {
+export async function signUpWithPassword(userInfo: SignUpFormType) {
   const supabase = await createClient();
 
   // validate form fields first
@@ -38,24 +38,27 @@ export async function signUpWithOtp(userInfo: SignUpFormType) {
   }
   const validFields = validatedFields.data;
 
+  console.log(validFields);
+
   try {
     // check if a user already exists
     const { data: existingUser } = await supabase.rpc("check_user_existence", {
       user_email_address: validFields.emailAddress,
     });
-
     if (existingUser && existingUser.length > 0) {
+      console.log(existingUser);
       return {
         success: false,
         error: { message: "User with this email already exists" },
       };
     }
 
-    // sign up user with otp to supabase
-    let { data, error: signUpError } = await supabase.auth.signInWithOtp({
+    // sign up user to supabase
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email: validFields.emailAddress,
-
+      password: validFields.password,
       options: {
+        emailRedirectTo: `${process.env.SITE_URL}/listings?modalId=welcome`,
         data: {
           first_name: validFields.firstName,
           last_name: validFields.lastName,
@@ -65,10 +68,11 @@ export async function signUpWithOtp(userInfo: SignUpFormType) {
       },
     });
 
+    console.log("after creating user", data);
+
     if (signUpError) {
       throw signUpError;
     }
-
     return { success: true, data: { userEmail: validFields.emailAddress } };
   } catch (error) {
     console.error(error);
@@ -124,6 +128,32 @@ export async function verifyOtp(email: string, token: string) {
       success: false,
       error,
     };
+  }
+}
+
+export async function resendVerification(userEmail: string) {
+  console.log("user info resend:", userEmail);
+
+  const supabase = await createClient();
+
+  // TODO: WRITE THE PARAMS FOR OTHER RESEND OPERATIONS I.E: SMS, ETC
+
+  try {
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: userEmail,
+      options: {
+        emailRedirectTo: `${process.env.SITE_URL}/listings?modalId=welcome`,
+      },
+    });
+
+    if (error) {
+      throw error;
+    }
+    return { success: true };
+  } catch (error) {
+    console.log(error);
+    return { success: false, error };
   }
 }
 

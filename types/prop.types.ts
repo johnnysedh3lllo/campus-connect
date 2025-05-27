@@ -7,7 +7,7 @@ import {
   ResetPasswordFormType,
   RoleFormType,
   CreatePasswordFormType,
-  UserDetailsFormType,
+  SignUpFormType,
 } from "@/types/form.types";
 
 export type NavigationProps = {
@@ -137,7 +137,7 @@ export type SelectRoleProps = {
   handleRoleSubmit: (values: RoleFormType) => void;
 };
 export type GetUserInfoProps = {
-  handleSignUp: (values: UserDetailsFormType) => void;
+  handleSignUp: (values: SignUpFormType) => void;
 };
 export type VerifyOtpProps = {
   handleVerifyOtp: (values: OtpFormType) => void;
@@ -154,7 +154,8 @@ export type ResetPasswordProps = {
 };
 export type CheckInboxProps = {
   emailAddress: string;
-  handleResetPassword: (values: ResetPasswordFormType) => void;
+  timeLeft: number;
+  handleReset: () => Promise<void>;
 };
 export type CreatePasswordProps = {
   isSubmitting: boolean;

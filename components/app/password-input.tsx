@@ -21,7 +21,7 @@ export function PasswordInput({ field, ...props }: PasswordInputProps) {
         onClick={() => setShowPassword(!showPassword)}
       >
         {showPassword ? (
-          <EyeOff className="h-4 w-4" />
+          <EyeOff className="h-4 scale-x-[-1] w-4" />
         ) : (
           <Eye className="h-4 w-4" />
         )}

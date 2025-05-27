@@ -9,6 +9,7 @@ import { animationConfig, formVariants } from "@/hooks/animations";
 import { ResetPasswordFormType } from "@/types/form.types";
 import { resetPassword } from "@/app/actions/supabase/onboarding";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
+import { useCountdownTimer } from "@/hooks/use-countdown-timer";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
@@ -24,11 +25,15 @@ import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 export default function ResetPasswordPage() {
   const { email, setEmail } = useEmailState();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  let { timeLeft, resetTimer } = useCountdownTimer(60);
 
   const { step, setStep, nextStep, formData, updateFields } =
     useMultiStepFormStore();
 
-  async function handleResetPassword(values: ResetPasswordFormType) {
+  async function handleResetPassword(
+    values: ResetPasswordFormType,
+    resend?: boolean,
+  ) {
     if (!values.emailAddress) {
       console.error("The user's email is undefined");
       return;
@@ -46,7 +51,12 @@ export default function ResetPasswordPage() {
         title: "Failed to resend password",
         description: result?.error?.message,
       });
+
       return;
+    }
+
+    if (resend) {
+      resetTimer();
     }
 
     if (step < 1) {
@@ -62,7 +72,10 @@ export default function ResetPasswordPage() {
     />,
     <CheckInbox
       emailAddress={email}
-      handleResetPassword={handleResetPassword}
+      timeLeft={timeLeft}
+      handleReset={async () =>
+        await handleResetPassword({ emailAddress: email }, true)
+      }
     />,
   ];
 

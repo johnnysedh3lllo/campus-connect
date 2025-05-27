@@ -15,7 +15,6 @@ import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 import { CreatePasswordFormType } from "@/types/form.types";
 import {
-  // changePassword,
   createPassword,
 } from "@/app/actions/supabase/onboarding";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";

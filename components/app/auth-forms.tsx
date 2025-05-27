@@ -5,12 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import {
-  otpFormSchema,
   resetPasswordFormSchema,
   roleSchema,
-  createPasswordFormSchema,
-  userDetailsFormSchema,
   loginSchema,
+  signUpFormSchema,
+  createPasswordFormSchema,
 } from "@/lib/form.schemas";
 import Link from "next/link";
 
@@ -28,12 +27,6 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { LoginPrompt } from "@/components/app/log-in-prompt";
-import { SeparatorMain } from "@/components/app/separator-main";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -44,10 +37,8 @@ import tenantIcon from "@/public/icons/icon-tenant.svg";
 import { Loader2 } from "lucide-react";
 import { PasswordInput } from "@/components/app/password-input";
 import { LargeMailIcon } from "@/public/icons/large-mail-icon";
-import { LockIcon } from "@/public/icons/lock-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
 import { ShieldIcon } from "@/public/icons/shield-icon";
-import { useCountdownTimer } from "@/hooks/use-countdown-timer";
 import {
   CheckInboxProps,
   CreatePasswordProps,
@@ -55,18 +46,18 @@ import {
   LoginFormProps,
   ResetPasswordProps,
   SelectRoleProps,
-  VerifyOtpProps,
 } from "@/types/prop.types";
 import {
   LoginFormType,
   RoleFormType,
-  UserDetailsFormType,
-  OtpFormType,
   CreatePasswordFormType,
   ResetPasswordFormType,
+  SignUpFormType,
 } from "@/types/form.types";
-import { resendSignUpOtp, signOut } from "@/app/actions/supabase/onboarding";
+import { signOut } from "@/app/actions/supabase/onboarding";
 import { OAuthButtons } from "./oauth-buttons";
+import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
+import { formatTime } from "@/lib/utils";
 
 const roleDetails = [
   {
@@ -93,7 +84,7 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
     },
   });
   return (
-    <section className="mx-auto flex w-full flex-col justify-center lg:max-w-120">
+    <section className="mx-auto flex w-full flex-col justify-center">
       <div className="flex h-full flex-col items-start justify-center">
         <section className="flex flex-col items-start">
           <h1 className="text-left text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
@@ -173,7 +164,6 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
 
         <footer className="flex w-full flex-col items-center gap-3">
           <LoginPrompt callToAction="Don't have an account?" route="/sign-up" />
-          <SeparatorMain />
           {/* <OAuthButtons /> */}
         </footer>
       </div>
@@ -285,12 +275,16 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
 }
 
 export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
-  const form = useForm<UserDetailsFormType>({
-    resolver: zodResolver(userDetailsFormSchema),
+  const { formData } = useMultiStepFormStore();
+  const form = useForm<SignUpFormType>({
+    resolver: zodResolver(signUpFormSchema),
     defaultValues: {
+      roleId: formData.roleId,
       firstName: "",
       lastName: "",
       emailAddress: "",
+      password: "",
+      confirmPassword: "",
       settings: {
         notifications: {
           newsletter: true,
@@ -321,47 +315,48 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
           className="flex flex-col gap-6 sm:gap-12"
         >
           <div className="flex flex-col gap-6 sm:px-2">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-1">
-                  <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
-                    First Name
-                    <FormControl>
-                      <Input
-                        disabled={isSubmitting}
-                        required
-                        placeholder="Enter your first name"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem className="flex flex-col gap-1">
-                  <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
-                    Last Name
-                    <FormControl>
-                      <Input
-                        disabled={isSubmitting}
-                        required
-                        placeholder="Enter your last name"
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormLabel>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-col gap-6 sm:flex-row">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem className="flex w-full flex-col gap-1">
+                    <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                      First Name
+                      <FormControl>
+                        <Input
+                          disabled={isSubmitting}
+                          required
+                          placeholder="Enter your first name"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem className="flex w-full flex-col gap-1">
+                    <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                      Last Name
+                      <FormControl>
+                        <Input
+                          disabled={isSubmitting}
+                          required
+                          placeholder="Enter your last name"
+                          {...field}
+                        />
+                      </FormControl>
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
@@ -383,6 +378,55 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
                 </FormItem>
               )}
             />
+
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col gap-1">
+                      <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                        Password
+                        <FormControl>
+                          <PasswordInput
+                            disabled={isSubmitting}
+                            required
+                            placeholder="Enter password"
+                            field={field}
+                          />
+                        </FormControl>
+                      </FormLabel>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* <div className="text-sm">
+                Password strength: {getPasswordStrength(form.watch("password"))}
+              </div> */}
+              </div>
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
+                      Confirm Password
+                      <FormControl>
+                        <PasswordInput
+                          disabled={isSubmitting}
+                          required
+                          placeholder="Confirm password"
+                          field={field}
+                        />
+                      </FormControl>
+                    </FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
@@ -417,156 +461,257 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
 
       <footer className="flex flex-col items-center gap-6">
         <LoginPrompt callToAction="Already have an account?" route="/log-in" />
-        <SeparatorMain />
         {/* <OAuthButtons /> */}
       </footer>
     </div>
   );
 }
 
-export function VerifyOtp({
-  handleVerifyOtp,
-  userEmail,
-  isLoading,
-}: VerifyOtpProps) {
-  let { timeLeft, resetTimer } = useCountdownTimer(60);
-
-  const form = useForm<OtpFormType>({
-    resolver: zodResolver(otpFormSchema),
+export function ResetPassword({
+  isSubmitting,
+  handleResetPassword,
+}: ResetPasswordProps) {
+  const form = useForm<ResetPasswordFormType>({
+    resolver: zodResolver(resetPasswordFormSchema),
     defaultValues: {
-      otp: "",
+      emailAddress: "",
     },
   });
 
-  const {
-    formState: { isValid, isSubmitting },
-  } = form;
-
-  async function handleResendOtp() {
-    if (!userEmail) {
-      console.error("the user's email is undefined");
-      return;
-    }
-    try {
-      console.log("Resending OTP for: ", userEmail);
-      const result = await resendSignUpOtp(userEmail);
-
-      if (result.success) {
-        console.log("OTP resent successfully");
-      } else {
-        throw result.error;
-      }
-      resetTimer();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  const formatTime = (time: number) => {
-    const minute = Math.floor(time / 60)
-      .toString()
-      .padStart(2, "0");
-
-    const seconds = Math.floor(time % 60)
-      .toString()
-      .padStart(2, "0");
-
-    return `${minute}:${seconds}`;
-  };
-
   return (
-    <div>
-      <div className="flex flex-col gap-6 sm:gap-12">
-        <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
-          <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
-            <LockIcon />
-          </figure>
-        </div>
-
-        <section className="flex flex-col gap-2">
-          <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
-            OTP Verification
-          </h1>
-
-          <p className="text text-secondary-foreground text-sm">
-            Enter the code we sent to your email address{" "}
-            <span className="text-primary font-semibold">{userEmail}:</span>
-          </p>
-        </section>
-      </div>
+    <div className="flex w-full flex-col gap-10 sm:gap-12">
+      <section className="flex flex-col gap-2">
+        <h1 className="text-2xl leading-7.5 font-semibold md:text-4xl md:leading-11">
+          Reset Password
+        </h1>
+        <p className="text-secondary-foreground text-sm leading-6">
+          Enter the email address associated with your account and we will send
+          you a link to reset your password
+        </p>
+      </section>
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit((data) => handleVerifyOtp(data))}
+          onSubmit={form.handleSubmit(handleResetPassword)}
           className="flex flex-col gap-6"
         >
           <FormField
             control={form.control}
-            name="otp"
-            render={({ field, fieldState }) => {
-              const hasError = fieldState.invalid;
-
-              return (
-                <FormItem className="flex max-w-[304px] flex-col gap-3 pt-10 sm:pt-12">
-                  <FormControl>
-                    <InputOTP maxLength={6} {...field}>
-                      <InputOTPGroup className="flex w-full justify-between">
-                        {[...Array(6)].map((_, i) => {
-                          return (
-                            <InputOTPSlot
-                              key={i}
-                              index={i}
-                              className={
-                                hasError
-                                  ? "text-text-primary border-alert-error-line"
-                                  : "text-text-accent border-input"
-                              }
-                            />
-                          );
-                        })}
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </FormControl>
-
-                  <FormDescription>
-                    <Button
-                      type="button"
-                      disabled={timeLeft > 0}
-                      className="text-primary p-1 font-medium"
-                      variant={"link"}
-                      onClick={handleResendOtp} // refactor this
-                    >
-                      Resend Code
-                    </Button>
-                    in {formatTime(timeLeft)}
-                  </FormDescription>
-
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+            name="emailAddress"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-1">
+                <FormLabel className="text-sm leading-6 font-semibold">
+                  Email address
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
           <Button
-            disabled={!isValid || isSubmitting || isLoading}
             type="submit"
+            className="cursor-pointer"
             width={"full"}
-            className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
+            disabled={isSubmitting}
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Verifying...
-              </>
-            ) : (
-              "Continue"
-            )}
+            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting ? "Sending..." : "Send"}
           </Button>
         </form>
       </Form>
     </div>
   );
 }
+
+export function CheckInbox({
+  emailAddress,
+  timeLeft,
+  handleReset,
+}: CheckInboxProps) {
+  return (
+    <div className="flex w-full flex-col gap-10 sm:gap-12">
+      <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
+        <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
+          <LargeMailIcon />
+        </figure>
+      </div>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
+          Check your inbox
+        </h2>
+
+        <p className="text-text-secondary text-sm leading-6">
+          Click on the link we sent to{" "}
+          <span className="text-text-primary font-bold">{emailAddress}</span> to
+          finish your account set-up.
+        </p>
+      </section>
+
+      <div className="flex w-full flex-col items-start gap-6 sm:gap-12">
+        <div className="flex w-full justify-center gap-2">
+          <MessagesIcon />
+          <p className="text-base leading-6 font-semibold">Check your mail</p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-text-accent/80 text-sm leading-6">
+            No email in your inbox or spam folder?
+          </p>
+          <Button
+            type="button"
+            disabled={timeLeft > 0}
+            className="text-primary gap-0.5 p-0"
+            variant={"link"}
+            onClick={handleReset} // refactor this
+          >
+            Resend
+          </Button>
+          <span className="text-sm">{formatTime(timeLeft)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// export function VerifyOtp({
+//   handleVerifyOtp,
+//   userEmail,
+//   isLoading,
+// }: VerifyOtpProps) {
+//   let { timeLeft, resetTimer } = useCountdownTimer(60);
+
+//   const form = useForm<OtpFormType>({
+//     resolver: zodResolver(otpFormSchema),
+//     defaultValues: {
+//       otp: "",
+//     },
+//   });
+
+//   const {
+//     formState: { isValid, isSubmitting },
+//   } = form;
+
+//   async function handleResendOtp() {
+//     if (!userEmail) {
+//       console.error("the user's email is undefined");
+//       return;
+//     }
+//     try {
+//       console.log("Resending OTP for: ", userEmail);
+//       const result = await resendSignUpOtp(userEmail);
+
+//       if (result.success) {
+//         console.log("OTP resent successfully");
+//       } else {
+//         throw result.error;
+//       }
+//       resetTimer();
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   }
+
+//   return (
+//     <div>
+//       <div className="flex flex-col gap-6 sm:gap-12">
+//         <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
+//           <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
+//             <LockIcon />
+//           </figure>
+//         </div>
+
+//         <section className="flex flex-col gap-2">
+//           <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
+//             OTP Verification
+//           </h1>
+
+//           <p className="text text-secondary-foreground text-sm">
+//             Enter the code we sent to your email address{" "}
+//             <span className="text-primary font-semibold">{userEmail}:</span>
+//           </p>
+//         </section>
+//       </div>
+
+//       <Form {...form}>
+//         <form
+//           onSubmit={form.handleSubmit((data) => handleVerifyOtp(data))}
+//           className="flex flex-col gap-6"
+//         >
+//           <FormField
+//             control={form.control}
+//             name="otp"
+//             render={({ field, fieldState }) => {
+//               const hasError = fieldState.invalid;
+
+//               return (
+//                 <FormItem className="flex max-w-[304px] flex-col gap-3 pt-10 sm:pt-12">
+//                   <FormControl>
+//                     <InputOTP maxLength={6} {...field}>
+//                       <InputOTPGroup className="flex w-full justify-between">
+//                         {[...Array(6)].map((_, i) => {
+//                           return (
+//                             <InputOTPSlot
+//                               key={i}
+//                               index={i}
+//                               className={
+//                                 hasError
+//                                   ? "text-text-primary border-alert-error-line"
+//                                   : "text-text-accent border-input"
+//                               }
+//                             />
+//                           );
+//                         })}
+//                       </InputOTPGroup>
+//                     </InputOTP>
+//                   </FormControl>
+
+//                   <FormDescription>
+//                     <Button
+//                       type="button"
+//                       disabled={timeLeft > 0}
+//                       className="text-primary p-1 font-medium"
+//                       variant={"link"}
+//                       onClick={handleResendOtp} // refactor this
+//                     >
+//                       Resend Code
+//                     </Button>
+//                     in {formatTime(timeLeft)}
+//                   </FormDescription>
+
+//                   <FormMessage />
+//                 </FormItem>
+//               );
+//             }}
+//           />
+
+//           <Button
+//             disabled={!isValid || isSubmitting || isLoading}
+//             type="submit"
+//             width={"full"}
+//             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
+//           >
+//             {isLoading ? (
+//               <>
+//                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+//                 Verifying...
+//               </>
+//             ) : (
+//               "Continue"
+//             )}
+//           </Button>
+//         </form>
+//       </Form>
+//     </div>
+//   );
+// }
 
 export function CreatePassword({
   isSubmitting,
@@ -660,215 +805,6 @@ export function CreatePassword({
     </div>
   );
 }
-
-export function ResetPassword({
-  isSubmitting,
-  handleResetPassword,
-}: ResetPasswordProps) {
-  const form = useForm<ResetPasswordFormType>({
-    resolver: zodResolver(resetPasswordFormSchema),
-    defaultValues: {
-      emailAddress: "",
-    },
-  });
-
-  return (
-    <div className="flex w-full flex-col gap-10 sm:gap-12">
-      <section className="flex flex-col gap-2">
-        <h1 className="text-2xl leading-7.5 font-semibold md:text-4xl md:leading-11">
-          Reset Password
-        </h1>
-        <p className="text-secondary-foreground text-sm leading-6">
-          Enter the email address associated with your account and we will send
-          you a link to reset your password
-        </p>
-      </section>
-
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleResetPassword)}
-          className="flex flex-col gap-6"
-        >
-          <FormField
-            control={form.control}
-            name="emailAddress"
-            render={({ field }) => (
-              <FormItem className="flex flex-col gap-1">
-                <FormLabel className="text-sm leading-6 font-semibold">
-                  Email address
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button
-            type="submit"
-            className="cursor-pointer"
-            width={"full"}
-            disabled={isSubmitting}
-          >
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isSubmitting ? "Sending..." : "Send"}
-          </Button>
-        </form>
-      </Form>
-    </div>
-  );
-}
-
-export function CheckInbox({
-  emailAddress,
-  handleResetPassword,
-}: CheckInboxProps) {
-  const handleResetPasswordWithEmail = handleResetPassword.bind(null, {
-    emailAddress: emailAddress,
-  });
-
-  return (
-    <div className="flex w-full flex-col gap-10 sm:gap-12">
-      <div className="border-foreground w-fit self-center rounded-full border-1 border-solid p-4">
-        <figure className="bg-accent-secondary flex size-50 items-center justify-center rounded-full">
-          <LargeMailIcon />
-        </figure>
-      </div>
-
-      <section className="flex flex-col gap-2">
-        <h2 className="text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
-          Check your inbox
-        </h2>
-
-        <p className="text-text-secondary text-sm leading-6">
-          Click on the link we sent to{" "}
-          <span className="text-text-primary font-bold">{emailAddress}</span> to
-          finish your account set-up.
-        </p>
-      </section>
-
-      <div className="flex w-full flex-col items-start gap-6 sm:gap-12">
-        <div className="flex w-full justify-center gap-2">
-          <MessagesIcon />
-          <p className="text-base leading-6 font-semibold">Check your mail</p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-text-accent/80 text-sm leading-6">
-            No email in your inbox or spam folder?
-          </p>
-
-          <form action={handleResetPasswordWithEmail}>
-            <Button
-              className="text-text-accent cursor-pointer p-0 font-medium underline"
-              variant={"link"}
-            >
-              Resend email
-            </Button>
-          </form>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// export function CreateNewPassword({
-//   isSubmitting,
-//   handleCreatePassword,
-// }: CreatePasswordProps) {
-//   const form = useForm<CreatePasswordFormType>({
-//     resolver: zodResolver(createPasswordFormSchema),
-//     defaultValues: {
-//       password: "",
-//       confirmPassword: "",
-//     },
-//   });
-
-//   return (
-//     <div className="flex flex-col gap-6 sm:gap-12">
-//       <section className="flex flex-col gap-2">
-//         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
-//           Create Password
-//         </h1>
-
-//         <p className="text text-secondary-foreground text-sm">
-//           Enter a password you can remember, to secure your account
-//         </p>
-//       </section>
-
-//       <Form {...form}>
-//         <form
-//           onSubmit={form.handleSubmit(handleCreatePassword)}
-//           className="flex flex-col gap-6 sm:gap-12"
-//         >
-//           <div className="flex flex-col gap-6 sm:px-2">
-//             <div className="flex flex-col gap-2">
-//               <FormField
-//                 control={form.control}
-//                 name="password"
-//                 render={({ field }) => (
-//                   <FormItem className="flex flex-col gap-1">
-//                     <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
-//                       Password
-//                       <FormControl>
-//                         <PasswordInput
-//                           disabled={isSubmitting}
-//                           required
-//                           placeholder="Enter password"
-//                           field={field}
-//                         />
-//                       </FormControl>
-//                     </FormLabel>
-//                     <FormMessage />
-//                   </FormItem>
-//                 )}
-//               />
-//               {/* <div className="text-sm">
-//                 Password strength: {getPasswordStrength(form.watch("password"))}
-//               </div> */}
-//             </div>
-
-//             <FormField
-//               control={form.control}
-//               name="confirmPassword"
-//               render={({ field }) => (
-//                 <FormItem className="flex flex-col gap-1">
-//                   <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
-//                     Confirm Password
-//                     <FormControl>
-//                       <PasswordInput
-//                         disabled={isSubmitting}
-//                         required
-//                         placeholder="Confirm password"
-//                         field={field}
-//                       />
-//                     </FormControl>
-//                   </FormLabel>
-//                   <FormMessage />
-//                 </FormItem>
-//               )}
-//             />
-//           </div>
-
-//           <Button
-//             disabled={isSubmitting}
-//             type="submit"
-//             width={"full"}
-//             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-300"
-//           >
-//             {isSubmitting && <Loader2 className="animate-spin" />}
-//             Create Password
-//           </Button>
-//         </form>
-//       </Form>
-//     </div>
-//   );
-// }
 
 export function PasswordCreationSuccess() {
   return (

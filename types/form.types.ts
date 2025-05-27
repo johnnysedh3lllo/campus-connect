@@ -12,7 +12,6 @@ import {
   createPasswordFormSchema,
   settingsFormSchema,
   signUpFormSchema,
-  userDetailsFormSchema,
   userValidationSchema,
   multiStepFormSchema,
   conversationFormSchema,
@@ -34,7 +33,6 @@ export type MultiStepFormType = z.infer<typeof multiStepFormSchema>;
 
 export type SignUpFormType = z.infer<typeof signUpFormSchema>;
 export type RoleFormType = z.infer<typeof roleSchema>;
-export type UserDetailsFormType = z.infer<typeof userDetailsFormSchema>;
 export type OtpFormType = z.infer<typeof otpFormSchema>;
 export type CreatePasswordFormType = z.infer<typeof createPasswordFormSchema>;
 export type LoginFormType = z.infer<typeof loginSchema>;

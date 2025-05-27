@@ -28,7 +28,7 @@ export const useMultiStepFormStore = create<
   MultiStepFormStore<MultiStepFormType>
 >((set) => ({
   step: 0,
-  totalSteps: 4,
+  totalSteps: 3,
   formData: initialData,
   setStep: (step) => set({ step }),
   setTotalSteps: (totalSteps) => set({ totalSteps }),
