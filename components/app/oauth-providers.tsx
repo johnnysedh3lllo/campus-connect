@@ -19,8 +19,8 @@ export function OAuthProviders({ action }: { action: OAuthActionType }) {
 
   const oauthProviderData: { provider: Provider; logo: ReactNode }[] = [
     { provider: "google", logo: <GoogleLogo /> },
-    { provider: "facebook", logo: <FacebookLogo /> },
-    { provider: "apple", logo: <AppleLogo /> },
+    // { provider: "facebook", logo: <FacebookLogo /> },
+    // { provider: "apple", logo: <AppleLogo /> },
   ];
 
   return (
