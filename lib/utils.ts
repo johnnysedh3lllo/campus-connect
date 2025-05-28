@@ -13,6 +13,9 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getBaseUrl() {
   // Fallback to Vercel-specific env if available
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL)
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
 
   // If explicitly set, always prefer that
