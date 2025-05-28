@@ -4,12 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { MessageLandlordButton } from "./action-buttons";
-import { BadgeIcon } from "@/public/illustrations/badge-icon";
-import { ModalProps } from "@/types/prop.types";
-import { useState } from "react";
-import Modal from "./modals/modal";
-import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
-import { useUserStore } from "@/lib/store/user-store";
 
 export function ListingLandlordProfileCard({
   landlord,
@@ -17,12 +11,17 @@ export function ListingLandlordProfileCard({
   landlord:
     | Pick<
         UserPublic,
-        "id" | "first_name" | "last_name" | "role_id" | "avatar_url"
+        | "id"
+        | "first_name"
+        | "last_name"
+        | "full_name"
+        | "role_id"
+        | "avatar_url"
       >
     | undefined;
 }) {
   const landlordId = landlord?.id;
-  const landlordName = `${landlord?.first_name} ${landlord?.last_name}`;
+  const landlordName = landlord?.full_name;
   const landlordAvatarUrl = landlord?.avatar_url;
 
   return (

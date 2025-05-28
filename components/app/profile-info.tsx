@@ -33,10 +33,9 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
 
   const firstName = userProfile?.first_name;
   const lastName = userProfile?.last_name;
+  const fullName = userProfile?.full_name ?? "";
   const emailAddress = userProfile?.email;
   const about = userProfile.about;
-
-  const fullName: string | undefined = `${firstName} ${lastName}`;
 
   const handleEditToggle = () => {
     if (isEditing) {

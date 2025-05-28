@@ -39,6 +39,7 @@ import { ListingDetailSkeleton } from "../../skeletons/listing-details-skeleton"
 import Link from "next/link";
 import { RoleGate } from "../../role-gate";
 import { ListingLandlordProfileCard } from "../../listing-landlord-profile-card";
+import { BathroomIcon } from "@/public/icons/bathroom-icon";
 
 type ListingPublicationStatus = "published" | "unpublished";
 export default function ListingIdPageBody({
@@ -71,12 +72,10 @@ export default function ListingIdPageBody({
     listingData?.payment_frequency &&
     frequencyMap[listingData?.payment_frequency];
   const price = formatCurrency(listingData?.price ?? 0, "internal");
-  const noOfBedrooms = pluralize(
-    listingData?.no_of_bedrooms ?? undefined,
-    "room",
-  );
+  const noOfBedrooms =
+    listingData?.no_of_bedrooms ?? listingData?.no_of_bedrooms;
   const noOfBathrooms =
-    listingData?.no_of_bathrooms && listingData.no_of_bathrooms;
+    listingData?.no_of_bathrooms ?? listingData?.no_of_bathrooms;
 
   const homeType = listingData?.listing_type;
   const description = listingData?.description;
@@ -274,7 +273,7 @@ export default function ListingIdPageBody({
 
               {/* NUMBER OF BATHROOMS */}
               <div className="flex items-center gap-3 p-4">
-                <BedIcon />
+                <BathroomIcon />
 
                 <section className="flex flex-col">
                   <h3 className="text-text-secondary text-sm leading-6">

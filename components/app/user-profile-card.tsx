@@ -10,7 +10,8 @@ export function UserProfileCard({ participants }: UserProfileCardProps) {
 
   const roleId = +(participant?.users?.role_id ?? 0);
   const firstName = participant?.users?.first_name ?? "";
-  const lastName = participant?.users?.last_name ?? "";
+  const fullName = participant?.users?.full_name ?? "";
+
   const about = participant?.users?.about ?? "Nil";
   const avatarUrl = participant?.users?.avatar_url ?? undefined;
 
@@ -29,7 +30,7 @@ export function UserProfileCard({ participants }: UserProfileCardProps) {
         </div>
 
         <p className="text-text-primary text-2xl leading-8 font-semibold">
-          {firstName} {lastName}
+          {fullName}
         </p>
       </figure>
 

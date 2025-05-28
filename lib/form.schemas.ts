@@ -82,7 +82,11 @@ export const multiStepFormSchema = userValidationSchema.pick({
   settings: true,
 });
 
-// SIGN UP ACTION
+// AUTH SCHEMAS
+export const roleSchema = userValidationSchema.pick({
+  roleId: true,
+});
+
 export const signUpFormSchema = userValidationSchema
   .pick({
     roleId: true,
@@ -98,28 +102,9 @@ export const signUpFormSchema = userValidationSchema
     path: ["confirmPassword"],
   });
 
-// SIGN UP FORM STEPS
-export const roleSchema = userValidationSchema.pick({
-  roleId: true,
-});
-
-// export const userDetailsFormSchema = signUpFormSchema.omit({
-//   roleId: true,
+// export const otpFormSchema = userValidationSchema.pick({
+//   otp: true,
 // });
-
-export const otpFormSchema = userValidationSchema.pick({
-  otp: true,
-});
-
-export const createPasswordFormSchema = userValidationSchema
-  .pick({
-    password: true,
-    confirmPassword: true,
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
 
 export const changePasswordSchema = userValidationSchema
   .pick({
@@ -151,12 +136,22 @@ export const resetPasswordFormSchema = userValidationSchema.pick({
   emailAddress: true,
 });
 
-// LOGIN FORM
+export const createPasswordFormSchema = userValidationSchema
+  .pick({
+    password: true,
+    confirmPassword: true,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export const loginSchema = userValidationSchema.pick({
   emailAddress: true,
   password: true,
 });
 
+// IN APP SCHEMA
 export const profileInfoFormSchema = userValidationSchema.pick({
   firstName: true,
   lastName: true,

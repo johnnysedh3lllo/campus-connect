@@ -19,10 +19,14 @@ import {
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
 
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Provider, ResendParams } from "@supabase/supabase-js";
 import { z } from "zod";
+import { getBaseUrl } from "@/lib/utils";
+
+const baseUrl = getBaseUrl();
+
+console.log("base url", baseUrl);
 
 export async function signUpWithPassword(userInfo: SignUpFormType) {
   const supabase = await createClient();
@@ -38,8 +42,6 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
   }
   const validFields = validatedFields.data;
 
-  console.log(validFields);
-
   try {
     // check if a user already exists
     const { data: existingUser } = await supabase.rpc("check_user_existence", {
@@ -53,22 +55,25 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
       };
     }
 
+    const fullName = `${validFields.firstName} ${validFields.lastName}`;
+
     // sign up user to supabase
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: validFields.emailAddress,
       password: validFields.password,
       options: {
-        emailRedirectTo: `${process.env.SITE_URL}/listings?modalId=welcome`,
+        emailRedirectTo: `${baseUrl}/listings?modalId=welcome`,
         data: {
           first_name: validFields.firstName,
           last_name: validFields.lastName,
+          full_name: fullName,
           role_id: validFields.roleId,
           settings: validFields.settings,
         },
       },
     });
-
-    console.log("after creating user", data);
+    // console.log(validFields);
+    // console.log("after creating user", data);
 
     if (signUpError) {
       throw signUpError;
@@ -83,19 +88,34 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
   }
 }
 
+export async function signUpWithOAuth(provider: Provider, roleId: number) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: provider,
+    options: {
+      redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings?modalId=welcome&userRoleId=${roleId}&action=signup`,
+      scopes: "email, profile, openid",
+    },
+  });
+
+  console.log("oauth data:", data);
+  console.log("oauth error:", error);
+
+  if (data.url) {
+    redirect(data.url);
+  }
+}
+
 export async function signInWithOAuth(provider: Provider) {
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: provider,
     options: {
-      // redirectTo: `${process.env.SITE_URL}/auth/callback/?redirect_to=/listings?modalId=welcome`,
-      // scopes: "/auth/userinfo.email, /auth/userinfo.profile, openid",
+      redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings&action=login`,
     },
   });
-
-  console.log("oauth data:", data);
-  console.log("oauth error:", error);
 
   if (data.url) {
     redirect(data.url);
@@ -143,7 +163,7 @@ export async function resendVerification(userEmail: string) {
       type: "signup",
       email: userEmail,
       options: {
-        emailRedirectTo: `${process.env.SITE_URL}/listings?modalId=welcome`,
+        emailRedirectTo: `${baseUrl}/listings?modalId=welcome`,
       },
     });
 
@@ -231,9 +251,25 @@ export async function login(formData: LoginFormType) {
 
   try {
     // check if a user does not exist
-    const { data: existingUser } = await supabase.rpc("check_user_existence", {
-      user_email_address: validFields.emailAddress,
-    });
+    const { data: existingUser, error: existingUserError } = await supabase.rpc(
+      "check_user_existence",
+      {
+        user_email_address: validFields.emailAddress,
+      },
+    );
+
+    console.log(existingUser);
+    console.log("error", existingUserError);
+    console.log(validFields);
+    if (existingUserError) {
+      return {
+        success: false,
+        error: {
+          message: existingUserError.message,
+          code: existingUserError.code,
+        },
+      };
+    }
 
     if (!existingUser || existingUser.length <= 0) {
       return {
@@ -283,7 +319,7 @@ export async function resetPassword(formData: ResetPasswordFormType) {
   const email = validFields.emailAddress;
 
   try {
-    // check if a user already exists
+    // check if a user exists
     const { data: existingUser } = await supabase.rpc("check_user_existence", {
       user_email_address: email,
     });
@@ -295,19 +331,15 @@ export async function resetPassword(formData: ResetPasswordFormType) {
       };
     }
 
-    // TODO: USE ENV INSTEAD
-    const origin = (await headers()).get("origin");
-
     if (!email) {
       return encodedRedirect("error", "/reset-password", "Email is required");
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/auth/callback?redirect_to=/create-new-password`,
+      redirectTo: `${baseUrl}/create-new-password`,
     });
 
     if (error) {
-      console.error(error.message);
       throw error;
     }
 

@@ -32,9 +32,7 @@ export default function MessageHeader({
 
   const otherUser = chatParticipants?.[0]?.users;
 
-  const chatName = otherUser
-    ? `${otherUser?.first_name} ${otherUser?.last_name}`
-    : "";
+  const chatName = otherUser?.full_name ?? "";
 
   const deleteModalProps: ModalProps = {
     modalId: "welcome",

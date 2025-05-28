@@ -73,7 +73,7 @@ export default function BuyCredits({
 
   const userEmail = user?.email;
   const usersName = user?.user_metadata
-    ? formatUsersName(user.user_metadata)
+    ? user.user_metadata.full_name
     : undefined;
 
   const { data: creditRecord } = useGetUserCredits(

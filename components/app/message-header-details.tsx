@@ -6,9 +6,7 @@ export function MessageHeaderDetails({
 }: {
   participant: ConvoParticipant["users"] | undefined | null;
 }) {
-  const chatName = participant
-    ? `${participant?.first_name} ${participant?.last_name}`
-    : "";
+  const chatName = participant ? participant?.full_name : "";
 
   return (
     <section className="flex items-center gap-4.5">

@@ -3,7 +3,7 @@ import {
   buyCreditsFormSchema,
   changePasswordSchema,
   loginSchema,
-  otpFormSchema,
+  // otpFormSchema,
   profileInfoFormSchema,
   purchasePremiumFormSchema,
   resetPasswordFormSchema,
@@ -33,7 +33,7 @@ export type MultiStepFormType = z.infer<typeof multiStepFormSchema>;
 
 export type SignUpFormType = z.infer<typeof signUpFormSchema>;
 export type RoleFormType = z.infer<typeof roleSchema>;
-export type OtpFormType = z.infer<typeof otpFormSchema>;
+// export type OtpFormType = z.infer<typeof otpFormSchema>;
 export type CreatePasswordFormType = z.infer<typeof createPasswordFormSchema>;
 export type LoginFormType = z.infer<typeof loginSchema>;
 export type ResetPasswordFormType = z.infer<typeof resetPasswordFormSchema>;

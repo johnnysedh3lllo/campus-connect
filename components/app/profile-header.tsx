@@ -3,8 +3,7 @@ import { ProfilePictureUpload } from "./profile-picture-upload";
 import { ProfileHeaderProps } from "@/types/prop.types";
 
 export function ProfileHeader({ userProfile }: ProfileHeaderProps) {
-  const firstName = userProfile?.first_name;
-  const lastName = userProfile?.last_name;
+  const fullName = userProfile?.full_name;
   const emailAddress = userProfile?.email;
   const avatarUrl = userProfile?.avatar_url;
   // const userId = userProfile?.id;
@@ -15,7 +14,7 @@ export function ProfileHeader({ userProfile }: ProfileHeaderProps) {
 
       <section>
         <h1 className="text-2xl leading-10 font-semibold capitalize sm:text-4xl sm:leading-11">
-          {firstName} {lastName}
+          {fullName}
         </h1>
         <p className="text-text-secondary text-sm leading-6">{emailAddress}</p>
       </section>

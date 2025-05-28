@@ -2,7 +2,7 @@ import { UserPillProps } from "@/types/prop.types";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { UserIcon } from "@/public/icons/user-icon";
 
-export function UserPill({ firstName, lastName, avatarUrl }: UserPillProps) {
+export function UserPill({ name, avatarUrl }: UserPillProps) {
   return (
     <figure className="flex items-center gap-2">
       <Avatar className="size-10 items-center justify-center overflow-hidden rounded-full bg-gray-100">
@@ -12,7 +12,7 @@ export function UserPill({ firstName, lastName, avatarUrl }: UserPillProps) {
         </AvatarFallback>
       </Avatar>
 
-      <p className="text-sm leading-6 font-medium capitalize">{`${firstName} ${lastName}`}</p>
+      <p className="text-sm leading-6 font-medium capitalize">{name}</p>
     </figure>
   );
 }

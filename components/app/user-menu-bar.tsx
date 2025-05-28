@@ -24,8 +24,7 @@ export function UserMenuBar({
   isOpen,
   onClose,
 }: UserMenuBarProps) {
-  const firstName = userProfile?.first_name;
-  const lastName = userProfile?.last_name;
+  const fullName = userProfile?.full_name;
   const avatarUrl = userProfile?.avatar_url;
 
   if (userProfile) {
@@ -33,11 +32,7 @@ export function UserMenuBar({
       <div className="hidden p-0 focus-visible:outline-0 lg:flex lg:items-center lg:gap-2">
         <DropdownMenu onOpenChange={(open) => onClose(!open)}>
           <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 p-0 select-none">
-            <UserPill
-              firstName={firstName}
-              lastName={lastName}
-              avatarUrl={avatarUrl}
-            />
+            <UserPill name={fullName} avatarUrl={avatarUrl} />
 
             {/* TODO: USE COMPONENT */}
             <Image

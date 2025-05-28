@@ -81,9 +81,14 @@ export async function updateUser(
 ) {
   const supabase = await createClient();
 
+  const firstName = formData.firstName;
+  const lastName = formData.lastName;
+  const fullName = `${formData.firstName} ${formData.lastName}`;
+  const about = formData.about;
+
   const userDataObject = {
-    first_name: formData.firstName,
-    last_name: formData.lastName,
+    first_name: firstName,
+    last_name: lastName,
   };
   try {
     const userMain = await getUser();
@@ -103,7 +108,7 @@ export async function updateUser(
       data: { ...userMetadata, ...metadata },
     });
 
-    console.log("updated user", data);
+    console.log("updated user at user", data);
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`);
@@ -111,9 +116,8 @@ export async function updateUser(
 
     // TODO: FIND A WAY TO UPDATE ONLY ONE USER OBJECT; EITHER USERS OR PUBLIC.USERS
     const userPublicDataObject = {
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      ...(formData.about ? { about: formData.about } : {}),
+      ...userDataObject,
+      ...(about ? { about: about } : {}),
       updated_at: new Date().toISOString(),
     };
 
@@ -180,6 +184,12 @@ export async function updateProfilePicture(
       .from("users")
       .update({ avatar_url: newPublicUrl })
       .eq("id", userId);
+
+    // .auth.updateUser({
+    //   data: {
+    //     avatar_url: newPublicUrl,
+    //   },
+    // });
 
     if (updateError) {
       console.error("Error updating profile:", updateError);

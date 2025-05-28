@@ -55,7 +55,7 @@ import {
   SignUpFormType,
 } from "@/types/form.types";
 import { signOut } from "@/app/actions/supabase/onboarding";
-import { OAuthButtons } from "./oauth-buttons";
+import { OAuthProviders } from "./oauth-providers";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 import { formatTime } from "@/lib/utils";
 
@@ -164,7 +164,7 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
 
         <footer className="flex w-full flex-col items-center gap-3">
           <LoginPrompt callToAction="Don't have an account?" route="/sign-up" />
-          {/* <OAuthButtons /> */}
+          <OAuthProviders action="login" />
         </footer>
       </div>
     </section>
@@ -461,7 +461,7 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
 
       <footer className="flex flex-col items-center gap-6">
         <LoginPrompt callToAction="Already have an account?" route="/log-in" />
-        {/* <OAuthButtons /> */}
+        <OAuthProviders action="signup" />
       </footer>
     </div>
   );

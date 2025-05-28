@@ -33,8 +33,7 @@ export function MobileNav({ userProfile }: MobileNavProps) {
 
   const onClose = () => setIsMobileNavOpen(false);
 
-  const firstName = userProfile?.first_name;
-  const lastName = userProfile?.last_name;
+  const fullName = userProfile?.full_name;
   const avatarUrl = userProfile?.avatar_url;
 
   return (
@@ -59,11 +58,7 @@ export function MobileNav({ userProfile }: MobileNavProps) {
 
         <div className="mobile-nav-menu flex h-full flex-col gap-6 overflow-y-auto">
           <div className="bg-background sticky top-0 flex flex-col gap-6">
-            <UserPill
-              firstName={firstName ?? null}
-              lastName={lastName ?? null}
-              avatarUrl={avatarUrl ?? null}
-            />
+            <UserPill name={fullName} avatarUrl={avatarUrl ?? null} />
 
             <Separator />
           </div>

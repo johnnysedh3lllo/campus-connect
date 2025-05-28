@@ -11,6 +11,17 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function getBaseUrl() {
+  // Fallback to Vercel-specific env if available
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+
+  // If explicitly set, always prefer that
+  if (process.env.SITE_URL) return process.env.SITE_URL;
+
+  // Otherwise assume it's local
+  return "http://localhost:3000";
+}
+
 export function getPasswordStrength(password: string): string {
   if (password.length === 0) return "None";
   if (password.length < 8) return "Weak";

@@ -74,7 +74,7 @@ export async function getConversationParticipants(
     const { data, error } = await supabase
       .from("conversation_participants")
       .select(
-        "*, users(first_name, last_name, email, role_id, about, avatar_url)",
+        "*, users(first_name, last_name, full_name, email, role_id, about, avatar_url)",
       )
       .eq("conversation_id", conversationId)
       .neq("user_id", userId);

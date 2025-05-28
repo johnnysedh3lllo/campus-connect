@@ -3,7 +3,6 @@ import React, { Dispatch, SetStateAction } from "react";
 
 import {
   LoginFormType,
-  OtpFormType,
   ResetPasswordFormType,
   RoleFormType,
   CreatePasswordFormType,
@@ -39,8 +38,7 @@ export type ProfileInfoProps = {
 };
 
 export type UserPillProps = {
-  firstName: UserPublic["first_name"] | undefined;
-  lastName: UserPublic["last_name"] | undefined;
+  name: UserPublic["full_name"] | undefined;
   avatarUrl: UserPublic["avatar_url"] | undefined;
 };
 
@@ -139,11 +137,11 @@ export type SelectRoleProps = {
 export type GetUserInfoProps = {
   handleSignUp: (values: SignUpFormType) => void;
 };
-export type VerifyOtpProps = {
-  handleVerifyOtp: (values: OtpFormType) => void;
-  userEmail: string;
-  isLoading: boolean;
-};
+// export type VerifyOtpProps = {
+//   handleVerifyOtp: (values: OtpFormType) => void;
+//   userEmail: string;
+//   isLoading: boolean;
+// };
 export type SetPasswordProps = {
   isLoading: boolean;
   handleCreatePassword: (values: CreatePasswordFormType) => void;

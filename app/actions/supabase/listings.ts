@@ -60,7 +60,7 @@ export async function getListingByUUID(listingUUID: string) {
       .select(
         `*, 
         listing_images(id, url, path, full_path, width, height), 
-        users(id, first_name, last_name, role_id, avatar_url)`,
+        users(id, first_name, last_name, full_name, role_id, avatar_url)`,
       )
       .eq("uuid", listingUUID)
       .single();

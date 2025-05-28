@@ -31,7 +31,13 @@ declare global {
 
   type Participant = Pick<
     UserPublic,
-    "id" | "first_name" | "last_name" | "role_id" | "email" | "avatar_url"
+    | "id"
+    | "first_name"
+    | "last_name"
+    | "full_name"
+    | "role_id"
+    | "email"
+    | "avatar_url"
   >;
 
   type ConversationsMain = Tables<"conversations">;
@@ -71,8 +77,9 @@ declare global {
     users: {
       first_name: string | null;
       last_name: string | null;
+      full_name: string | null;
       email: string;
-      role_id: number;
+      role_id: number | null;
       about: string | null;
       avatar_url: string | null;
     } | null;

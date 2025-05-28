@@ -28,7 +28,7 @@ export function PackagesPageBody() {
   const userId = user?.id;
   const userRoleId: UserValidationType["roleId"] = user?.user_metadata.role_id;
   const usersName = user?.user_metadata
-    ? formatUsersName(user.user_metadata)
+    ? user.user_metadata.full_name
     : undefined;
   const userEmail = user?.email;
 

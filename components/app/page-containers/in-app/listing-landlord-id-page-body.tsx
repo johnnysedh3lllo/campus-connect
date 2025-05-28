@@ -21,7 +21,7 @@ export function ListingLandlordIdPageBody({
   const { data: listingData, isLoading: isPublishedListingsLoading } =
     useGetPublishedListings(landlordId, "published");
 
-  const fullName = `${landlordProfile?.first_name} ${landlordProfile?.last_name}`;
+  const fullName = landlordProfile?.full_name;
   const avatarUrl = landlordProfile?.avatar_url;
 
   const publishedListings = listingData?.data;

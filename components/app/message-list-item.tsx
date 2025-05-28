@@ -48,7 +48,7 @@ export function MessageListItem({ conversation }: MessageListItemProps) {
         <section className="flex flex-col justify-between gap-2">
           <h2 className="text-text-primary text-base leading-6 font-semibold whitespace-nowrap lg:text-2xl lg:leading-8">
             {participants && participants.length > 0
-              ? `${participant?.first_name} ${participant?.last_name}`
+              ? participant?.full_name
               : ""}
           </h2>
           <p className="text-text-secondary w-[15ch] truncate text-sm leading-6 sm:line-clamp-2 sm:max-w-full lg:line-clamp-3">

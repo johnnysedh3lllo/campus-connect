@@ -5,3 +5,5 @@ export type ListingImageMetadata = {
   width: number;
   height: number;
 };
+
+export type OAuthActionType = "signup" | "login" | null;
