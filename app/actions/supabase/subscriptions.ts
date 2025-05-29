@@ -29,7 +29,7 @@ export async function getActiveSubscription(
   }
 
   if (data.length === 0) {
-    console.log(
+    console.info(
       `Could not find an active subscription found for this user: ${userId} on Supabase`,
     );
   }

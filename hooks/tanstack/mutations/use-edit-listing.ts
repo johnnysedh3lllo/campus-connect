@@ -44,10 +44,6 @@ export function useEditListing() {
         originalImages.some((orgImg) => orgImg.id === currImg.id),
       );
 
-      console.log("addedImages", addedImages);
-      console.log("deletedImages", deletedImages);
-      console.log("unchangedImages", unchangedImages);
-
       if (deletedImages.length > 0) {
         // delete from Supabase Storage
         const deletedImagePaths = deletedImages
@@ -79,8 +75,6 @@ export function useEditListing() {
           );
           throw new Error("Failed to delete images from listing_images");
         }
-
-        console.log(deletedListingImages);
       }
 
       if (addedImages.length > 0) {
@@ -94,7 +88,6 @@ export function useEditListing() {
           throw listingImages.error;
         }
         const imageMetadata = listingImages?.data;
-        console.log(imageMetadata);
 
         // Associate images with listing
         const imageInsertResult = await upsertListingImages(

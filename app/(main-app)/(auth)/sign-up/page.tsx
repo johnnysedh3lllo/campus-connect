@@ -53,7 +53,7 @@ export default function Signup() {
         throw result?.error;
       }
     } catch (error: any) {
-      console.log(error);
+      console.error("client error: handle signUpWithPassword", error);
       toast({
         variant: "destructive",
         description: error.message,
@@ -63,21 +63,18 @@ export default function Signup() {
 
   async function handleResend(emailAddress: string) {
     if (!emailAddress) {
-      console.error("the user's email is undefined");
-      return;
+      throw new Error("the user's email is undefined");
     }
     try {
-      console.log("Resending OTP for: ", emailAddress);
       const result = await resendVerification(emailAddress);
 
       if (result.success) {
-        console.log("Confirmation Email resent successfully");
       } else {
         throw result.error;
       }
       resetTimer();
     } catch (error) {
-      console.error(error);
+      console.error("client error: from resendVerification", error);
     }
   }
 
@@ -85,7 +82,6 @@ export default function Signup() {
   //   setIsLoading(true);
   //   try {
   //     const result = await verifyOtp(formData.emailAddress, values.otp);
-  //     console.log("result from verifyOtp:", result);
 
   //     if (result.success) {
   //       router.push("/create-password");
@@ -94,19 +90,18 @@ export default function Signup() {
   //     }
   //   } catch (error) {
   //     setIsLoading(false);
+  //     console.error("An unexpected error occurred. Please try again.");
 
   //     toast({
   //       variant: "destructive",
   //       title: "Invalid Otp",
   //       description: "Please enter correct otp",
   //     });
-
-  //     console.log("An unexpected error occurred. Please try again.");
   //   }
   // }
 
   const steps = [
-    <SelectRole handleRoleSubmit={handleRoleSubmit} />,
+    <SelectRole handleRoleSubmit={handleRoleSubmit} action="signup" />,
     <GetUserInfo handleSignUp={handleSignUp} />,
     <CheckInbox
       emailAddress={formData?.emailAddress}

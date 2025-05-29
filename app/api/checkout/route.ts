@@ -103,7 +103,6 @@ export async function POST(request: NextRequest) {
           sessionParams.payment_intent_data = {
             setup_future_usage: "off_session", // to save payment method for future usage where the customer may not be directly involve, such as subscriptions
           };
-          console.log("landlord credit purchasing:", sessionParams);
         }
 
         if (purchaseType === PURCHASE_TYPES.LANDLORD_PREMIUM.type) {
@@ -115,10 +114,8 @@ export async function POST(request: NextRequest) {
               landlordPremiumPrice: landlordPremiumPrice ?? null,
             },
           };
-          console.log("landlord premium purchasing:", sessionParams);
         }
 
-        console.log("landlord is purchasing...................");
         break;
 
       case PURCHASE_TYPES.STUDENT_PACKAGE.type:
@@ -138,7 +135,6 @@ export async function POST(request: NextRequest) {
           setup_future_usage: "off_session", // to save payment method for future usage where the customer may not be directly involve, such as subscriptions
         };
 
-        console.log("student purchasing:", sessionParams);
         break;
       default:
         throw new Error("Invalid purchase type");

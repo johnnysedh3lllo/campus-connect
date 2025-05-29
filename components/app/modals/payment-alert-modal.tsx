@@ -51,7 +51,6 @@ export function PaymentAlertModal() {
 
     verifyPaymentStatus(currentSessionId).then((result) => {
       if (result?.ok) {
-        console.log(result);
         if (
           currentModalId === "land_premium_success" &&
           result.subscriptionData

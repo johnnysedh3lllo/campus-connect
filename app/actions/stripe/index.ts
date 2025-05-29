@@ -94,7 +94,7 @@ export async function fetchStripeActiveSubscription(
     });
 
     if (subscription.data.length === 0) {
-      console.log(
+      console.info(
         `Could not find an active subscription found for this customer: ${customerId} on Stripe`,
       );
     }

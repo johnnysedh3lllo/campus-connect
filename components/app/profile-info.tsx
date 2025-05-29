@@ -86,7 +86,6 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
       }
     } catch (error) {
       // Handle any unexpected errors
-      console.log(error);
       toast({
         variant: "destructive",
         title: "Something went wrong",

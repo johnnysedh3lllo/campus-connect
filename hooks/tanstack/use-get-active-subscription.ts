@@ -10,8 +10,6 @@ export function useGetActiveSubscription(
 ) {
   const isLandlord = hasRole(userRoleId ?? 0, "LANDLORD");
 
-  // console.log("are you a landlord? ", isLandlord);
-
   return useQuery({
     queryKey: queryKeys.subscription(userId),
     queryFn: async () => await getActiveSubscription(userId),

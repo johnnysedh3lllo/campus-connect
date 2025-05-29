@@ -22,7 +22,6 @@ export function SearchBar() {
   });
 
   function onSubmit(data: SearchFormValues) {
-    console.log("Search query:", data.query);
     // Handle search logic here
     form.reset({ query: "" });
   }

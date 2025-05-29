@@ -13,7 +13,6 @@ export async function getConversationMessages(
 
   try {
     if (!userId) {
-      console.log("User Id is required to get messages");
       throw new Error("User Id is required to get messages");
     }
 
@@ -25,12 +24,13 @@ export async function getConversationMessages(
       .order("created_at", { ascending: true });
 
     if (error) {
-      console.log("Error during fetching", error);
       throw error;
     }
 
     return data as Messages[];
   } catch (error) {
+    console.error(error);
+
     if (error instanceof Error) {
       throw new Error(`Failed to fetch conversation: ${error.message}`);
     }
@@ -43,7 +43,6 @@ export async function insertMessages(messageDetails: MessagesInsert) {
   const conversationId = messageDetails.conversation_id;
   try {
     if (!conversationId) {
-      console.log("Conversation ID is required");
       throw new Error("Conversation ID is required");
     }
 
@@ -54,12 +53,12 @@ export async function insertMessages(messageDetails: MessagesInsert) {
       .single();
 
     if (error) {
-      console.error("Error adding a new message:", error);
       throw error;
     }
 
     return data;
   } catch (error) {
+    console.error(error);
     if (error instanceof Error) {
       throw new Error(`Failed to add a new message ${error.message}`);
     }
@@ -86,6 +85,7 @@ export async function getConversationParticipants(
 
     return data;
   } catch (error) {
+    console.error(error);
     if (error instanceof Error) {
       throw new Error(`Failed to get participants ${error.message}`);
     }
@@ -179,7 +179,6 @@ export async function updateConversations(
   const supabase = await createClient();
 
   if (!conversationId) {
-    console.log("Conversation ID is required");
     throw new Error("Conversation ID is required");
   }
 
@@ -193,6 +192,7 @@ export async function updateConversations(
       throw error;
     }
   } catch (error) {
+    console.error(error);
     if (error instanceof Error) {
       throw new Error(`Failed to update conversations ${error.message}`);
     }

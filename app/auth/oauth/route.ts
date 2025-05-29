@@ -1,3 +1,5 @@
+import { updateUser } from "@/app/actions/supabase/user";
+import { redirectRoutes } from "@/lib/config/app.config";
 import { OAuthActionType } from "@/types/config.types";
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
@@ -26,48 +28,59 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient();
 
-    console.log("before exchange")
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    console.log("after exchange");
-
-
-    console.log(error);
 
     if (!error) {
       const forwardedHost = request.headers.get("x-forwarded-host"); // original origin before load balancer
       const isLocalEnv = process.env.NODE_ENV === "development";
 
+      const user = data?.user;
+      const userMetadata = user.user_metadata;
+      const fullName = ((userMetadata?.full_name as string) || "").trim();
+      const [firstName, ...rest] = fullName.split(/\s+/);
+      const lastName = rest.join(" ");
+
       switch (currentAction) {
         case "signup":
-          console.log("the user is signing in");
-
-          const user = data?.user;
-          const userMetadata = user.user_metadata;
-          const fullName = ((userMetadata?.full_name as string) || "").trim();
-          const [firstName, ...rest] = fullName.split(/\s+/);
-          const lastName = rest.join(" ");
-
+          console.info("the user is signing in");
           // update user
-          const { data: updateUserData, error: updateUserError } =
-            await supabase.auth.updateUser({
-              data: {
-                ...userMetadata,
-                first_name: firstName,
-                last_name: lastName,
-                role_id: userRoleId,
-              },
-            });
+          const { error: updateUserError } = await updateUser({
+            data: {
+              ...userMetadata,
+              first_name: firstName,
+              last_name: lastName,
+              role_id: userRoleId,
+            },
+          });
 
           if (updateUserError) {
             console.error(updateUserError);
             return NextResponse.redirect(`${origin}/error`);
           }
 
-          console.log("updated user at oauth", updateUserData.user);
-
           break;
         case "login":
-          console.log("the user is logging in");
+          if (!userMetadata.role_id) {
+            const { error: updateUserError } = await updateUser({
+              data: {
+                ...userMetadata,
+                first_name: firstName,
+                last_name: lastName,
+              },
+            });
+
+            if (updateUserError) {
+              console.error(updateUserError);
+              return NextResponse.redirect(`${origin}/error`);
+            }
+
+            // since the user doesn't have a role_id they should be redirect to select a role
+            return NextResponse.redirect(
+              `${origin}${redirectRoutes.usersWithoutARole}`,
+            );
+          } else {
+            console.info("the user is logging in");
+          }
 
           break;
         default:

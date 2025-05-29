@@ -104,11 +104,8 @@ export default function CreateListingPage() {
   const idempotencyKey = storeData.idempotencyKey;
 
   async function handlePublish(values: ListingFormType) {
-    console.log("create listing form", values);
-
     let idemKey = idempotencyKey;
     if (!hasActiveSubscription && !hasEnoughCredits) {
-      console.log("this user can't upload a property");
       setIsErrorModalOpen(true);
     } else {
       if (!idemKey) {
@@ -159,16 +156,13 @@ export default function CreateListingPage() {
           });
 
           if (!updateCreditMutation.isError) {
-            console.log("created listings", createdListing);
-            console.log("updated credit record", updatedCredits);
-
             setIsSuccessModalOpen(true);
           }
         } else {
           setIsSuccessModalOpen(true);
         }
       } catch (error) {
-        console.error(error);
+        console.error("client error: from publishing setting", error);
       }
     }
   }

@@ -33,8 +33,6 @@ export async function uploadListingImages(
         upsert: true,
       });
 
-    console.log("after upload", data);
-
     if (uploadError) {
       throw new Error(`Failed to upload ${image.name}: ${uploadError.message}`);
     }
@@ -62,7 +60,7 @@ export async function uploadListingImages(
     );
     return { success: true, data: imageMetadata };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return {
       success: false,
       error,

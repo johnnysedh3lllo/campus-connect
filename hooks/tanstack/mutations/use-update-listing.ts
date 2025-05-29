@@ -32,9 +32,6 @@ export function useUpdateListing() {
       queryClient.setQueryData(
         ["listings", variables.listingUUID],
         (old: any) => {
-          console.log("old data", old);
-          console.log("new data", variables.listingData);
-
           return {
             ...old,
             data: {

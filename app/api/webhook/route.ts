@@ -53,9 +53,9 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-    console.log(`🔔  Webhook received: ${event.type}`);
+    console.info(`🔔  Webhook received: ${event.type}`);
   } catch (error: any) {
-    console.log(
+    console.error(
       `❌ An error occurred while verifying the webhook: ${error.message}`,
     );
 
@@ -94,10 +94,6 @@ export async function POST(req: NextRequest) {
         await stripe.customers.update(customer, {
           invoice_settings: { default_payment_method: paymentMethod },
         });
-
-        console.log(
-          `Default payment method for customer: ${customer} has been updated `,
-        );
       }
     } catch (error) {
       console.error("Error updating default payment method:", error);
@@ -121,15 +117,15 @@ export async function POST(req: NextRequest) {
             updateCustomerPaymentMethod(paymentIntent);
           }
 
-          if (
-            session.mode === "subscription" &&
-            session.payment_status === "unpaid"
-          ) {
-            console.log(
-              "this is inside the checkout.session.completed event but for subscriptions",
-            );
-            console.log(event.data.object.payment_intent);
-          }
+          // if (
+          //   session.mode === "subscription" &&
+          //   session.payment_status === "unpaid"
+          // ) {
+          //   console.log(
+          //     "this is inside the checkout.session.completed event but for subscriptions",
+          //   );
+          //   console.log(event.data.object.payment_intent);
+          // }
 
           // to handle one-time payments
           if (session.mode === "payment" && session.payment_status === "paid") {
@@ -176,7 +172,6 @@ export async function POST(req: NextRequest) {
                 userId,
                 supabaseServiceRoleKey,
               );
-              console.log("hey there student, ready to find some house?");
 
               if (!userPackageDetails) {
                 await createUserPackageRecord(
@@ -240,7 +235,7 @@ export async function POST(req: NextRequest) {
           // TODO: handle failed subscription payments
           break;
         default:
-          console.log(`Unhandled event type ${event.type}`);
+          console.info(`Unhandled event type ${event.type}`);
           break;
       }
     } catch (error) {

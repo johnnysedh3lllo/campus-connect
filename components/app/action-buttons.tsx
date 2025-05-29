@@ -95,9 +95,8 @@ export function ChangeListingPubStatusButton({
         throw updatedListing.error;
       }
 
-      console.log(updatedListing);
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +156,7 @@ export function DeleteListingButton({
         throw deletedListing.error;
       }
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -192,9 +191,6 @@ export function MessageLandlordButton({
   const createConversationMutation = useCreateConversation();
 
   async function handleMessage() {
-    console.log("user id", userId);
-    console.log("landlord id", landlordId);
-
     if (!userId || !landlordId) return;
     setIsLoading(true);
 
@@ -213,7 +209,7 @@ export function MessageLandlordButton({
         router.push(`/messages/${createdConversation?.conversation_id}`);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
@@ -522,9 +518,6 @@ export function DeleteChatBtn({
       if (!result.success) {
         throw new Error(result.error?.message);
       }
-
-      console.log(result);
-      console.log("you have successfully deleted this chat");
 
       toast({
         variant: "success",

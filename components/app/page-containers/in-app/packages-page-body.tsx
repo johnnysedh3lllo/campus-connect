@@ -74,8 +74,6 @@ export function PackagesPageBody() {
   });
 
   async function handlePackagePurchase(values: PurchasePackageFormType) {
-    console.log(values);
-
     const priceId = values.priceId;
     const purchaseType = values.purchaseType;
     const studentInquiryCount = values.studentInquiryCount;

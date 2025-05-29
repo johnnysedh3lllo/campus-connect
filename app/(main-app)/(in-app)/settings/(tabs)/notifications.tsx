@@ -64,7 +64,6 @@ export default function Notifications() {
         newSettings: values,
       });
 
-      console.log(result);
       if (result?.success) {
         toast({
           variant: "success",
@@ -76,6 +75,7 @@ export default function Notifications() {
         );
       }
     } catch (error: any) {
+      console.error("client error: from updating setting", error);
       if (error instanceof Error) {
         toast({
           title: "Settings update failed",

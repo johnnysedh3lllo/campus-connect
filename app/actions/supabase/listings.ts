@@ -12,13 +12,6 @@ export async function getListings(
 ) {
   const supabase = await createClient();
 
-  console.log(
-    "[GET LISTINGS] userId:",
-    userId,
-    "Called from:",
-    typeof window === "undefined" ? "Server" : "Client",
-  );
-
   try {
     let query = supabase
       .from("listings")
@@ -31,7 +24,6 @@ export async function getListings(
       ascending: false,
     });
 
-    // console.log("any errors?", data);
     if (error) {
       throw error;
     }
@@ -43,7 +35,8 @@ export async function getListings(
       data,
     };
   } catch (error) {
-    console.log(error);
+    console.error("error from getListings", error);
+
     return {
       success: false,
       error,
@@ -76,7 +69,7 @@ export async function getListingByUUID(listingUUID: string) {
       data,
     };
   } catch (error) {
-    console.log(error);
+    console.error("error from getListingByUUID", error);
     return {
       success: false,
       error,
@@ -122,8 +115,6 @@ export async function upsertListing(
       idempotency_key: idemKey,
     };
 
-    console.log(listingDataInsert);
-
     const { data, error } = await supabase
       .from("listings")
       .upsert(listingDataInsert, { onConflict: "idempotency_key" })
@@ -140,7 +131,7 @@ export async function upsertListing(
       data: data[0],
     };
   } catch (error) {
-    console.log(error);
+    console.error("error from upsertListing", error);
     return {
       success: false,
       error,
@@ -160,8 +151,6 @@ export async function updateListing(
   const supabase = await createClient();
 
   try {
-    // console.log("update listing", listingData);
-
     const { data, error } = await supabase
       .from("listings")
       .update(listingData)
@@ -181,7 +170,7 @@ export async function updateListing(
       data,
     };
   } catch (error) {
-    console.log(error);
+    console.error("error from updateListing", error);
     return {
       success: false,
       error,
@@ -219,7 +208,7 @@ export async function deleteListing(
       data,
     };
   } catch (error) {
-    console.log(error);
+    console.error("error from deleteListing", error);
     return {
       success: false,
       error,
@@ -240,13 +229,11 @@ export async function deleteListingImages(imageIds: number[]) {
       throw error;
     }
 
-    console.log("Images have be deleted successfully");
-
     return {
       success: true,
     };
   } catch (error) {
-    console.log("error deleting listing images", error);
+    console.error("error deleting listing images", error);
     return {
       success: false,
       error: "There was an error deleting listing images",
@@ -258,8 +245,6 @@ export async function deleteListingImagesInStorage(imagePaths: string[]) {
   const supabase = await createClient();
 
   try {
-    console.log("to be deleted images", imagePaths);
-
     const { error } = await supabase.storage
       .from("listing-images")
       .remove(imagePaths);
@@ -268,13 +253,11 @@ export async function deleteListingImagesInStorage(imagePaths: string[]) {
       throw error;
     }
 
-    console.log("Images have be deleted successfully");
-
     return {
       success: true,
     };
   } catch (error) {
-    console.log("error deleting listing images", error);
+    console.error("error deleting listing images", error);
     return {
       success: false,
       error: "There was an error deleting listing images",
@@ -287,8 +270,6 @@ export async function upsertListingImages(
   listingImageMetadata: ListingImageMetadata[],
 ) {
   const supabase = await createClient();
-
-  console.log("listing image urls:", listingImageMetadata);
 
   try {
     const listingImageInsert: ListingImagesInsert[] = listingImageMetadata.map(
@@ -313,11 +294,8 @@ export async function upsertListingImages(
       .select();
 
     if (error) {
-      console.log(error);
       throw error;
     }
-
-    console.log("insert results:", data);
 
     return {
       success: true,

@@ -94,7 +94,7 @@ export async function fetchOrCreateCustomer(
       if (customer) {
         return customer;
       } else {
-        console.log("Could not find the customer on Stripe");
+        console.info("Could not find the customer on Stripe");
       }
     }
 
@@ -161,14 +161,11 @@ export async function fetchOrCreateCustomer(
     });
 
     // upsert the customer id on Supabase
-    console.info("-------upserting new customer to supabase.....");
-    const upsertedCustomer = await upsertCustomerDetails({
+    await upsertCustomerDetails({
       id: userId,
       created_at: new Date().toISOString(),
       stripe_customer_id: customer.id,
     });
-
-    console.log(upsertedCustomer);
 
     return customer;
   } catch (error) {

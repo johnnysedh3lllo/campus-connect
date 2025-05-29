@@ -132,6 +132,8 @@ export type LoginFormProps = {
   handleLogin: (values: LoginFormType) => void;
 };
 export type SelectRoleProps = {
+  action: "signup" | "login";
+  isLoading?: boolean;
   handleRoleSubmit: (values: RoleFormType) => void;
 };
 export type GetUserInfoProps = {

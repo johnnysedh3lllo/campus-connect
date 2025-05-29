@@ -1,25 +1,40 @@
 "use server";
 import { createClient, ENVType } from "@/utils/supabase/server";
-import { User, UserResponse } from "@supabase/supabase-js";
+import { isAuthError, User, UserAttributes } from "@supabase/supabase-js";
 import { ProfileInfoFormType } from "@/types/form.types";
 
 export async function getUser() {
   const supabase = await createClient();
 
   try {
-    const {
-      data: { user },
-      error,
-    }: UserResponse = await supabase.auth.getUser();
+    const { data, error } = await supabase.auth.getUser();
     if (error) {
       throw error;
     }
-    return user;
+    return data.user;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
     }
     throw new Error("Could not get user");
+  }
+}
+
+export async function updateUser(attributes: UserAttributes) {
+  const supabase = await createClient();
+
+  try {
+    const { data, error } = await supabase.auth.updateUser(attributes);
+
+    if (error) {
+      throw error;
+    }
+    return { data: data, error: null };
+  } catch (error) {
+    if (isAuthError(error)) {
+      return { data: { user: null }, error };
+    }
+    throw error;
   }
 }
 
@@ -75,7 +90,7 @@ export async function getUserDetail<K extends keyof UserPublic>(
   return (data as Record<K, UserPublic[K]>)[property];
 }
 
-export async function updateUser(
+export async function updateUserInfo(
   formData: ProfileInfoFormType,
   userId: string,
 ) {
@@ -101,14 +116,10 @@ export async function updateUser(
       ),
     );
 
-    console.log(metadata);
-
     // Update the user metadata
-    const { data, error } = await supabase.auth.updateUser({
+    const { data, error } = await updateUser({
       data: { ...userMetadata, ...metadata },
     });
-
-    console.log("updated user at user", data);
 
     if (error) {
       throw new Error(`Failed to update user: ${error.message}`);

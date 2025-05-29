@@ -11,8 +11,6 @@ export function useGetPublishedListings(
 
   const isActiveView = activeView === pubStatus;
 
-  console.log("get published listings", userId);
-
   return useQuery({
     queryKey: queryKeys.listings.published(userId ?? "public"),
     queryFn: async () => await getListings(userId, pubStatus),

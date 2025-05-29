@@ -125,3 +125,8 @@ export const statusVerbMap: Record<ListingPublicationStatus, string> = {
   unpublished: "unpublish",
   draft: "draft",
 };
+
+export const redirectRoutes = {
+  newUsers: "/listings?modalId=welcome",
+  usersWithoutARole: "/select-role",
+};

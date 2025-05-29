@@ -14,9 +14,7 @@ import {
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { animationConfig, formVariants } from "@/hooks/animations";
 import { CreatePasswordFormType } from "@/types/form.types";
-import {
-  createPassword,
-} from "@/app/actions/supabase/onboarding";
+import { createPassword } from "@/app/actions/supabase/onboarding";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 
 export default function CreateNewPasswordPage() {
@@ -45,7 +43,7 @@ export default function CreateNewPasswordPage() {
       updateFields(values);
       nextStep();
     } catch (error) {
-      console.log("error");
+      console.error("client error: from createPassword");
     } finally {
       setIsLoading(false);
     }

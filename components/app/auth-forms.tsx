@@ -171,7 +171,11 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
   );
 }
 
-export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
+export function SelectRole({
+  action,
+  isLoading,
+  handleRoleSubmit,
+}: SelectRoleProps) {
   const form = useForm<RoleFormType>({
     resolver: zodResolver(roleSchema),
   });
@@ -180,16 +184,21 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
     formState: { isValid },
   } = form;
 
+  const heading = action === "signup" ? "Sign up as:" : "Complete Sign up";
+
+  const subHeading =
+    action === "signup"
+      ? "What brings you to Campus Connect?"
+      : "Make a selection to finish creating your account.";
+
   return (
     <div className="flex flex-col gap-6 sm:gap-12 sm:px-2">
       <section className="flex flex-col gap-2">
         <h1 className="text-xl leading-7.5 font-semibold sm:text-4xl sm:leading-11">
-          Sign up as:
+          {heading}
         </h1>
 
-        <p className="text text-secondary-foreground text-sm">
-          What brings you to Campus Connect?
-        </p>
+        <p className="text text-secondary-foreground text-sm">{subHeading}</p>
       </section>
 
       <Form {...form}>
@@ -259,17 +268,20 @@ export function SelectRole({ handleRoleSubmit }: SelectRoleProps) {
           />
 
           <Button
-            disabled={!isValid}
+            disabled={!isValid || isLoading}
             type="submit"
             width={"full"}
             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
           >
-            Continue
+            {isLoading && <Loader2 className="animate-spin" />}
+            {isLoading ? "Processing" : "Continue"}
           </Button>
         </form>
       </Form>
 
-      <LoginPrompt callToAction="Already have an account?" route="/log-in" />
+      {action === "signup" && (
+        <LoginPrompt callToAction="Already have an account?" route="/log-in" />
+      )}
     </div>
   );
 }

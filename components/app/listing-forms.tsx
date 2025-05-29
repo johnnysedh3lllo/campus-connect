@@ -420,7 +420,6 @@ export function PhotoUploadForm({
 
     // CHECK 5: if total amount of images do not exceed constraint
     if (combinedFiles.length > MAX_LISTING_IMAGES) {
-      console.log();
       toast({
         variant: "destructive",
         description: `You can only upload a maximum of ${MAX_LISTING_IMAGES} photos`,

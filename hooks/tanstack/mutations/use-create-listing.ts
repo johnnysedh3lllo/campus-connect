@@ -48,7 +48,6 @@ export function useCreateListing() {
         throw listingImages.error;
       }
       const imageMetadata = listingImages?.data;
-      console.log(imageMetadata);
 
       // Step 3: Associate images with listing
       const imageInsertResult = await upsertListingImages(

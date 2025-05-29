@@ -44,8 +44,6 @@ export default function Security() {
     try {
       const result = await changePassword(values);
 
-      console.log(values);
-      console.log(result, "Result");
       if (result?.success) {
         toast({
           variant: "success",
@@ -56,6 +54,8 @@ export default function Security() {
         throw result?.error;
       }
     } catch (error) {
+      console.error("client error: from updating setting", error);
+
       toast({
         variant: "destructive",
         title: "Failed to change password",

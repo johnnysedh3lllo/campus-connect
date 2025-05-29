@@ -39,12 +39,6 @@ export function useDeleteListing() {
       return deletedListing;
     },
     onSuccess: (_, variables) => {
-      console.log(
-        "before the mutation",
-        variables.userId,
-        variables.publicationStatus,
-      );
-
       // TODO: remove the individual listing data from query cache
       // queryClient.setQueryData(
       //   ["listings", variables.listingUUID],

@@ -23,10 +23,10 @@ import { redirect } from "next/navigation";
 import { Provider, ResendParams } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getBaseUrl } from "@/lib/utils";
+import { redirectRoutes } from "@/lib/config/app.config";
+import { updateUser } from "./user";
 
 const baseUrl = getBaseUrl();
-
-console.log("base url", baseUrl);
 
 export async function signUpWithPassword(userInfo: SignUpFormType) {
   const supabase = await createClient();
@@ -48,7 +48,6 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
       user_email_address: validFields.emailAddress,
     });
     if (existingUser && existingUser.length > 0) {
-      console.log(existingUser);
       return {
         success: false,
         error: { message: "User with this email already exists" },
@@ -62,7 +61,7 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
       email: validFields.emailAddress,
       password: validFields.password,
       options: {
-        emailRedirectTo: `${baseUrl}/listings?modalId=welcome`,
+        emailRedirectTo: `${baseUrl}${redirectRoutes.newUsers}`,
         data: {
           first_name: validFields.firstName,
           last_name: validFields.lastName,
@@ -72,8 +71,6 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
         },
       },
     });
-    // console.log(validFields);
-    // console.log("after creating user", data);
 
     if (signUpError) {
       throw signUpError;
@@ -90,41 +87,58 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
 
 export async function signUpWithOAuth(provider: Provider, roleId: number) {
   const supabase = await createClient();
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: {
+        redirectTo: `${baseUrl}/auth/oauth?redirect_to=${redirectRoutes.newUsers}&userRoleId=${roleId}&action=signup`,
+        scopes: "email, profile, openid",
+      },
+    });
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: provider,
-    options: {
-      redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings?modalId=welcome&userRoleId=${roleId}&action=signup`,
-      scopes: "email, profile, openid",
-    },
-  });
+    if (error) {
+      throw error;
+    }
 
-  console.log("oauth data:", data);
-  console.log("oauth error:", error);
-
-  if (data.url) {
-    redirect(data.url);
+    if (data.url) {
+      redirect(data.url);
+    }
+  } catch (error: any) {
+    console.error(error);
+    // return {
+    //   success: false,
+    //   error: { message: error.message, code: error.code },
+    // };
   }
 }
 
 export async function signInWithOAuth(provider: Provider) {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: provider,
-    options: {
-      redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings&action=login`,
-    },
-  });
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: {
+        redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings&action=login`,
+      },
+    });
+    if (error) {
+      throw error;
+    }
 
-  if (data.url) {
-    redirect(data.url);
+    if (data.url) {
+      redirect(data.url);
+    }
+  } catch (error: any) {
+    console.error(error);
+    // return {
+    //   success: false,
+    //   error: { message: error.message, code: error.code },
+    // };
   }
 }
 
 export async function verifyOtp(email: string, token: string) {
-  console.log("user info otp:", email);
-
   const supabase = await createClient();
 
   try {
@@ -143,7 +157,7 @@ export async function verifyOtp(email: string, token: string) {
       data,
     };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return {
       success: false,
       error,
@@ -152,8 +166,6 @@ export async function verifyOtp(email: string, token: string) {
 }
 
 export async function resendVerification(userEmail: string) {
-  console.log("user info resend:", userEmail);
-
   const supabase = await createClient();
 
   // TODO: WRITE THE PARAMS FOR OTHER RESEND OPERATIONS I.E: SMS, ETC
@@ -163,7 +175,7 @@ export async function resendVerification(userEmail: string) {
       type: "signup",
       email: userEmail,
       options: {
-        emailRedirectTo: `${baseUrl}/listings?modalId=welcome`,
+        emailRedirectTo: `${baseUrl}${redirectRoutes.newUsers}`,
       },
     });
 
@@ -172,14 +184,12 @@ export async function resendVerification(userEmail: string) {
     }
     return { success: true };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false, error };
   }
 }
 
 export async function resendSignUpOtp(userEmail: string) {
-  console.log("user info resend:", userEmail);
-
   const supabase = await createClient();
 
   try {
@@ -192,7 +202,7 @@ export async function resendSignUpOtp(userEmail: string) {
     }
     return { success: true };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { success: false, error };
   }
 }
@@ -200,17 +210,10 @@ export async function resendSignUpOtp(userEmail: string) {
 // this is for the two create password forms on the create password page
 // and when resetting/forgetting passwords
 export async function createPassword(formData: CreatePasswordFormType) {
-  console.log("🔥🔥🔥 createPassword is running 🔥🔥🔥");
-  // console.log("FORM DATA:", formData);
-
-  const supabase = await createClient();
-
   // Validate fields
   const validatedFields = createPasswordFormSchema.safeParse(formData);
 
   if (!validatedFields.success) {
-    console.log("zod error:", validatedFields.error.format());
-
     return {
       success: false,
       error: validatedFields.error.format(),
@@ -218,16 +221,16 @@ export async function createPassword(formData: CreatePasswordFormType) {
   }
 
   try {
-    const { error } = await supabase.auth.updateUser({
+    const { error } = await updateUser({
       password: validatedFields.data.password,
     });
 
     if (error) {
-      console.log("supabase error:", error);
       return { error: error.message };
     }
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
+    console.error(error);
     if (error instanceof z.ZodError) {
       return { error: error.errors[0].message };
     }
@@ -249,6 +252,7 @@ export async function login(formData: LoginFormType) {
   }
   const validFields = validatedFields.data;
 
+  let errorObj: { message: string; code: string };
   try {
     // check if a user does not exist
     const { data: existingUser, error: existingUserError } = await supabase.rpc(
@@ -258,27 +262,21 @@ export async function login(formData: LoginFormType) {
       },
     );
 
-    console.log(existingUser);
-    console.log("error", existingUserError);
-    console.log(validFields);
     if (existingUserError) {
-      return {
-        success: false,
-        error: {
-          message: existingUserError.message,
-          code: existingUserError.code,
-        },
+      errorObj = {
+        message: existingUserError.message,
+        code: existingUserError.code,
       };
+      throw errorObj;
     }
 
     if (!existingUser || existingUser.length <= 0) {
-      return {
-        success: false,
-        error: {
-          message: "This User does not exist.",
-          code: "user_does_not_exist",
-        },
+      errorObj = {
+        message: "This User does not exist.",
+        code: "user_does_not_exist",
       };
+
+      throw errorObj;
     }
 
     const { error } = await supabase.auth.signInWithPassword({
@@ -287,13 +285,12 @@ export async function login(formData: LoginFormType) {
     });
 
     if (error) {
-      // console.error("error from supabase", error.code);
       throw error;
     }
 
-    // TODO: AFTER UPDATING,
     return { success: true };
   } catch (error: any) {
+    console.error(error);
     return {
       success: false,
       error: { message: error.message, code: error.code },
@@ -450,7 +447,7 @@ export async function changePassword(
     };
   }
 
-  const { error } = await supabase.auth.updateUser({
+  const { error } = await updateUser({
     password: newPassword,
   });
 
