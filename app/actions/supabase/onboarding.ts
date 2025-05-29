@@ -87,54 +87,38 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
 
 export async function signUpWithOAuth(provider: Provider, roleId: number) {
   const supabase = await createClient();
-  try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: provider,
-      options: {
-        redirectTo: `${baseUrl}/auth/oauth?redirect_to=${redirectRoutes.newUsers}&userRoleId=${roleId}&action=signup`,
-        scopes: "email, profile, openid",
-      },
-    });
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: provider,
+    options: {
+      redirectTo: `${baseUrl}/auth/oauth?redirect_to=${redirectRoutes.newUsers}&userRoleId=${roleId}&action=signup`,
+      scopes: "email, profile, openid",
+    },
+  });
 
-    if (error) {
-      throw error;
-    }
-
-    if (data.url) {
-      redirect(data.url);
-    }
-  } catch (error: any) {
+  if (error) {
     console.error(error);
-    // return {
-    //   success: false,
-    //   error: { message: error.message, code: error.code },
-    // };
+  }
+
+  if (data.url) {
+    redirect(data.url);
   }
 }
 
 export async function signInWithOAuth(provider: Provider) {
   const supabase = await createClient();
 
-  try {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: provider,
-      options: {
-        redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings&action=login`,
-      },
-    });
-    if (error) {
-      throw error;
-    }
-
-    if (data.url) {
-      redirect(data.url);
-    }
-  } catch (error: any) {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: provider,
+    options: {
+      redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings&action=login`,
+    },
+  });
+  if (error) {
     console.error(error);
-    // return {
-    //   success: false,
-    //   error: { message: error.message, code: error.code },
-    // };
+  }
+
+  if (data.url) {
+    redirect(data.url);
   }
 }
 
