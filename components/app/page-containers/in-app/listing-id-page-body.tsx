@@ -145,12 +145,12 @@ export default function ListingIdPageBody({
       <div className="flex flex-col gap-6">
         <section className="bg-background flex flex-col-reverse items-center justify-between gap-3 py-6 lg:flex-row">
           <section className="flex w-full gap-3">
-            <BackButton className="hidden lg:flex" route="/listings" />
+            <BackButton className="flex" route="/listings" />
             <header className="flex flex-col gap-3">
               <h1 className="text-2xl leading-10 font-semibold capitalize sm:text-4xl sm:leading-11">
                 {title}
               </h1>
-              <p className="text-text-secondary flex gap-2 text-sm leading-6">
+              <p className="text-text-secondary flex gap-2 text-sm leading-6 capitalize">
                 <LocationIcon /> {location}
               </p>
             </header>

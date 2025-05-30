@@ -7,3 +7,15 @@ export type ListingImageMetadata = {
 };
 
 export type OAuthActionType = "signup" | "login" | null;
+
+export type PasswordStrengthRequirements = {
+  score: number;
+  criteria: {
+    hasChar: boolean;
+    hasMinimum: boolean;
+    hasUppercase: boolean;
+    hasLowercase: boolean;
+    hasNumbers: boolean;
+    hasSpecialChars: boolean;
+  };
+};

@@ -815,6 +815,7 @@ export function PreviewPage({
           >
             <Button
               type="submit"
+              disabled={isSubmitting}
               onClick={handleClick} // TODO: FIND A BETTER WAY TO HANDLE THIS DISABLED STATE HERE
               className="w-full transition-all duration-150 sm:w-50"
             >

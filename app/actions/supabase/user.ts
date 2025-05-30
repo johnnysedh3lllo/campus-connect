@@ -96,8 +96,8 @@ export async function updateUserInfo(
 ) {
   const supabase = await createClient();
 
-  const firstName = formData.firstName;
-  const lastName = formData.lastName;
+  const firstName = formData.firstName.trim().toLowerCase();
+  const lastName = formData.lastName.trim().toLowerCase();
   const fullName = `${formData.firstName} ${formData.lastName}`;
   const about = formData.about;
 

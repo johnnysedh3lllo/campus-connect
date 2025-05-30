@@ -54,7 +54,9 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
       };
     }
 
-    const fullName = `${validFields.firstName} ${validFields.lastName}`;
+    const firstName = validFields.firstName.trim().toLowerCase();
+    const lastName = validFields.lastName.trim().toLowerCase();
+    const fullName = `${firstName} ${lastName}`;
 
     // sign up user to supabase
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -63,8 +65,8 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
       options: {
         emailRedirectTo: `${baseUrl}${redirectRoutes.newUsers}`,
         data: {
-          first_name: validFields.firstName,
-          last_name: validFields.lastName,
+          first_name: firstName,
+          last_name: lastName,
           full_name: fullName,
           role_id: validFields.roleId,
           settings: validFields.settings,
@@ -111,6 +113,7 @@ export async function signInWithOAuth(provider: Provider) {
     provider: provider,
     options: {
       redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings&action=login`,
+      scopes: "email, profile, openid",
     },
   });
   if (error) {

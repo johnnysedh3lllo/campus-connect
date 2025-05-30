@@ -125,10 +125,10 @@ export default function ListingEditPageBody({
     }
 
     const listingDetails: ListingsUpdate = {
-      title: values.title,
+      title: values.title.trim().toLowerCase(),
       no_of_bedrooms: values.noOfBedrooms,
       listing_type: values.listingType,
-      location: values.location,
+      location: values.location.trim().toLowerCase(),
       payment_frequency: values.paymentFrequency,
       price: values.price,
       publication_status: values.publicationStatus,

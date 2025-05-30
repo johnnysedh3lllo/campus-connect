@@ -111,7 +111,7 @@ export default function Signup() {
   ];
 
   return (
-    <OnboardingFlowWrapper currentStep={step} totalSteps={totalSteps}>
+    <OnboardingFlowWrapper currentStep={step} totalSteps={steps.length}>
       <AnimationWrapper
         variants={formVariants}
         transition={animationConfig}

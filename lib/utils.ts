@@ -6,6 +6,8 @@ import { UserMetadata } from "@supabase/supabase-js";
 import { format, isBefore, subMonths, formatDistanceToNow } from "date-fns";
 import { Role, ROLES } from "./config/app.config";
 import { z } from "zod";
+import { passwordCriteria } from "./form.schemas";
+import { PasswordStrengthRequirements } from "@/types/config.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -25,22 +27,35 @@ export function getBaseUrl() {
   return "http://localhost:3000";
 }
 
-export function getPasswordStrength(password: string): string {
-  if (password.length === 0) return "None";
-  if (password.length < 8) return "Weak";
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasLowercase = /[a-z]/.test(password);
-  const hasNumbers = /\d/.test(password);
-  const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-  const strength = [
+export function getPasswordStrength(
+  password: string,
+): PasswordStrengthRequirements {
+  const hasChar = password.length > 0;
+  const hasMinimum = password.length >= 8;
+  const hasUppercase = passwordCriteria.upperCase.test(password);
+  const hasLowercase = passwordCriteria.lowerCase.test(password);
+  const hasNumbers = passwordCriteria.number.test(password);
+  const hasSpecialChars = passwordCriteria.special.test(password);
+
+  const score = [
+    hasChar,
+    hasMinimum,
     hasUppercase,
     hasLowercase,
     hasNumbers,
     hasSpecialChars,
   ].filter(Boolean).length;
-  if (strength < 3) return "Medium";
-  if (strength === 3) return "Strong";
-  return "Very Strong";
+
+  const criteria = {
+    hasChar,
+    hasMinimum,
+    hasUppercase,
+    hasLowercase,
+    hasNumbers,
+    hasSpecialChars,
+  };
+
+  return { score, criteria };
 }
 
 export const formatDate = (date: Date, locale: string): string => {

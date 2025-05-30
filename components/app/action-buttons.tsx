@@ -94,7 +94,6 @@ export function ChangeListingPubStatusButton({
       } else {
         throw updatedListing.error;
       }
-
     } catch (error: any) {
       console.error(error);
     } finally {
@@ -146,10 +145,18 @@ export function DeleteListingButton({
 
       if (!deleteListing.isError) {
         setIsDeleteListingModalOpen(false);
+        const listingDescription = (
+          <p>
+            You have successfully deleted the{" "}
+            <span className="capitalize">"{deletedListing?.data?.title}"</span>{" "}
+            property from your listings
+          </p>
+        );
+
         toast({
           variant: "info",
           title: "Property Deleted!",
-          description: `You have successfully deleted the "${deletedListing?.data?.title}" property from your listings`,
+          description: listingDescription,
         });
         router.push("/listings");
       } else {

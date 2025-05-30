@@ -2,7 +2,7 @@
 
 // UTILITIES
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   resetPasswordFormSchema,
@@ -57,7 +57,8 @@ import {
 import { signOut } from "@/app/actions/supabase/onboarding";
 import { OAuthProviders } from "./oauth-providers";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
-import { formatTime } from "@/lib/utils";
+import { formatTime, getPasswordStrength } from "@/lib/utils";
+import { PasswordRequirements } from "./password-requirement";
 
 const roleDetails = [
   {
@@ -287,6 +288,8 @@ export function SelectRole({
 }
 
 export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
+  const [isPasswordFocused, setIsPasswordFocused] = useState<boolean>(false);
+
   const { formData } = useMultiStepFormStore();
   const form = useForm<SignUpFormType>({
     resolver: zodResolver(signUpFormSchema),
@@ -308,6 +311,10 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
   const {
     formState: { isSubmitting },
   } = form;
+
+  const passWordStrength = getPasswordStrength(form.watch("password"));
+  const passWordStrengthScore = passWordStrength.score;
+  const passWordStrengthCriteria = passWordStrength.criteria;
 
   return (
     <div className="flex flex-col gap-6 sm:gap-12">
@@ -397,7 +404,7 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col gap-1">
+                    <FormItem className="relative flex flex-col gap-1">
                       <FormLabel className="flex flex-col gap-1 text-sm leading-6 font-medium">
                         Password
                         <FormControl>
@@ -405,6 +412,8 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
                             disabled={isSubmitting}
                             required
                             placeholder="Enter password"
+                            onFocus={() => setIsPasswordFocused(true)}
+                            onBlur={() => setIsPasswordFocused(false)}
                             field={field}
                           />
                         </FormControl>
@@ -413,9 +422,13 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
                     </FormItem>
                   )}
                 />
-                {/* <div className="text-sm">
-                Password strength: {getPasswordStrength(form.watch("password"))}
-              </div> */}
+
+                {isPasswordFocused && (
+                  <PasswordRequirements
+                    score={passWordStrengthScore}
+                    criteria={passWordStrengthCriteria}
+                  />
+                )}
               </div>
 
               <FormField

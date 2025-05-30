@@ -12,21 +12,28 @@ import { PhotoType } from "@/types/form.types";
 // FORM SCHEMAS
 export const RoleEnum = z.enum(["1", "2", "3"]); // TODO: REFACTOR THIS TO BE A NUMBER INSTEAD OF STRING
 
+export const passwordCriteria = {
+  lowerCase: /[a-z]/,
+  upperCase: /[A-Z]/,
+  number: /\d/,
+  special: /[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/,
+};
+
 const passwordSchema = z
   .string()
   .min(8, {
     message: "Password must be at least 8 characters.",
   })
-  .refine((val) => /[a-z]/.test(val), {
+  .refine((val) => passwordCriteria.lowerCase.test(val), {
     message: "Password must contain at least one lowercase letter.",
   })
-  .refine((val) => /[A-Z]/.test(val), {
+  .refine((val) => passwordCriteria.upperCase.test(val), {
     message: "Password must contain at least one uppercase letter.",
   })
-  .refine((val) => /\d/.test(val), {
+  .refine((val) => passwordCriteria.number.test(val), {
     message: "Password must contain at least one number.",
   })
-  .refine((val) => /[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]/.test(val), {
+  .refine((val) => passwordCriteria.special.test(val), {
     message: "Password must contain at least one special character.",
   });
 

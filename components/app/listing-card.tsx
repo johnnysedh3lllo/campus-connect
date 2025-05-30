@@ -49,7 +49,7 @@ export default function ListingCard({
         {listing.location && (
           <div className="text-text-secondary flex gap-2">
             <LocationIcon />
-            <p className="w-full truncate">{listing.location}</p>
+            <p className="w-full truncate capitalize">{listing.location}</p>
           </div>
         )}
         {listing.title && (

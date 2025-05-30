@@ -151,6 +151,7 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
                               required
                               placeholder="Enter your first name"
                               {...field}
+                              className="capitalize"
                             />
                           </FormControl>
                         </FormLabel>
@@ -172,6 +173,7 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
                               required
                               placeholder="Enter your last name"
                               {...field}
+                              className="capitalize"
                             />
                           </FormControl>
                         </FormLabel>

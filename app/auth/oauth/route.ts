@@ -47,8 +47,8 @@ export async function GET(request: Request) {
           const { error: updateUserError } = await updateUser({
             data: {
               ...userMetadata,
-              first_name: firstName,
-              last_name: lastName,
+              first_name: firstName.trim().toLowerCase(),
+              last_name: lastName.trim().toLowerCase(),
               role_id: userRoleId,
             },
           });
@@ -64,8 +64,8 @@ export async function GET(request: Request) {
             const { error: updateUserError } = await updateUser({
               data: {
                 ...userMetadata,
-                first_name: firstName,
-                last_name: lastName,
+                first_name: firstName.trim().toLowerCase(),
+                last_name: lastName.trim().toLowerCase(),
               },
             });
 
