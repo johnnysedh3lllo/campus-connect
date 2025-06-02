@@ -35,7 +35,7 @@ export async function getListings(
     if (userId) query = query.eq("landlord_id", userId);
 
     if (searchTerm) {
-      query = query.textSearch("title", searchTerm, {
+      query = query.textSearch("listings_search_vector", searchTerm, {
         type: "websearch",
         config: "english",
       });
