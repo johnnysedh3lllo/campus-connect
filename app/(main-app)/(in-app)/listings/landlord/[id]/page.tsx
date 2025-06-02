@@ -2,6 +2,7 @@ import { getListings } from "@/app/actions/supabase/listings";
 import { getUserPublic } from "@/app/actions/supabase/user";
 import { ListingLandlordIdPageBody } from "@/components/app/page-containers/in-app/listing-landlord-id-page-body";
 import { queryKeys } from "@/lib/config/query-keys.config";
+import { LISTING_PAGE_SIZE } from "@/lib/constants";
 import {
   dehydrate,
   HydrationBoundary,
@@ -23,8 +24,9 @@ export default async function Page({
   });
 
   await queryClient.prefetchQuery({
-    queryKey: queryKeys.listings.published(id ?? "public"),
-    queryFn: async () => await getListings(id, "published"),
+    queryKey: queryKeys.listings.published(id, undefined),
+    queryFn: async () =>
+      await getListings("published", 0, LISTING_PAGE_SIZE, id),
   });
 
   return (

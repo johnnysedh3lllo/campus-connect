@@ -4,10 +4,22 @@ import { MessageList } from "./message-list";
 import { Suspense, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useGetConversations } from "@/hooks/tanstack/use-get-conversations";
+import { useUserStore } from "@/lib/store/user-store";
+import { MessageListItemSkeleton } from "./skeletons/message-list-item-skeleton";
+import { createSearchStore } from "@/lib/store/search-store";
+import { useStore } from "zustand";
+
+const messageSearchStore = createSearchStore();
 
 export function MessageSideBar() {
   const [isRoot, setIsRoot] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const { userId } = useUserStore();
+  const query = useStore(messageSearchStore, (s) => s.query);
+  const setQuery = useStore(messageSearchStore, (s) => s.setQuery);
+
+  const { data: conversations, isLoading } = useGetConversations(userId ?? "");
 
   const pathname = usePathname();
 
@@ -19,6 +31,7 @@ export function MessageSideBar() {
     }
   }, [pathname]);
 
+  console.log("message side bar", query);
   return (
     <div
       className={`border-border absolute inset-0 border-r-1 ${isRoot || isDesktop ? "block" : "hidden"} bg-background z-10 lg:static`}
@@ -31,10 +44,18 @@ export function MessageSideBar() {
             Messages
           </h1>
 
-          <SearchBar />
+          <SearchBar collection="messages" query={query} setQuery={setQuery} />
         </header>
 
-        <MessageList />
+        {isLoading ? (
+          <section>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <MessageListItemSkeleton key={index} />
+            ))}
+          </section>
+        ) : (
+          <MessageList conversations={conversations} />
+        )}
       </section>
     </div>
   );

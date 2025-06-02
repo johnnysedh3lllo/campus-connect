@@ -6,18 +6,16 @@ import { PlusIcon } from "@/public/icons/plus-icon";
 import { CreateListingsButton } from "../../action-buttons";
 import { EmptyPageState } from "../../empty-page-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import listingIllustration from "@/public/illustrations/illustration-listings.png";
 import { Header } from "../../header";
 import { useUserStore } from "@/lib/store/user-store";
-import { useGetPublishedListings } from "@/hooks/tanstack/use-get-published-listings";
-import { useGetUnpublishedListings } from "@/hooks/tanstack/use-get-unpublished-listings";
-import { useGetDraftListings } from "@/hooks/tanstack/use-get-draft-listings";
-import ListingCard from "../../listing-card";
-import listingIllustration from "@/public/illustrations/illustration-listings.png";
 import { PublicationStatusType } from "@/types/form.types";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ListingsCardGridSkeleton } from "../../skeletons/listings-card-grid-skeleton";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import { PremiumBanner } from "../../premium-banner";
+import { ListingsPageContainer } from "../../listings-page-container";
+import { UseGetListingsType } from "@/hooks/tanstack/use-get-listings";
+import { Suspense } from "react";
 
 export function ListingsPageLandlord() {
   const { userId, userRoleId } = useUserStore();
@@ -32,49 +30,35 @@ export function ListingsPageLandlord() {
     userRoleId,
   );
 
-  const { data: publishedListings, isLoading: isPublishedLoading } =
-    useGetPublishedListings(userId || undefined, activeTab);
-
-  const { data: unPublishedListings, isLoading: isUnpublishedLoading } =
-    useGetUnpublishedListings(userId || undefined, userRoleId, activeTab);
-
-  const { data: draftListings, isLoading: isDraftLoading } =
-    useGetDraftListings(userId || undefined, userRoleId, activeTab);
-
-  const publishedListingsData = publishedListings?.data;
-  const unPublishedListingsData = unPublishedListings?.data;
-  const draftListingsData = draftListings?.data;
-
-  const isAnyLoading =
-    isPublishedLoading || isUnpublishedLoading || isDraftLoading;
-
-  const allQueriesFinished = !isAnyLoading;
-  const allTabsEmpty =
-    (!publishedListingsData || publishedListingsData.length === 0) &&
-    (!unPublishedListingsData || unPublishedListingsData.length === 0) &&
-    (!draftListingsData || draftListingsData.length === 0);
-
   const tabData = [
     {
       label: "Published",
       value: "published",
-      count: publishedListingsData?.length,
-      content: publishedListingsData,
-      isLoading: isPublishedLoading,
+      props: {
+        currStatus: activeTab,
+        pubStatus: "published",
+        userId: userId ?? undefined,
+      },
     },
     {
       label: "unpublished",
       value: "unpublished",
-      count: unPublishedListingsData?.length,
-      content: unPublishedListingsData,
-      isLoading: isUnpublishedLoading,
+      props: {
+        currStatus: activeTab,
+        pubStatus: "unpublished",
+        userRoleId: userRoleId ?? undefined,
+        userId: userId ?? undefined,
+      },
     },
     {
       label: "Drafts",
       value: "draft",
-      count: draftListingsData?.length,
-      content: draftListingsData,
-      isLoading: isDraftLoading,
+      props: {
+        currStatus: activeTab,
+        pubStatus: "draft",
+        userRoleId: userRoleId ?? undefined,
+        userId: userId || undefined,
+      },
     },
   ];
 
@@ -107,53 +91,59 @@ export function ListingsPageLandlord() {
           onValueChange={(value: string) =>
             updateActiveTab(value as PublicationStatusType)
           }
-          className="w-full gap-6 pb-6"
+          className="w-full gap-0 pb-6"
         >
           {/* TODO: DEVISE A WAY TO REMOVE ACHIEVE STICKY WITHOUT THIS ARBITRARY top-[105px] */}
           <TabsList className="bg-background-secondary sticky top-[105px] z-20 w-full items-end justify-start gap-3 rounded-none border-b p-0 pt-6 sm:top-[125px]">
             <div className="max-w-screen-max-xl mx-auto w-full">
               <div className="listing-image-preview-container flex h-full w-full max-w-fit items-end gap-3 overflow-x-auto px-4 sm:px-6">
-                {tabData.map((tab) => (
-                  <TabsTrigger
-                    className="data-[state=active]:bg-background-accent-secondary focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring hover:bg-background-accent-secondary/50 data-[state=active]:border-text-disabled data-[state=active]:text-text-accent text-text-secondary p-3 capitalize focus-visible:ring-[3px] focus-visible:outline-1"
-                    key={tab.value}
-                    value={tab.value}
-                  >
-                    {tab.label} {tab.count ? `(${tab.count})` : "(-)"}
-                  </TabsTrigger>
-                ))}
+                {tabData.map((tab) => {
+                  // const totalItems = tab.content?.reduce(
+                  //   (acc, curr) => acc + (curr?.data?.length ?? 0),
+                  //   0,
+                  // );
+                  // {
+                  //   totalItems ? `(${totalItems})` : "(-)";
+                  // }
+
+                  return (
+                    <TabsTrigger
+                      className="data-[state=active]:bg-background-accent-secondary focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring hover:bg-background-accent-secondary/50 data-[state=active]:border-text-disabled data-[state=active]:text-text-accent text-text-secondary p-3 capitalize focus-visible:ring-[3px] focus-visible:outline-1"
+                      key={tab.value}
+                      value={tab.value}
+                    >
+                      {tab.label}
+                    </TabsTrigger>
+                  );
+                })}
               </div>
             </div>
           </TabsList>
 
-          {isAnyLoading ? (
-            <ListingsCardGridSkeleton />
-          ) : allQueriesFinished && allTabsEmpty ? (
-            <div className="flex items-center justify-center px-4 pt-4 pb-8">
+          <Suspense
+            fallback={
               <EmptyPageState
                 imageSrc={listingIllustration.src}
                 title="You have no listings yet"
                 subTitle="Kick start your journey with us by making your first listing. Clicking the button below"
                 button={<CreateListingsButton />}
               />
-            </div>
-          ) : (
-            tabData.map((tab) => (
-              <TabsContent key={tab.value} value={tab.value}>
-                {tab.content && tab.content.length > 0 ? (
-                  <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 px-4 sm:grid-cols-2 sm:px-12 lg:grid-cols-3 xl:grid-cols-4">
-                    {tab.content.map((listing) => (
-                      <ListingCard listing={listing} key={listing.uuid} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="max-w-screen-max-xl mx-auto w-full text-center">
-                    <p className="">You don't have any listings here</p>
-                  </div>
-                )}
-              </TabsContent>
-            ))
-          )}
+            }
+          >
+            {tabData.map((tab) => {
+              const props = tab.props as UseGetListingsType;
+              return (
+                <TabsContent key={`${tab.value}`} value={tab.value}>
+                  <ListingsPageContainer
+                    pubStatus={props.pubStatus}
+                    currStatus={props.currStatus}
+                    userId={props.userId}
+                    userRoleId={props.userRoleId}
+                  />
+                </TabsContent>
+              );
+            })}
+          </Suspense>
         </Tabs>
 
         <Link href="/listings/create">

@@ -74,7 +74,7 @@ export function useCreateListing() {
     },
     onSuccess: (data, variables) => {
       queryClient.refetchQueries({
-        queryKey: queryKeys.listings.published(variables.userId ?? "public"),
+        queryKey: queryKeys.listings.published(variables.userId, undefined),
         exact: true,
       });
     },

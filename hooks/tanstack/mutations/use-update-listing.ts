@@ -45,15 +45,15 @@ export function useUpdateListing() {
       // TODO: REDUCE THIS TO ONE INVALIDATION INSTANCE THAT HANDLES WHICH EVER AFFECTED STATUS
       // Invalidate the user's published listings
       queryClient.invalidateQueries({
-        queryKey: queryKeys.listings.published(variables.userId! ?? "public"),
+        queryKey: queryKeys.listings.all,
       });
 
       // Invalidate the user's draft, unpublished listings
       queryClient.invalidateQueries({
-        queryKey: queryKeys.listings.unpublished(variables.userId!),
+        queryKey: queryKeys.listings.all,
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.listings.drafts(variables.userId!),
+        queryKey: queryKeys.listings.all,
       });
     },
   });

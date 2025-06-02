@@ -12,6 +12,7 @@ import { hasRole } from "@/lib/utils";
 import { upsertUserSettings } from "@/app/actions/supabase/settings";
 import { createClient } from "@/utils/supabase/server";
 import { queryKeys } from "@/lib/config/query-keys.config";
+import { LISTING_PAGE_SIZE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Listings",
@@ -59,15 +60,16 @@ export default async function Page({ searchParams }: WelcomeProps) {
 
   if (isLandlord) {
     await queryClient.prefetchQuery({
-      queryKey: queryKeys.listings.published(userId),
-      queryFn: async () => await getListings(userId, "published"),
+      queryKey: queryKeys.listings.published(userId, undefined),
+      queryFn: async () =>
+        await getListings("published", 0, LISTING_PAGE_SIZE, userId),
     });
   }
 
   if (isStudent) {
     await queryClient.prefetchQuery({
-      queryKey: queryKeys.listings.published(userId),
-      queryFn: async () => await getListings(undefined, "published"),
+      queryKey: queryKeys.listings.published(userId, undefined),
+      queryFn: async () => await getListings("published", 0, LISTING_PAGE_SIZE),
     });
   }
 

@@ -20,12 +20,17 @@ export const queryKeys = {
 
   listings: {
     all: ["listings"] as const,
-    published: (userId: string | undefined) =>
-      ["listings", userId ?? "public", "published"] as const,
-    unpublished: (userId: string | undefined) =>
-      ["listings", userId, "unpublished"] as const,
-    drafts: (userId: string | undefined) =>
-      ["listings", userId, "draft"] as const,
+    published: (userId: string | undefined, searchTerm: string | undefined) =>
+      [
+        "listings",
+        userId ?? "public",
+        "published",
+        searchTerm ?? "all",
+      ] as const,
+    unpublished: (userId: string | undefined, searchTerm: string | undefined) =>
+      ["listings", userId, "unpublished", searchTerm ?? "all"] as const,
+    drafts: (userId: string | undefined, searchTerm: string | undefined) =>
+      ["listings", userId, "draft", searchTerm ?? "all"] as const,
     byId: (listingId: string) => ["listings", listingId] as const,
   },
 };

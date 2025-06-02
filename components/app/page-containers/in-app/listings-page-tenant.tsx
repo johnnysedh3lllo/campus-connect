@@ -1,26 +1,29 @@
 "use client";
 import { EmptyPageState } from "../../empty-page-state";
 import { Header } from "../../header";
-import listingIllustration from "@/public/illustrations/illustration-listings.png";
-import { useGetPublishedListings } from "@/hooks/tanstack/use-get-published-listings";
 import { ListingsCardGridSkeleton } from "../../skeletons/listings-card-grid-skeleton";
-import ListingCard from "../../listing-card";
 import { PremiumBanner } from "../../premium-banner";
 import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
 import { useUserStore } from "@/lib/store/user-store";
 import { RoleGate } from "../../role-gate";
+import { ListingsPageContainer } from "../../listings-page-container";
+import { useGetListings } from "@/hooks/tanstack/use-get-listings";
 
 export function ListingsPageTenant() {
   const { userId, userRoleId } = useUserStore();
 
-  const { data, isLoading } = useGetPublishedListings(undefined, "published");
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useGetListings({
+      pubStatus: "published",
+      currStatus: "published",
+    });
 
   const { data: currentPackage } = useGetPackageRecord(
     userId || undefined,
     userRoleId,
   );
 
-  const publishedListings = data?.data;
+  const listingPages = data?.pages;
 
   return (
     <RoleGate userRoleId={userRoleId} role="TENANT">
@@ -40,22 +43,18 @@ export function ListingsPageTenant() {
           subTitle="Search and connect based on your preferences"
         />
 
-        {isLoading ? (
+        {/* {isLoading ? (
           <ListingsCardGridSkeleton />
-        ) : !publishedListings || publishedListings?.length === 0 ? (
+        ) : !listingPages || listingPages?.length === 0 ? (
           <div className="flex items-center justify-center px-4 pt-4 pb-8">
             <EmptyPageState
               imageSrc={listingIllustration.src}
               title="There are no listings available yet"
             />
           </div>
-        ) : (
-          <div className="max-w-screen-max-xl mx-auto grid grid-cols-1 justify-items-center gap-4 px-4 py-6 sm:grid-cols-2 sm:px-12 lg:grid-cols-3 xl:grid-cols-4">
-            {publishedListings?.map((listing) => (
-              <ListingCard listing={listing} key={listing.uuid} />
-            ))}
-          </div>
-        )}
+        ) : ( */}
+        <ListingsPageContainer currStatus="published" pubStatus="published" />
+        {/* )} */}
       </section>
     </RoleGate>
   );

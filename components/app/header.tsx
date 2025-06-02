@@ -9,7 +9,7 @@ export function Header({
   className,
 }: HeaderProps) {
   return (
-    <div className="bg-background border-border sticky top-0 z-10 border-b-1">
+    <div className="bg-background border-border sticky -top-1 z-10 border-b-1">
       <header
         className={cn(
           "max-w-screen-max-xl mx-auto flex items-center justify-between p-4 pt-6 sm:px-12 sm:pt-10 lg:px-6",

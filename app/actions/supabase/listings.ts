@@ -6,23 +6,42 @@ import { formatCurrency } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/server";
 import { ListingImageMetadata } from "@/types/config.types";
 
+export type ListingsResponse =
+  | {
+      success: boolean;
+      data: ListingWithImages[];
+      error?: undefined;
+    }
+  | { success: boolean; error: unknown; data?: undefined }
+  | null;
+
 export async function getListings(
-  userId: string | undefined,
   pubStatus: Listings["publication_status"],
+  from: number,
+  to: number,
+  userId?: string,
+  searchTerm?: string,
 ) {
   const supabase = await createClient();
 
   try {
     let query = supabase
       .from("listings")
-      .select("*, listing_images(id, url, path, full_path, width, height)");
+      .select("*, listing_images(id, url, path, full_path, width, height)")
+      .order("created_at", { ascending: false });
 
-    if (userId) query = query.eq("landlord_id", userId);
     if (pubStatus) query = query.eq("publication_status", pubStatus);
 
-    const { data, error } = await query.order("created_at", {
-      ascending: false,
-    });
+    if (userId) query = query.eq("landlord_id", userId);
+
+    if (searchTerm) {
+      query = query.textSearch("title", searchTerm, {
+        type: "websearch",
+        config: "english",
+      });
+    }
+
+    const { data, error } = await query.range(from, to);
 
     if (error) {
       throw error;

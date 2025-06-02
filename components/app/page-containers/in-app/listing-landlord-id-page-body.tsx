@@ -5,10 +5,11 @@ import { BackButton, MessageLandlordButton } from "../../action-buttons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UserIcon } from "@/public/icons/user-icon";
 import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
-import { useGetPublishedListings } from "@/hooks/tanstack/use-get-published-listings";
-import ListingCard from "../../listing-card";
 import { ListingLandlordProfileSkeleton } from "../../skeletons/listing-landlord-id-page-skeleton";
 import { ListingsCardSkeleton } from "../../skeletons/listings-card-skeleton";
+import { ListingsPageContainer } from "../../listings-page-container";
+import { useGetListings } from "@/hooks/tanstack/use-get-listings";
+import { useEffect, useState } from "react";
 
 export function ListingLandlordIdPageBody({
   landlordId,
@@ -18,14 +19,17 @@ export function ListingLandlordIdPageBody({
   const { data: landlordProfile, isLoading: isUserProfileLoading } =
     useGetUserPublic(landlordId || undefined);
 
-  const { data: listingData, isLoading: isPublishedListingsLoading } =
-    useGetPublishedListings(landlordId, "published");
+  const { data } = useGetListings({
+    currStatus: "published",
+    pubStatus: "published",
+    userId: landlordId,
+  });
 
   const fullName = landlordProfile?.full_name;
   const avatarUrl = landlordProfile?.avatar_url;
 
-  const publishedListings = listingData?.data;
-  const numOfListings = publishedListings?.length;
+  const listingPages = data?.pages;
+  const numOfListings = listingPages?.length;
 
   return (
     <section>
@@ -41,7 +45,7 @@ export function ListingLandlordIdPageBody({
         </header>
       </section>
       <Separator />
-      {/* {isUserProfileLoading || isPublishedListingsLoading ? (
+      {/* {isUserProfileLoading || isLoading ? (
         <ListingLandlordProfileSkeleton />
       ) : ( */}
       <section className="max-w-screen-max-xl mx-auto w-full px-4 py-6 sm:grid sm:grid-cols-[1fr_2fr] sm:gap-6 sm:py-12 lg:px-10 xl:px-4">
@@ -91,20 +95,11 @@ export function ListingLandlordIdPageBody({
             Listings
           </h2>
 
-          {isPublishedListingsLoading ? (
-            <div className="max-w-screen-max-xl grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
-              {/* Generate 3 property card skeletons */}
-              {Array.from({ length: 3 }).map((_, index) => (
-                <ListingsCardSkeleton key={index} />
-              ))}
-            </div>
-          ) : (
-            <div className="max-w-screen-max-xl mx-auto grid w-full grid-cols-1 justify-items-center gap-4 lg:grid-cols-2 xl:grid-cols-3">
-              {publishedListings?.map((listing) => (
-                <ListingCard listing={listing} key={listing.uuid} />
-              ))}
-            </div>
-          )}
+          <ListingsPageContainer
+            currStatus="published"
+            pubStatus="published"
+            userId={landlordId}
+          />
         </section>
       </section>
       )
