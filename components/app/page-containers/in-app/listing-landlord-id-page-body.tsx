@@ -10,12 +10,19 @@ import { ListingsCardSkeleton } from "../../skeletons/listings-card-skeleton";
 import { ListingsPageContainer } from "../../listings-page-container";
 import { useGetListings } from "@/hooks/tanstack/use-get-listings";
 import { useEffect, useState } from "react";
+import { SearchBar } from "../../search-bar";
+import { useStore } from "zustand";
+import { createSearchStore } from "@/lib/store/search-store";
 
+const listingsSearchStore = createSearchStore();
 export function ListingLandlordIdPageBody({
   landlordId,
 }: {
   landlordId: string;
 }) {
+  const searchTerm = useStore(listingsSearchStore, (s) => s.query);
+  const setSearchTerm = useStore(listingsSearchStore, (s) => s.setQuery);
+
   const { data: landlordProfile, isLoading: isUserProfileLoading } =
     useGetUserPublic(landlordId || undefined);
 
@@ -23,6 +30,7 @@ export function ListingLandlordIdPageBody({
     currStatus: "published",
     pubStatus: "published",
     userId: landlordId,
+    searchTerm: "",
   });
 
   const fullName = landlordProfile?.full_name;
@@ -48,7 +56,7 @@ export function ListingLandlordIdPageBody({
       {/* {isUserProfileLoading || isLoading ? (
         <ListingLandlordProfileSkeleton />
       ) : ( */}
-      <section className="max-w-screen-max-xl mx-auto w-full px-4 py-6 sm:grid sm:grid-cols-[1fr_2fr] sm:gap-6 sm:py-12 lg:px-10 xl:px-4">
+      <section className="max-w-screen-max-xl mx-auto w-full px-4 py-6 sm:grid sm:grid-cols-[0.75fr_2.25fr] sm:gap-6 sm:py-12 lg:px-10 xl:px-4">
         {isUserProfileLoading ? (
           <ListingLandlordProfileSkeleton />
         ) : (
@@ -91,14 +99,25 @@ export function ListingLandlordIdPageBody({
         )}
 
         <section className="flex flex-col gap-4 py-6 lg:p-0">
-          <h2 className="text-text-primary bg-background sticky top-0 pb-2 text-2xl leading-8 font-semibold">
-            Listings
-          </h2>
+          <div
+            className={`max-w-screen-max-xl bg-background sticky top-0 z-15 mx-auto flex w-full justify-between px-6 pt-6 pb-2`}
+          >
+            <h2 className="text-text-primary text-2xl leading-8 font-semibold">
+              Listings
+            </h2>
+            <SearchBar
+              collection="listings"
+              className="w-full lg:max-w-80"
+              query={searchTerm}
+              setQuery={setSearchTerm}
+            />
+          </div>
 
           <ListingsPageContainer
             currStatus="published"
             pubStatus="published"
             userId={landlordId}
+            searchTerm={searchTerm}
           />
         </section>
       </section>

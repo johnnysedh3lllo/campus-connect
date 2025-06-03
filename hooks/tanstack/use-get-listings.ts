@@ -56,7 +56,6 @@ export function useGetListings({
   };
 
   if (isPublished) {
-    options.queryKey = queryKeys.listings.published(userId, searchTerm);
     options.enabled = isActiveStatus;
   }
 
