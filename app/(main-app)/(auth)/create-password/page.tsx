@@ -17,11 +17,11 @@ import { CreatePasswordFormType } from "@/types/form.types";
 import { createPassword } from "@/app/actions/supabase/onboarding";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 
-export default function CreateNewPasswordPage() {
+export default function CreatePasswordPage() {
   const { step, nextStep, updateFields } = useMultiStepFormStore();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleCreateNewPassword = async (
+  const handleCreatePassword = async (
     values: CreatePasswordFormType,
   ): Promise<void> => {
     setIsLoading(true);
@@ -42,16 +42,16 @@ export default function CreateNewPasswordPage() {
       updateFields(values);
       nextStep();
     } catch (error) {
-      console.error("client error: from createNewPassword");
+      console.error("client error: from createPassword");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const createNewPasswordSteps = [
+  const createPasswordSteps = [
     <CreatePassword
       isSubmitting={isLoading}
-      handleCreatePassword={handleCreateNewPassword}
+      handleCreatePassword={handleCreatePassword}
     />,
     <PasswordCreationSuccess />,
   ];
@@ -64,7 +64,7 @@ export default function CreateNewPasswordPage() {
         transition={animationConfig}
         classes="flex h-full w-full flex-col justify-center"
       >
-        {createNewPasswordSteps[step]}
+        {createPasswordSteps[step]}
       </AnimationWrapper>
       <Toaster />
     </>

@@ -194,8 +194,7 @@ export async function resendSignUpOtp(userEmail: string) {
   }
 }
 
-// this is for the two create password forms on the create password page
-// and when resetting/forgetting passwords
+// for resetting/forgetting passwords
 export async function createPassword(formData: CreatePasswordFormType) {
   // Validate fields
   const validatedFields = createPasswordFormSchema.safeParse(formData);
@@ -320,7 +319,7 @@ export async function resetPassword(formData: ResetPasswordFormType) {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${baseUrl}/create-new-password`,
+      redirectTo: `${baseUrl}/create-password`,
     });
 
     if (error) {
