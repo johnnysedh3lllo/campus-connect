@@ -31,7 +31,6 @@ export function MessageSideBar() {
     }
   }, [pathname]);
 
-  console.log("message side bar", query);
   return (
     <div
       className={`border-border absolute inset-0 border-r-1 ${isRoot || isDesktop ? "block" : "hidden"} bg-background z-10 lg:static`}

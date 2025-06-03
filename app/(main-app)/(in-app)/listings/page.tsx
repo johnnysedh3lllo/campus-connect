@@ -62,14 +62,24 @@ export default async function Page({ searchParams }: WelcomeProps) {
     await queryClient.prefetchQuery({
       queryKey: queryKeys.listings.published(userId, undefined),
       queryFn: async () =>
-        await getListings("published", 0, LISTING_PAGE_SIZE, userId),
+        await getListings({
+          pubStatus: "published",
+          from: 0,
+          to: LISTING_PAGE_SIZE,
+          userId: userId,
+        }),
     });
   }
 
   if (isStudent) {
     await queryClient.prefetchQuery({
       queryKey: queryKeys.listings.published(userId, undefined),
-      queryFn: async () => await getListings("published", 0, LISTING_PAGE_SIZE),
+      queryFn: async () =>
+        await getListings({
+          pubStatus: "published",
+          from: 0,
+          to: LISTING_PAGE_SIZE,
+        }),
     });
   }
 

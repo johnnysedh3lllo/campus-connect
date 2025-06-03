@@ -27,7 +27,7 @@ export function ListingsPageTenant() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetListings({
       pubStatus: "published",
-      currStatus: "published",
+      activeStatus: "published",
       searchTerm: searchTerm,
     });
 

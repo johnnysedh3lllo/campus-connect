@@ -15,13 +15,19 @@ export type ListingsResponse =
   | { success: boolean; error: unknown; data?: undefined }
   | null;
 
-export async function getListings(
-  pubStatus: Listings["publication_status"],
-  from: number,
-  to: number,
-  userId?: string,
-  searchTerm?: string,
-) {
+export async function getListings({
+  pubStatus,
+  from,
+  to,
+  userId,
+  searchTerm,
+}: {
+  pubStatus: Listings["publication_status"];
+  from: number;
+  to: number;
+  userId?: string;
+  searchTerm?: string;
+}) {
   const supabase = await createClient();
 
   try {
@@ -46,8 +52,6 @@ export async function getListings(
     if (error) {
       throw error;
     }
-
-    console.log(data);
 
     if (!data || data.length === 0) return null;
 

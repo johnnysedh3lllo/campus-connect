@@ -16,13 +16,13 @@ export function useGetPublishedListings(
   return useInfiniteQuery({
     queryKey: queryKeys.listings.published(userId, searchTerm),
     queryFn: async ({ pageParam }) =>
-      await getListings(
+      await getListings({
         pubStatus,
-        pageParam as number,
-        (pageParam as number) + LISTING_PAGE_SIZE - 1,
+        from: pageParam as number,
+        to: (pageParam as number) + LISTING_PAGE_SIZE - 1,
         userId,
         searchTerm,
-      ),
+      }),
     initialPageParam: 0,
     getNextPageParam: (lastPage: ListingsResponse, allPages) =>
       (lastPage?.data?.length ?? 0) < LISTING_PAGE_SIZE

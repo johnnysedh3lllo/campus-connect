@@ -19,13 +19,13 @@ export function useGetUnpublishedListings(
   return useInfiniteQuery<ListingsResponse>({
     queryKey: queryKeys.listings.unpublished(userId, searchTerm),
     queryFn: async ({ pageParam }) =>
-      await getListings(
+      await getListings({
         pubStatus,
-        pageParam as number,
-        (pageParam as number) + LISTING_PAGE_SIZE - 1,
+        from: pageParam as number,
+        to: (pageParam as number) + LISTING_PAGE_SIZE - 1,
         userId,
         searchTerm,
-      ),
+      }),
     initialPageParam: 0,
     getNextPageParam: (lastPage: any, allPages) =>
       lastPage?.data?.length < LISTING_PAGE_SIZE

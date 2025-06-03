@@ -37,7 +37,7 @@ export function ListingLandlordIdPageBody({
     fetchNextPage,
     isFetchingNextPage,
   } = useGetListings({
-    currStatus: "published",
+    activeStatus: "published",
     pubStatus: "published",
     userId: landlordId,
     searchTerm: searchTerm,

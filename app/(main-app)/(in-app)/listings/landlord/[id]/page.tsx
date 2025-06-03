@@ -26,7 +26,12 @@ export default async function Page({
   await queryClient.prefetchQuery({
     queryKey: queryKeys.listings.published(id, undefined),
     queryFn: async () =>
-      await getListings("published", 0, LISTING_PAGE_SIZE, id),
+      await getListings({
+        pubStatus: "published",
+        from: 0,
+        to: LISTING_PAGE_SIZE,
+        userId: id,
+      }),
   });
 
   return (

@@ -21,12 +21,11 @@ export default function CreateNewPasswordPage() {
   const { step, nextStep, updateFields } = useMultiStepFormStore();
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleChangePassword = async (
+  const handleCreateNewPassword = async (
     values: CreatePasswordFormType,
   ): Promise<void> => {
     setIsLoading(true);
     try {
-      // const result = await changePassword(values);
       const result = await createPassword(values);
 
       if (!result.success) {
@@ -43,16 +42,16 @@ export default function CreateNewPasswordPage() {
       updateFields(values);
       nextStep();
     } catch (error) {
-      console.error("client error: from createPassword");
+      console.error("client error: from createNewPassword");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const changePasswordSteps = [
+  const createNewPasswordSteps = [
     <CreatePassword
       isSubmitting={isLoading}
-      handleCreatePassword={handleChangePassword}
+      handleCreatePassword={handleCreateNewPassword}
     />,
     <PasswordCreationSuccess />,
   ];
@@ -65,7 +64,7 @@ export default function CreateNewPasswordPage() {
         transition={animationConfig}
         classes="flex h-full w-full flex-col justify-center"
       >
-        {changePasswordSteps[step]}
+        {createNewPasswordSteps[step]}
       </AnimationWrapper>
       <Toaster />
     </>
