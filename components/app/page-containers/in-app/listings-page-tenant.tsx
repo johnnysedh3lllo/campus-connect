@@ -8,22 +8,29 @@ import { useUserStore } from "@/lib/store/user-store";
 import { RoleGate } from "../../role-gate";
 import { ListingsPageContainer } from "../../listings-page-container";
 import { useGetListings } from "@/hooks/tanstack/use-get-listings";
+import { SearchBar } from "../../search-bar";
+import { useStore } from "zustand";
+import { createSearchStore } from "@/lib/store/search-store";
 
+const listingsSearchStore = createSearchStore();
 export function ListingsPageTenant() {
   const { userId, userRoleId } = useUserStore();
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useGetListings({
-      pubStatus: "published",
-      currStatus: "published",
-    });
+  const searchTerm = useStore(listingsSearchStore, (s) => s.query);
+  const setSearchTerm = useStore(listingsSearchStore, (s) => s.setQuery);
+
+  // const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  //   useGetListings({
+  //     pubStatus: "published",
+  //     currStatus: "published",
+  //   });
 
   const { data: currentPackage } = useGetPackageRecord(
     userId || undefined,
     userRoleId,
   );
 
-  const listingPages = data?.pages;
+  // const listingPages = data?.pages;
 
   return (
     <RoleGate userRoleId={userRoleId} role="TENANT">
@@ -42,7 +49,16 @@ export function ListingsPageTenant() {
           title="Listings"
           subTitle="Search and connect based on your preferences"
         />
-
+        <div
+          className={`max-w-screen-max-xl sticky top-[100px] z-15 mx-auto flex w-full justify-end bg-white px-6 pt-6 pb-2 sm:top-[105px]`}
+        >
+          <SearchBar
+            collection="listings"
+            className="w-full lg:max-w-80"
+            query={searchTerm}
+            setQuery={setSearchTerm}
+          />
+        </div>
         {/* {isLoading ? (
           <ListingsCardGridSkeleton />
         ) : !listingPages || listingPages?.length === 0 ? (
@@ -53,7 +69,11 @@ export function ListingsPageTenant() {
             />
           </div>
         ) : ( */}
-        <ListingsPageContainer currStatus="published" pubStatus="published" />
+        <ListingsPageContainer
+          currStatus="published"
+          pubStatus="published"
+          searchTerm={searchTerm}
+        />
         {/* )} */}
       </section>
     </RoleGate>

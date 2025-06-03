@@ -47,6 +47,8 @@ export async function getListings(
       throw error;
     }
 
+    console.log(data);
+
     if (!data || data.length === 0) return null;
 
     return {
