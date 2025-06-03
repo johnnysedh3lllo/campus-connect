@@ -13,17 +13,21 @@ import { PublicationStatusType } from "@/types/form.types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
 import { PremiumBanner } from "../../premium-banner";
-import { ListingsPageContainer } from "../../listings-page-container";
-import { UseGetListingsType } from "@/hooks/tanstack/use-get-listings";
-import { Suspense } from "react";
+import { useGetListings } from "@/hooks/tanstack/use-get-listings";
+import { useEffect } from "react";
 import { SearchBar } from "../../search-bar";
 import { useStore } from "zustand";
 import { createSearchStore } from "@/lib/store/search-store";
+import { useInView } from "react-intersection-observer";
+import { ListingsCardGridSkeleton } from "../../skeletons/listings-card-grid-skeleton";
+import { ListingsCardContainer } from "../../listings-card-container";
+import { Loader2 } from "lucide-react";
 
 const listingsSearchStore = createSearchStore();
 export function ListingsPageLandlord() {
   const { userId, userRoleId } = useUserStore();
   const router = useRouter();
+  const { ref, inView } = useInView();
   const searchParams = useSearchParams();
 
   const searchTerm = useStore(listingsSearchStore, (s) => s.query);
@@ -37,38 +41,105 @@ export function ListingsPageLandlord() {
     userRoleId,
   );
 
+  // QUERIES
+  const {
+    data: publishedListings,
+    isLoading: isPublishedLoading,
+    hasNextPage: hasNextPublishedPage,
+    fetchNextPage: fetchNextPublishedPage,
+    isFetchingNextPage: isFetchingNextPublishedPage,
+  } = useGetListings({
+    currStatus: activeTab,
+    pubStatus: "published",
+    userId: userId ?? undefined,
+    searchTerm: searchTerm,
+  });
+
+  const {
+    data: unPublishedListings,
+    isLoading: isUnpublishedLoading,
+    hasNextPage: hasNextUnpublishedPage,
+    fetchNextPage: fetchNextUnpublishedPage,
+    isFetchingNextPage: isFetchingNextUnpublishedPage,
+  } = useGetListings({
+    currStatus: activeTab,
+    pubStatus: "unpublished",
+    userId: userId ?? undefined,
+    userRoleId: userRoleId ?? undefined,
+    searchTerm: searchTerm,
+  });
+
+  const {
+    data: draftListings,
+    isLoading: isDraftLoading,
+    hasNextPage: hasNextDraftPage,
+    fetchNextPage: fetchNextDraftPage,
+    isFetchingNextPage: isFetchingNextDraftPage,
+  } = useGetListings({
+    currStatus: activeTab,
+    pubStatus: "draft",
+    userId: userId ?? undefined,
+    userRoleId: userRoleId ?? undefined,
+    searchTerm: searchTerm,
+  });
+
+  useEffect(() => {
+    if (inView && hasNextPublishedPage) {
+      fetchNextPublishedPage();
+    }
+    if (inView && hasNextUnpublishedPage) {
+      fetchNextUnpublishedPage();
+    }
+    if (inView && hasNextDraftPage) {
+      fetchNextDraftPage();
+    }
+  }, [inView, hasNextPublishedPage, hasNextUnpublishedPage, hasNextDraftPage]);
+
+  const publishedListingsData = publishedListings?.pages?.flatMap(
+    (page) => page?.data ?? [],
+  );
+  const unPublishedListingsData = unPublishedListings?.pages?.flatMap(
+    (page) => page?.data ?? [],
+  );
+  const draftListingsData = draftListings?.pages?.flatMap(
+    (page) => page?.data ?? [],
+  );
+
+  const isAnyLoading =
+    isPublishedLoading || isUnpublishedLoading || isDraftLoading;
+
+  const isFetchingNextPage =
+    isFetchingNextPublishedPage ||
+    isFetchingNextUnpublishedPage ||
+    isFetchingNextDraftPage;
+
+  const allQueriesFinished = !isAnyLoading;
+  const hasData =
+    !!publishedListingsData?.length ||
+    !!unPublishedListingsData?.length ||
+    !!draftListingsData?.length;
+
   const tabData = [
     {
       label: "Published",
       value: "published",
-      props: {
-        currStatus: activeTab,
-        pubStatus: "published",
-        userId: userId ?? undefined,
-        searchTerm: searchTerm,
-      },
+      count: publishedListingsData?.length,
+      content: publishedListingsData,
+      isLoading: isPublishedLoading,
     },
     {
       label: "unpublished",
       value: "unpublished",
-      props: {
-        currStatus: activeTab,
-        pubStatus: "unpublished",
-        userRoleId: userRoleId ?? undefined,
-        userId: userId ?? undefined,
-        searchTerm: searchTerm,
-      },
+      count: unPublishedListingsData?.length,
+      content: unPublishedListingsData,
+      isLoading: isUnpublishedLoading,
     },
     {
       label: "Drafts",
       value: "draft",
-      props: {
-        currStatus: activeTab,
-        pubStatus: "draft",
-        userRoleId: userRoleId ?? undefined,
-        userId: userId || undefined,
-        searchTerm: searchTerm,
-      },
+      count: draftListingsData?.length,
+      content: draftListingsData,
+      isLoading: isDraftLoading,
     },
   ];
 
@@ -114,7 +185,7 @@ export function ListingsPageLandlord() {
                       key={tab.value}
                       value={tab.value}
                     >
-                      {tab.label}
+                      {tab.label} {tab.count ? `(${tab.count})` : "(-)"}
                     </TabsTrigger>
                   );
                 })}
@@ -122,42 +193,63 @@ export function ListingsPageLandlord() {
             </div>
           </TabsList>
 
-          <Suspense
-            fallback={
-              <EmptyPageState
-                imageSrc={listingIllustration.src}
-                title="You have no listings yet"
-                subTitle="Kick start your journey with us by making your first listing. Clicking the button below"
-                button={<CreateListingsButton />}
-              />
-            }
-          >
-            {tabData.map((tab) => {
-              const props = tab.props as UseGetListingsType;
-              return (
-                <TabsContent key={`${tab.value}`} value={tab.value}>
-                  <div
-                    className={`max-w-screen-max-xl sticky top-[178px] z-15 mx-auto flex w-full justify-end bg-white px-6 pt-6 pb-2 sm:top-[198px] lg:top-[199px]`}
-                  >
-                    <SearchBar
-                      collection="listings"
-                      className="w-full lg:max-w-80"
-                      query={searchTerm}
-                      setQuery={setSearchTerm}
-                    />
+          {tabData.map((tab) => {
+            const listings = tab.content;
+            const hasListings = !!listings?.length;
+
+            return (
+              <TabsContent key={`${tab.value}`} value={tab.value}>
+                <div
+                  className={`max-w-screen-max-xl sticky top-[178px] z-15 mx-auto flex w-full justify-between bg-white px-6 pt-6 pb-2 sm:top-[198px] lg:top-[199px]`}
+                >
+                  <div>
+                    {searchTerm && (
+                      <p className="text-sm">
+                        Showing search results for:{" "}
+                        <span className="text-base font-medium italic">
+                          {searchTerm}
+                        </span>
+                      </p>
+                    )}
                   </div>
 
-                  <ListingsPageContainer
-                    pubStatus={props.pubStatus}
-                    currStatus={props.currStatus}
-                    userId={props.userId}
-                    userRoleId={props.userRoleId}
-                    searchTerm={props.searchTerm}
+                  <SearchBar
+                    collection="listings"
+                    className="w-full lg:max-w-80"
+                    query={searchTerm}
+                    setQuery={setSearchTerm}
                   />
-                </TabsContent>
-              );
-            })}
-          </Suspense>
+                </div>
+
+                {isAnyLoading ? (
+                  <ListingsCardGridSkeleton />
+                ) : allQueriesFinished && hasData ? (
+                  <section className="flex w-full flex-col items-center gap-4">
+                    {hasListings ? (
+                      <ListingsCardContainer listings={listings} />
+                    ) : (
+                      <div className="flex w-full justify-center p-4">
+                        <p className="italic">No listings here yet...</p>
+                      </div>
+                    )}
+
+                    <div className="flex justify-center" ref={ref}>
+                      {isFetchingNextPage && (
+                        <Loader2 className="size-8 animate-spin" />
+                      )}
+                    </div>
+                  </section>
+                ) : (
+                  <EmptyPageState
+                    imageSrc={listingIllustration.src}
+                    title="You have no listings yet"
+                    subTitle="Kick start your journey with us by making your first listing. Clicking the button below"
+                    button={<CreateListingsButton />}
+                  />
+                )}
+              </TabsContent>
+            );
+          })}
         </Tabs>
 
         <Link href="/listings/create">
@@ -169,5 +261,3 @@ export function ListingsPageLandlord() {
     </RoleGate>
   );
 }
-
-// "top-[100px] sm:top-[105px]"

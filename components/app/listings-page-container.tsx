@@ -9,15 +9,8 @@ import {
   UseGetListingsType,
 } from "@/hooks/tanstack/use-get-listings";
 import { ListingsCardGridSkeleton } from "./skeletons/listings-card-grid-skeleton";
-
-import { createSearchStore } from "@/lib/store/search-store";
-import { useStore } from "zustand";
-import { SearchBar } from "./search-bar";
-
 import { EmptyPageState } from "./empty-page-state";
 import listingIllustration from "@/public/illustrations/illustration-listings.png";
-import { hasRole } from "@/lib/utils";
-import { CreateListingsButton } from "./action-buttons";
 
 export function ListingsPageContainer({
   pubStatus,
@@ -45,9 +38,8 @@ export function ListingsPageContainer({
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetListings(getListingsProps);
 
-  const listingPages = data?.pages;
-
-  const hasListingPages = !!(listingPages?.length && listingPages[0]);
+  const listings = data?.pages.flatMap((page) => page?.data ?? []);
+  const hasListing = !!listings?.length;
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -56,17 +48,12 @@ export function ListingsPageContainer({
   }, [inView, hasNextPage]);
 
   return (
-    <section className="flex flex-col items-center gap-6">
+    <>
       {isLoading ? (
         <ListingsCardGridSkeleton />
-      ) : hasListingPages ? (
+      ) : hasListing ? (
         <section className="flex w-full flex-col gap-4">
-          {listingPages?.map((page, index) => {
-            const pageData = page?.data;
-
-            return <ListingsCardContainer key={index} pageData={pageData} />;
-          })}
-
+          <ListingsCardContainer listings={listings} />
           <div className="flex justify-center" ref={ref}>
             {isFetchingNextPage && <Loader2 className="size-8 animate-spin" />}
           </div>
@@ -77,7 +64,7 @@ export function ListingsPageContainer({
           title="There are no listings available yet"
         />
       )}
-    </section>
+    </>
   );
 }
 
