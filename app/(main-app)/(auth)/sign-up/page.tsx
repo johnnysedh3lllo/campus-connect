@@ -22,8 +22,7 @@ import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 import { useCountdownTimer } from "@/hooks/use-countdown-timer";
 
 export default function Signup() {
-  const { step, totalSteps, nextStep, formData, updateFields } =
-    useMultiStepFormStore();
+  const { step, nextStep, formData, updateFields } = useMultiStepFormStore();
   const onboardingFormWrapperRef = useRef<HTMLDivElement>(null);
 
   let { timeLeft, resetTimer } = useCountdownTimer(60);
