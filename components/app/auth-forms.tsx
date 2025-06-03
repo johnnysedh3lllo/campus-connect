@@ -144,7 +144,7 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
                   )}
                 />
                 <Link
-                  href={"/reset-password"}
+                  href="/reset-password"
                   className="text-left text-sm text-red-600"
                 >
                   Forgot Password?
