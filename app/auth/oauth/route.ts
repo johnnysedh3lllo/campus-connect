@@ -40,6 +40,8 @@ export async function GET(request: Request) {
       const [firstName, ...rest] = fullName.split(/\s+/);
       const lastName = rest.join(" ");
 
+      console.log(user)
+
       switch (currentAction) {
         case "signup":
           console.info("the user is signing in");

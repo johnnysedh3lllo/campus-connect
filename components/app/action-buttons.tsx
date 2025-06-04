@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
-import { cn, formatUsersName } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
 
 import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";

@@ -1,6 +1,6 @@
 import { getListings } from "@/app/actions/supabase/listings";
 import { getUserPublic } from "@/app/actions/supabase/user";
-import { ListingLandlordIdPageBody } from "@/components/app/page-containers/in-app/listing-landlord-id-page-body";
+import { ListingLandlordProfilePageBody } from "@/components/app/page-containers/in-app/listing-landlord-profile-page-body";
 import { queryKeys } from "@/lib/config/query-keys.config";
 import { LISTING_PAGE_SIZE } from "@/lib/constants";
 import {
@@ -36,7 +36,7 @@ export default async function Page({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ListingLandlordIdPageBody landlordId={id} />
+      <ListingLandlordProfilePageBody landlordId={id} />
     </HydrationBoundary>
   );
 }

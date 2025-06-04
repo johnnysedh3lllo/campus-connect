@@ -10,14 +10,14 @@ import { MessageListItemSkeleton } from "./skeletons/message-list-item-skeleton"
 import { createSearchStore } from "@/lib/store/search-store";
 import { useStore } from "zustand";
 
-const messageSearchStore = createSearchStore();
+// const messageSearchStore = createSearchStore();
 
 export function MessageSideBar() {
   const [isRoot, setIsRoot] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const { userId } = useUserStore();
-  const query = useStore(messageSearchStore, (s) => s.query);
-  const setQuery = useStore(messageSearchStore, (s) => s.setQuery);
+  // const query = useStore(messageSearchStore, (s) => s.query);
+  // const setQuery = useStore(messageSearchStore, (s) => s.setQuery);
 
   const { data: conversations, isLoading } = useGetConversations(userId ?? "");
 
@@ -43,7 +43,7 @@ export function MessageSideBar() {
             Messages
           </h1>
 
-          <SearchBar collection="messages" query={query} setQuery={setQuery} />
+          {/* <SearchBar collection="messages" query={query} setQuery={setQuery} /> */}
         </header>
 
         {isLoading ? (

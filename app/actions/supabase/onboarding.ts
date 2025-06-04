@@ -89,11 +89,19 @@ export async function signUpWithPassword(userInfo: SignUpFormType) {
 
 export async function signUpWithOAuth(provider: Provider, roleId: number) {
   const supabase = await createClient();
+
+  const scopes =
+    provider === "google"
+      ? "email, profile, openid"
+      : provider === "facebook"
+        ? "email, public_profile"
+        : "";
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: provider,
     options: {
       redirectTo: `${baseUrl}/auth/oauth?redirect_to=${redirectRoutes.newUsers}&userRoleId=${roleId}&action=signup`,
-      scopes: "email, profile, openid",
+      scopes,
     },
   });
 
@@ -109,16 +117,27 @@ export async function signUpWithOAuth(provider: Provider, roleId: number) {
 export async function signInWithOAuth(provider: Provider) {
   const supabase = await createClient();
 
+  const scopes =
+    provider === "google"
+      ? "email, profile, openid"
+      : provider === "facebook"
+        ? "email, public_profile"
+        : "";
+
+  console.log("signInWithOAuth scopes", scopes);
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: provider,
     options: {
       redirectTo: `${baseUrl}/auth/oauth?redirect_to=/listings&action=login`,
-      scopes: "email, profile, openid",
+      scopes,
     },
   });
   if (error) {
     console.error(error);
   }
+
+  console.log("signInWithOAuth", data);
 
   if (data.url) {
     redirect(data.url);

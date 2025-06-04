@@ -42,7 +42,7 @@ import { ListingLandlordProfileCard } from "../../listing-landlord-profile-card"
 import { BathroomIcon } from "@/public/icons/bathroom-icon";
 
 type ListingPublicationStatus = "published" | "unpublished";
-export default function ListingIdPageBody({
+export default function ListingSinglePageBody({
   listingUUID,
 }: {
   listingUUID: string;
@@ -145,7 +145,9 @@ export default function ListingIdPageBody({
       <div className="flex flex-col gap-6">
         <section className="bg-background flex flex-col-reverse items-center justify-between gap-3 py-6 lg:flex-row">
           <section className="flex w-full gap-3">
-            <BackButton className="flex" route="/listings" />
+            <RoleGate userRoleId={userRoleId} role="TENANT">
+              <BackButton className="flex" route="/listings" />
+            </RoleGate>
             <header className="flex flex-col gap-3">
               <h1 className="text-2xl leading-10 font-semibold capitalize sm:text-4xl sm:leading-11">
                 {title}

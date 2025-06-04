@@ -1,7 +1,7 @@
 import { getListingByUUID } from "@/app/actions/supabase/listings";
 import { getUserPackageRecord } from "@/app/actions/supabase/packages";
 import { getUser } from "@/app/actions/supabase/user";
-import ListingIdPageBody from "@/components/app/page-containers/in-app/listing-id-page-body";
+import ListingSinglePageBody from "@/components/app/page-containers/in-app/listing-single-page-body";
 import { queryKeys } from "@/lib/config/query-keys.config";
 import { hasRole } from "@/lib/utils";
 import {
@@ -43,7 +43,7 @@ export default async function Page({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <ListingIdPageBody listingUUID={listingId} />
+      <ListingSinglePageBody listingUUID={listingId} />
     </HydrationBoundary>
   );
 }

@@ -58,12 +58,16 @@ export default function LoginPage() {
   };
 
   return (
-    <AnimationWrapper
-      variants={formVariants}
-      transition={animationConfig}
-      classes="w-full"
+    <div
+      className="onboarding-form--wrapper flex flex-col px-2 lg:w-full lg:overflow-x-hidden lg:overflow-y-auto"
     >
-      <LoginForm isLoading={isLoading} handleLogin={handleLogin} />
-    </AnimationWrapper>
+      <AnimationWrapper
+        variants={formVariants}
+        transition={animationConfig}
+        classes="w-full"
+      >
+        <LoginForm isLoading={isLoading} handleLogin={handleLogin} />
+      </AnimationWrapper>
+    </div>
   );
 }

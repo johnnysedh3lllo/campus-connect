@@ -8,7 +8,7 @@ export const SUPPORTED_FILE_TYPES = [
   "image/webp",
 ];
 
-export const LISTING_PAGE_SIZE = 1;
+export const LISTING_PAGE_SIZE = 4;
 export const MAX_LISTING_IMAGES = 10;
 
 export const MIN_LISTING_IMAGE_WIDTH = 1200;

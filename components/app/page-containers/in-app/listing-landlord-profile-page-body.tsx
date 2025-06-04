@@ -17,7 +17,7 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
 const listingsSearchStore = createSearchStore();
-export function ListingLandlordIdPageBody({
+export function ListingLandlordProfilePageBody({
   landlordId,
 }: {
   landlordId: string;

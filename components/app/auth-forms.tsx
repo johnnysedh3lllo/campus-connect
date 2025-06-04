@@ -86,7 +86,7 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
   });
   return (
     <section className="mx-auto flex w-full flex-col justify-center">
-      <div className="flex h-full flex-col items-start justify-center">
+      <div className="flex h-full flex-col items-start justify-center overflow-y-auto">
         <section className="flex flex-col items-start">
           <h1 className="text-left text-2xl leading-10 font-semibold sm:text-4xl sm:leading-11">
             Welcome Back!

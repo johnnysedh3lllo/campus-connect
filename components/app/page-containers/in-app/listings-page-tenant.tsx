@@ -15,6 +15,7 @@ import { ListingsCardContainer } from "../../listings-card-container";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
+import { InfiniteScrollTrigger } from "../../infinite-scroll-trigger";
 
 const listingsSearchStore = createSearchStore();
 export function ListingsPageTenant() {
@@ -88,19 +89,13 @@ export function ListingsPageTenant() {
           <ListingsCardGridSkeleton />
         ) : hasListings ? (
           <section className="flex w-full flex-col items-center gap-4 pt-4">
-            {hasListings ? (
-              <ListingsCardContainer listings={listings} />
-            ) : (
-              <div className="flex w-full justify-center p-4">
-                <p className="italic">No listings here yet...</p>
-              </div>
-            )}
-
-            <div className="flex justify-center" ref={ref}>
-              {isFetchingNextPage && (
-                <Loader2 className="size-8 animate-spin" />
-              )}
-            </div>
+            <ListingsCardContainer listings={listings} />
+            
+            <InfiniteScrollTrigger
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              fetchNextPage={fetchNextPage}
+            />
           </section>
         ) : (
           <div className="flex items-center justify-center px-4 pt-4 pb-8">

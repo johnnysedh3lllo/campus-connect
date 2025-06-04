@@ -12,7 +12,7 @@ import { MessageContainerSkeleton } from "../../skeletons/message-container-skel
 import { useEffect } from "react";
 import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
 
-export default function MessagesIdPageBody({
+export default function MessagesSinglePageBody({
   user,
   conversationId,
 }: {

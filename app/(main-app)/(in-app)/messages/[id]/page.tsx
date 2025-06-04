@@ -4,7 +4,7 @@ import {
   getConversationParticipants,
 } from "@/app/actions/supabase/messages";
 import { getUser } from "@/app/actions/supabase/user";
-import MessagesIdPageBody from "@/components/app/page-containers/in-app/messages-id-page-body";
+import MessagesSinglePageBody from "@/components/app/page-containers/in-app/messages-single-page-body";
 import { queryKeys } from "@/lib/config/query-keys.config";
 import {
   dehydrate,
@@ -38,7 +38,7 @@ export default async function MessagesIdPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <MessagesIdPageBody user={user} conversationId={conversationId} />
+      <MessagesSinglePageBody user={user} conversationId={conversationId} />
     </HydrationBoundary>
   );
 }

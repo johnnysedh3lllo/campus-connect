@@ -90,7 +90,7 @@ export function ListingsPageLandlord() {
           className="w-full gap-0 pb-6"
         >
           {/* TODO: DEVISE A WAY TO REMOVE ACHIEVE STICKY WITHOUT THIS ARBITRARY top-[105px] */}
-          <TabsList className="bg-background-secondary sticky top-[105px] z-20 w-full items-end justify-start gap-3 rounded-none border-b p-0 pt-6 sm:top-[125px]">
+          <TabsList className="bg-background-secondary sticky top-[104px] z-20 w-full items-end justify-start gap-3 rounded-none border-b p-0 pt-6 sm:top-[125px]">
             <div className="max-w-screen-max-xl mx-auto w-full">
               <div className="listing-image-preview-container flex h-full w-full max-w-fit items-end gap-3 overflow-x-auto px-4 sm:px-6">
                 {tabData.map((tab) => {
@@ -131,7 +131,11 @@ export function ListingsPageLandlord() {
             const hasListings = !!listings?.length;
 
             return (
-              <TabsContent key={`${tab.value}`} value={tab.value}>
+              <TabsContent
+                className="flex gap-4 flex-col"
+                key={`${tab.value}`}
+                value={tab.value}
+              >
                 <div
                   className={`max-w-screen-max-xl sticky top-[178px] z-15 mx-auto flex w-full items-center justify-between bg-white px-6 pt-6 pb-2 sm:top-[198px] lg:top-[199px]`}
                 >
