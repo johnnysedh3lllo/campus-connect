@@ -77,7 +77,7 @@ export const updateSession = async (request: NextRequest) => {
 
   // redirects when user is logged in
   if (isUnprotected && !user.error && userRoleId) {
-    return NextResponse.redirect(new URL("/profile", request.url));
+    return NextResponse.redirect(new URL("/listings", request.url));
   }
 
   // semi-protected

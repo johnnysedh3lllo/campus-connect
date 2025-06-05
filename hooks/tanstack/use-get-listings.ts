@@ -29,7 +29,11 @@ export function useGetListings({
       : !!userId && isLandlord && isActiveStatus;
 
   return useInfiniteQuery({
-    queryKey: queryKeys.listings.byStatus(pubStatus, userId, searchTerm),
+    queryKey: queryKeys.listings.byStatusInfinite(
+      pubStatus,
+      userId,
+      searchTerm,
+    ),
     queryFn: async ({ pageParam }) =>
       await getListings({
         pubStatus,
@@ -38,7 +42,7 @@ export function useGetListings({
         userId,
         searchTerm,
       }),
-    initialPageParam: 0,
+    initialPageParam: 1,
     getNextPageParam: (lastPage: ListingsResponse, allPages) =>
       (lastPage?.data?.length ?? 0) < LISTING_PAGE_SIZE
         ? undefined

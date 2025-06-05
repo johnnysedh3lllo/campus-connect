@@ -25,7 +25,7 @@ export function UserProfileCard({ participants }: UserProfileCardProps) {
               src={avatarUrl}
               alt="avatar"
             />
-            <AvatarFallback>{firstName[0]}</AvatarFallback>
+            <AvatarFallback className="capitalize">{firstName[0]}</AvatarFallback>
           </Avatar>
         </div>
 

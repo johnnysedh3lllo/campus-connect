@@ -16,9 +16,9 @@ export function MessageHeaderDetails({
           src={participant?.avatar_url ?? undefined}
           alt="avatar"
         />
-        <AvatarFallback>{participant?.first_name?.[0]}</AvatarFallback>
+        <AvatarFallback className="capitalize">{participant?.first_name?.[0]}</AvatarFallback>
       </Avatar>
-      <h2 className="text-lg font-bold">{chatName}</h2>
+      <h2 className="text-lg capitalize font-bold">{chatName}</h2>
     </section>
   );
 }

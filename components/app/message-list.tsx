@@ -10,18 +10,14 @@ export function MessageList({
 }) {
   return (
     <div className="flex max-h-[calc(80vh-100px)] w-full flex-1 flex-col gap-4 overflow-y-auto">
-      {!conversations || conversations.length === 0 ? (
-        <p className="italic">No conversations to display</p>
-      ) : (
-        conversations?.map((conversation) => {
-          return (
-            <MessageListItem
-              key={conversation.conversation_id}
-              conversation={conversation}
-            />
-          );
-        })
-      )}
+      {conversations?.map((conversation) => {
+        return (
+          <MessageListItem
+            key={conversation.conversation_id}
+            conversation={conversation}
+          />
+        );
+      })}
     </div>
   );
 }

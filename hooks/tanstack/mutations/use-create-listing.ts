@@ -73,8 +73,12 @@ export function useCreateListing() {
       };
     },
     onSuccess: (data, variables) => {
-      queryClient.refetchQueries({
-        queryKey: queryKeys.listings.published(variables.userId, undefined),
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.listings.byStatusInfinite(
+          "published",
+          variables.userId,
+          undefined,
+        ),
         exact: true,
       });
     },

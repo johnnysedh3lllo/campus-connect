@@ -46,6 +46,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "conversation_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "user_conversations"
+            referencedColumns: ["conversation_id"]
+          },
+          {
             foreignKeyName: "conversation_participants_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -230,6 +237,7 @@ export type Database = {
           idempotency_key: string | null
           landlord_id: string
           listing_type: Database["public"]["Enums"]["listing_type"]
+          listings_search_vector: unknown | null
           location: string
           no_of_bathrooms: number
           no_of_bedrooms: number | null
@@ -248,6 +256,7 @@ export type Database = {
           idempotency_key?: string | null
           landlord_id: string
           listing_type: Database["public"]["Enums"]["listing_type"]
+          listings_search_vector?: unknown | null
           location: string
           no_of_bathrooms?: number
           no_of_bedrooms?: number | null
@@ -266,6 +275,7 @@ export type Database = {
           idempotency_key?: string | null
           landlord_id?: string
           listing_type?: Database["public"]["Enums"]["listing_type"]
+          listings_search_vector?: unknown | null
           location?: string
           no_of_bathrooms?: number
           no_of_bedrooms?: number | null
@@ -324,6 +334,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "conversations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "user_conversations"
+            referencedColumns: ["conversation_id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"
@@ -586,6 +603,30 @@ export type Database = {
       }
     }
     Views: {
+      user_conversations: {
+        Row: {
+          conversation_id: string | null
+          conversations_search_vector: unknown | null
+          created_at: string | null
+          deleted_at: string | null
+          last_message: string | null
+          last_message_sender_id: string | null
+          last_message_sent_at: string | null
+          participant: Json | null
+          unread_count: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_participants_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       visible_messages_for_user: {
         Row: {
           content: string | null
@@ -612,6 +653,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "conversations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "user_conversations"
+            referencedColumns: ["conversation_id"]
           },
           {
             foreignKeyName: "messages_sender_id_fkey"

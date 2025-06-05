@@ -91,7 +91,18 @@ export async function getConversationParticipants(
     }
   }
 }
-export async function getConversations(userId: string | undefined) {
+
+export async function getConversations({
+  userId,
+  from,
+  to,
+  searchTerm,
+}: {
+  userId: string | undefined;
+  from: number;
+  to: number;
+  searchTerm?: string;
+}): Promise<Conversations[] | undefined> {
   const supabase = await createClient();
 
   if (!userId) {
@@ -99,17 +110,27 @@ export async function getConversations(userId: string | undefined) {
   }
 
   try {
-    const { data: conversations, error } = await supabase.rpc(
-      "get_conversations_for_user",
-      { pid: userId },
-    );
+    let query = supabase
+      .from("user_conversations")
+      .select("*")
+      .eq("user_id", userId)
+      .order("updated_at", { ascending: false });
+
+    if (searchTerm) {
+      query = query.textSearch("conversations_search_vector", searchTerm, {
+        type: "websearch",
+        config: "english",
+      });
+    }
+
+    const { data, error } = await query.range(from, to);
 
     if (error) {
       console.error("Error fetching conversations:", error);
       throw error;
     }
 
-    return conversations as Conversations[];
+    return data as Conversations[];
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to get conversations ${error.message}`);
@@ -188,11 +209,10 @@ export async function updateConversations(
       .update(conversationDetails)
       .eq("id", conversationId);
     if (error) {
-      console.error("Error updating conversations:", error);
       throw error;
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error updating conversations:", error);
     if (error instanceof Error) {
       throw new Error(`Failed to update conversations ${error.message}`);
     }
@@ -216,18 +236,19 @@ export async function updateConversationParticipants(
       .eq("conversation_id", conversationData.conversationId);
 
     if (error) {
-      throw error;
+      throw new Error("Couldn't update conversations participants");
     }
+
+    await updateConversations(conversationData.conversationId, {
+      updated_at: new Date().toISOString(),
+    });
 
     return { success: true, data };
   } catch (error: any) {
     console.error(error);
     return {
       success: false,
-      error: {
-        message:
-          "Something went wrong while deleting this chat, please try again.",
-      },
+      error: { message: error.message },
     };
   }
 }

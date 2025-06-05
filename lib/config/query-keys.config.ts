@@ -1,3 +1,14 @@
+export type ConversationLIstInfiniteQueryKeys = readonly [
+  "conversationsInfinite",
+  string | undefined,
+  string,
+];
+export type ConversationMessagesQueryKeys = readonly [
+  "conversations",
+  "messages",
+  string,
+  string,
+];
 export const queryKeys = {
   user: {
     main: ["user"] as const,
@@ -11,7 +22,13 @@ export const queryKeys = {
     ["activeSubscription", userId] as const,
 
   conversations: {
-    list: (userId: string | undefined) => ["conversations", userId] as const,
+    list: (userId: string | undefined, searchTerm: string | undefined) =>
+      ["conversations", userId, searchTerm ?? ""] as const,
+    listInfinite: (
+      userId: string | undefined,
+      searchTerm: string | undefined,
+    ): ConversationLIstInfiniteQueryKeys =>
+      ["conversationsInfinite", userId, searchTerm ?? ""] as const,
     participants: (userId: string, conversationId: string) =>
       ["conversations", "participants", userId, conversationId] as const,
     messages: (conversationId: string, userId: string) =>
@@ -24,20 +41,18 @@ export const queryKeys = {
       status: "published" | "unpublished" | "draft",
       userId: string | undefined,
       searchTerm: string | undefined,
-    ) => ["listings", userId ?? "public", status, searchTerm ?? "none"] as const,
-    byId: (listingId: string) => ["listings", listingId] as const,
-
-    // to be removed
-    published: (userId: string | undefined, searchTerm: string | undefined) =>
+    ) => ["listings", userId ?? "public", status, searchTerm ?? ""] as const,
+    byStatusInfinite: (
+      status: "published" | "unpublished" | "draft",
+      userId: string | undefined,
+      searchTerm: string | undefined,
+    ) =>
       [
-        "listings",
+        "listingsInfinite",
         userId ?? "public",
-        "published",
-        searchTerm ?? "none",
+        status,
+        searchTerm ?? "",
       ] as const,
-    unpublished: (userId: string | undefined, searchTerm: string | undefined) =>
-      ["listings", userId, "unpublished", searchTerm ?? "none"] as const,
-    drafts: (userId: string | undefined, searchTerm: string | undefined) =>
-      ["listings", userId, "draft", searchTerm ?? "none"] as const,
+    byId: (listingId: string) => ["listings", listingId] as const,
   },
 };

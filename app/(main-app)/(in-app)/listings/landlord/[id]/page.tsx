@@ -23,15 +23,16 @@ export default async function Page({
     queryFn: async () => await getUserPublic(id),
   });
 
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.listings.published(id, undefined),
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: queryKeys.listings.byStatusInfinite("published", id, undefined),
     queryFn: async () =>
       await getListings({
         pubStatus: "published",
         from: 0,
-        to: LISTING_PAGE_SIZE,
+        to: LISTING_PAGE_SIZE - 1,
         userId: id,
       }),
+    initialPageParam: 0,
   });
 
   return (

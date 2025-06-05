@@ -41,17 +41,8 @@ declare global {
   >;
 
   type ConversationsMain = Tables<"conversations">;
-  type Conversations = {
-    conversation_id: ConversationsMain["id"];
-    created_at: ConversationsMain["created_at"];
-    deleted_at: ConversationsMain["deleted_at"];
-    updated_at: ConversationsMain["updated_at"];
-    last_message: Messages["content"];
-    last_message_sender_id: Messages["sender_id"];
-    last_message_sent_at: Messages["created_at"];
-    unread_count: number; // TODO: revisit and properly type this.
-    participants: Participant[];
-  };
+  type Conversations = Tables<"user_conversations">;
+
   type ConversationsInsert = TablesInsert<"conversations">;
 
   // TODO[REFACTOR]: USE THIS NEW PATTERN BELOW FOR ALL OTHER DATABASE TYPES

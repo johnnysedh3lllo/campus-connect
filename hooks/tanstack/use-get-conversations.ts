@@ -1,59 +1,42 @@
-// hooks/use-conversations.ts
 "use client";
 
 import { getConversations } from "@/app/actions/supabase/messages";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { supabase } from "@/utils/supabase/client";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys.config";
+import { CONVERSATION_PAGE_SIZE } from "@/lib/constants";
+import { useConversationsRealtime } from "../supabase/use-conversations-realtime";
 
-export function useGetConversations(userId: string | undefined) {
-  const queryClient = useQueryClient();
-  const conversationQueryKey = queryKeys.conversations.list(userId);
+export function useGetConversations({
+  userId,
+  searchTerm,
+}: {
+  userId: string | undefined;
+  searchTerm?: string;
+}) {
+  const conversationQueryKey = queryKeys.conversations.listInfinite(
+    userId,
+    searchTerm,
+  );
 
-  const query = useQuery({
+  const query = useInfiniteQuery({
     queryKey: conversationQueryKey,
-    queryFn: async () => await getConversations(userId),
-    enabled: !!userId,
-    // staleTime: DEFAULT_STALE_TIME,
+    queryFn: async ({ pageParam }) =>
+      await getConversations({
+        userId,
+        from: pageParam as number,
+        to: (pageParam as number) + CONVERSATION_PAGE_SIZE - 1,
+        searchTerm: searchTerm,
+      }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      (lastPage?.length ?? 0) < CONVERSATION_PAGE_SIZE
+        ? undefined
+        : allPages.length * CONVERSATION_PAGE_SIZE,
     staleTime: Infinity,
+    enabled: !!userId,
   });
 
-  const refetch = query.refetch;
-
-  // TODO: REFACTOR TO USE BROADCAST INSTEAD
-  useEffect(() => {
-    // Create a channel to listen for changes
-    const channel = supabase
-      .channel("conversations-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "conversations",
-        },
-        (payload) => {
-          const eventType = payload.eventType;
-          switch (eventType) {
-            case "UPDATE":
-            case "INSERT":
-            case "DELETE":
-              queryClient.invalidateQueries({ queryKey: conversationQueryKey });
-              break;
-            default:
-              console.log("unhandled payload event");
-              break;
-          }
-        },
-      )
-      .subscribe();
-
-    // Clean up the subscription when the component unmounts
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId, queryClient, supabase]);
+  useConversationsRealtime({ userId, queryKey: conversationQueryKey });
 
   return query;
 }

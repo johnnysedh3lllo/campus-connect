@@ -24,7 +24,7 @@ export function useCreateConversation() {
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.conversations.list(variables.tenantId),
+        queryKey: queryKeys.conversations.listInfinite(variables.tenantId, ""),
       });
 
       queryClient.refetchQueries({

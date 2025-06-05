@@ -59,27 +59,37 @@ export default async function Page({ searchParams }: WelcomeProps) {
   const isStudent = hasRole(userRoleId ?? 0, "TENANT");
 
   if (isLandlord) {
-    await queryClient.prefetchQuery({
-      queryKey: queryKeys.listings.published(userId, undefined),
+    await queryClient.prefetchInfiniteQuery({
+      queryKey: queryKeys.listings.byStatusInfinite(
+        "published",
+        userId,
+        undefined,
+      ),
       queryFn: async () =>
         await getListings({
           pubStatus: "published",
           from: 0,
-          to: LISTING_PAGE_SIZE,
+          to: LISTING_PAGE_SIZE - 1,
           userId: userId,
         }),
+      initialPageParam: 0,
     });
   }
 
   if (isStudent) {
-    await queryClient.prefetchQuery({
-      queryKey: queryKeys.listings.published(userId, undefined),
+    await queryClient.prefetchInfiniteQuery({
+      queryKey: queryKeys.listings.byStatusInfinite(
+        "published",
+        userId,
+        undefined,
+      ),
       queryFn: async () =>
         await getListings({
           pubStatus: "published",
           from: 0,
-          to: LISTING_PAGE_SIZE,
+          to: LISTING_PAGE_SIZE - 1,
         }),
+      initialPageParam: 0,
     });
   }
 

@@ -9,18 +9,24 @@ import { useUserStore } from "@/lib/store/user-store";
 import { MessageListItemSkeleton } from "./skeletons/message-list-item-skeleton";
 import { createSearchStore } from "@/lib/store/search-store";
 import { useStore } from "zustand";
+import { InfiniteScrollTrigger } from "./infinite-scroll-trigger";
 
-// const messageSearchStore = createSearchStore();
+const messageSearchStore = createSearchStore();
 
 export function MessageSideBar() {
   const [isRoot, setIsRoot] = useState(true);
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const { userId } = useUserStore();
-  // const query = useStore(messageSearchStore, (s) => s.query);
-  // const setQuery = useStore(messageSearchStore, (s) => s.setQuery);
+  const searchTerm = useStore(messageSearchStore, (s) => s.query);
+  const setSearchTerm = useStore(messageSearchStore, (s) => s.setQuery);
 
-  const { data: conversations, isLoading } = useGetConversations(userId ?? "");
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
+    useGetConversations({
+      userId: userId ?? undefined,
+      searchTerm: searchTerm,
+    });
 
+  const conversations = data?.pages.flatMap((page) => page ?? []);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -30,6 +36,8 @@ export function MessageSideBar() {
       setIsRoot(false);
     }
   }, [pathname]);
+
+  const hasConversations = !!conversations?.length;
 
   return (
     <div
@@ -43,18 +51,32 @@ export function MessageSideBar() {
             Messages
           </h1>
 
-          {/* <SearchBar collection="messages" query={query} setQuery={setQuery} /> */}
+          <SearchBar
+            collection="messages"
+            query={searchTerm}
+            setQuery={setSearchTerm}
+          />
         </header>
 
-        {isLoading ? (
-          <section>
-            {Array.from({ length: 5 }).map((_, index) => (
+        <section className="flex flex-col gap-6">
+          {isLoading ? (
+            Array.from({ length: 5 }).map((_, index) => (
               <MessageListItemSkeleton key={index} />
-            ))}
-          </section>
-        ) : (
-          <MessageList conversations={conversations} />
-        )}
+            ))
+          ) : hasConversations ? (
+            <>
+              <MessageList conversations={conversations} />
+
+              <InfiniteScrollTrigger
+                hasNextPage={hasNextPage}
+                fetchNextPage={fetchNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+              />
+            </>
+          ) : (
+            <p className="italic">No conversations to display yet</p>
+          )}
+        </section>
       </section>
     </div>
   );

@@ -29,6 +29,7 @@ export default function MessagesSinglePageBody({
           conversationData: { userId: user.id, conversationId },
           conversationParticipantsDetails: {
             last_read_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           },
         });
       } catch (error: any) {

@@ -8,7 +8,13 @@ import { RoleGate } from "../../role-gate";
 
 export default function MessagesPageBody() {
   const { userId, userRoleId } = useUserStore();
-  const { data: conversations } = useGetConversations(userId ?? undefined);
+  const { data } = useGetConversations({
+    userId: userId ?? undefined,
+  });
+
+  const conversations = data?.pages.flatMap((page) => page ?? []);
+
+  console.log("conversations", conversations);
 
   return (
     <div className="flex w-full flex-2 items-center justify-center rounded-sm">

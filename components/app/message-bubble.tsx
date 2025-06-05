@@ -37,7 +37,7 @@ export default function MessageBubble({
               src={participantAvatarUrl}
               alt="avatar"
             />
-            <AvatarFallback className="size-7.5">
+            <AvatarFallback className="capitalize size-7.5">
               {participant?.users?.first_name?.[0]}
             </AvatarFallback>
           </Avatar>
