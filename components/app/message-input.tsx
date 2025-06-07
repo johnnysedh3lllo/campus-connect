@@ -1,7 +1,6 @@
 "use client";
 import type React from "react";
 import { Button } from "../ui/button";
-import { MessageInputProps } from "@/types/prop.types";
 import {
   Form,
   FormControl,
@@ -15,6 +14,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SendIcon } from "@/public/icons/send-icon";
 import { Input } from "../ui/input";
 import { useUpdateConversationMessages } from "@/hooks/tanstack/mutations/use-update-conversation-messages";
+
+export type MessageInputProps = {
+  userId: string | undefined;
+  conversationId: Messages["conversation_id"];
+  chatContainerRef?: React.RefObject<HTMLDivElement>;
+};
 
 export default function MessageInput({
   userId,

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MessageBubble from "./message-bubble";
 import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
@@ -8,6 +8,8 @@ import { useProfileViewStore } from "@/lib/store/profile-view-store";
 import { InfiniteScrollTrigger } from "./infinite-scroll-trigger";
 import { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDownIcon } from "@/public/icons/chevron-down-icon";
+import { Button } from "../ui/button";
 
 export type MessageContainerProps = {
   conversationId: Messages["conversation_id"];
@@ -29,15 +31,24 @@ export default function MessageContainer({
   isFetchingNextPage,
 }: MessageContainerProps) {
   const { isProfileOpen } = useProfileViewStore();
+
   const chatContainerRef = useRef<HTMLDivElement>(null!);
 
-  // Scroll to bottom when messages change
-  useEffect(() => {
+  function scrollToBottom() {
     const chatContainer = chatContainerRef.current;
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  }, []);
+  }
+
+  // Scroll to bottom on mount
+  useEffect(() => {
+    if (conversationMessages && !isFetchingNextPage) {
+      scrollToBottom();
+    }
+  }, [conversationMessages, isFetchingNextPage]);
+
+  
 
   // Group messages by date
   const messagesByDate: { [key: string]: any[] } = {};
@@ -62,7 +73,7 @@ export default function MessageContainer({
       {/* Messages */}
       <div
         ref={chatContainerRef}
-        className="messaging-container border-border h-full flex-1 overflow-y-auto scroll-smooth border-y-1 p-4"
+        className="messaging-container border-border relative h-full flex-1 overflow-y-auto scroll-smooth border-y-1 p-4"
       >
         {hasNextPage && (
           <InfiniteScrollTrigger
@@ -104,6 +115,14 @@ export default function MessageContainer({
             </div>
           </div>
         ))}
+
+        <Button
+          variant="outline"
+          onClick={scrollToBottom}
+          className="border-line/50 fixed right-[2.5%] bottom-[15%] flex size-10 items-center justify-center rounded-sm p-0 shadow-lg hover:scale-105 active:scale-100 [&_svg]:size-8"
+        >
+          <ChevronDownIcon />
+        </Button>
       </div>
 
       {user?.id && conversationId && (

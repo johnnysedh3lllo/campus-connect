@@ -25,10 +25,6 @@ export function InfiniteScrollTrigger({
     }
   }, [inView, hasNextPage]);
 
-  const handleFetchNextPage = () => {
-    fetchNextPage();
-  };
-
   return (
     <div className="flex h-10 items-center justify-center" ref={ref}>
       <AnimatePresence mode="wait">
@@ -49,7 +45,7 @@ export function InfiniteScrollTrigger({
             variant="ghost"
             className="bg-background-secondary hover:bg-background-secondary/20 flex cursor-pointer items-center gap-2 rounded-xs px-2 font-medium"
             disabled={isFetchingNextPage}
-            onClick={handleFetchNextPage}
+            onClick={fetchNextPage}
           >
             <AnimatePresence mode="wait">
               {isFetchingNextPage && (

@@ -59,14 +59,6 @@ export interface PasswordInputProps
 
 export type MessageListItemProps = { conversation: Conversations };
 
-// refactor this to point to types coming from Supabase
-
-export type MessageInputProps = {
-  userId: User["id"] | undefined;
-  conversationId: Messages["conversation_id"];
-  chatContainerRef?: React.RefObject<HTMLDivElement>;
-};
-
 export type MessageHeaderProps = {
   conversationId: Messages["conversation_id"];
   user: User | null;
