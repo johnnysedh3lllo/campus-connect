@@ -8,8 +8,8 @@ export const SUPPORTED_FILE_TYPES = [
   "image/webp",
 ];
 
-export const LISTING_PAGE_SIZE = 1;
-export const CONVERSATION_PAGE_SIZE = 1;
+export const LISTING_PAGE_SIZE = 20;
+export const CONVERSATION_PAGE_SIZE = 10;
 export const MESSAGES_PAGE_SIZE = 10;
 
 export const MAX_LISTING_IMAGES = 10;
