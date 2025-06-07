@@ -34,7 +34,6 @@ import { buyCreditsFormSchema } from "@/lib/form.schemas";
 import { BuyCreditsFormSchemaType } from "@/types/form.types";
 import { formatUsersName, getCreditTiers } from "@/lib/utils";
 import { CreditTierOption } from "@/types/pricing.types";
-import { Loader2 } from "lucide-react";
 import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { loadStripe } from "@stripe/stripe-js";
 import { CreditBalance } from "@/components/app/credit-balance";
@@ -44,6 +43,7 @@ import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
 import { useUserStore } from "@/lib/store/user-store";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 type BuyCreditProps = {
   variant?: ButtonProps["variant"];
@@ -317,7 +317,9 @@ export default function BuyCredits({
                   disabled={isSubmitting}
                   className="flex w-full items-center md:w-50"
                 >
-                  {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {isSubmitting && (
+                    <LoaderIcon className="size-4 animate-spin" />
+                  )}
                   {isSubmitting ? "Processing..." : "Buy Credits"}
                 </Button>
               </div>

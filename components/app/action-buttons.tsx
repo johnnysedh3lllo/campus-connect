@@ -6,7 +6,6 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "../ui/toast";
 import { cn } from "@/lib/utils";
@@ -36,6 +35,7 @@ import { BadgeIcon } from "@/public/illustrations/badge-icon";
 import { ModalProps } from "@/types/prop.types";
 import Modal from "./modals/modal";
 import { Skeleton } from "../ui/skeleton";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 const publishableKey: string | undefined =
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -107,7 +107,7 @@ export function ChangeListingPubStatusButton({
       className="w-full flex-1 capitalize"
       onClick={handleStatusChange}
     >
-      {isLoading && <Loader2 className="animate-spin" />}
+      {isLoading && <LoaderIcon className="animate-spin" />}
       {isLoading
         ? "Loading..."
         : publicationStatus && statusVerbMap[publicationStatus]}
@@ -175,7 +175,7 @@ export function DeleteListingButton({
       className="w-full flex-1 capitalize"
       onClick={handleDelete}
     >
-      {isLoading && <Loader2 className="animate-spin" />}
+      {isLoading && <LoaderIcon className="animate-spin" />}
       {isLoading ? "Loading..." : "Delete"}
     </Button>
   );
@@ -243,7 +243,7 @@ export function MessageLandlordButton({
         <Skeleton className="h-12 w-full" />
       ) : !hasPackageInquires ? (
         <Button disabled={isLoading} onClick={handleMessage} className="w-full">
-          {isLoading && <Loader2 className="animate-spin" />}
+          {isLoading && <LoaderIcon className="animate-spin" />}
           {isLoading ? "Processing...." : "Message"}
         </Button>
       ) : (
@@ -381,7 +381,9 @@ export function SubscribeToPremiumBtn({
           disabled={isSubmittingPremium}
           className="h-full w-full px-11 py-3 text-base leading-6 sm:w-fit"
         >
-          {isSubmittingPremium && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSubmittingPremium && (
+            <LoaderIcon className="size-4 animate-spin" />
+          )}
           {isSubmittingPremium ? "Processing..." : "Go Premium"}
         </Button>
       </form>
@@ -475,7 +477,7 @@ export function SwitchToBasicBtn({ userId }: { userId: string | null }) {
           disabled={isSubmitting}
           className="h-full w-full px-0 py-3 text-base leading-6"
         >
-          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSubmitting && <LoaderIcon className="size-4 animate-spin" />}
           {isSubmitting ? "Processing..." : "Switch to Basic"}
         </Button>
       </form>
@@ -558,7 +560,7 @@ export function DeleteChatBtn({
           disabled={isSubmitting}
           className="flex h-full w-full flex-1 items-center px-0"
         >
-          {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isSubmitting && <LoaderIcon className="size-4 animate-spin" />}
           {isSubmitting ? "Deleting..." : "Delete"}
         </Button>
       </form>

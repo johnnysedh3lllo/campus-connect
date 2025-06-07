@@ -73,13 +73,6 @@ export type MessageHeaderProps = {
   chatParticipants: ConvoParticipant[] | undefined;
 };
 
-export type MessageContainerProps = {
-  conversationId: Messages["conversation_id"];
-  conversationMessages: Messages[] | undefined;
-  user: User | null;
-  participants: ConvoParticipant[] | undefined;
-};
-
 export type MessageBubbleProps = {
   user: User | null;
   participants: ConvoParticipant[] | undefined;

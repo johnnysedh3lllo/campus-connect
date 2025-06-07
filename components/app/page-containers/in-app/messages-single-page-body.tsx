@@ -19,6 +19,7 @@ export default function MessagesSinglePageBody({
   user: User;
   conversationId: string;
 }) {
+  const userId = user?.id;
   const conversationParticipantsMutation = useUpdateConversationParticipants();
 
   // UPDATE IMMEDIATELY COMPONENT LOADS TO MARK THE CONVERSATION AS READ
@@ -26,7 +27,7 @@ export default function MessagesSinglePageBody({
     const markAsRead = async () => {
       try {
         await conversationParticipantsMutation.mutateAsync({
-          conversationData: { userId: user.id, conversationId },
+          conversationData: { userId: userId, conversationId },
           conversationParticipantsDetails: {
             last_read_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -38,13 +39,27 @@ export default function MessagesSinglePageBody({
     };
 
     markAsRead();
-  }, [user.id, conversationId]);
+  }, [userId, conversationId]);
 
-  const { data: conversationMessages, isLoading: isMessagesLoading } =
-    useGetConversationMessages(conversationId, user.id);
+  const {
+    data,
+    isLoading: isMessagesLoading,
+    refetch: refetchMessages,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useGetConversationMessages(conversationId, userId);
+
+  const conversationMessages = data?.pages
+    .flatMap((page) => page ?? [])
+    .reverse();
 
   const { data: participants, isLoading: isParticipantsLoading } =
-    useGetConversationParticipants(user.id, conversationId);
+    useGetConversationParticipants(userId, conversationId);
+
+  useEffect(() => {
+    refetchMessages();
+  }, [conversationId, userId]);
 
   if (isMessagesLoading || isParticipantsLoading) {
     return <MessageContainerSkeleton />;
@@ -56,6 +71,9 @@ export default function MessagesSinglePageBody({
         conversationMessages={conversationMessages}
         user={user}
         participants={participants}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
       />
 
       <UserProfileCardWrapper>

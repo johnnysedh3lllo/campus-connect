@@ -28,16 +28,16 @@ export default async function MessagesLayout({
   const userId = user?.id;
   const queryClient = new QueryClient();
 
-  // await queryClient.prefetchInfiniteQuery({
-  //   queryKey: queryKeys.conversations.listInfinite(userId, ""),
-  //   queryFn: async () =>
-  //     await getConversations({
-  //       userId,
-  //       from: 0,
-  //       to: CONVERSATION_PAGE_SIZE - 1,
-  //     }),
-  //   initialPageParam: 0,
-  // });
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: queryKeys.conversations.listInfinite(userId, ""),
+    queryFn: async ({ pageParam }) =>
+      await getConversations({
+        userId,
+        from: pageParam,
+        to: pageParam + CONVERSATION_PAGE_SIZE - 1,
+      }),
+    initialPageParam: 0,
+  });
 
   return (
     <div className="relative grid h-full lg:grid-cols-[auto_1fr]">

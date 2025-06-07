@@ -5,7 +5,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhotoPreview } from "@/components/app/listing-photo-preview";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "../ui/skeleton";
 
 interface PhotoCarouselProps {
   photos: string[];

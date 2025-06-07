@@ -12,9 +12,9 @@ import { SearchBar } from "../../search-bar";
 import { useStore } from "zustand";
 import { createSearchStore } from "@/lib/store/search-store";
 import ListingCard from "../../listing-card";
-import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 const listingsSearchStore = createSearchStore();
 export function ListingLandlordProfilePageBody({
@@ -49,7 +49,6 @@ export function ListingLandlordProfilePageBody({
   const publishedListings = listingData?.pages?.flatMap(
     (page) => page?.data ?? [],
   );
-  const hasListings = !!publishedListings?.length;
   const numOfListings = publishedListings?.length;
 
   useEffect(() => {
@@ -146,7 +145,7 @@ export function ListingLandlordProfilePageBody({
 
               <div className="flex justify-center" ref={ref}>
                 {isFetchingNextPage && (
-                  <Loader2 className="size-8 animate-spin" />
+                  <LoaderIcon className="size-8 animate-spin" />
                 )}
               </div>
             </>

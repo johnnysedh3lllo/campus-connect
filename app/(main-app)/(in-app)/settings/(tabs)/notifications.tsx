@@ -16,12 +16,12 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { Loader2 } from "lucide-react";
 import { SettingsFormType } from "@/types/form.types";
 import { useUserStore } from "@/lib/store/user-store";
 import { useGetUserSettings } from "@/hooks/tanstack/use-get-user-settings";
 import { useUpdateUserSettings } from "@/hooks/tanstack/mutations/use-update-user-settings";
 import { NotificationsTabSkeleton } from "@/components/app/skeletons/notifications-tab-skeleton";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 export default function Notifications() {
   const { userId } = useUserStore();
@@ -162,7 +162,7 @@ export default function Notifications() {
           type="submit"
           className="w-fit cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
         >
-          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isLoading && <LoaderIcon className="mr-2 size-4 animate-spin" />}
           {isLoading ? "Saving changes..." : "Save changes"}
         </Button>
       </form>

@@ -1,10 +1,14 @@
 "use client";
 
 import { getConversations } from "@/app/actions/supabase/messages";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/config/query-keys.config";
 import { CONVERSATION_PAGE_SIZE } from "@/lib/constants";
-import { useConversationsRealtime } from "../supabase/use-conversations-realtime";
+
+export type UseGetConversationsReturnType = InfiniteData<
+  Conversations[] | undefined,
+  unknown
+>;
 
 export function useGetConversations({
   userId,
@@ -32,11 +36,12 @@ export function useGetConversations({
       (lastPage?.length ?? 0) < CONVERSATION_PAGE_SIZE
         ? undefined
         : allPages.length * CONVERSATION_PAGE_SIZE,
-    staleTime: Infinity,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
     enabled: !!userId,
   });
 
-  useConversationsRealtime({ userId, queryKey: conversationQueryKey });
+  // useConversationsRealtime({ userId, queryKey: conversationQueryKey });
 
   return query;
 }

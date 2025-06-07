@@ -7,7 +7,7 @@ import secondPlaceIllustration from "@/public/illustrations/second-place-medal-i
 import thirdPlaceIllustration from "@/public/illustrations/third-place-medal-illustration.png";
 import Image from "next/image";
 import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
-import { formatCurrencyToLocale, formatUsersName } from "@/lib/utils";
+import { formatCurrencyToLocale} from "@/lib/utils";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,7 +19,7 @@ import {
 } from "@/types/form.types";
 import { loadStripe } from "@stripe/stripe-js";
 import { toast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 // TODO: DEVISE A MEANS TO ENSURE THE USER OBJECT IS AVAILABLE BEFORE THIS COMPONENT MOUNTS
 // TODO: CONSIDER PREFETCHING THE USER HERE
@@ -209,7 +209,7 @@ export function PackagesPageBody() {
                       disabled={isSubmitting}
                     >
                       {isSubmitting && (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <LoaderIcon className="size-4 animate-spin" />
                       )}
                       {isSubmitting ? "Processing..." : "Get Package"}
                     </Button>

@@ -3,8 +3,8 @@ export type ConversationLIstInfiniteQueryKeys = readonly [
   string | undefined,
   string,
 ];
-export type ConversationMessagesQueryKeys = readonly [
-  "conversations",
+export type ConversationMessagesInfiniteQueryKeys = readonly [
+  "conversationsInfinite",
   "messages",
   string,
   string,
@@ -33,6 +33,8 @@ export const queryKeys = {
       ["conversations", "participants", userId, conversationId] as const,
     messages: (conversationId: string, userId: string) =>
       ["conversations", "messages", conversationId, userId] as const,
+    messagesInfinite: (conversationId: string, userId: string) =>
+      ["conversationsInfinite", "messages", conversationId, userId] as const,
   },
 
   listings: {

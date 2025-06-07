@@ -14,8 +14,6 @@ export default function MessagesPageBody() {
 
   const conversations = data?.pages.flatMap((page) => page ?? []);
 
-  console.log("conversations", conversations);
-
   return (
     <div className="flex w-full flex-2 items-center justify-center rounded-sm">
       {conversations && conversations.length > 0 ? (

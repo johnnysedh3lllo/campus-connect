@@ -34,7 +34,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 // ASSETS
 import houseIcon from "@/public/icons/icon-house.svg";
 import tenantIcon from "@/public/icons/icon-tenant.svg";
-import { Loader2 } from "lucide-react";
 import { PasswordInput } from "@/components/app/password-input";
 import { LargeMailIcon } from "@/public/icons/large-mail-icon";
 import { MessagesIcon } from "@/public/icons/message-icon";
@@ -59,6 +58,7 @@ import { OAuthProviders } from "./oauth-providers";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
 import { formatTime, getPasswordStrength } from "@/lib/utils";
 import { PasswordRequirements } from "./password-requirement";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 const roleDetails = [
   {
@@ -156,7 +156,7 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
                 width={"full"}
                 className="w-full cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
               >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading && <LoaderIcon className="mr-2 size-4 animate-spin" />}
                 {isLoading ? "Logging in..." : "Log in"}
               </Button>
             </div>
@@ -274,7 +274,7 @@ export function SelectRole({
             width={"full"}
             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
           >
-            {isLoading && <Loader2 className="animate-spin" />}
+            {isLoading && <LoaderIcon className="animate-spin" />}
             {isLoading ? "Processing" : "Continue"}
           </Button>
         </form>
@@ -478,7 +478,7 @@ export function GetUserInfo({ handleSignUp }: GetUserInfoProps) {
             width={"full"}
             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
           >
-            {isSubmitting && <Loader2 className="animate-spin" />}
+            {isSubmitting && <LoaderIcon className="animate-spin" />}
             {isSubmitting ? "Signing up..." : "Sign up"}
           </Button>
         </form>
@@ -546,7 +546,7 @@ export function ResetPassword({
             width={"full"}
             disabled={isSubmitting}
           >
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isSubmitting && <LoaderIcon className="mr-2 size-4 animate-spin" />}
             {isSubmitting ? "Sending..." : "Send"}
           </Button>
         </form>
@@ -725,7 +725,7 @@ export function CheckInbox({
 //           >
 //             {isLoading ? (
 //               <>
-//                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+//                 <LoaderIcon className="mr-2 size-4 animate-spin" />
 //                 Verifying...
 //               </>
 //             ) : (
@@ -822,7 +822,7 @@ export function CreatePassword({
             width={"full"}
             className="cursor-pointer text-base leading-6 font-semibold transition-all duration-300"
           >
-            {isSubmitting && <Loader2 className="animate-spin" />}
+            {isSubmitting && <LoaderIcon className="animate-spin" />}
             Create Password
           </Button>
         </form>

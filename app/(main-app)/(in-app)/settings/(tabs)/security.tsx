@@ -2,7 +2,6 @@
 
 // UTILITIES
 import { useState } from "react";
-import type { z } from "zod";
 import { useForm } from "react-hook-form";
 import { changePasswordSchema } from "@/lib/form.schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,10 +20,10 @@ import {
 import { PasswordInput } from "@/components/app/password-input";
 
 // ASSETS
-import { Loader2 } from "lucide-react";
 import { ChangePasswordFormType } from "@/types/form.types";
 import { changePassword } from "@/app/actions/supabase/onboarding";
 import Link from "next/link";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 //
 export default function Security() {
@@ -162,7 +161,9 @@ export default function Security() {
                 type="submit"
                 className="w-fit cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
               >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading && (
+                  <LoaderIcon className="mr-2 size-4 animate-spin" />
+                )}
                 {isLoading ? "Saving changes..." : "Save changes"}
               </Button>
             </div>

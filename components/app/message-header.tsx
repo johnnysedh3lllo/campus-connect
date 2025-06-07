@@ -75,7 +75,7 @@ export default function MessageHeader({
         onOpenChange={() => setIsOpenDropDown(false)}
       >
         <DropdownMenuTrigger
-          className="hover:bg-background-secondary flex size-10 cursor-pointer items-center justify-center gap-2 rounded-sm p-0 select-none"
+          className="hover:bg-gray-50 flex size-10 cursor-pointer items-center justify-center gap-2 rounded-sm p-0 select-none"
           onClick={() => setIsOpenDropDown(true)}
         >
           <KabobIcon />

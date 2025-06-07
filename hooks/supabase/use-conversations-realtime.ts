@@ -30,7 +30,7 @@ export function useConversationsRealtime({
         (payload) => {
           const { eventType } = payload;
           if (["INSERT", "UPDATE", "DELETE"].includes(eventType)) {
-            queryClient.refetchQueries({ queryKey });
+            queryClient.invalidateQueries({ queryKey });
           }
         },
       )

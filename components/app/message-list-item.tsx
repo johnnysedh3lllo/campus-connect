@@ -32,12 +32,11 @@ export function MessageListItem({ conversation }: MessageListItemProps) {
   const fullName = participant?.full_name;
 
   const hasUnreadMessages = unreadMessagesCount > 0;
-  console.log("unread messages count", unreadMessagesCount);
 
   return (
     <Link
       href={`/messages/${conversationId}`}
-      className={`hover:bg-background-secondary grid grid-cols-[auto_1fr] items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300 ${pathName.includes(conversationId) ? "bg-background-secondary" : ""}`}
+      className={`hover:bg-background-secondary/50 grid grid-cols-[auto_1fr] items-center gap-3 rounded-sm px-3 py-4 transition-all duration-300 ${pathName.includes(conversationId) ? "bg-background-secondary" : ""}`}
     >
       <Avatar className="size-10">
         <AvatarImage className="rounded-full" src={avatarUrl} alt="avatar" />

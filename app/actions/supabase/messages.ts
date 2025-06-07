@@ -5,10 +5,17 @@ import { updateUserPackageInquiries } from "./packages";
 import { MIN_INQUIRIES } from "@/lib/constants";
 
 // TODO: SETUP A GUARD CLAUSE FOR BOTH FUNCTION PARAMETERS
-export async function getConversationMessages(
-  conversationId: string,
-  userId: string,
-) {
+export async function getConversationMessages({
+  conversationId,
+  userId,
+  from,
+  to,
+}: {
+  conversationId: string;
+  userId: string;
+  from: number;
+  to: number;
+}) {
   const supabase = await createClient();
 
   try {
@@ -21,7 +28,8 @@ export async function getConversationMessages(
       .select("*")
       .eq("conversation_id", conversationId)
       .eq("viewer_id", userId) // this filters to *your* visible messages
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
     if (error) {
       throw error;

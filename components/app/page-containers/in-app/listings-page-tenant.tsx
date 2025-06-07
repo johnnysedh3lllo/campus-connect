@@ -12,15 +12,11 @@ import { SearchBar } from "../../search-bar";
 import { useStore } from "zustand";
 import { createSearchStore } from "@/lib/store/search-store";
 import { ListingsCardContainer } from "../../listings-card-container";
-import { Loader2 } from "lucide-react";
-import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
 import { InfiniteScrollTrigger } from "../../infinite-scroll-trigger";
 
 const listingsSearchStore = createSearchStore();
 export function ListingsPageTenant() {
   const { userId, userRoleId } = useUserStore();
-  const { ref, inView } = useInView();
 
   const searchTerm = useStore(listingsSearchStore, (s) => s.query);
   const setSearchTerm = useStore(listingsSearchStore, (s) => s.setQuery);
@@ -40,14 +36,6 @@ export function ListingsPageTenant() {
     userRoleId,
   );
 
-  console.log(listings);
-
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage]);
-
   return (
     <RoleGate userRoleId={userRoleId} role="TENANT">
       {!currentPackage && (
@@ -60,7 +48,7 @@ export function ListingsPageTenant() {
         </section>
       )}
 
-      <section>
+      <section className="py-6">
         <Header
           title="Listings"
           subTitle="Search and connect based on your preferences"
@@ -90,12 +78,15 @@ export function ListingsPageTenant() {
         ) : hasListings ? (
           <section className="flex w-full flex-col items-center gap-4 pt-4">
             <ListingsCardContainer listings={listings} />
-            
-            <InfiniteScrollTrigger
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-              fetchNextPage={fetchNextPage}
-            />
+
+            {hasNextPage && (
+              <InfiniteScrollTrigger
+                hasNextPage={hasNextPage}
+                fetchNextPage={fetchNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                type="button"
+              />
+            )}
           </section>
         ) : (
           <div className="flex items-center justify-center px-4 pt-4 pb-8">

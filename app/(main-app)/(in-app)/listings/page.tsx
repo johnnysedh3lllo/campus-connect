@@ -10,7 +10,6 @@ import { ListingsPageLandlord } from "@/components/app/page-containers/in-app/li
 import { ListingsPageTenant } from "@/components/app/page-containers/in-app/listings-page-tenant";
 import { hasRole } from "@/lib/utils";
 import { upsertUserSettings } from "@/app/actions/supabase/settings";
-import { createClient } from "@/utils/supabase/server";
 import { queryKeys } from "@/lib/config/query-keys.config";
 import { LISTING_PAGE_SIZE } from "@/lib/constants";
 
@@ -23,8 +22,6 @@ type WelcomeProps = {
 };
 
 export default async function Page({ searchParams }: WelcomeProps) {
-  const supabase = await createClient();
-
   const user = await getUser();
   const params = await searchParams;
 
@@ -56,42 +53,23 @@ export default async function Page({ searchParams }: WelcomeProps) {
   }
 
   const isLandlord = hasRole(userRoleId ?? 0, "LANDLORD");
-  const isStudent = hasRole(userRoleId ?? 0, "TENANT");
+  // const isStudent = hasRole(userRoleId ?? 0, "TENANT");
 
-  if (isLandlord) {
-    await queryClient.prefetchInfiniteQuery({
-      queryKey: queryKeys.listings.byStatusInfinite(
-        "published",
-        userId,
-        undefined,
-      ),
-      queryFn: async () =>
-        await getListings({
-          pubStatus: "published",
-          from: 0,
-          to: LISTING_PAGE_SIZE - 1,
-          userId: userId,
-        }),
-      initialPageParam: 0,
-    });
-  }
-
-  if (isStudent) {
-    await queryClient.prefetchInfiniteQuery({
-      queryKey: queryKeys.listings.byStatusInfinite(
-        "published",
-        userId,
-        undefined,
-      ),
-      queryFn: async () =>
-        await getListings({
-          pubStatus: "published",
-          from: 0,
-          to: LISTING_PAGE_SIZE - 1,
-        }),
-      initialPageParam: 0,
-    });
-  }
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: queryKeys.listings.byStatusInfinite(
+      "published",
+      userId,
+      undefined,
+    ),
+    queryFn: async ({ pageParam }) =>
+      await getListings({
+        pubStatus: "published",
+        from: pageParam,
+        to: pageParam + LISTING_PAGE_SIZE - 1,
+        ...(isLandlord && { userId: userId }),
+      }),
+    initialPageParam: 0,
+  });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>

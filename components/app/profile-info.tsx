@@ -17,13 +17,13 @@ import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { profileInfoFormSchema } from "@/lib/form.schemas";
-import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ProfileInfoFormType } from "@/types/form.types";
 import { useUpdateUserMetadata } from "@/hooks/tanstack/mutations/use-update-user-metadata";
 import { Textarea } from "../ui/textarea";
 import { RoleGate } from "./role-gate";
 import { useUserStore } from "@/lib/store/user-store";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 export function ProfileInfo({ userProfile }: ProfileInfoProps) {
   const { userId, userRoleId } = useUserStore();
@@ -224,7 +224,7 @@ export function ProfileInfo({ userProfile }: ProfileInfoProps) {
                   width={"full"}
                   className="flex-1 cursor-pointer text-base leading-6 font-semibold transition-all duration-500"
                 >
-                  {isSubmitting && <Loader2 className="animate-spin" />}
+                  {isSubmitting && <LoaderIcon className="animate-spin" />}
                   {isSubmitting ? "Saving..." : "Save Changes"}
                 </Button>
               </div>

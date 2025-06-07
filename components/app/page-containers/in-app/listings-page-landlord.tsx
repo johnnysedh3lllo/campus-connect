@@ -87,7 +87,7 @@ export function ListingsPageLandlord() {
           onValueChange={(value: string) =>
             updateActiveTab(value as PublicationStatusType)
           }
-          className="w-full gap-0 pb-6"
+          className="w-full gap-0"
         >
           {/* TODO: DEVISE A WAY TO REMOVE ACHIEVE STICKY WITHOUT THIS ARBITRARY top-[105px] */}
           <TabsList className="bg-background-secondary sticky top-[104px] z-20 w-full items-end justify-start gap-3 rounded-none border-b p-0 pt-6 sm:top-[125px]">
@@ -132,7 +132,7 @@ export function ListingsPageLandlord() {
 
             return (
               <TabsContent
-                className="flex gap-4 flex-col"
+                className="flex flex-col gap-4"
                 key={`${tab.value}`}
                 value={tab.value}
               >
@@ -161,14 +161,17 @@ export function ListingsPageLandlord() {
                 {isLoading ? (
                   <ListingsCardGridSkeleton />
                 ) : hasListings ? (
-                  <section className="flex w-full flex-col items-center gap-4">
+                  <section className="flex w-full flex-col items-center gap-4 py-4">
                     <ListingsCardContainer listings={listings} />
 
-                    <InfiniteScrollTrigger
-                      hasNextPage={hasNextPage}
-                      fetchNextPage={fetchNextPage}
-                      isFetchingNextPage={isFetchingNextPage}
-                    />
+                    {hasNextPage && (
+                      <InfiniteScrollTrigger
+                        hasNextPage={hasNextPage}
+                        fetchNextPage={fetchNextPage}
+                        isFetchingNextPage={isFetchingNextPage}
+                        type="button"
+                      />
+                    )}
                   </section>
                 ) : (
                   <EmptyPageState

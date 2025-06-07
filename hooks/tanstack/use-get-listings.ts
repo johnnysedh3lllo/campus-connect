@@ -42,7 +42,7 @@ export function useGetListings({
         userId,
         searchTerm,
       }),
-    initialPageParam: 1,
+    initialPageParam: 0,
     getNextPageParam: (lastPage: ListingsResponse, allPages) =>
       (lastPage?.data?.length ?? 0) < LISTING_PAGE_SIZE
         ? undefined

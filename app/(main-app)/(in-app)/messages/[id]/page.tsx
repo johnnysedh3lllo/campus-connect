@@ -6,6 +6,7 @@ import {
 import { getUser } from "@/app/actions/supabase/user";
 import MessagesSinglePageBody from "@/components/app/page-containers/in-app/messages-single-page-body";
 import { queryKeys } from "@/lib/config/query-keys.config";
+import { MESSAGES_PAGE_SIZE } from "@/lib/constants";
 import {
   dehydrate,
   HydrationBoundary,
@@ -25,9 +26,16 @@ export default async function MessagesIdPage({
   const userId = user.id;
 
   const queryClient = new QueryClient();
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.conversations.messages(userId, conversationId),
-    queryFn: async () => await getConversationMessages(conversationId, userId),
+  await queryClient.prefetchInfiniteQuery({
+    queryKey: queryKeys.conversations.messagesInfinite(userId, conversationId),
+    queryFn: async ({ pageParam }) =>
+      await getConversationMessages({
+        conversationId,
+        userId,
+        from: pageParam,
+        to: pageParam + MESSAGES_PAGE_SIZE - 1,
+      }),
+    initialPageParam: 0,
   });
 
   await queryClient.prefetchQuery({

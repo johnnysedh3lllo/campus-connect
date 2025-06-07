@@ -44,7 +44,6 @@ import { Separator } from "../ui/separator";
 
 import { PhotoCarousel } from "./listing-photo-preview-carousel";
 import { CreditBalance } from "./credit-balance";
-import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { EditListingsState } from "@/lib/store/edit-listings-store";
 import { PhotoCarouselGeneric } from "./photo-carousel-generic";
@@ -62,6 +61,7 @@ import {
   MIN_LISTING_IMAGE_WIDTH,
 } from "@/lib/constants";
 import { EmptyImageCarousel } from "./empty-image-carousel";
+import { LoaderIcon } from "@/public/icons/loader-icon";
 
 export function HomeDetailsForm({
   defaultValues,
@@ -819,7 +819,7 @@ export function PreviewPage({
               onClick={handleClick} // TODO: FIND A BETTER WAY TO HANDLE THIS DISABLED STATE HERE
               className="w-full transition-all duration-150 sm:w-50"
             >
-              {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isSubmitting && <LoaderIcon className="size-4 animate-spin" />}
               {isSubmitting ? "Publishing" : "Publish"}
             </Button>
           </form>

@@ -5,13 +5,28 @@ import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
 import { getMessageDateLabel } from "@/lib/utils";
 import { useProfileViewStore } from "@/lib/store/profile-view-store";
-import type { MessageContainerProps } from "@/types/prop.types";
+import { InfiniteScrollTrigger } from "./infinite-scroll-trigger";
+import { User } from "@supabase/supabase-js";
+import { AnimatePresence, motion } from "framer-motion";
+
+export type MessageContainerProps = {
+  conversationId: Messages["conversation_id"];
+  conversationMessages: Messages[] | undefined;
+  user: User | null;
+  participants: ConvoParticipant[] | undefined;
+  hasNextPage: boolean;
+  fetchNextPage: () => void;
+  isFetchingNextPage: boolean;
+};
 
 export default function MessageContainer({
   conversationId,
   conversationMessages,
   user,
   participants,
+  hasNextPage,
+  fetchNextPage,
+  isFetchingNextPage,
 }: MessageContainerProps) {
   const { isProfileOpen } = useProfileViewStore();
   const chatContainerRef = useRef<HTMLDivElement>(null!);
@@ -22,7 +37,7 @@ export default function MessageContainer({
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
-  }, [conversationMessages]);
+  }, []);
 
   // Group messages by date
   const messagesByDate: { [key: string]: any[] } = {};
@@ -49,6 +64,14 @@ export default function MessageContainer({
         ref={chatContainerRef}
         className="messaging-container border-border h-full flex-1 overflow-y-auto scroll-smooth border-y-1 p-4"
       >
+        {hasNextPage && (
+          <InfiniteScrollTrigger
+            hasNextPage={hasNextPage}
+            fetchNextPage={fetchNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            type="button"
+          />
+        )}
         {Object.entries(messagesByDate).map(([dateLabel, dateMessages]) => (
           <div key={dateLabel}>
             {/* Date separator */}
@@ -58,16 +81,26 @@ export default function MessageContainer({
               </div>
             </div>
 
-            <div className="flex flex-col gap-2">
-              {/* Messages for this date */}
-              {dateMessages?.map((message) => (
-                <MessageBubble
-                  user={user}
-                  participants={participants}
-                  key={message.optimisticId || message.id}
-                  message={message}
-                />
-              ))}
+            <div className="flex w-full flex-col gap-2">
+              <AnimatePresence initial={false}>
+                {dateMessages?.map((message) => (
+                  <motion.div
+                    key={message.optimisticId || message.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                  >
+                    <div className="flex w-full flex-col gap-2">
+                      <MessageBubble
+                        user={user}
+                        participants={participants}
+                        message={message}
+                      />
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           </div>
         ))}
