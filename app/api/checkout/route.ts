@@ -8,6 +8,8 @@ import {
 import { stripe } from "@/lib/stripe";
 import { ROLES } from "@/lib/config/app.config";
 import { PurchaseFormType } from "@/types/form.types";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 
 type CheckoutRequestBody = PurchaseFormType & {
   promoCode?: string;
@@ -20,7 +22,26 @@ type CheckoutRequestBody = PurchaseFormType & {
   landLordCreditCount?: number;
   landlordPremiumPrice?: number;
 };
-// const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+type SessionParams = Stripe.Checkout.SessionCreateParams & {
+  metadata: {
+    userId: string;
+    userEmail: string;
+    userName: string;
+    userRoleId: string;
+    purchaseType: string;
+    [key: string]: string;
+  };
+};
+
+const checkoutRequestSchema = z.object({
+  purchaseType: z.enum([
+    PURCHASE_TYPES.LANDLORD_CREDITS.type,
+    PURCHASE_TYPES.LANDLORD_PREMIUM.type,
+    PURCHASE_TYPES.STUDENT_PACKAGE.type,
+  ]),
+  
+});
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
@@ -29,12 +50,15 @@ export async function POST(request: NextRequest) {
   try {
     const requestBody: CheckoutRequestBody = await request.json();
 
+    // idempotency for each stripe transaction
+    const idempotencyKey = uuidv4();
+
     const {
       purchaseType,
       priceId,
       userId,
       userEmail,
-      usersName,
+      userName,
       userRoleId,
       promoCode,
       studentInquiryCount,
@@ -44,7 +68,7 @@ export async function POST(request: NextRequest) {
     } = requestBody;
 
     // Gets or creates a customer
-    const customer = await fetchOrCreateCustomer(userId, userEmail, usersName);
+    const customer = await fetchOrCreateCustomer(userId, userEmail, userName);
 
     // Setup session object
     let sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -56,7 +80,7 @@ export async function POST(request: NextRequest) {
       metadata: {
         userId,
         userEmail,
-        usersName,
+        userName,
         userRoleId,
         purchaseType,
       },
@@ -140,7 +164,12 @@ export async function POST(request: NextRequest) {
         throw new Error("Invalid purchase type");
     }
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
+    console.log("idempotency key for checkout session", idempotencyKey);
+
+    const session = await stripe.checkout.sessions.create(sessionParams, {
+      idempotencyKey: idempotencyKey,
+    });
+
     return NextResponse.json({ sessionId: session.id });
   } catch (error) {
     console.error("There was a Checkout error:", error);

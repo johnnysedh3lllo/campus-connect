@@ -296,7 +296,7 @@ export function SubscribeToPremiumBtn({
 }) {
   const userId = user?.id;
   const userRoleId: UserValidationType["roleId"] = user?.user_metadata.role_id;
-  const usersName = user?.user_metadata
+  const userName = user?.user_metadata
     ? user.user_metadata.full_name
     : undefined;
   const userEmail = user?.email;
@@ -309,7 +309,7 @@ export function SubscribeToPremiumBtn({
       landlordPremiumPrice: PRICING.landlord.premium.monthly.amount,
       userId,
       userEmail,
-      usersName,
+      userName,
       userRoleId,
     },
   });
@@ -329,7 +329,7 @@ export function SubscribeToPremiumBtn({
         landlordPremiumPrice,
         userId,
         userEmail,
-        usersName,
+        userName,
         userRoleId,
       };
 

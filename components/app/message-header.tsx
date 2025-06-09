@@ -57,11 +57,11 @@ export default function MessageHeader({
   };
 
   return (
-    <div className="bg-background sticky top-0 z-10 flex items-end justify-between py-4 sm:items-center">
-      <div className="flex w-full flex-col items-start gap-2 sm:flex-row sm:items-center">
+    <div className="bg-background sticky top-0 z-10 flex items-center justify-between py-4">
+      <div className="flex w-full flex-row items-center gap-2">
         <Button
           variant={"ghost"}
-          className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm lg:hidden"
+          className="hover:bg-background-secondary flex size-10 p-0 items-center justify-center rounded-sm lg:hidden"
           onClick={handleClickBack}
         >
           <LeftChevonIcon />
@@ -75,7 +75,7 @@ export default function MessageHeader({
         onOpenChange={() => setIsOpenDropDown(false)}
       >
         <DropdownMenuTrigger
-          className="hover:bg-gray-50 flex size-10 cursor-pointer items-center justify-center gap-2 rounded-sm p-0 select-none"
+          className="flex size-10 cursor-pointer items-center justify-center gap-2 rounded-sm p-0 select-none hover:bg-gray-50"
           onClick={() => setIsOpenDropDown(true)}
         >
           <KabobIcon />

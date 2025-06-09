@@ -32,18 +32,18 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { buyCreditsFormSchema } from "@/lib/form.schemas";
 import { BuyCreditsFormSchemaType } from "@/types/form.types";
-import { formatUsersName, getCreditTiers } from "@/lib/utils";
+import { getCreditTiers } from "@/lib/utils";
 import { CreditTierOption } from "@/types/pricing.types";
 import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { loadStripe } from "@stripe/stripe-js";
 import { CreditBalance } from "@/components/app/credit-balance";
-import { useGetUser } from "@/hooks/tanstack/use-get-user";
 import { toast } from "@/hooks/use-toast";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
 import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
 import { useUserStore } from "@/lib/store/user-store";
 import { LoaderIcon } from "@/public/icons/loader-icon";
+import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
 
 type BuyCreditProps = {
   variant?: ButtonProps["variant"];
@@ -60,6 +60,7 @@ export default function BuyCredits({
   isClickable,
 }: BuyCreditProps) {
   const { userId, userRoleId } = useUserStore();
+
   const newUserRoleId = userRoleId
     ? (`${userRoleId}` as "1" | "2" | "3")
     : undefined;
@@ -68,13 +69,11 @@ export default function BuyCredits({
   const [promoCode, setPromoCode] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const { data: user } = useGetUser();
+  const { data: user } = useGetUserPublic(userId ?? undefined);
   const { setIsMobileNavOpen } = useMobileNavState();
 
   const userEmail = user?.email;
-  const usersName = user?.user_metadata
-    ? user.user_metadata.full_name
-    : undefined;
+  const userName = user?.full_name;
 
   const { data: creditRecord } = useGetUserCredits(
     userId || undefined,
@@ -93,7 +92,7 @@ export default function BuyCredits({
       promoCode: "",
       userId: userId ?? undefined,
       userEmail,
-      usersName,
+      userName: userName ?? undefined,
       userRoleId: newUserRoleId,
     },
   });
@@ -104,6 +103,16 @@ export default function BuyCredits({
   } = form;
 
   const formValues = watch();
+
+  useEffect(() => {
+    form.reset({
+      purchaseType: PURCHASE_TYPES.LANDLORD_CREDITS.type,
+      userId: userId ?? undefined,
+      userEmail: userEmail,
+      userName: userEmail,
+      userRoleId: newUserRoleId,
+    });
+  }, [user]);
 
   async function handleCreditCheckout(values: BuyCreditsFormSchemaType) {
     const priceId = values.priceId;
@@ -122,7 +131,7 @@ export default function BuyCredits({
         landLordCreditCount,
         userId,
         userEmail,
-        usersName,
+        userName,
         userRoleId,
       };
 

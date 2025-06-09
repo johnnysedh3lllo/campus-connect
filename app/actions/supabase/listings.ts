@@ -30,9 +30,6 @@ export async function getListings({
 }) {
   const supabase = await createClient();
 
-  console.log("from", from);
-  console.log("to", to);
-
   try {
     let query = supabase
       .from("listings")

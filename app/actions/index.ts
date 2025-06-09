@@ -72,7 +72,7 @@ export async function retrieveActiveSubscription(
 export async function fetchOrCreateCustomer(
   userId: string,
   userEmail: string,
-  usersName: string,
+  userName: string,
   options?: { failLoudly?: boolean }, // optional toggle
 ): Promise<Stripe.Customer | null> {
   // fail loudly by default
@@ -154,7 +154,7 @@ export async function fetchOrCreateCustomer(
 
     // create a new Customer Object for the user on Stripe, if a Customer Object could not be retrieved.
     const customer = await createStripeCustomer({
-      name: usersName,
+      name: userName,
       email: userEmail,
       test_clock: testClock.id,
       metadata: customerMetadata,

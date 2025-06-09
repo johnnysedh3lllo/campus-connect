@@ -7,7 +7,7 @@ import secondPlaceIllustration from "@/public/illustrations/second-place-medal-i
 import thirdPlaceIllustration from "@/public/illustrations/third-place-medal-illustration.png";
 import Image from "next/image";
 import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
-import { formatCurrencyToLocale} from "@/lib/utils";
+import { formatCurrencyToLocale } from "@/lib/utils";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,7 +27,7 @@ export function PackagesPageBody() {
   const { data: user } = useGetUser();
   const userId = user?.id;
   const userRoleId: UserValidationType["roleId"] = user?.user_metadata.role_id;
-  const usersName = user?.user_metadata
+  const userName = user?.user_metadata
     ? user.user_metadata.full_name
     : undefined;
   const userEmail = user?.email;
@@ -80,7 +80,7 @@ export function PackagesPageBody() {
     const studentPackageName = values.studentPackageName;
     const userId = values.userId;
     const userEmail = values.userEmail;
-    const usersName = values.usersName;
+    const userName = values.userName;
     const userRoleId = values.userRoleId;
 
     try {
@@ -91,7 +91,7 @@ export function PackagesPageBody() {
         studentPackageName,
         userId,
         userEmail,
-        usersName,
+        userName,
         userRoleId,
       };
 
@@ -159,7 +159,7 @@ export function PackagesPageBody() {
               studentPackageName: pkg.tier,
               userId: userId ?? undefined,
               userEmail,
-              usersName,
+              userName,
               userRoleId,
             };
 
