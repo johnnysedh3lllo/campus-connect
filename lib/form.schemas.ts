@@ -8,6 +8,7 @@ import {
   MAX_TOTAL_LISTING_IMAGE_SIZE,
 } from "./constants";
 import { PhotoType } from "@/types/form.types";
+import { PURCHASE_TYPES } from "./config/pricing.config";
 
 // FORM SCHEMAS
 export const RoleEnum = z.enum(["1", "2", "3"]); // TODO: REFACTOR THIS TO BE A NUMBER INSTEAD OF STRING
@@ -166,18 +167,22 @@ export const profileInfoFormSchema = userValidationSchema.pick({
 });
 
 export const purchaseFormSchema = z.object({
-  purchaseType: z.string(),
-  priceId: z.string(),
-  userId: z.string(),
-  userEmail: z.string().email(),
-  usersName: z.string(),
+  purchaseType: z.enum([
+    PURCHASE_TYPES.LANDLORD_CREDITS.type,
+    PURCHASE_TYPES.LANDLORD_PREMIUM.type,
+    PURCHASE_TYPES.STUDENT_PACKAGE.type,
+  ]),
+  priceId: z.string().min(1, "Price ID is required"),
+  userId: z.string().min(1, "User ID is required"),
+  userEmail: z.string().email("Valid email is required"),
+  userName: z.string().min(1, "User name is required"),
   userRoleId: RoleEnum.describe("User role selection"),
 });
 
 // Override priceId to make sure a credit amount is selected when buying credits
 export const buyCreditsFormSchema = purchaseFormSchema.extend({
   priceId: z.string().min(1, {
-    message: "Please select a credit amount.",
+    message: "Please select a credit tier.",
   }),
   promoCode: z
     .string()

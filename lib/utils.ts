@@ -8,6 +8,7 @@ import { Role, ROLES } from "./config/app.config";
 import { z } from "zod";
 import { passwordCriteria } from "./form.schemas";
 import { PasswordStrengthRequirements } from "@/types/config.types";
+import { PurchaseFormType } from "@/types/form.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -288,3 +289,12 @@ export const pluralize = (data: number | undefined, noun: string) => {
   const pluralNoun = data !== 1 ? `${noun}s` : noun;
   return `${data} ${pluralNoun}`;
 };
+
+export function createIdempotencyKey(
+  operation: "checkout" | "billing-portal" | "verify" | "customer",
+  userId: string,
+  purchaseType: PurchaseFormType["purchaseType"],
+  transactionId: string,
+): string {
+  return `${operation}-${userId}-${purchaseType}-${transactionId}`;
+}

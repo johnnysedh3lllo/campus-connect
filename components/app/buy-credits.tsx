@@ -32,7 +32,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { buyCreditsFormSchema } from "@/lib/form.schemas";
 import { BuyCreditsFormSchemaType } from "@/types/form.types";
-import { getCreditTiers } from "@/lib/utils";
+import { createIdempotencyKey, getCreditTiers } from "@/lib/utils";
 import { CreditTierOption } from "@/types/pricing.types";
 import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { loadStripe } from "@stripe/stripe-js";
@@ -44,6 +44,7 @@ import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
 import { useUserStore } from "@/lib/store/user-store";
 import { LoaderIcon } from "@/public/icons/loader-icon";
 import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
+import { v4 as uuidv4 } from "uuid";
 
 type BuyCreditProps = {
   variant?: ButtonProps["variant"];
@@ -109,7 +110,7 @@ export default function BuyCredits({
       purchaseType: PURCHASE_TYPES.LANDLORD_CREDITS.type,
       userId: userId ?? undefined,
       userEmail: userEmail,
-      userName: userEmail,
+      userName: userName ?? undefined,
       userRoleId: newUserRoleId,
     });
   }, [user]);
@@ -119,11 +120,22 @@ export default function BuyCredits({
     const promoCode = values.promoCode;
     const purchaseType = values.purchaseType;
     const userRoleId = values.userRoleId;
+    const userId = values.userId;
+    const userEmail = values.userEmail;
+    const userName = values.userName;
 
     const creditTier = getCreditTiers(priceId) as CreditTierOption;
-    const landLordCreditCount = creditTier?.value;
+    const landLordCreditCount = +creditTier?.value;
 
     try {
+      const transactionId = uuidv4();
+      const idempotencyKey = createIdempotencyKey(
+        "checkout",
+        userId!,
+        "landlord_credits",
+        transactionId,
+      );
+
       const requestBody = {
         purchaseType,
         priceId,
@@ -133,6 +145,7 @@ export default function BuyCredits({
         userEmail,
         userName,
         userRoleId,
+        idempotencyKey,
       };
 
       const response = await fetch("/api/checkout", {
