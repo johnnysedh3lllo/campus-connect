@@ -10,7 +10,7 @@ import {
   updateStripeCustomer,
 } from "./stripe";
 import { fetchCustomer, upsertCustomerDetails } from "./supabase/customers";
-import { stripe } from "@/lib/stripe";
+import { stripe } from "@/lib/utils/stripe/stripe";
 
 // const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
@@ -62,10 +62,7 @@ export async function retrieveActiveSubscription(
  *   - If found and email differs, update the Stripe Customer with the app’s email and metadata.
  *   - Update Supabase with the Customer ID and return the Customer.
  *
- * STEP 3 — Fallback: Search Stripe by email:
- *   - If a match is found, update metadata and Supabase, then return the Customer.
- *
- * STEP 4 — No match found: Create a new Stripe Customer:
+ * STEP 3 — No match found: Create a new Stripe Customer:
  *   - Use user’s name/email from Supabase.
  *   - Update Supabase with new Customer ID and return the Customer.
  */
@@ -129,30 +126,14 @@ export async function fetchOrCreateCustomer(
     }
 
     // STEP 3
-    // fetches the Customer Object from Stripe using the User's Email,
-    // ... There may be a scenario where multiple users are using the same email
-    // ... and the user we hope to get is not the one or only one returned.
-    // TODO: HANDLE SAME EMAIL USED BY MULTIPLE USERS.
-    // const customerByEmail = await fetchStripeCustomerByEmail(userEmail);
+    // create a new Customer Object for the user on Stripe, if a Customer Object could not be retrieved.
 
-    // if (customerByEmail) {
-    //   // updates the customer id on Supabase
-    //   await upsertCustomerDetails(
-    //     {id: userId, stripe_customer_id: customerByEmail.id },
-    //   );
-
-    //   return await updateStripeCustomer(customerByEmail.id, {
-    //     metadata: customerMetadata,
-    //   });
-    // }
-
-    // STEP 3
+    // test clock for subscription testing purposes.
     const testClock = await stripe.testHelpers.testClocks.create({
       frozen_time: Math.floor(Date.now() / 1000),
       name: "Test Clock for New Customer",
     });
 
-    // create a new Customer Object for the user on Stripe, if a Customer Object could not be retrieved.
     const customer = await createStripeCustomer({
       name: userName,
       email: userEmail,

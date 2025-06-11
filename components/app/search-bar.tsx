@@ -1,7 +1,7 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { SearchIcon } from "@/public/icons/search-icon";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/app/utils";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { Button } from "../ui/button";
 import { useEffect, useRef, useState } from "react";

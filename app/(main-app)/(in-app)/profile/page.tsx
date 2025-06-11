@@ -4,7 +4,7 @@ import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
 import { getUser } from "@/app/actions/supabase/user";
 import { ProfilePageBody } from "@/components/app/page-containers/in-app/profile-page-body";
 import { queryKeys } from "@/lib/config/query-keys.config";
-import { hasRole } from "@/lib/utils";
+import { hasRole } from "@/lib/utils/app/utils";
 import {
   dehydrate,
   HydrationBoundary,

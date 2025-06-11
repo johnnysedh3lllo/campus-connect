@@ -1,6 +1,6 @@
 "use client";
-import { useGetUser } from "@/hooks/tanstack/use-get-user";
-import { useUserStore } from "../store/user-store";
+import { useGetUser } from "@/lib/hooks/tanstack/queries/use-get-user";
+import { useUserStore } from "../store/user/user-store";
 import { useEffect } from "react";
 
 export default function UserIdentityProvider({

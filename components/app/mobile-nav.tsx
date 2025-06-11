@@ -21,9 +21,9 @@ import { LogOut } from "@/public/icons/log-out-icon";
 import { CreditDisplayCard } from "./credit-display-card";
 import { signOut } from "@/app/actions/supabase/onboarding";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
-import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
+import { useMobileNavState } from "@/lib/store/ui/mobile-nav-state-store";
 import { RoleGate } from "./role-gate";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 
 export function MobileNav({ userProfile }: MobileNavProps) {
   const { userRoleId } = useUserStore();

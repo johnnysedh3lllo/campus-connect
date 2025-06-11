@@ -1,15 +1,15 @@
 "use client";
 import { PRICING } from "@/lib/config/pricing.config";
-import { formatCurrencyToLocale } from "@/lib/utils";
+import { formatCurrencyToLocale } from "@/lib/utils/app/utils";
 
 import { Header } from "@/components/app/header";
 import { PlansCard } from "@/components/app/plans-card";
-import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
-import { useUserStore } from "@/lib/store/user-store";
+import { useGetActiveSubscription } from "@/lib/hooks/tanstack/queries/use-get-active-subscription";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { ModalProps } from "@/types/prop.types";
 import Modal from "@/components/app/modals/modal";
 import { SadFaceIcon } from "@/public/icons/sad-face-icon";
-import { useSwitchToBasicModalStore } from "@/lib/store/switch-to-basic-modal-store";
+import { useSwitchToBasicModalStore } from "@/lib/store/ui/switch-to-basic-modal-store";
 import { SwitchToBasicBtn } from "../../action-buttons";
 
 type LandlordPlansType = {

@@ -8,12 +8,12 @@ import "react-image-crop/dist/ReactCrop.css";
 import { useState } from "react";
 import { ProfilePictureUploadProps } from "@/types/prop.types";
 import { ProfilePictureUploadModal } from "./modals/profile-picture-upload-modal";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { validateImages } from "@/lib/config/app.config";
 import {
   MAX_PROFILE_IMAGE_SIZE,
   MIN_PROFILE_IMAGE_SIZE,
-} from "@/lib/constants";
+} from "@/lib/constants/constants";
 import { LoaderIcon } from "@/public/icons/loader-icon";
 
 export function ProfilePictureUpload({

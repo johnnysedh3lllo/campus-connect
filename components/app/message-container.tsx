@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import MessageBubble from "./message-bubble";
 import MessageInput from "./message-input";
 import MessageHeader from "./message-header";
-import { getMessageDateLabel } from "@/lib/utils";
-import { useProfileViewStore } from "@/lib/store/profile-view-store";
+import { getMessageDateLabel } from "@/lib/utils/app/utils";
+import { useProfileViewStore } from "@/lib/store/user/profile-view-store";
 import { InfiniteScrollTrigger } from "./infinite-scroll-trigger";
 import { User } from "@supabase/supabase-js";
 import { AnimatePresence, motion } from "framer-motion";
@@ -47,8 +47,6 @@ export default function MessageContainer({
       scrollToBottom();
     }
   }, [conversationMessages, isFetchingNextPage]);
-
-  
 
   // Group messages by date
   const messagesByDate: { [key: string]: any[] } = {};

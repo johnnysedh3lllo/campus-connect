@@ -6,15 +6,15 @@ import { PremiumBanner } from "@/components/app/premium-banner";
 import { ProfileHeader } from "@/components/app/profile-header";
 import { Separator } from "@/components/ui/separator";
 // ASSETS
-import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
+import { useGetUserPublic } from "@/lib/hooks/tanstack/queries/use-get-user-public";
 import { ProfileInfo } from "@/components/app/profile-info";
-import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
+import { useGetActiveSubscription } from "@/lib/hooks/tanstack/queries/use-get-active-subscription";
 import { ProfileHeaderSkeleton } from "@/components/app/skeletons/profile-header-skeleton";
 import { ProfileInfoSkeleton } from "@/components/app/skeletons/profile-info-skeleton";
 import { RoleGate } from "@/components/app/role-gate";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 import UserTierSummary from "@/components/app/user-tier-summary";
-import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
+import { useGetPackageRecord } from "@/lib/hooks/tanstack/queries/use-get-package-record";
 
 export function ProfilePageBody() {
   const { userId, userRoleId } = useUserStore();

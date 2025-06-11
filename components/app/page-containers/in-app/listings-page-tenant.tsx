@@ -3,14 +3,14 @@ import { EmptyPageState } from "../../empty-page-state";
 import { Header } from "../../header";
 import { ListingsCardGridSkeleton } from "../../skeletons/listings-card-grid-skeleton";
 import { PremiumBanner } from "../../premium-banner";
-import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
-import { useUserStore } from "@/lib/store/user-store";
+import { useGetPackageRecord } from "@/lib/hooks/tanstack/queries/use-get-package-record";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { RoleGate } from "../../role-gate";
 import listingIllustration from "@/public/illustrations/illustration-listings.png";
-import { useGetListings } from "@/hooks/tanstack/use-get-listings";
+import { useGetListings } from "@/lib/hooks/tanstack/queries/use-get-listings";
 import { SearchBar } from "../../search-bar";
 import { useStore } from "zustand";
-import { createSearchStore } from "@/lib/store/search-store";
+import { createSearchStore } from "@/lib/store/global/search-store";
 import { ListingsCardContainer } from "../../listings-card-container";
 import { InfiniteScrollTrigger } from "../../infinite-scroll-trigger";
 

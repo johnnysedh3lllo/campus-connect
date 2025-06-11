@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/lib/hooks/ui/use-toast";
 
 const ErrorHandler = () => {
   const { toast } = useToast();

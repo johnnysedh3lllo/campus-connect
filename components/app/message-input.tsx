@@ -13,7 +13,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SendIcon } from "@/public/icons/send-icon";
 import { Input } from "../ui/input";
-import { useUpdateConversationMessages } from "@/hooks/tanstack/mutations/use-update-conversation-messages";
+import { useUpdateConversationMessages } from "@/lib/hooks/tanstack/mutations/chat/use-update-conversation-messages";
 
 export type MessageInputProps = {
   userId: string | undefined;

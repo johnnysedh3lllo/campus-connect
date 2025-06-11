@@ -1,7 +1,7 @@
 import { updateUser } from "@/app/actions/supabase/user";
 import { redirectRoutes } from "@/lib/config/app.config";
 import { OAuthActionType } from "@/types/config.types";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
       const [firstName, ...rest] = fullName.split(/\s+/);
       const lastName = rest.join(" ");
 
-      console.log(user)
+      console.log(user);
 
       switch (currentAction) {
         case "signup":

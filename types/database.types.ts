@@ -1,5 +1,6 @@
 import {
   Database as DB,
+  Enums,
   Tables,
   TablesInsert,
   TablesUpdate,
@@ -28,6 +29,8 @@ declare global {
   type MessagesInsert = TablesInsert<"messages">;
 
   type RealMessagesTable = Tables<"messages">;
+
+  type RateLimitEndpointEnum = Enums<"rate_limit_endpoint">;
 
   type Participant = Pick<
     UserPublic,

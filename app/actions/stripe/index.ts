@@ -1,10 +1,8 @@
 "use server";
 
 import Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
-import { createClient, User } from "@supabase/supabase-js";
-import { fetchCustomer } from "../supabase/customers";
-import { headers } from "next/headers";
+import { stripe } from "@/lib/utils/stripe/stripe";
+import { User } from "@supabase/supabase-js";
 
 // Stripe Functions
 export async function fetchStripeCustomerById(customerId: string) {
@@ -111,6 +109,4 @@ export async function fetchStripeActiveSubscription(
 
 export async function createBillingPortalSession(
   userId: User["id"] | undefined,
-) {
-  
-}
+) {}

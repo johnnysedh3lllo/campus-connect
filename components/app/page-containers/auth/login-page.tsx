@@ -3,7 +3,7 @@
 // UTILITIES
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { login } from "@/app/actions/supabase/onboarding";
 
 // COMPONENTS
@@ -11,7 +11,7 @@ import { login } from "@/app/actions/supabase/onboarding";
 // ASSETS
 import { LoginForm } from "@/components/app/auth-forms";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
-import { animationConfig, formVariants } from "@/hooks/animations";
+import { animationConfig, formVariants } from "@/lib/hooks/global/animations";
 import { LoginFormType } from "@/types/form.types";
 
 export default function LoginPage() {
@@ -58,9 +58,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div
-      className="onboarding-form--wrapper flex flex-col px-2 lg:w-full lg:overflow-x-hidden lg:overflow-y-auto"
-    >
+    <div className="onboarding-form--wrapper flex flex-col px-2 lg:w-full lg:overflow-x-hidden lg:overflow-y-auto">
       <AnimationWrapper
         variants={formVariants}
         transition={animationConfig}

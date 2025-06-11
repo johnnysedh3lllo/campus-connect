@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { CheckInbox, ResetPassword } from "@/components/app/auth-forms";
-import { useEmailState } from "@/lib/store/email-state-store";
-import { toast } from "@/hooks/use-toast";
+import { useEmailState } from "@/lib/store/user/email-state-store";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
-import { animationConfig, formVariants } from "@/hooks/animations";
+import { animationConfig, formVariants } from "@/lib/hooks/global/animations";
 import { ResetPasswordFormType } from "@/types/form.types";
 import { resetPassword } from "@/app/actions/supabase/onboarding";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
-import { useCountdownTimer } from "@/hooks/use-countdown-timer";
+import { useCountdownTimer } from "@/lib/hooks/global/use-countdown-timer";
 
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`

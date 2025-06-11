@@ -1,12 +1,12 @@
 "use client";
-import { animationConfig, formVariants } from "@/hooks/animations";
+import { animationConfig, formVariants } from "@/lib/hooks/global/animations";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
 import { SelectRole } from "../../auth-forms";
 import { RoleFormType } from "@/types/form.types";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { useState } from "react";
 import { updateUser } from "@/app/actions/supabase/user";
-import { supabase } from "@/utils/supabase/client";
+import { supabase } from "@/lib/utils/supabase/client";
 import { redirectRoutes } from "@/lib/config/app.config";
 
 export default function SelectRolePage() {

@@ -10,7 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../ui/carousel";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/app/utils";
 import imagePlaceholder from "@/public/illustrations/illustration-image-placeholder.png";
 
 export function ListingImageCarousel({

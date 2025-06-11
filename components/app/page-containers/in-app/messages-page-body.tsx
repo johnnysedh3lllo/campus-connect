@@ -2,8 +2,8 @@
 
 import { EmptyPageState } from "../../empty-page-state";
 import messageIllustration from "@/public/illustrations/illustration-messages.svg";
-import { useGetConversations } from "@/hooks/tanstack/use-get-conversations";
-import { useUserStore } from "@/lib/store/user-store";
+import { useGetConversations } from "@/lib/hooks/tanstack/queries/use-get-conversations";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { RoleGate } from "../../role-gate";
 
 export default function MessagesPageBody() {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { MessageListItemProps } from "@/types/prop.types";
 import { usePathname } from "next/navigation";
-import { customRelativeTime } from "@/lib/utils";
+import { customRelativeTime } from "@/lib/utils/app/utils";
 
 export function MessageListItem({ conversation }: MessageListItemProps) {
   const pathName = usePathname();

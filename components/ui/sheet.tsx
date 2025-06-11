@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as SheetPrimitive from "@radix-ui/react-dialog";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/app/utils";
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -25,7 +25,7 @@ function SheetClose({
       data-slot="sheet-close"
       {...props}
       className={cn(
-        "ring-offset-background focus-visible:ring-ring data-[state=open]:bg-secondary rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 focus-visible::outline-hidden disabled:pointer-events-none",
+        "ring-offset-background focus-visible:ring-ring data-[state=open]:bg-secondary focus-visible::outline-hidden rounded-xs opacity-70 transition-opacity hover:opacity-100 focus-visible:ring-2 disabled:pointer-events-none",
         className,
       )}
     >
@@ -73,7 +73,7 @@ function SheetContent({
         className={cn(
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-300",
           side === "right" &&
-            "data-[state=closed]:translate-x-full data-[state=open]:translate-x-0 inset-y-0 right-0 h-full w-full border-l sm:max-w-1/2",
+            "inset-y-0 right-0 h-full w-full border-l data-[state=closed]:translate-x-full data-[state=open]:translate-x-0 sm:max-w-1/2",
           side === "left" &&
             "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-full border-r sm:max-w-1/2",
           side === "top" &&

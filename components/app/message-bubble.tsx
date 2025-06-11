@@ -1,6 +1,6 @@
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils/app/utils";
 import type { MessageBubbleProps } from "@/types/prop.types";
 
 export default function MessageBubble({
@@ -37,7 +37,7 @@ export default function MessageBubble({
               src={participantAvatarUrl}
               alt="avatar"
             />
-            <AvatarFallback className="capitalize size-7.5">
+            <AvatarFallback className="size-7.5 capitalize">
               {participant?.users?.first_name?.[0]}
             </AvatarFallback>
           </Avatar>

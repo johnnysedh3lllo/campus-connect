@@ -1,9 +1,9 @@
 import { CreditChipIcon } from "@/public/icons/credit-chip-icon";
-import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
-import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
+import { useGetUserCredits } from "@/lib/hooks/tanstack/queries/use-get-user-credits";
+import { useGetActiveSubscription } from "@/lib/hooks/tanstack/queries/use-get-active-subscription";
 import BuyCredits from "./buy-credits";
 import { CreditDisplayCardSkeleton } from "./skeletons/credit-display-card-skeleton";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 
 export function CreditDisplayCard() {
   const { userId, userRoleId } = useUserStore();

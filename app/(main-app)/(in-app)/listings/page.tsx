@@ -8,10 +8,10 @@ import {
 import { getUser } from "@/app/actions/supabase/user";
 import { ListingsPageLandlord } from "@/components/app/page-containers/in-app/listings-page-landlord";
 import { ListingsPageTenant } from "@/components/app/page-containers/in-app/listings-page-tenant";
-import { hasRole } from "@/lib/utils";
+import { hasRole } from "@/lib/utils/app/utils";
 import { upsertUserSettings } from "@/app/actions/supabase/settings";
 import { queryKeys } from "@/lib/config/query-keys.config";
-import { LISTING_PAGE_SIZE } from "@/lib/constants";
+import { LISTING_PAGE_SIZE } from "@/lib/constants/constants";
 
 export const metadata: Metadata = {
   title: "Listings",

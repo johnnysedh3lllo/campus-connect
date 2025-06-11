@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhotoPreview } from "@/components/app/listing-photo-preview";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/app/utils";
 
 interface PhotoCarouselProps {
   photos: string[];
@@ -56,9 +56,7 @@ export function PhotoCarousel({ photos, onRemove }: PhotoCarouselProps) {
 
   return (
     <div className="relative flex w-full flex-col gap-6">
-      <div className="text-sm font-medium">
-        {totalPhotos}/10 Photos
-      </div>
+      <div className="text-sm font-medium">{totalPhotos}/10 Photos</div>
 
       <div className="flex items-center">
         {/* Left navigation button */}

@@ -1,5 +1,5 @@
 "use server";
-import { createClient, ENVType } from "@/utils/supabase/server";
+import { createClient, ENVType } from "@/lib/utils/supabase/server";
 import { isAuthError, User, UserAttributes } from "@supabase/supabase-js";
 import { ProfileInfoFormType } from "@/types/form.types";
 

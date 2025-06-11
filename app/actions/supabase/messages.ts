@@ -1,8 +1,8 @@
 "use server";
 import { ConversationFormType } from "@/types/form.types";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/utils/supabase/server";
 import { updateUserPackageInquiries } from "./packages";
-import { MIN_INQUIRIES } from "@/lib/constants";
+import { MIN_INQUIRIES } from "@/lib/constants/constants";
 
 // TODO: SETUP A GUARD CLAUSE FOR BOTH FUNCTION PARAMETERS
 export async function getConversationMessages({

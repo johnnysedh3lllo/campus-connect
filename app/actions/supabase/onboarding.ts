@@ -6,7 +6,7 @@ import {
   resetPasswordFormSchema,
   changePasswordSchema,
   loginSchema,
-} from "@/lib/form.schemas";
+} from "@/lib/schemas/form.schemas";
 
 import {
   SignUpFormType,
@@ -16,15 +16,15 @@ import {
   ChangePasswordFormType,
 } from "@/types/form.types";
 
-import { encodedRedirect } from "@/utils/utils";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/lib/utils/supabase/server";
 
 import { redirect } from "next/navigation";
 import { Provider, ResendParams } from "@supabase/supabase-js";
 import { z } from "zod";
-import { getBaseUrl } from "@/lib/utils";
+import { getBaseUrl } from "@/lib/utils/app/utils";
 import { redirectRoutes } from "@/lib/config/app.config";
 import { updateUser } from "./user";
+import { encodedRedirect } from "@/lib/api/response";
 
 const baseUrl = getBaseUrl();
 

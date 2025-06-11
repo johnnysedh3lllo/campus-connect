@@ -5,7 +5,7 @@ import { MessagesIcon } from "@/public/icons/message-icon";
 import { ProfileIcon } from "@/public/icons/profile-icon";
 import { SettingsIcon } from "@/public/icons/settings-icon";
 // import { areValidFileTypes, areValidFileSizes } from "./utils";
-import { SUPPORTED_FILE_TYPES } from "../constants";
+import { SUPPORTED_FILE_TYPES } from "../constants/constants";
 
 export const ROLES = {
   ADMIN: 1,
@@ -130,3 +130,20 @@ export const redirectRoutes = {
   newUsers: "/listings?modalId=welcome",
   usersWithoutARole: "/select-role",
 };
+
+export const SITE_CONFIG = {
+  MAX_REQUEST_SIZE: parseInt(process.env.MAX_REQUEST_SIZE ?? "10240"),
+  RATE_LIMIT: {
+    MAX_ATTEMPTS: parseInt(process.env.RATE_LIMIT_MAX_ATTEMPTS ?? "10"),
+    WINDOW_HOURS: parseInt(process.env.RATE_LIMIT_WINDOW_HOURS ?? "1"),
+  },
+  STRIPE: {
+    SESSION_EXPIRATION: 30 * 60, // 30 minutes
+  },
+  EXPONENTIAL_BACKOFF_RETRY_DELAY: 1000,
+};
+
+export const ALLOWED_ORIGINS = [
+  "https://campconnect.vercel.app",
+  ...(process.env.NODE_ENV === "development" ? ["http://localhost:3000"] : []),
+];

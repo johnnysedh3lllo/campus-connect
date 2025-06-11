@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Image from "next/image";
 
 //ASSETS
-import { figtree } from "@/lib/fonts";
+import { figtree } from "@/lib/constants/fonts";
 import "@/app/global.css";
 import onboardingPattern from "@/public/patterns/pattern-onboarding.svg";
 import { Metadata } from "next";
@@ -54,7 +54,7 @@ export default function RootLayout({
             src={onboardingPattern}
             quality={80}
           />
-          <section className="max-w-screen-max-xl w-full z-1 mx-auto flex flex-col gap-6 overflow-y-hidden pt-6 pr-4 pb-20 pl-4 sm:items-start sm:pt-12 sm:pr-10 sm:pb-12 sm:pl-10 lg:h-screen lg:flex-row lg:items-center lg:p-6">
+          <section className="max-w-screen-max-xl z-1 mx-auto flex w-full flex-col gap-6 overflow-y-hidden pt-6 pr-4 pb-20 pl-4 sm:items-start sm:pt-12 sm:pr-10 sm:pb-12 sm:pl-10 lg:h-screen lg:flex-row lg:items-center lg:p-6">
             <div className="text-background flex w-full justify-start sm:flex-1 lg:h-full lg:items-center lg:justify-center">
               <Link href="/">
                 <Logo />

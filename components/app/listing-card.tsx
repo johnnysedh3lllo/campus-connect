@@ -5,7 +5,7 @@ import {
   formatCurrency,
   formatNumberWithSuffix,
   frequencyMap,
-} from "@/lib/utils";
+} from "@/lib/utils/app/utils";
 import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
 import { LocationIcon } from "@/public/icons/location-icon";
 import imagePlaceholder from "@/public/illustrations/illustration-image-placeholder.png";

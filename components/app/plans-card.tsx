@@ -2,8 +2,8 @@
 import { CheckIcon } from "@/public/icons/check-icon";
 import { Button } from "../ui/button";
 import { PlansCardProps } from "@/types/prop.types";
-import { useGetUser } from "@/hooks/tanstack/use-get-user";
-import { useSwitchToBasicModalStore } from "@/lib/store/switch-to-basic-modal-store";
+import { useGetUser } from "@/lib/hooks/tanstack/queries/use-get-user";
+import { useSwitchToBasicModalStore } from "@/lib/store/ui/switch-to-basic-modal-store";
 import { SubscribeToPremiumBtn } from "./action-buttons";
 
 export function PlansCard({ plan }: PlansCardProps) {

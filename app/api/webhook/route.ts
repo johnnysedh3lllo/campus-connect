@@ -8,7 +8,7 @@ import {
 } from "@/app/actions/supabase/credits";
 import { deleteCustomer } from "@/app/actions/supabase/customers";
 import { manageSubscriptions } from "@/app/actions/supabase/subscriptions";
-import { stripe } from "@/lib/stripe";
+import { stripe } from "@/lib/utils/stripe/stripe";
 import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import {
   createUserPackageRecord,

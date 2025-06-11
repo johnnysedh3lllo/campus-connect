@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchCustomer } from "@/app/actions/supabase/customers";
-import { stripe } from "@/lib/stripe";
+import { stripe } from "@/lib/utils/stripe/stripe";
 
 export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");

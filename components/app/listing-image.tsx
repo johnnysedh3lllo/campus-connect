@@ -1,5 +1,5 @@
-import { useImageSize } from "@/hooks/use-image-size";
-import { cn } from "@/lib/utils";
+import { useImageSize } from "@/lib/hooks/global/use-image-size";
+import { cn } from "@/lib/utils/app/utils";
 import Image from "next/image";
 
 export const ListingImage = ({

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import { stripe } from "@/lib/utils/stripe/stripe";
 import { getActiveSubscription } from "@/app/actions/supabase/subscriptions";
 import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 

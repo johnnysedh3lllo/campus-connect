@@ -3,9 +3,9 @@
 import {
   convertTimeStampToISOSafe,
   convertTimeStampToISOStrict,
-} from "@/lib/utils";
-import { supabaseAdmin } from "@/utils/supabase/admin";
-import { createClient, ENVType } from "@/utils/supabase/server";
+} from "@/lib/utils/app/utils";
+import { supabaseAdmin } from "@/lib/utils/supabase/admin";
+import { createClient, ENVType } from "@/lib/utils/supabase/server";
 import Stripe from "stripe";
 
 // SERVER & CLIENT

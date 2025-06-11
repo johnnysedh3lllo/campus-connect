@@ -6,9 +6,9 @@ import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { ToastAction } from "../ui/toast";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/app/utils";
 import { User } from "@supabase/supabase-js";
 
 import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
@@ -16,21 +16,21 @@ import {
   PurchasePremiumFormType,
   UserValidationType,
 } from "@/types/form.types";
-import { purchasePremiumFormSchema } from "@/lib/form.schemas";
+import { purchasePremiumFormSchema } from "@/lib/schemas/form.schemas";
 
 import { ConversationFormType } from "@/types/form.types";
-import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
+import { useUpdateConversationParticipants } from "@/lib/hooks/tanstack/mutations/chat/use-update-conversation-participants";
 import { PlusIcon } from "@/public/icons/plus-icon";
 import Link from "next/link";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
-import { useUpdateListing } from "@/hooks/tanstack/mutations/use-update-listing";
+import { useUpdateListing } from "@/lib/hooks/tanstack/mutations/listings/use-update-listing";
 import { statusVerbMap } from "@/lib/config/app.config";
 import { LeftChevonIcon } from "@/public/icons/left-chevon-icon";
-import { useDeleteListing } from "@/hooks/tanstack/mutations/use-delete-listing";
-import { useBackToLastPage } from "@/hooks/use-back-to-last-page";
-import { useUserStore } from "@/lib/store/user-store";
-import { useCreateConversation } from "@/hooks/tanstack/mutations/use-create-conversation";
-import { useGetPackageRecord } from "@/hooks/tanstack/use-get-package-record";
+import { useDeleteListing } from "@/lib/hooks/tanstack/mutations/listings/use-delete-listing";
+import { useBackToLastPage } from "@/lib/hooks/global/use-back-to-last-page";
+import { useUserStore } from "@/lib/store/user/user-store";
+import { useCreateConversation } from "@/lib/hooks/tanstack/mutations/chat/use-create-conversation";
+import { useGetPackageRecord } from "@/lib/hooks/tanstack/queries/use-get-package-record";
 import { BadgeIcon } from "@/public/illustrations/badge-icon";
 import { ModalProps } from "@/types/prop.types";
 import Modal from "./modals/modal";

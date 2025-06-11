@@ -30,20 +30,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { buyCreditsFormSchema } from "@/lib/form.schemas";
+import { buyCreditsFormSchema } from "@/lib/schemas/form.schemas";
 import { BuyCreditsFormSchemaType } from "@/types/form.types";
-import { createIdempotencyKey, getCreditTiers } from "@/lib/utils";
+import { createIdempotencyKey, getCreditTiers } from "@/lib/utils/app/utils";
 import { CreditTierOption } from "@/types/pricing.types";
 import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { loadStripe } from "@stripe/stripe-js";
 import { CreditBalance } from "@/components/app/credit-balance";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
-import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
-import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
-import { useUserStore } from "@/lib/store/user-store";
+import { useGetUserCredits } from "@/lib/hooks/tanstack/queries/use-get-user-credits";
+import { useMobileNavState } from "@/lib/store/ui/mobile-nav-state-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { LoaderIcon } from "@/public/icons/loader-icon";
-import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
+import { useGetUserPublic } from "@/lib/hooks/tanstack/queries/use-get-user-public";
 import { v4 as uuidv4 } from "uuid";
 
 type BuyCreditProps = {
@@ -171,7 +171,7 @@ export default function BuyCredits({
       } else {
         const responseObj: { error: string } = await response.json();
         toast({
-          variant: "default",
+          variant: "destructive",
           // title: "Please confirm email and password",
           description: responseObj.error,
         });

@@ -7,18 +7,18 @@ import secondPlaceIllustration from "@/public/illustrations/second-place-medal-i
 import thirdPlaceIllustration from "@/public/illustrations/third-place-medal-illustration.png";
 import Image from "next/image";
 import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
-import { formatCurrencyToLocale } from "@/lib/utils";
+import { formatCurrencyToLocale } from "@/lib/utils/app/utils";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useGetUser } from "@/hooks/tanstack/use-get-user";
-import { purchasePackageFormSchema } from "@/lib/form.schemas";
+import { useGetUser } from "@/lib/hooks/tanstack/queries/use-get-user";
+import { purchasePackageFormSchema } from "@/lib/schemas/form.schemas";
 import {
   PurchasePackageFormType,
   UserValidationType,
 } from "@/types/form.types";
 import { loadStripe } from "@stripe/stripe-js";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { LoaderIcon } from "@/public/icons/loader-icon";
 
 // TODO: DEVISE A MEANS TO ENSURE THE USER OBJECT IS AVAILABLE BEFORE THIS COMPONENT MOUNTS

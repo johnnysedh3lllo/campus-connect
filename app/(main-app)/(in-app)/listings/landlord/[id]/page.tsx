@@ -2,7 +2,7 @@ import { getListings } from "@/app/actions/supabase/listings";
 import { getUserPublic } from "@/app/actions/supabase/user";
 import { ListingLandlordProfilePageBody } from "@/components/app/page-containers/in-app/listing-landlord-profile-page-body";
 import { queryKeys } from "@/lib/config/query-keys.config";
-import { LISTING_PAGE_SIZE } from "@/lib/constants";
+import { LISTING_PAGE_SIZE } from "@/lib/constants/constants";
 import {
   dehydrate,
   HydrationBoundary,

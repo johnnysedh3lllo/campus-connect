@@ -16,13 +16,13 @@ import {
 import { Input } from "../ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { profileInfoFormSchema } from "@/lib/form.schemas";
-import { useToast } from "@/hooks/use-toast";
+import { profileInfoFormSchema } from "@/lib/schemas/form.schemas";
+import { useToast } from "@/lib/hooks/ui/use-toast";
 import { ProfileInfoFormType } from "@/types/form.types";
-import { useUpdateUserMetadata } from "@/hooks/tanstack/mutations/use-update-user-metadata";
+import { useUpdateUserMetadata } from "@/lib/hooks/tanstack/mutations/user/use-update-user-metadata";
 import { Textarea } from "../ui/textarea";
 import { RoleGate } from "./role-gate";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { LoaderIcon } from "@/public/icons/loader-icon";
 
 export function ProfileInfo({ userProfile }: ProfileInfoProps) {

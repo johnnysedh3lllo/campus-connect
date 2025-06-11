@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, type JSX } from "react";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { useMediaQuery } from "@/lib/hooks/ui/use-media-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 

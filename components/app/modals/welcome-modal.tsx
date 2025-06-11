@@ -8,7 +8,7 @@ import welcomeIllustration from "@/public/illustrations/welcome-illustration.png
 import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
 import { useState } from "react";
 import Link from "next/link";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { RoleGate } from "../role-gate";
 import Modal from "./modal";
 

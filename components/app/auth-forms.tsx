@@ -10,7 +10,7 @@ import {
   loginSchema,
   signUpFormSchema,
   createPasswordFormSchema,
-} from "@/lib/form.schemas";
+} from "@/lib/schemas/form.schemas";
 import Link from "next/link";
 
 // COMPONENTS
@@ -56,7 +56,7 @@ import {
 import { signOut } from "@/app/actions/supabase/onboarding";
 import { OAuthProviders } from "./oauth-providers";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
-import { formatTime, getPasswordStrength } from "@/lib/utils";
+import { formatTime, getPasswordStrength } from "@/lib/utils/app/utils";
 import { PasswordRequirements } from "./password-requirement";
 import { LoaderIcon } from "@/public/icons/loader-icon";
 
@@ -156,7 +156,9 @@ export function LoginForm({ handleLogin, isLoading }: LoginFormProps) {
                 width={"full"}
                 className="w-full cursor-pointer text-center text-base leading-6 font-semibold transition-all duration-500"
               >
-                {isLoading && <LoaderIcon className="mr-2 size-4 animate-spin" />}
+                {isLoading && (
+                  <LoaderIcon className="mr-2 size-4 animate-spin" />
+                )}
                 {isLoading ? "Logging in..." : "Log in"}
               </Button>
             </div>
@@ -546,7 +548,9 @@ export function ResetPassword({
             width={"full"}
             disabled={isSubmitting}
           >
-            {isSubmitting && <LoaderIcon className="mr-2 size-4 animate-spin" />}
+            {isSubmitting && (
+              <LoaderIcon className="mr-2 size-4 animate-spin" />
+            )}
             {isSubmitting ? "Sending..." : "Send"}
           </Button>
         </form>

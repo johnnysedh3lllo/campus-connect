@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useGetListingByUUID } from "@/hooks/tanstack/use-get-listing-by-uuid";
+import { useGetListingByUUID } from "@/lib/hooks/tanstack/queries/use-get-listing-by-uuid";
 import { BinStrokeIcon } from "@/public/icons/bin-stroke-icon";
 import { EditIcon } from "@/public/icons/edit-icon";
 import { KabobIcon } from "@/public/icons/kabob-icon";
@@ -16,7 +16,7 @@ import { useState } from "react";
 import Modal from "../../modals/modal";
 import { ModalProps } from "@/types/prop.types";
 import Image from "next/image";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 import {
   BackButton,
   ChangeListingPubStatusButton,
@@ -32,7 +32,7 @@ import {
   formatNumberWithSuffix,
   frequencyMap,
   pluralize,
-} from "@/lib/utils";
+} from "@/lib/utils/app/utils";
 import { ListingImageGallery } from "../../listing-image-gallery";
 import { BinIcon } from "@/public/icons/bin-icon";
 import { ListingDetailSkeleton } from "../../skeletons/listing-details-skeleton";

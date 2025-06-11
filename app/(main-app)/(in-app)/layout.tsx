@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 
 // Assets
-import { figtree } from "@/lib/fonts";
+import { figtree } from "@/lib/constants/fonts";
 
 import "@/app/global.css";
 

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { UserProfileCardMobile } from "./user-profile-card-mobile";
-import { useProfileViewStore } from "@/lib/store/profile-view-store";
+import { useProfileViewStore } from "@/lib/store/user/profile-view-store";
 import { MessageHeaderProps, ModalProps } from "@/types/prop.types";
 import { BinIcon } from "@/public/icons/bin-icon";
 import Modal from "@/components/app/modals/modal";
@@ -61,7 +61,7 @@ export default function MessageHeader({
       <div className="flex w-full flex-row items-center gap-2">
         <Button
           variant={"ghost"}
-          className="hover:bg-background-secondary flex size-10 p-0 items-center justify-center rounded-sm lg:hidden"
+          className="hover:bg-background-secondary flex size-10 items-center justify-center rounded-sm p-0 lg:hidden"
           onClick={handleClickBack}
         >
           <LeftChevonIcon />

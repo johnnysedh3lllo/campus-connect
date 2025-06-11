@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "@/utils/supabase/client";
+import { supabase } from "@/lib/utils/supabase/client";
 import { PhotoType } from "@/types/form.types";
 import { ListingImageMetadata } from "@/types/config.types";
 

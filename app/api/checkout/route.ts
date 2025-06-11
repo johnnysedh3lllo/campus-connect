@@ -5,12 +5,14 @@ import {
   retrieveActiveSubscription,
   fetchOrCreateCustomer,
 } from "@/app/actions";
-import { stripe } from "@/lib/stripe";
-import { ROLES } from "@/lib/config/app.config";
+import { stripe } from "@/lib/utils/stripe/stripe";
+import { ROLES, SITE_CONFIG } from "@/lib/config/app.config";
 import { PurchaseFormType } from "@/types/form.types";
 import { v4 as uuidv4 } from "uuid";
-import { purchaseFormSchema } from "@/lib/form.schemas";
+import { purchaseFormSchema } from "@/lib/schemas/form.schemas";
 import { z } from "zod";
+import { evaluateRateLimit } from "@/app/actions/supabase/server/utils";
+import { differenceInSeconds, formatDistanceToNow } from "date-fns";
 
 type CheckoutRequestBody = PurchaseFormType & {
   promoCode?: string;
@@ -39,37 +41,6 @@ const checkoutRequestSchema = purchaseFormSchema.extend({
   landlordPremiumPrice: z.number().positive().optional(),
   idempotencyKey: z.string(),
 });
-
-// Rate limiting store (in production, use Redis or database)
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
-
-// Constants
-const RATE_LIMIT = {
-  MAX_ATTEMPTS: 10,
-  WINDOW_HOURS: 1,
-};
-
-const MAX_REQUEST_SIZE = 1024 * 10; // 10KB
-
-function checkRateLimit(userId: string): boolean {
-  const key = `checkout-rate-${userId}`;
-  const now = Date.now();
-  const windowMs = RATE_LIMIT.WINDOW_HOURS * 60 * 60 * 1000;
-
-  const record = rateLimitStore.get(key);
-
-  if (!record || now > record.resetAt) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
-    return true;
-  }
-
-  if (record.count >= RATE_LIMIT.MAX_ATTEMPTS) {
-    return false;
-  }
-
-  record.count++;
-  return true;
-}
 
 // Utility functions: Validators
 async function validateStripePrice(priceId: string): Promise<boolean> {
@@ -145,6 +116,15 @@ function buildBaseSessionParams(
     payment_method_data: {
       allow_redisplay: "always",
     },
+    // billing_address_collection: "required",
+    // phone_number_collection: {
+    //   enabled: true,
+    // },
+    // consent_collection: {
+    //   terms_of_service: "required",
+    // },
+    expires_at:
+      Math.floor(Date.now() / 1000) + SITE_CONFIG.STRIPE.SESSION_EXPIRATION,
   };
 
   if (promoCode) {
@@ -170,6 +150,7 @@ async function handleLandlordCredits(
     },
     payment_intent_data: {
       setup_future_usage: "off_session",
+      description: `Landlord Credits Purchase - ${landLordCreditCount} credits`,
     },
   };
 }
@@ -186,6 +167,7 @@ async function handleLandlordPremium(
     mode: "subscription",
     success_url: `${referer}?session_id={CHECKOUT_SESSION_ID}&modalId=land_premium_success`,
     subscription_data: {
+      description: "Landlord Premium Subscription",
       metadata: {
         ...sessionParams.metadata,
         landlordPremiumPrice: landlordPremiumPrice ?? null,
@@ -211,6 +193,7 @@ async function handleStudentPackage(
     },
     payment_intent_data: {
       setup_future_usage: "off_session",
+      description: `Student Package - ${studentPackageName}`,
     },
   };
 }
@@ -230,7 +213,8 @@ async function retryWithBackoff<T>(
 
       if (attempt === maxRetries - 1) break;
 
-      const delay = Math.pow(2, attempt) * 1000; // Exponential backoff
+      const delay =
+        Math.pow(2, attempt) * SITE_CONFIG.EXPONENTIAL_BACKOFF_RETRY_DELAY;
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
@@ -254,7 +238,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Request Size Validation
-    if (contentLength > MAX_REQUEST_SIZE) {
+    if (contentLength > SITE_CONFIG.MAX_REQUEST_SIZE) {
       console.error(`[${requestId}] Request too large: ${contentLength} bytes`);
 
       return NextResponse.json({ error: "Request too large" }, { status: 413 });
@@ -296,14 +280,47 @@ export async function POST(request: NextRequest) {
       idempotencyKey,
     } = requestBody;
 
-    // ? Rate limiting
-    // if (!checkRateLimit(userId)) {
-    //   console.error(`[${requestId}]: Rate limit exceeded for user: ${userId}`);
-    //   return NextResponse.json(
-    //     { error: "Too many checkout attempts. Please try again later." },
-    //     { status: 429 },
-    //   );
-    // }
+    // Rate limiting: uses an supabase rpc to handle rate limiting via a rate_limits table
+    const rateLimitResult = await evaluateRateLimit({
+      userId: userId,
+      endpoint: "api/checkout",
+      maxAttempts: SITE_CONFIG.RATE_LIMIT.MAX_ATTEMPTS,
+      windowHours: SITE_CONFIG.RATE_LIMIT.WINDOW_HOURS,
+    });
+
+    if (!rateLimitResult.allowed) {
+      console.error(`[${requestId}]: Rate limit exceeded for user: ${userId}`);
+
+      const resetTime = new Date(rateLimitResult.reset_at);
+      const now = new Date();
+
+      const secondsDiff = differenceInSeconds(resetTime, now);
+
+      if (secondsDiff <= 0) {
+        console.warn(
+          `[${requestId}]: Reset time is in the past or invalid: ${resetTime}`,
+        );
+        return NextResponse.json(
+          {
+            error: "Too many checkout attempts. Please try again shortly.",
+          },
+          { status: 429 },
+        );
+      }
+
+      const retryMessage = `Too many checkout attempts. Please try again in ${formatDistanceToNow(resetTime, { addSuffix: false })}.`;
+
+      console.log(
+        `[${requestId}]: Time to retry for user ${userId}: ${retryMessage}`,
+      );
+
+      return NextResponse.json(
+        {
+          error: retryMessage,
+        },
+        { status: 429 },
+      );
+    }
 
     // Role permission validation
     if (!validateRolePermission(+userRoleId, purchaseType)) {
@@ -317,8 +334,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate Stripe price ID
-    // TODO: SETUP PRICE TABLE ON SUPABASE TO MIRROR STRIPE WHEN NEW PRICES AND PRODUCTS ARE CREATED.
-    // TODO: THIS SHOULD BE WHERE THE CALL SHOULD BE MADE TO REDUCE API CALLS ON STRIPE.
+    // TODO: SETUP PRICE TABLE ON SUPABASE TO MIRROR STRIPE WHEN NEW PRICES AND PRODUCTS ARE CREATED TO REDUCE DIRECT API CALLS ON STRIPE.
     const isPriceValid = await validateStripePrice(priceId);
 
     if (!isPriceValid) {
@@ -330,6 +346,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate promo code if provided
+    // TODO: SETUP PROMO_CODES (TABLE?) ON SUPABASE TO MIRROR STRIPE WHEN NEW CODES TO REDUCE DIRECT API CALLS ON STRIPE.
     if (promoCode) {
       const isPromoValid = await validatePromoCode(promoCode);
       if (!isPromoValid) {

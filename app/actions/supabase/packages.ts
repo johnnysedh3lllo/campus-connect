@@ -1,5 +1,5 @@
 "use server";
-import { createClient, ENVType } from "@/utils/supabase/server";
+import { createClient, ENVType } from "@/lib/utils/supabase/server";
 
 // SERVER & CLIENT
 export async function getUserPackageRecord(

@@ -8,7 +8,7 @@ import {
   PaymentFrequencyEnum,
   pricingFormSchema,
   photosFormSchema,
-} from "@/lib/form.schemas";
+} from "@/lib/schemas/form.schemas";
 import {
   Form,
   FormControl,
@@ -29,7 +29,7 @@ import {
 import { LocationIcon } from "@/public/icons/location-icon";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { CreateListingsState } from "@/lib/store/create-listings-store";
+import { CreateListingsState } from "@/lib/store/listings/create-listings-store";
 import {
   HomeDetailsFormType,
   PricingFormType,
@@ -44,8 +44,8 @@ import { Separator } from "../ui/separator";
 
 import { PhotoCarousel } from "./listing-photo-preview-carousel";
 import { CreditBalance } from "./credit-balance";
-import { toast } from "@/hooks/use-toast";
-import { EditListingsState } from "@/lib/store/edit-listings-store";
+import { toast } from "@/lib/hooks/ui/use-toast";
+import { EditListingsState } from "@/lib/store/listings/edit-listings-store";
 import { PhotoCarouselGeneric } from "./photo-carousel-generic";
 import { validateImages } from "@/lib/config/app.config";
 import {
@@ -59,7 +59,7 @@ import {
   MIN_LISTING_IMAGE_HEIGHT,
   MIN_LISTING_IMAGE_SIZE,
   MIN_LISTING_IMAGE_WIDTH,
-} from "@/lib/constants";
+} from "@/lib/constants/constants";
 import { EmptyImageCarousel } from "./empty-image-carousel";
 import { LoaderIcon } from "@/public/icons/loader-icon";
 

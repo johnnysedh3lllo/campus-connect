@@ -1,4 +1,4 @@
-import { figtree } from "@/lib/fonts";
+import { figtree } from "@/lib/constants/fonts";
 
 import "@/app/global.css";
 import ThemeProviderWrapper from "@/lib/providers/theme-provider-wrapper";

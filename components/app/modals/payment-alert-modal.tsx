@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "../../ui/button";
 import { ChevronRightIcon } from "@/public/icons/chevron-right-icon";
 import { SuccessShieldIcon } from "@/public/icons/success-shield-icon";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { RoleGate } from "../role-gate";
 import { VerifySessionResponseType } from "@/app/api/verify-session/route";
 import Modal from "./modal";

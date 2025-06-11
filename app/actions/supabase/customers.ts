@@ -1,6 +1,6 @@
 "use server";
 
-import { supabaseAdmin } from "@/utils/supabase/admin";
+import { supabaseAdmin } from "@/lib/utils/supabase/admin";
 
 export async function upsertCustomerDetails(customerDetails: CustomersInsert) {
   const userId = customerDetails.id;

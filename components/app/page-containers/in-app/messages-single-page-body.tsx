@@ -6,11 +6,11 @@ import { UserProfileCard } from "@/components/app/user-profile-card";
 import { MessageBody } from "@/components/app/message-body";
 import { UserProfileCardWrapper } from "@/components/app/user-profile-card-wrapper";
 import { User } from "@supabase/supabase-js";
-import { useGetConversationMessages } from "@/hooks/tanstack/use-get-conversation-messages";
-import { useGetConversationParticipants } from "@/hooks/tanstack/use-get-conversation-participants";
+import { useGetConversationMessages } from "@/lib/hooks/tanstack/queries/use-get-conversation-messages";
+import { useGetConversationParticipants } from "@/lib/hooks/tanstack/queries/use-get-conversation-participants";
 import { MessageContainerSkeleton } from "../../skeletons/message-container-skeleton";
 import { useEffect } from "react";
-import { useUpdateConversationParticipants } from "@/hooks/tanstack/mutations/use-update-conversation-participants";
+import { useUpdateConversationParticipants } from "@/lib/hooks/tanstack/mutations/chat/use-update-conversation-participants";
 
 export default function MessagesSinglePageBody({
   user,

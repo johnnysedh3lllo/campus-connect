@@ -10,11 +10,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { animationConfig, formVariants } from "@/hooks/animations";
-import { useEditListing } from "@/hooks/tanstack/mutations/use-edit-listing";
-import { useGetListingByUUID } from "@/hooks/tanstack/use-get-listing-by-uuid";
-import { useBackToLastPage } from "@/hooks/use-back-to-last-page";
-import { toast } from "@/hooks/use-toast";
+import { animationConfig, formVariants } from "@/lib/hooks/global/animations";
+import { useEditListing } from "@/lib/hooks/tanstack/mutations/listings/use-edit-listing";
+import { useGetListingByUUID } from "@/lib/hooks/tanstack/queries/use-get-listing-by-uuid";
+import { useBackToLastPage } from "@/lib/hooks/global/use-back-to-last-page";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import {
   HomeDetailsFormType,
   PricingFormType,
@@ -23,10 +23,10 @@ import {
   ListingFormType,
 } from "@/types/form.types";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
-import { useEditListingsStore } from "@/lib/store/edit-listings-store";
+import { useEditListingsStore } from "@/lib/store/listings/edit-listings-store";
 import { clearStorage } from "@/lib/store/store-utils";
-import { useUserStore } from "@/lib/store/user-store";
-import { fileFromUrl } from "@/lib/utils";
+import { useUserStore } from "@/lib/store/user/user-store";
+import { fileFromUrl } from "@/lib/utils/app/utils";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { useEffect, useState } from "react";
 

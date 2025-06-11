@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/app/utils";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
@@ -11,7 +11,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "border-input bg-background ring-offset-background placeholder:text-sm placeholder:text-text-placeholder focus-visible:ring-ring flex h-10 w-full rounded-sm border py-3 px-3.5 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:leading-6 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+          "border-input bg-background ring-offset-background placeholder:text-text-placeholder focus-visible:ring-ring flex h-10 w-full rounded-sm border px-3.5 py-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-sm placeholder:leading-6 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
           className,
         )}
         ref={ref}
@@ -23,5 +23,3 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input";
 
 export { Input };
-
-

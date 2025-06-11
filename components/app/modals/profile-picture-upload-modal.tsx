@@ -7,9 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useUpdateUserAvatar } from "@/hooks/tanstack/mutations/use-update-user-avatar";
-import { toast } from "@/hooks/use-toast";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUpdateUserAvatar } from "@/lib/hooks/tanstack/mutations/user/use-update-user-avatar";
+import { toast } from "@/lib/hooks/ui/use-toast";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import ReactCrop, { type Crop } from "react-image-crop";
 
@@ -185,4 +185,3 @@ export function ProfilePictureUploadModal({
     </Dialog>
   );
 }
-

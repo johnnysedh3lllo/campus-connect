@@ -1,6 +1,6 @@
 "use client";
 
-import { useProfileViewStore } from "@/lib/store/profile-view-store";
+import { useProfileViewStore } from "@/lib/store/user/profile-view-store";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { Button } from "../ui/button";
 

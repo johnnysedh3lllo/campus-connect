@@ -1,5 +1,5 @@
 import { HeaderProps } from "@/types/prop.types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/app/utils";
 
 export function Header({
   title,

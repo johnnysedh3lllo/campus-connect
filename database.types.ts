@@ -427,6 +427,36 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          attempts: number
+          created_at: string | null
+          endpoint: Database["public"]["Enums"]["rate_limit_endpoint"]
+          id: string
+          reset_at: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string | null
+          endpoint: Database["public"]["Enums"]["rate_limit_endpoint"]
+          id?: string
+          reset_at: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          created_at?: string | null
+          endpoint?: Database["public"]["Enums"]["rate_limit_endpoint"]
+          id?: string
+          reset_at?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       roles: {
         Row: {
           created_at: string | null
@@ -695,6 +725,19 @@ export type Database = {
           was_deleted: boolean
         }[]
       }
+      evaluate_rate_limit: {
+        Args: {
+          p_user_id: string
+          p_endpoint: Database["public"]["Enums"]["rate_limit_endpoint"]
+          p_max_attempts: number
+          p_window_hours: number
+        }
+        Returns: {
+          allowed: boolean
+          remaining_attempts: number
+          reset_at: string
+        }[]
+      }
       get_conversations_for_user: {
         Args: { pid: string }
         Returns: {
@@ -748,6 +791,7 @@ export type Database = {
         | "room in family house"
         | "basement unit"
       package_type: "bronze" | "silver" | "gold"
+      rate_limit_endpoint: "api/checkout" | "api/webhook"
       subscription_status:
         | "active"
         | "canceled"
@@ -882,6 +926,7 @@ export const Constants = {
         "basement unit",
       ],
       package_type: ["bronze", "silver", "gold"],
+      rate_limit_endpoint: ["api/checkout", "api/webhook"],
       subscription_status: [
         "active",
         "canceled",

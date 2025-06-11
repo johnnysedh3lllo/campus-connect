@@ -3,8 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { toast } from "@/hooks/use-toast";
-import { settingsFormSchema } from "@/lib/form.schemas";
+import { toast } from "@/lib/hooks/ui/use-toast";
+import { settingsFormSchema } from "@/lib/schemas/form.schemas";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { SettingsFormType } from "@/types/form.types";
-import { useUserStore } from "@/lib/store/user-store";
-import { useGetUserSettings } from "@/hooks/tanstack/use-get-user-settings";
-import { useUpdateUserSettings } from "@/hooks/tanstack/mutations/use-update-user-settings";
+import { useUserStore } from "@/lib/store/user/user-store";
+import { useGetUserSettings } from "@/lib/hooks/tanstack/queries/use-get-user-settings";
+import { useUpdateSettings } from "@/lib/hooks/tanstack/mutations/settings/use-update-settings";
 import { NotificationsTabSkeleton } from "@/components/app/skeletons/notifications-tab-skeleton";
 import { LoaderIcon } from "@/public/icons/loader-icon";
 
@@ -54,7 +54,7 @@ export default function Notifications() {
     }
   }, [notifications]);
 
-  const upsertSettingsMutation = useUpdateUserSettings();
+  const upsertSettingsMutation = useUpdateSettings();
 
   const onSubmit = async (values: SettingsFormType) => {
     setIsLoading(true);

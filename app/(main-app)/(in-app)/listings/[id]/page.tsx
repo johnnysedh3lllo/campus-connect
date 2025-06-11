@@ -3,7 +3,7 @@ import { getUserPackageRecord } from "@/app/actions/supabase/packages";
 import { getUser } from "@/app/actions/supabase/user";
 import ListingSinglePageBody from "@/components/app/page-containers/in-app/listing-single-page-body";
 import { queryKeys } from "@/lib/config/query-keys.config";
-import { hasRole } from "@/lib/utils";
+import { hasRole } from "@/lib/utils/app/utils";
 import {
   dehydrate,
   HydrationBoundary,

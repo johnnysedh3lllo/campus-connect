@@ -17,12 +17,12 @@ import { MobileNav } from "./mobile-nav";
 import logoMain from "@/public/logos/logo-mark-red.svg";
 
 //
-import { useGetUserPublic } from "@/hooks/tanstack/use-get-user-public";
-import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
+import { useGetUserPublic } from "@/lib/hooks/tanstack/queries/use-get-user-public";
+import { useGetActiveSubscription } from "@/lib/hooks/tanstack/queries/use-get-active-subscription";
 import BuyCredits from "./buy-credits";
-import { useMobileNavState } from "@/lib/store/mobile-nav-state-store";
+import { useMobileNavState } from "@/lib/store/ui/mobile-nav-state-store";
 import { HamburgerIcon } from "@/public/icons/hamburger-icon";
-import { useUserStore } from "@/lib/store/user-store";
+import { useUserStore } from "@/lib/store/user/user-store";
 import { RoleGate } from "./role-gate";
 
 export default function Navigation() {

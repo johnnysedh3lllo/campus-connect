@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 // import ErrorHandler from "@/lib/ErrorHandler";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -12,7 +12,7 @@ import {
   PasswordCreationSuccess,
 } from "@/components/app/auth-forms";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
-import { animationConfig, formVariants } from "@/hooks/animations";
+import { animationConfig, formVariants } from "@/lib/hooks/global/animations";
 import { CreatePasswordFormType } from "@/types/form.types";
 import { createPassword } from "@/app/actions/supabase/onboarding";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";

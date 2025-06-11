@@ -11,7 +11,7 @@ import Modal from "@/components/app/modals/modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { animationConfig, formVariants } from "@/hooks/animations";
+import { animationConfig, formVariants } from "@/lib/hooks/global/animations";
 import {
   HomeDetailsFormType,
   PricingFormType,
@@ -21,24 +21,24 @@ import {
 } from "@/types/form.types";
 import { ModalProps } from "@/types/prop.types";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
-import { useCreateListingsStore } from "@/lib/store/create-listings-store";
+import { useCreateListingsStore } from "@/lib/store/listings/create-listings-store";
 import { CloseIconNoBorders } from "@/public/icons/close-icon-no-borders";
 import { XLarge } from "@/public/icons/x-large-icon";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useCreateListing } from "@/hooks/tanstack/mutations/use-create-listing";
-import { useUpdateCreditRecord } from "@/hooks/tanstack/mutations/use-update-credit-record";
-import { toast } from "@/hooks/use-toast";
+import { useCreateListing } from "@/lib/hooks/tanstack/mutations/listings/use-create-listing";
+import { useUpdateCreditRecord } from "@/lib/hooks/tanstack/mutations/use-update-credit-record";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
-import { useUserStore } from "@/lib/store/user-store";
-import { useGetUserCredits } from "@/hooks/tanstack/use-get-user-credits";
-import { useGetActiveSubscription } from "@/hooks/tanstack/use-get-active-subscription";
+import { useUserStore } from "@/lib/store/user/user-store";
+import { useGetUserCredits } from "@/lib/hooks/tanstack/queries/use-get-user-credits";
+import { useGetActiveSubscription } from "@/lib/hooks/tanstack/queries/use-get-active-subscription";
 import BuyCredits from "@/components/app/buy-credits";
 import Link from "next/link";
 import { SuccessShieldIcon } from "@/public/icons/success-shield-icon";
 import { SadFaceIcon } from "@/public/icons/sad-face-icon";
 import { clearStorage } from "@/lib/store/store-utils";
-import { MIN_CREDITS } from "@/lib/constants";
+import { MIN_CREDITS } from "@/lib/constants/constants";
 
 export default function CreateListingPage() {
   const { userId, userRoleId } = useUserStore();

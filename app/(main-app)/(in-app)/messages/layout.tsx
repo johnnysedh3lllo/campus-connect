@@ -9,7 +9,7 @@ import {
 import { getConversations } from "@/app/actions/supabase/messages";
 import { getUser } from "@/app/actions/supabase/user";
 import { queryKeys } from "@/lib/config/query-keys.config";
-import { CONVERSATION_PAGE_SIZE } from "@/lib/constants";
+import { CONVERSATION_PAGE_SIZE } from "@/lib/constants/constants";
 
 export const metadata: Metadata = {
   title: "Messages",

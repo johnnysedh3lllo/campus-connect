@@ -1,7 +1,7 @@
 "use client";
 
 // UTILITIES
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 import { useEffect, useRef } from "react";
 import { RoleFormType, SignUpFormType } from "@/types/form.types";
 
@@ -12,14 +12,14 @@ import {
   SelectRole,
 } from "@/components/app/auth-forms";
 import { AnimationWrapper } from "@/lib/providers/animation-wrapper";
-import { animationConfig, formVariants } from "@/hooks/animations";
+import { animationConfig, formVariants } from "@/lib/hooks/global/animations";
 import {
   resendVerification,
   signUpWithPassword,
 } from "@/app/actions/supabase/onboarding";
 import { OnboardingFlowWrapper } from "@/lib/providers/onboarding-flow-wrapper";
 import { useMultiStepFormStore } from "@/lib/store/multi-step-form-store";
-import { useCountdownTimer } from "@/hooks/use-countdown-timer";
+import { useCountdownTimer } from "@/lib/hooks/global/use-countdown-timer";
 
 export default function Signup() {
   const { step, nextStep, formData, updateFields } = useMultiStepFormStore();

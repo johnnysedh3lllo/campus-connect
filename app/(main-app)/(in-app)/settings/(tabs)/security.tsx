@@ -3,9 +3,9 @@
 // UTILITIES
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { changePasswordSchema } from "@/lib/form.schemas";
+import { changePasswordSchema } from "@/lib/schemas/form.schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/lib/hooks/ui/use-toast";
 
 // COMPONENTS
 import { Button } from "@/components/ui/button";
