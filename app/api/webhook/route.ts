@@ -29,7 +29,10 @@ const relevantEvent = new Set([
   "customer.subscription.created",
   "customer.subscription.updated",
   "customer.subscription.deleted",
+  "invoice.created", // ...hmmm
   "invoice.paid",
+  "invoice.payment_succeeded", // ...hmmm
+  "invoice.finalized", // ...hmmm
   "invoice.payment_failed",
   "payment_intent.created",
   "payment_intent.succeeded",
@@ -38,32 +41,30 @@ const relevantEvent = new Set([
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
-  const signature = req.headers.get("stripe-signature")!;
+  const signature = req.headers.get("stripe-signature");
 
-  const response = JSON.parse(body);
+  if (!signature || !webhookSecret) {
+    return NextResponse.json({ error: "Invalid Request" }, { status: 400 });
+  }
+
   let event: Stripe.Event;
 
-  const dateString = new Date(response.created * 1000).toLocaleDateString();
-  const timeString = new Date(response.created * 1000).toLocaleDateString();
-
   try {
-    if (!signature || !webhookSecret)
-      return NextResponse.json(
-        { error: "Invalid Signature or Webhook Secret" },
-        { status: 400 },
-      );
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     console.info(`🔔  Webhook received: ${event.type}`);
   } catch (error: any) {
-    console.error(
-      `❌ An error occurred while verifying the webhook: ${error.message}`,
-    );
+    console.error(`❌ An error occurred: ${error.message}`);
 
-    return NextResponse.json(
-      { error: "Webhook signature verification failed" },
-      { status: 400 },
-    );
+    return NextResponse.json({ error: "Invalid Request" }, { status: 400 });
   }
+
+  const createdAt = new Date(event.created * 1000);
+  const dateString = createdAt.toLocaleDateString();
+  const timeString = createdAt.toLocaleTimeString();
+
+  console.info(
+    `🔔  ${dateString} ${timeString} — Event received: ${event.type}`,
+  );
 
   const updateCustomerPaymentMethod = async (
     paymentIntent: Stripe.PaymentIntent,
@@ -235,7 +236,7 @@ export async function POST(req: NextRequest) {
           // TODO: handle failed subscription payments
           break;
         default:
-          console.info(`Unhandled event type ${event.type}`);
+          console.info(`💭 Unhandled event type ${event.type}`);
           break;
       }
     } catch (error) {
@@ -263,9 +264,9 @@ export async function POST(req: NextRequest) {
 // charge.succeeded
 // charge.updated
 // customer.created
+// customer.updated
 // payment_intent.created
 // payment_method.attached
-// customer.updated
 // invoice.created
-// invoice.finalized
 // invoice.payment_succeeded
+// invoice.finalized

@@ -1,24 +1,19 @@
 "use client";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/lib/hooks/ui/use-toast";
 import { ToastAction } from "../ui/toast";
-import { cn } from "@/lib/utils/app/utils";
+import { cn, createIdempotencyKey } from "@/lib/utils/app/utils";
 import { User } from "@supabase/supabase-js";
+import { v4 as uuidv4 } from "uuid";
 
 import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
-import {
-  PurchasePremiumFormType,
-  UserValidationType,
-} from "@/types/form.types";
-import { purchasePremiumFormSchema } from "@/lib/schemas/form.schemas";
 
-import { ConversationFormType } from "@/types/form.types";
+import { ConversationFormType, RoleType } from "@/types/form.types";
 import { useUpdateConversationParticipants } from "@/lib/hooks/tanstack/mutations/chat/use-update-conversation-participants";
 import { PlusIcon } from "@/public/icons/plus-icon";
 import Link from "next/link";
@@ -292,117 +287,80 @@ export function BackButton({
 export function SubscribeToPremiumBtn({
   user,
 }: {
-  user: User | null | undefined;
+  user: UserPublic | undefined;
 }) {
-  const userId = user?.id;
-  const userRoleId: UserValidationType["roleId"] = user?.user_metadata.role_id;
-  const userName = user?.user_metadata
-    ? user.user_metadata.full_name
-    : undefined;
-  const userEmail = user?.email;
+  const isPending = useRef(false);
+  const [loading, setLoading] = useState(false);
 
-  const premiumSubscriptionForm = useForm<PurchasePremiumFormType>({
-    resolver: zodResolver(purchasePremiumFormSchema),
-    defaultValues: {
-      purchaseType: PURCHASE_TYPES.LANDLORD_PREMIUM.type,
-      priceId: PRICING.landlord.premium.monthly.priceId,
-      landlordPremiumPrice: PRICING.landlord.premium.monthly.amount,
-      userId,
-      userEmail,
-      userName,
-      userRoleId,
-    },
-  });
+  async function handleSubscribe() {
+    if (isPending.current || !user) return;
 
-  const {
-    formState: { isSubmitting: isSubmittingPremium },
-  } = premiumSubscriptionForm;
-
-  async function handleSubscribeToPremium(values: PurchasePremiumFormType) {
-    const { purchaseType, userId, priceId, landlordPremiumPrice, userRoleId } =
-      values;
+    isPending.current = true;
+    setLoading(true);
 
     try {
+      const transactionId = uuidv4();
+      const idempotencyKey = createIdempotencyKey(
+        "checkout",
+        user.id,
+        "landlord_credits",
+        transactionId,
+      );
+
       const requestBody = {
-        purchaseType,
-        priceId,
-        landlordPremiumPrice,
-        userId,
-        userEmail,
-        userName,
-        userRoleId,
+        purchaseType: PURCHASE_TYPES.LANDLORD_PREMIUM.type,
+        priceId: PRICING.landlord.premium.monthly.priceId,
+        landlordPremiumPrice: PRICING.landlord.premium.monthly.amount,
+        userId: user.id,
+        userEmail: user.email,
+        userName: user.full_name,
+        userRoleId: `${user.role_id}` as RoleType,
+        idempotencyKey,
       };
 
-      const response = await fetch("/api/checkout", {
+      const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
 
-      if (response.ok) {
-        const { sessionId } = await response.json();
-
-        if (!publishableKey) {
-          throw new Error("Stripe publishable key not found");
-        }
-        const stripe = await loadStripe(publishableKey);
-
-        const stripeError = await stripe?.redirectToCheckout({
-          sessionId,
-        });
-
-        if (stripeError?.error) {
-          throw new Error(`Stripe error: ${stripeError.error}`);
-        }
-      } else {
-        const responseObj: { error: string } = await response.json();
-        toast({
-          variant: "info",
-          showCloseButton: false,
-          description: responseObj.error,
-        });
-
-        throw responseObj;
+      if (!res.ok) {
+        const { error } = await res.json();
+        toast({ variant: "info", description: error });
+        throw new Error(error);
       }
-    } catch (error) {
-      console.error(error);
+
+      const { sessionId } = await res.json();
+
+      if (!publishableKey) throw new Error("Missing Stripe key");
+
+      const stripe = await loadStripe(publishableKey);
+      await stripe?.redirectToCheckout({ sessionId });
+    } catch (err) {
+      console.error(err);
+    } finally {
+      isPending.current = false;
+      setLoading(false);
     }
   }
 
   return (
-    <Form {...premiumSubscriptionForm}>
-      <form
-        onSubmit={premiumSubscriptionForm.handleSubmit(
-          handleSubscribeToPremium,
-        )}
-      >
-        <Button
-          type="submit"
-          disabled={isSubmittingPremium}
-          className="h-full w-full px-11 py-3 text-base leading-6 sm:w-fit"
-        >
-          {isSubmittingPremium && (
-            <LoaderIcon className="size-4 animate-spin" />
-          )}
-          {isSubmittingPremium ? "Processing..." : "Go Premium"}
-        </Button>
-      </form>
-    </Form>
+    <Button
+      onClick={handleSubscribe}
+      disabled={loading}
+      className="h-full w-full px-11 py-3 text-base leading-6 sm:w-fit"
+    >
+      {loading && <LoaderIcon className="size-4 animate-spin" />}
+      {loading ? "Processing..." : "Go Premium"}
+    </Button>
   );
 }
 
 export function SwitchToBasicBtn({ userId }: { userId: string | null }) {
   const [billingPortalUrl, setBillingPortalUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const switchToBasicForm = useForm();
-  const {
-    formState: { isSubmitting },
-  } = switchToBasicForm;
-
-  // TODO: DRY this up in other places, maybe abstract into a file
-  async function createPortalSession(
-    userId: User["id"] | undefined,
-  ): Promise<string> {
+  async function createPortalSession(userId: string): Promise<string> {
     const response = await fetch("/api/billing-portal", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -418,70 +376,55 @@ export function SwitchToBasicBtn({ userId }: { userId: string | null }) {
     const { url } = await response.json();
     return url;
   }
-  // TODO: HANDLE CASE WHERE A USER IS NOT YET A CUSTOMER
-  // Preload portal session on mount
+
   useEffect(() => {
-    async function preloadBillingPortal() {
-      if (!userId) return;
+    if (!userId) return;
 
-      try {
-        const url = await createPortalSession(userId);
-        setBillingPortalUrl(url);
-      } catch (error: any) {
-        console.error(error);
-      }
-    }
-
-    preloadBillingPortal();
+    createPortalSession(userId)
+      .then(setBillingPortalUrl)
+      .catch((err) => console.error(err));
   }, [userId]);
 
+  // TODO: loading state now working, figure out issue and fix
   async function handleRedirect() {
+    setIsLoading(true);
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        description: "Missing user ID. Please reload and try again.",
+        showCloseButton: false,
+      });
+      return;
+    }
+
     try {
-      if (!userId) {
-        throw new Error(
-          "Some necessary details are missing. Please reload and try again later.",
-        );
-      }
+      const url = billingPortalUrl ?? (await createPortalSession(userId));
+      if (!url) throw new Error("Failed to create billing portal session.");
 
-      let url = billingPortalUrl;
-
-      // If not preloaded, fetch on demand
-      if (!url) {
-        const portalUrl = await createPortalSession(userId);
-        url = portalUrl;
-        setBillingPortalUrl(url); // cache for future
-      }
-
-      window.location.href = url!;
+      setBillingPortalUrl(url);
+      window.location.href = url;
     } catch (error: any) {
-      if (error instanceof Error) {
-        toast({
-          variant: "destructive",
-          description: error.message,
-          showCloseButton: false,
-          action: <ToastAction altText="Try again">Try again</ToastAction>,
-        });
-      }
+      toast({
+        variant: "destructive",
+        description: error.message ?? "Unknown error occurred.",
+        showCloseButton: false,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
-    <Form {...switchToBasicForm}>
-      <form
-        className="h-full w-full flex-1 border-x-1 border-transparent"
-        onSubmit={switchToBasicForm.handleSubmit(handleRedirect)}
-      >
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="h-full w-full px-0 py-3 text-base leading-6"
-        >
-          {isSubmitting && <LoaderIcon className="size-4 animate-spin" />}
-          {isSubmitting ? "Processing..." : "Switch to Basic"}
-        </Button>
-      </form>
-    </Form>
+    <Button
+      onClick={handleRedirect}
+      disabled={isLoading}
+      className="h-full w-full flex-1 border-x-1 border-transparent px-0 py-3 text-base leading-6"
+    >
+      {isLoading && <LoaderIcon className="size-4 animate-spin" />}
+      {isLoading ? "Processing..." : "Switch to Basic"}
+    </Button>
   );
 }
 
@@ -498,72 +441,67 @@ export function DeleteChatBtn({
   setIsDeleteModalOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const router = useRouter();
-
-  const form = useForm<ConversationFormType>({
-    defaultValues: {
-      userId: user?.id,
-      conversationId: conversationId || undefined, // TODO: revisit this and optimize
-    },
-  });
-
-  const {
-    formState: { isSubmitting },
-    handleSubmit,
-  } = form;
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const conversationParticipantsMutation = useUpdateConversationParticipants();
 
-  async function handleChatDeletion(values: ConversationFormType) {
+  const chatToastDescription = (
+    <p>
+      Your chat with
+      <span className="capitalize">"{chatName}"</span> has been deleted!
+    </p>
+  );
+
+  async function handleChatDeletion() {
+    if (!user?.id || !conversationId) return;
+
+    setIsDeleting(true);
+
     try {
       const currentDate = new Date().toISOString();
+
       const result = await conversationParticipantsMutation.mutateAsync({
-        conversationData: values,
+        conversationData: {
+          userId: user.id,
+          conversationId,
+        },
         conversationParticipantsDetails: {
           deleted_at: currentDate,
           message_cutoff_at: currentDate,
         },
       });
 
-      if (!result.success) {
-        throw new Error(result.error?.message);
-      }
+      if (!result.success) throw new Error(result.error?.message);
 
       toast({
         variant: "success",
         showCloseButton: false,
-        description: `Your chat with ${chatName} has been deleted!`,
+        description: chatToastDescription,
       });
 
       setIsDeleteModalOpen(false);
       router.push("/messages");
     } catch (error: any) {
-      if (error instanceof Error) {
-        console.error(error.message);
-
-        toast({
-          variant: "destructive",
-          title: "Unable to delete chat",
-          description: error.message,
-        });
-      }
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Unable to delete chat",
+        description: error?.message ?? "An error occurred",
+      });
+    } finally {
+      setIsDeleting(false);
     }
   }
 
   return (
-    <Form {...form}>
-      <form
-        className="h-full w-full flex-1 border-x-1 border-transparent"
-        onSubmit={handleSubmit(handleChatDeletion)}
-      >
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="flex h-full w-full flex-1 items-center px-0"
-        >
-          {isSubmitting && <LoaderIcon className="size-4 animate-spin" />}
-          {isSubmitting ? "Deleting..." : "Delete"}
-        </Button>
-      </form>
-    </Form>
+    <Button
+      type="button"
+      onClick={handleChatDeletion}
+      disabled={isDeleting}
+      className="flex h-full w-full flex-1 items-center border-x-1 border-transparent px-0"
+    >
+      {isDeleting && <LoaderIcon className="size-4 animate-spin" />}
+      {isDeleting ? "Deleting..." : "Delete"}
+    </Button>
   );
 }

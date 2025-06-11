@@ -6,13 +6,18 @@ import {
   fetchOrCreateCustomer,
 } from "@/app/actions";
 import { stripe } from "@/lib/utils/stripe/stripe";
-import { ROLES, SITE_CONFIG } from "@/lib/config/app.config";
+import { SITE_CONFIG } from "@/lib/config/app.config";
 import { PurchaseFormType } from "@/types/form.types";
 import { v4 as uuidv4 } from "uuid";
 import { purchaseFormSchema } from "@/lib/schemas/form.schemas";
 import { z } from "zod";
 import { evaluateRateLimit } from "@/app/actions/supabase/server/utils";
 import { differenceInSeconds, formatDistanceToNow } from "date-fns";
+import { getBaseUrl } from "@/lib/utils/app/utils";
+import {
+  retryWithBackoff,
+  validateRolePermission,
+} from "@/lib/utils/api/utils";
 
 type CheckoutRequestBody = PurchaseFormType & {
   promoCode?: string;
@@ -65,21 +70,6 @@ async function validatePromoCode(promoCode: string): Promise<boolean> {
   } catch (error) {
     console.error("Promo code validation failed:", error);
     return false;
-  }
-}
-
-function validateRolePermission(
-  userRoleId: number,
-  purchaseType: PurchaseFormType["purchaseType"],
-): boolean {
-  switch (purchaseType) {
-    case PURCHASE_TYPES.LANDLORD_CREDITS.type:
-    case PURCHASE_TYPES.LANDLORD_PREMIUM.type:
-      return userRoleId === ROLES.LANDLORD;
-    case PURCHASE_TYPES.STUDENT_PACKAGE.type:
-      return userRoleId === ROLES.TENANT;
-    default:
-      return false;
   }
 }
 
@@ -198,30 +188,6 @@ async function handleStudentPackage(
   };
 }
 
-// Retry logic with exponential backoff
-async function retryWithBackoff<T>(
-  fn: () => Promise<T>,
-  maxRetries: number = 3,
-): Promise<T> {
-  let lastError: Error;
-
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (error) {
-      lastError = error as Error;
-
-      if (attempt === maxRetries - 1) break;
-
-      const delay =
-        Math.pow(2, attempt) * SITE_CONFIG.EXPONENTIAL_BACKOFF_RETRY_DELAY;
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
-  }
-
-  throw lastError!;
-}
-
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
   const requestId = uuidv4();
@@ -229,7 +195,7 @@ export async function POST(request: NextRequest) {
   console.info(`[${requestId}]: Checkout session request started`);
 
   try {
-    const origin = request.headers.get("origin");
+    const origin = request.headers.get("origin") ?? getBaseUrl();
     const referer = request.headers.get("referer");
 
     // ? under deliberation
@@ -359,17 +325,26 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create customer with retry logic
-    const customer = await retryWithBackoff(async () => {
-      const result = await fetchOrCreateCustomer(
-        requestBody.userId,
-        requestBody.userEmail,
-        requestBody.userName,
-      );
-      if (!result) {
-        throw new Error("Failed to create or retrieve customer");
-      }
-      return result;
+    const customer = await retryWithBackoff({
+      fn: async () =>
+        fetchOrCreateCustomer({
+          userId: requestBody.userId,
+          userEmail: requestBody.userEmail,
+          userName: requestBody.userName,
+          options: { failLoudly: true }, // Force it to throw on failure
+        }),
     });
+
+    // Explicit null check with early return
+    if (!customer) {
+      console.error(
+        `[${requestId}]: Failed to create or retrieve customer for user: ${requestBody.userId}`,
+      );
+      return NextResponse.json(
+        { error: "Unable to process payment. Please try again." },
+        { status: 500 },
+      );
+    }
 
     console.info(`[${requestId}]: Customer retrieved/created: ${customer.id}`);
 
@@ -378,8 +353,12 @@ export async function POST(request: NextRequest) {
       purchaseType === PURCHASE_TYPES.LANDLORD_CREDITS.type ||
       purchaseType === PURCHASE_TYPES.LANDLORD_PREMIUM.type
     ) {
-      const activeSubscription = await retryWithBackoff(async () => {
-        return retrieveActiveSubscription(customer.id, userId);
+      const activeSubscription = await retryWithBackoff({
+        fn: async () =>
+          retrieveActiveSubscription({
+            customerId: customer.id,
+            userId,
+          }),
       });
 
       if (activeSubscription) {
@@ -435,10 +414,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe checkout session with retry logic
-    const session = await retryWithBackoff(async () => {
-      return stripe.checkout.sessions.create(sessionParams, {
-        idempotencyKey,
-      });
+    const session = await retryWithBackoff({
+      fn: async () =>
+        stripe.checkout.sessions.create(sessionParams, {
+          idempotencyKey,
+        }),
     });
 
     const duration = Date.now() - startTime;

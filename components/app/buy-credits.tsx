@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { buyCreditsFormSchema } from "@/lib/schemas/form.schemas";
-import { BuyCreditsFormSchemaType } from "@/types/form.types";
+import { BuyCreditsFormSchemaType, RoleType } from "@/types/form.types";
 import { createIdempotencyKey, getCreditTiers } from "@/lib/utils/app/utils";
 import { CreditTierOption } from "@/types/pricing.types";
 import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
@@ -119,7 +119,7 @@ export default function BuyCredits({
     const priceId = values.priceId;
     const promoCode = values.promoCode;
     const purchaseType = values.purchaseType;
-    const userRoleId = values.userRoleId;
+    const userRoleId = values.userRoleId as RoleType;
     const userId = values.userId;
     const userEmail = values.userEmail;
     const userName = values.userName;
@@ -172,7 +172,6 @@ export default function BuyCredits({
         const responseObj: { error: string } = await response.json();
         toast({
           variant: "destructive",
-          // title: "Please confirm email and password",
           description: responseObj.error,
         });
         throw new Error(

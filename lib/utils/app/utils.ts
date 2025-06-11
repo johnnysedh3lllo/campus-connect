@@ -21,7 +21,7 @@ export function getBaseUrl() {
 
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
 
-  // If explicitly set, always prefer that
+  // If explicitly set
   if (process.env.SITE_URL) return process.env.SITE_URL;
 
   // Otherwise assume it's local

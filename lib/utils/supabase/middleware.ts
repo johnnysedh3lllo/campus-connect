@@ -1,4 +1,4 @@
-import { redirectRoutes, ROLES } from "@/lib/config/app.config";
+import { redirectRoutes, ROLES, SITE_CONFIG } from "@/lib/config/app.config";
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 import { handleCors, handlePreflightRequest } from "@/lib/api/response";
@@ -10,6 +10,32 @@ export const updateSession = async (request: NextRequest) => {
     request.nextUrl.pathname.startsWith("/api/")
   ) {
     return handlePreflightRequest(request);
+  }
+
+  // Block requests with invalid or missing origins
+  const origin = request.headers.get("origin");
+  const requestId = request.headers.get("x-request-id") ?? "no-id";
+
+  const isStripeWebhook = request.nextUrl.pathname === "/api/webhook";
+
+  if (
+    request.nextUrl.pathname.startsWith("/api/") &&
+    !isStripeWebhook &&
+    (!origin || !SITE_CONFIG.ALLOWED_ORIGINS.includes(origin))
+  ) {
+    console.error(`[${requestId}]: Invalid or missing origin: ${origin}`);
+
+    const res = NextResponse.json(
+      { error: "Invalid request origin" },
+      { status: 403 },
+    );
+
+    const corsHeaders = handleCors(request);
+    Object.entries(corsHeaders).forEach(([key, value]) => {
+      res.headers.set(key, value);
+    });
+
+    return res;
   }
 
   // Create an unmodified response

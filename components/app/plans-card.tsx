@@ -2,13 +2,16 @@
 import { CheckIcon } from "@/public/icons/check-icon";
 import { Button } from "../ui/button";
 import { PlansCardProps } from "@/types/prop.types";
-import { useGetUser } from "@/lib/hooks/tanstack/queries/use-get-user";
 import { useSwitchToBasicModalStore } from "@/lib/store/ui/switch-to-basic-modal-store";
 import { SubscribeToPremiumBtn } from "./action-buttons";
+import { useUserStore } from "@/lib/store/user/user-store";
+import { useGetUserPublic } from "@/lib/hooks/tanstack/queries/use-get-user-public";
 
 export function PlansCard({ plan }: PlansCardProps) {
+  const { userId } = useUserStore();
+
   const { setIsSwitchToBasicModalOpen } = useSwitchToBasicModalStore();
-  const { data: user } = useGetUser();
+  const { data: user } = useGetUserPublic(userId ?? undefined);
 
   const { name, price, status, features } = plan;
 

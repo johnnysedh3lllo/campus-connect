@@ -141,9 +141,10 @@ export const SITE_CONFIG = {
     SESSION_EXPIRATION: 30 * 60, // 30 minutes
   },
   EXPONENTIAL_BACKOFF_RETRY_DELAY: 1000,
+  ALLOWED_ORIGINS: [
+    "https://campconnect.vercel.app",
+    ...(process.env.NODE_ENV === "development"
+      ? ["http://localhost:3000"]
+      : []),
+  ],
 };
-
-export const ALLOWED_ORIGINS = [
-  "https://campconnect.vercel.app",
-  ...(process.env.NODE_ENV === "development" ? ["http://localhost:3000"] : []),
-];

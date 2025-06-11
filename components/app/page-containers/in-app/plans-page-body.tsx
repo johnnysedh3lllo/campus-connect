@@ -76,7 +76,7 @@ export default function PlansPageBody() {
           return <PlansCard key={plan.name} plan={plan} />;
         })}
       </div>
-      <Modal {...switchToBasicModalProps} />;
+      <Modal {...switchToBasicModalProps} />
     </section>
   );
 }

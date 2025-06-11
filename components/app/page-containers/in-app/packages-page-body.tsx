@@ -1,37 +1,13 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { Header } from "../../header";
-import { CheckFillIcon } from "@/public/icons/check-fill-icon";
 import firstPlaceIllustration from "@/public/illustrations/first-place-medal-illustration.png";
 import secondPlaceIllustration from "@/public/illustrations/second-place-medal-illustration.png";
 import thirdPlaceIllustration from "@/public/illustrations/third-place-medal-illustration.png";
-import Image from "next/image";
-import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
-import { formatCurrencyToLocale } from "@/lib/utils/app/utils";
-import { Form } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useGetUser } from "@/lib/hooks/tanstack/queries/use-get-user";
-import { purchasePackageFormSchema } from "@/lib/schemas/form.schemas";
-import {
-  PurchasePackageFormType,
-  UserValidationType,
-} from "@/types/form.types";
-import { loadStripe } from "@stripe/stripe-js";
-import { toast } from "@/lib/hooks/ui/use-toast";
-import { LoaderIcon } from "@/public/icons/loader-icon";
+import { PRICING } from "@/lib/config/pricing.config";
 
-// TODO: DEVISE A MEANS TO ENSURE THE USER OBJECT IS AVAILABLE BEFORE THIS COMPONENT MOUNTS
-// TODO: CONSIDER PREFETCHING THE USER HERE
+import { PackagesCard } from "../../packages-card";
+
 export function PackagesPageBody() {
-  const { data: user } = useGetUser();
-  const userId = user?.id;
-  const userRoleId: UserValidationType["roleId"] = user?.user_metadata.role_id;
-  const userName = user?.user_metadata
-    ? user.user_metadata.full_name
-    : undefined;
-  const userEmail = user?.email;
-
   const packagesData = [
     {
       tier: "bronze",
@@ -66,70 +42,11 @@ export function PackagesPageBody() {
     const packageData = packagesData.find(
       (pkgData) => pkgData.tier == pkg.tier,
     );
-
     return {
       ...packageData,
       ...pkg,
     };
   });
-
-  async function handlePackagePurchase(values: PurchasePackageFormType) {
-    const priceId = values.priceId;
-    const purchaseType = values.purchaseType;
-    const studentInquiryCount = values.studentInquiryCount;
-    const studentPackageName = values.studentPackageName;
-    const userId = values.userId;
-    const userEmail = values.userEmail;
-    const userName = values.userName;
-    const userRoleId = values.userRoleId;
-
-    try {
-      const requestBody = {
-        priceId,
-        purchaseType,
-        studentInquiryCount,
-        studentPackageName,
-        userId,
-        userEmail,
-        userName,
-        userRoleId,
-      };
-
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        const { sessionId } = await response.json();
-        const stripe = await loadStripe(
-          process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-        );
-
-        const stripeError = await stripe?.redirectToCheckout({
-          sessionId,
-        });
-
-        if (stripeError?.error) {
-          throw new Error(`Stripe error: ${stripeError.error}`);
-        }
-        return;
-      } else {
-        const responseObj: { error: string } = await response.json();
-        toast({
-          variant: "destructive",
-          description: responseObj.error,
-          showCloseButton: false,
-        });
-        throw new Error(
-          "There was an error trying to process checkout, please try again:",
-        );
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   return (
     <section className="mx-auto max-w-screen-2xl">
@@ -143,7 +60,6 @@ export function PackagesPageBody() {
           <h2 className="text-base leading-6 font-semibold text-black">
             Our Packages
           </h2>
-
           <p className="text-sm leading-6 text-gray-900">
             With these packages, Campus Connect ensures a hassle-free experience
             in finding the perfect off-campus housing for you.
@@ -152,81 +68,7 @@ export function PackagesPageBody() {
 
         <section className="lg max-w-screen-max-xl mx-auto grid grid-cols-1 gap-6 lg:flex lg:flex-row lg:items-center lg:gap-x-6 lg:gap-y-0">
           {newPackagesData.map((pkg, index) => {
-            const formValues = {
-              purchaseType: PURCHASE_TYPES.STUDENT_PACKAGE.type,
-              priceId: pkg.priceId,
-              studentInquiryCount: pkg.inquiries,
-              studentPackageName: pkg.tier,
-              userId: userId ?? undefined,
-              userEmail,
-              userName,
-              userRoleId,
-            };
-
-            const form = useForm<PurchasePackageFormType>({
-              resolver: zodResolver(purchasePackageFormSchema),
-              defaultValues: formValues,
-            });
-
-            const {
-              handleSubmit,
-              formState: { isSubmitting },
-            } = form;
-
-            return (
-              <div
-                key={index}
-                className={`relative flex flex-1 flex-col justify-between gap-6 rounded-md border border-gray-600/50 ${pkg.cardClass} px-4 py-5`}
-              >
-                <div className="z-1 flex flex-col gap-6">
-                  <section className="flex flex-col gap-2 font-semibold">
-                    <h2 className={`text-2xl leading-8 ${pkg.titleTextClass}`}>
-                      {pkg.title}
-                    </h2>
-                    <p className="text-text-primary text-4xl leading-11">
-                      {formatCurrencyToLocale(pkg.amount)}
-                    </p>
-                  </section>
-
-                  <ul className="flex flex-col gap-3">
-                    {pkg.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-1">
-                        <CheckFillIcon className="flex-1" />
-                        <p
-                          className={`${pkg.textClass} flex-1 text-sm leading-6`}
-                        >
-                          {feature}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <Form {...form}>
-                  <form onSubmit={handleSubmit(handlePackagePurchase)}>
-                    <Button
-                      type="submit"
-                      className="z-1 h-fit w-full px-11 py-3 text-base leading-6"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting && (
-                        <LoaderIcon className="size-4 animate-spin" />
-                      )}
-                      {isSubmitting ? "Processing..." : "Get Package"}
-                    </Button>
-                  </form>
-                </Form>
-
-                {pkg.image && (
-                  <Image
-                    className="absolute top-0 right-0"
-                    src={pkg.image.src}
-                    width={pkg.image.width}
-                    height={pkg.image.height}
-                    alt={`${pkg.title} illustration`}
-                  />
-                )}
-              </div>
-            );
+            return <PackagesCard key={index} pkg={pkg} />;
           })}
         </section>
       </section>

@@ -16,10 +16,13 @@ import { stripe } from "@/lib/utils/stripe/stripe";
 
 // SHARED
 // TODO: potential case - Handle a user on trial mode.
-export async function retrieveActiveSubscription(
-  customerId: string | undefined,
-  userId: string | undefined,
-): Promise<Subscriptions | Stripe.Subscription | null> {
+export async function retrieveActiveSubscription({
+  customerId,
+  userId,
+}: {
+  customerId: string | undefined;
+  userId: string | undefined;
+}): Promise<Subscriptions | Stripe.Subscription | null> {
   try {
     if (!customerId && !userId) {
       console.warn("No customerId or userId provided.");
@@ -66,12 +69,17 @@ export async function retrieveActiveSubscription(
  *   - Use user’s name/email from Supabase.
  *   - Update Supabase with new Customer ID and return the Customer.
  */
-export async function fetchOrCreateCustomer(
-  userId: string,
-  userEmail: string,
-  userName: string,
-  options?: { failLoudly?: boolean }, // optional toggle
-): Promise<Stripe.Customer | null> {
+export async function fetchOrCreateCustomer({
+  userId,
+  userEmail,
+  userName,
+  options,
+}: {
+  userId: string;
+  userEmail: string;
+  userName: string;
+  options?: { failLoudly?: boolean };
+}): Promise<Stripe.Customer | null> {
   // fail loudly by default
   const { failLoudly = true } = options || {};
   const customerMetadata: Stripe.Emptyable<Stripe.MetadataParam> = {
