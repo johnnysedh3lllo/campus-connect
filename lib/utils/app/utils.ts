@@ -290,11 +290,19 @@ export const pluralize = (data: number | undefined, noun: string) => {
   return `${data} ${pluralNoun}`;
 };
 
-export function createIdempotencyKey(
-  operation: "checkout" | "billing-portal" | "verify" | "customer",
-  userId: string,
-  purchaseType: PurchaseFormType["purchaseType"],
-  transactionId: string,
-): string {
+export function createIdempotencyKey({
+  operation,
+  userId,
+  transactionId,
+  purchaseType,
+}: {
+  operation: "checkout" | "billing-portal" | "verify" | "customer";
+  userId: string;
+  transactionId?: string;
+  purchaseType?: PurchaseFormType["purchaseType"];
+}): string {
+  if (operation === "customer") {
+    return `create-${operation}-${userId}`;
+  }
   return `${operation}-${userId}-${purchaseType}-${transactionId}`;
 }

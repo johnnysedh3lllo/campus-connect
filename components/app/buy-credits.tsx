@@ -128,13 +128,12 @@ export default function BuyCredits({
     const landLordCreditCount = +creditTier?.value;
 
     try {
-      const transactionId = uuidv4();
-      const idempotencyKey = createIdempotencyKey(
-        "checkout",
-        userId!,
-        "landlord_credits",
-        transactionId,
-      );
+      const idempotencyKey = createIdempotencyKey({
+        operation: "checkout",
+        userId: userId,
+        purchaseType: "landlord_credits",
+        transactionId: uuidv4(),
+      });
 
       const requestBody = {
         purchaseType,

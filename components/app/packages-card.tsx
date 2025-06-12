@@ -39,21 +39,27 @@ export function PackagesCard({ pkg }: { pkg: Package }) {
   const { userId, userRoleId } = useUserStore();
   const { data: user, isLoading } = useGetUserPublic(userId ?? undefined);
 
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   async function handlePackagePurchase() {
     if (!user) return;
 
+    const key =
+      idempotencyKey ??
+      createIdempotencyKey({
+        operation: "checkout",
+        userId: user.id,
+        purchaseType: "student_package",
+        transactionId: uuidv4(),
+      });
+
+    if (!idempotencyKey) setIdempotencyKey(key);
+
+    console.log("idempotencyKey:", key);
+
     setIsSubmitting(true);
     try {
-      const transactionId = uuidv4();
-      const idempotencyKey = createIdempotencyKey(
-        "checkout",
-        user.id,
-        "landlord_credits",
-        transactionId,
-      );
-
       const purchaseDetails: PurchasePackageFormType = {
         purchaseType: PURCHASE_TYPES.STUDENT_PACKAGE.type,
         priceId: pkg.priceId,

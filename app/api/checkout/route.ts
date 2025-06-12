@@ -7,7 +7,6 @@ import {
 } from "@/app/actions";
 import { stripe } from "@/lib/utils/stripe/stripe";
 import { SITE_CONFIG } from "@/lib/config/app.config";
-import { PurchaseFormType } from "@/types/form.types";
 import { v4 as uuidv4 } from "uuid";
 import { purchaseFormSchema } from "@/lib/schemas/form.schemas";
 import { z } from "zod";
@@ -19,26 +18,8 @@ import {
   validateRolePermission,
 } from "@/lib/utils/api/utils";
 
-type CheckoutRequestBody = PurchaseFormType & {
-  promoCode?: string;
-  interval?: "month" | "year";
-
-  studentInquiryCount?: number;
-  studentPackageName?: string;
-
-  landLordCreditCount?: number;
-  landlordPremiumPrice?: number;
-
-  idempotencyKey: string;
-};
-
-type SessionMetadataParams = Stripe.Checkout.SessionCreateParams["metadata"];
-
-interface SessionParams extends Stripe.Checkout.SessionCreateParams {
-  metadata: SessionMetadataParams;
-}
-
-const checkoutRequestSchema = purchaseFormSchema.extend({
+// Schemas
+const checkoutRequestBodySchema = purchaseFormSchema.extend({
   promoCode: z.string().optional(),
   studentInquiryCount: z.number().positive().optional(),
   studentPackageName: z.string().optional(),
@@ -47,7 +28,17 @@ const checkoutRequestSchema = purchaseFormSchema.extend({
   idempotencyKey: z.string(),
 });
 
+// Types
+type CheckoutRequestBody = z.infer<typeof checkoutRequestBodySchema>;
+
+type SessionMetadataParams = Stripe.Checkout.SessionCreateParams["metadata"];
+
+interface SessionParams extends Stripe.Checkout.SessionCreateParams {
+  metadata: SessionMetadataParams;
+}
+
 // Utility functions: Validators
+// TODO: SWITCH THIS TO BE USING SUPABASE
 async function validateStripePrice(priceId: string): Promise<boolean> {
   try {
     await stripe.prices.retrieve(priceId);
@@ -198,12 +189,11 @@ export async function POST(request: NextRequest) {
     const origin = request.headers.get("origin") ?? getBaseUrl();
     const referer = request.headers.get("referer");
 
-    // ? under deliberation
+    // Request Size Validation
     const contentLength = parseInt(
       request.headers.get("content-length") || "0",
     );
 
-    // Request Size Validation
     if (contentLength > SITE_CONFIG.MAX_REQUEST_SIZE) {
       console.error(`[${requestId}] Request too large: ${contentLength} bytes`);
 
@@ -221,7 +211,7 @@ export async function POST(request: NextRequest) {
     const requestBody: CheckoutRequestBody = await request.json();
 
     // Input validation
-    const validationResult = checkoutRequestSchema.safeParse(requestBody);
+    const validationResult = checkoutRequestBodySchema.safeParse(requestBody);
 
     if (!validationResult.success) {
       console.error(

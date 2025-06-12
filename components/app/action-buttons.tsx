@@ -2,9 +2,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
-import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
 import { toast } from "@/lib/hooks/ui/use-toast";
 import { ToastAction } from "../ui/toast";
 import { cn, createIdempotencyKey } from "@/lib/utils/app/utils";
@@ -13,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { PRICING, PURCHASE_TYPES } from "@/lib/config/pricing.config";
 
-import { ConversationFormType, RoleType } from "@/types/form.types";
+import { RoleType } from "@/types/form.types";
 import { useUpdateConversationParticipants } from "@/lib/hooks/tanstack/mutations/chat/use-update-conversation-participants";
 import { PlusIcon } from "@/public/icons/plus-icon";
 import Link from "next/link";
@@ -300,12 +298,12 @@ export function SubscribeToPremiumBtn({
 
     try {
       const transactionId = uuidv4();
-      const idempotencyKey = createIdempotencyKey(
-        "checkout",
-        user.id,
-        "landlord_credits",
+      const idempotencyKey = createIdempotencyKey({
+        operation: "checkout",
+        userId: user.id,
+        purchaseType: "landlord_premium",
         transactionId,
-      );
+      });
 
       const requestBody = {
         purchaseType: PURCHASE_TYPES.LANDLORD_PREMIUM.type,

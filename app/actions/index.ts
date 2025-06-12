@@ -11,6 +11,7 @@ import {
 } from "./stripe";
 import { fetchCustomer, upsertCustomerDetails } from "./supabase/customers";
 import { stripe } from "@/lib/utils/stripe/stripe";
+import { createIdempotencyKey } from "@/lib/utils/app/utils";
 
 // const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
@@ -142,11 +143,20 @@ export async function fetchOrCreateCustomer({
       name: "Test Clock for New Customer",
     });
 
+    const idempotencyKey = createIdempotencyKey({
+      operation: "customer",
+      userId,
+    });
     const customer = await createStripeCustomer({
-      name: userName,
-      email: userEmail,
-      test_clock: testClock.id,
-      metadata: customerMetadata,
+      parameters: {
+        name: userName,
+        email: userEmail,
+        test_clock: testClock.id,
+        metadata: customerMetadata,
+      },
+      options: {
+        idempotencyKey,
+      },
     });
 
     // upsert the customer id on Supabase

@@ -2,7 +2,6 @@
 
 import Stripe from "stripe";
 import { stripe } from "@/lib/utils/stripe/stripe";
-import { User } from "@supabase/supabase-js";
 
 // Stripe Functions
 export async function fetchStripeCustomerById(customerId: string) {
@@ -70,11 +69,15 @@ export async function updateStripeCustomer(
   }
 }
 
-export async function createStripeCustomer(
-  parameters: Stripe.CustomerCreateParams,
-) {
+export async function createStripeCustomer({
+  parameters,
+  options,
+}: {
+  parameters: Stripe.CustomerCreateParams;
+  options?: Stripe.RequestOptions;
+}) {
   try {
-    return await stripe.customers.create(parameters);
+    return await stripe.customers.create(parameters, options);
   } catch (error) {
     console.error("Error creating Stripe customer:", error);
     throw error;
@@ -106,7 +109,3 @@ export async function fetchStripeActiveSubscription(
     return null;
   }
 }
-
-export async function createBillingPortalSession(
-  userId: User["id"] | undefined,
-) {}
