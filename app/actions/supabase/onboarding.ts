@@ -19,7 +19,7 @@ import {
 import { createClient } from "@/lib/utils/supabase/server";
 
 import { redirect } from "next/navigation";
-import { Provider, ResendParams } from "@supabase/supabase-js";
+import { Provider } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getBaseUrl } from "@/lib/utils/app/utils";
 import { redirectRoutes } from "@/lib/config/app.config";
