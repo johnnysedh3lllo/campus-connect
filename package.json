@@ -29,7 +29,7 @@
     "@stripe/stripe-js": "^7.0.0",
     "@supabase/auth-js": "^2.70.0",
     "@supabase/ssr": "latest",
-    "@supabase/supabase-js": "^2.47.13",
+    "@supabase/supabase-js": "^2.50.0",
     "@tanstack/react-query": "^5.63.0",
     "@tanstack/react-query-devtools": "^5.63.0",
     "class-variance-authority": "^0.7.1",
