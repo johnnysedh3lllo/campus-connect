@@ -12,12 +12,15 @@ import { RoleGate } from "../role-gate";
 import { VerifySessionResponseType } from "@/app/api/verify-session/route";
 import Modal from "./modal";
 
-export const verifyPaymentStatus = async (sessionId: string) => {
+export const verifyPaymentStatus = async (
+  sessionId: string,
+  userId: string,
+) => {
   try {
     const response = await fetch("/api/verify-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionId }),
+      body: JSON.stringify({ sessionId, userId }),
     });
 
     if (!response.ok) {
@@ -34,7 +37,7 @@ export const verifyPaymentStatus = async (sessionId: string) => {
 };
 
 export function PaymentAlertModal() {
-  const { userRoleId } = useUserStore();
+  const { userId, userRoleId } = useUserStore();
   const searchParams = useSearchParams();
   const [open, setOpen] = useState(false);
   const [formattedDate, setFormattedDate] = useState<string | null>(null);
@@ -45,11 +48,11 @@ export function PaymentAlertModal() {
     const currentModalId = searchParams.get("modalId");
     const currentSessionId = searchParams.get("session_id");
 
-    if (!currentModalId || !currentSessionId) return;
+    if (!currentModalId || !currentSessionId || !userId) return;
 
     setModalId(currentModalId);
 
-    verifyPaymentStatus(currentSessionId).then((result) => {
+    verifyPaymentStatus(currentSessionId, userId).then((result) => {
       if (result?.ok) {
         if (
           currentModalId === "land_premium_success" &&
@@ -59,14 +62,15 @@ export function PaymentAlertModal() {
           setFormattedDate(format(date, "MMM do yyyy"));
         }
         if (currentModalId === "stud_package_success" && result) {
-          const packageName = result.sessionMetadata?.studentPackageName;
+          const packageName =
+            result.sessionMetadata?.studentPackageName ?? null;
           setStudentPackage(packageName);
         }
 
         setOpen(true);
       }
     });
-  }, [searchParams]);
+  }, [searchParams, userId]);
 
   let modalDescription;
 

@@ -69,6 +69,7 @@ export default function BuyCredits({
   const [selectedTier, setSelectedTier] = useState<CreditTierOption>();
   const [promoCode, setPromoCode] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
 
   const { data: user } = useGetUserPublic(userId ?? undefined);
   const { setIsMobileNavOpen } = useMobileNavState();
@@ -115,6 +116,20 @@ export default function BuyCredits({
     });
   }, [user]);
 
+  let idemKey = idempotencyKey;
+  useEffect(() => {
+    if (!userId) return;
+
+    idemKey = createIdempotencyKey({
+      operation: "checkout",
+      userId: userId,
+      purchaseType: "landlord_credits",
+      transactionId: uuidv4(),
+    });
+
+    setIdempotencyKey(idemKey);
+  }, [selectedTier]);
+
   async function handleCreditCheckout(values: BuyCreditsFormSchemaType) {
     const priceId = values.priceId;
     const promoCode = values.promoCode;
@@ -127,14 +142,18 @@ export default function BuyCredits({
     const creditTier = getCreditTiers(priceId) as CreditTierOption;
     const landLordCreditCount = +creditTier?.value;
 
-    try {
-      const idempotencyKey = createIdempotencyKey({
+    if (!idemKey) {
+      idemKey = createIdempotencyKey({
         operation: "checkout",
         userId: userId,
         purchaseType: "landlord_credits",
         transactionId: uuidv4(),
       });
 
+      setIdempotencyKey(idemKey);
+    }
+
+    try {
       const requestBody = {
         purchaseType,
         priceId,
@@ -144,7 +163,7 @@ export default function BuyCredits({
         userEmail,
         userName,
         userRoleId,
-        idempotencyKey,
+        idempotencyKey: idemKey,
       };
 
       const response = await fetch("/api/checkout", {

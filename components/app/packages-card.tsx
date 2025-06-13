@@ -45,18 +45,18 @@ export function PackagesCard({ pkg }: { pkg: Package }) {
   async function handlePackagePurchase() {
     if (!user) return;
 
-    const key =
-      idempotencyKey ??
-      createIdempotencyKey({
+    let idemKey = idempotencyKey;
+
+    if (!idemKey) {
+      idemKey = createIdempotencyKey({
         operation: "checkout",
         userId: user.id,
         purchaseType: "student_package",
         transactionId: uuidv4(),
       });
 
-    if (!idempotencyKey) setIdempotencyKey(key);
-
-    console.log("idempotencyKey:", key);
+      setIdempotencyKey(idemKey);
+    }
 
     setIsSubmitting(true);
     try {
@@ -73,7 +73,7 @@ export function PackagesCard({ pkg }: { pkg: Package }) {
 
       const requestBody = {
         ...purchaseDetails,
-        idempotencyKey,
+        idempotencyKey: idemKey,
       };
 
       const response = await fetch("/api/checkout", {

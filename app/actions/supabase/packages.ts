@@ -30,43 +30,17 @@ export async function getUserPackageRecord(
 }
 
 // SERVER ONLY
-export async function createUserPackageRecord(
-  userId: string,
-  packageName: Packages["package_name"],
-  totalInquiries: number,
-  SUPABASE_SECRET_KEY?: ENVType,
-): Promise<Packages | null> {
-  const supabase = await createClient(SUPABASE_SECRET_KEY);
-
-  try {
-    const { data, error } = await supabase
-      .from("packages")
-      .insert({
-        user_id: userId,
-        package_name: packageName,
-        total_inquiries: totalInquiries,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
-    }
-
-    if (!data) return null;
-    return data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-export async function updateUserPackageRecord(
-  userId: string | undefined,
-  packageName: Packages["package_name"],
-  addedInquires: number,
-  tableColumn: "total_inquiries" | "used_inquiries",
-  SUPABASE_SECRET_KEY?: ENVType,
-): Promise<{ success: boolean; data: Packages } | null> {
+export async function upsertUserPackageRecord({
+  userId,
+  packageName,
+  inquiresCount,
+  SUPABASE_SECRET_KEY,
+}: {
+  userId: string | undefined;
+  packageName: Packages["package_name"];
+  inquiresCount: number;
+  SUPABASE_SECRET_KEY?: ENVType;
+}): Promise<{ success: boolean; data: Packages } | null> {
   const supabase = await createClient(SUPABASE_SECRET_KEY);
 
   try {
@@ -76,11 +50,10 @@ export async function updateUserPackageRecord(
 
     // TODO: THIS MAY NOT BE COMPLETELY TYPE-SAFE, PLEASE REMEMBER TO REVISIT.
     const { data, error } = await supabase
-      .rpc("update_package", {
-        table_column: tableColumn,
-        increment: addedInquires,
+      .rpc("upsert_packages", {
+        p_inquiry_count: inquiresCount,
+        p_package_name: packageName,
         p_user_id: userId,
-        updated_package_name: packageName,
       })
       .single();
 
@@ -110,7 +83,7 @@ export async function updateUserPackageInquiries(
 
     // TODO: THIS MAY NOT BE COMPLETELY TYPE-SAFE, PLEASE REMEMBER TO REVISIT.
     const { data, error } = await supabase
-      .rpc("increment_column_value", {
+      .rpc("update_column_value", {
         table_name: "packages",
         table_column: tableColumn,
         increment: addedInquires,
