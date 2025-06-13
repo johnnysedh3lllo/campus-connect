@@ -289,6 +289,7 @@ export function SubscribeToPremiumBtn({
 }) {
   const isPending = useRef(false);
   const [loading, setLoading] = useState(false);
+  const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
 
   async function handleSubscribe() {
     if (isPending.current || !user) return;
@@ -296,15 +297,20 @@ export function SubscribeToPremiumBtn({
     isPending.current = true;
     setLoading(true);
 
-    try {
-      const transactionId = uuidv4();
-      const idempotencyKey = createIdempotencyKey({
+    let idemKey = idempotencyKey;
+
+    if (!idemKey) {
+      idemKey = createIdempotencyKey({
         operation: "checkout",
         userId: user.id,
         purchaseType: "landlord_premium",
-        transactionId,
+        transactionId: uuidv4(),
       });
 
+      setIdempotencyKey(idemKey);
+    }
+
+    try {
       const requestBody = {
         purchaseType: PURCHASE_TYPES.LANDLORD_PREMIUM.type,
         priceId: PRICING.landlord.premium.monthly.priceId,
@@ -313,7 +319,7 @@ export function SubscribeToPremiumBtn({
         userEmail: user.email,
         userName: user.full_name,
         userRoleId: `${user.role_id}` as RoleType,
-        idempotencyKey,
+        idempotencyKey: idemKey,
       };
 
       const res = await fetch("/api/checkout", {

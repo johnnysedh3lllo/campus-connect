@@ -752,21 +752,12 @@ export type Database = {
           unread_count: number
         }[]
       }
-      increment_column_value: {
+      update_column_value: {
         Args: {
           table_name: string
           table_column: string
           increment: number
           user_id: string
-        }
-        Returns: undefined
-      }
-      update_package: {
-        Args: {
-          p_user_id: string
-          table_column: string
-          increment: number
-          updated_package_name: Database["public"]["Enums"]["package_type"]
         }
         Returns: undefined
       }
@@ -780,6 +771,18 @@ export type Database = {
           user_id: string
         }
       }
+      upsert_credits: {
+        Args: { p_user_id: string; p_credit_count: number }
+        Returns: undefined
+      }
+      upsert_packages: {
+        Args: {
+          p_user_id: string
+          p_inquiry_count: number
+          p_package_name: Database["public"]["Enums"]["package_type"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       listing_availability_status: "available" | "taken"
@@ -791,7 +794,7 @@ export type Database = {
         | "room in family house"
         | "basement unit"
       package_type: "bronze" | "silver" | "gold"
-      rate_limit_endpoint: "api/checkout" | "api/webhook"
+      rate_limit_endpoint: "api/checkout" | "api/webhook" | "api/verify-session"
       subscription_status:
         | "active"
         | "canceled"
@@ -926,7 +929,11 @@ export const Constants = {
         "basement unit",
       ],
       package_type: ["bronze", "silver", "gold"],
-      rate_limit_endpoint: ["api/checkout", "api/webhook"],
+      rate_limit_endpoint: [
+        "api/checkout",
+        "api/webhook",
+        "api/verify-session",
+      ],
       subscription_status: [
         "active",
         "canceled",

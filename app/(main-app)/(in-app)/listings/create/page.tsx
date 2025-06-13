@@ -149,7 +149,7 @@ export default function CreateListingPage() {
         }
 
         if (!hasActiveSubscription) {
-          const updatedCredits = await updateCreditMutation.mutateAsync({
+          await updateCreditMutation.mutateAsync({
             userId: userId,
             addedCredits: MIN_CREDITS,
             tableColumn: "used_credits",

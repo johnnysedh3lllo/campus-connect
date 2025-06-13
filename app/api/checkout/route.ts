@@ -181,9 +181,9 @@ async function handleStudentPackage(
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  const requestId = uuidv4();
+  const correlationId = uuidv4();
 
-  console.info(`[${requestId}]: Checkout session request started`);
+  console.info(`[${correlationId}]: Checkout session request started`);
 
   try {
     const origin = request.headers.get("origin") ?? getBaseUrl();
@@ -195,13 +195,15 @@ export async function POST(request: NextRequest) {
     );
 
     if (contentLength > SITE_CONFIG.MAX_REQUEST_SIZE) {
-      console.error(`[${requestId}] Request too large: ${contentLength} bytes`);
+      console.error(
+        `[${correlationId}] Request too large: ${contentLength} bytes`,
+      );
 
       return NextResponse.json({ error: "Request too large" }, { status: 413 });
     }
 
     if (!referer) {
-      console.error(`[${requestId}]: Missing referer header`);
+      console.error(`[${correlationId}]: Missing referer header`);
       return NextResponse.json(
         { error: "Invalid request origin" },
         { status: 400 },
@@ -215,7 +217,7 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       console.error(
-        `[${requestId}]: Validation failed:`,
+        `[${correlationId}]: Validation failed:`,
         validationResult.error.errors,
       );
       return NextResponse.json(
@@ -229,12 +231,14 @@ export async function POST(request: NextRequest) {
 
     const {
       userId,
+      userEmail,
+      userName,
       userRoleId,
       purchaseType,
       priceId,
       promoCode,
       idempotencyKey,
-    } = requestBody;
+    } = validationResult.data;
 
     // Rate limiting: uses an supabase rpc to handle rate limiting via a rate_limits table
     const rateLimitResult = await evaluateRateLimit({
@@ -245,7 +249,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (!rateLimitResult.allowed) {
-      console.error(`[${requestId}]: Rate limit exceeded for user: ${userId}`);
+      console.error(
+        `[${correlationId}]: Rate limit exceeded for user: ${userId}`,
+      );
 
       const resetTime = new Date(rateLimitResult.reset_at);
       const now = new Date();
@@ -254,7 +260,7 @@ export async function POST(request: NextRequest) {
 
       if (secondsDiff <= 0) {
         console.warn(
-          `[${requestId}]: Reset time is in the past or invalid: ${resetTime}`,
+          `[${correlationId}]: Reset time is in the past or invalid: ${resetTime}`,
         );
         return NextResponse.json(
           {
@@ -267,7 +273,7 @@ export async function POST(request: NextRequest) {
       const retryMessage = `Too many checkout attempts. Please try again in ${formatDistanceToNow(resetTime, { addSuffix: false })}.`;
 
       console.log(
-        `[${requestId}]: Time to retry for user ${userId}: ${retryMessage}`,
+        `[${correlationId}]: Time to retry for user ${userId}: ${retryMessage}`,
       );
 
       return NextResponse.json(
@@ -281,7 +287,7 @@ export async function POST(request: NextRequest) {
     // Role permission validation
     if (!validateRolePermission(+userRoleId, purchaseType)) {
       console.error(
-        `[${requestId}]: Role permission denied: ${userRoleId} for ${purchaseType}`,
+        `[${correlationId}]: Role permission denied: ${userRoleId} for ${purchaseType}`,
       );
       return NextResponse.json(
         { error: "You are not authorized to initiate this transaction" },
@@ -294,7 +300,7 @@ export async function POST(request: NextRequest) {
     const isPriceValid = await validateStripePrice(priceId);
 
     if (!isPriceValid) {
-      console.error(`[${requestId}]: Invalid price ID: ${priceId}`);
+      console.error(`[${correlationId}]: Invalid price ID: ${priceId}`);
       return NextResponse.json(
         { error: "Invalid price configuration" },
         { status: 400 },
@@ -306,7 +312,7 @@ export async function POST(request: NextRequest) {
     if (promoCode) {
       const isPromoValid = await validatePromoCode(promoCode);
       if (!isPromoValid) {
-        console.error(`[${requestId}]: Invalid promo code: ${promoCode}`);
+        console.error(`[${correlationId}]: Invalid promo code: ${promoCode}`);
         return NextResponse.json(
           { error: "Invalid or expired promo code" },
           { status: 400 },
@@ -318,9 +324,9 @@ export async function POST(request: NextRequest) {
     const customer = await retryWithBackoff({
       fn: async () =>
         fetchOrCreateCustomer({
-          userId: requestBody.userId,
-          userEmail: requestBody.userEmail,
-          userName: requestBody.userName,
+          userId: userId,
+          userEmail: userEmail,
+          userName: userName,
           options: { failLoudly: true }, // Force it to throw on failure
         }),
     });
@@ -328,7 +334,7 @@ export async function POST(request: NextRequest) {
     // Explicit null check with early return
     if (!customer) {
       console.error(
-        `[${requestId}]: Failed to create or retrieve customer for user: ${requestBody.userId}`,
+        `[${correlationId}]: Failed to create or retrieve customer for user: ${userId}`,
       );
       return NextResponse.json(
         { error: "Unable to process payment. Please try again." },
@@ -336,7 +342,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.info(`[${requestId}]: Customer retrieved/created: ${customer.id}`);
+    console.info(
+      `[${correlationId}]: Customer retrieved/created: ${customer.id}`,
+    );
 
     // Check for active subscriptions for landlord purchases
     if (
@@ -353,7 +361,7 @@ export async function POST(request: NextRequest) {
 
       if (activeSubscription) {
         console.info(
-          `[${requestId}]: Active subscription found for user: ${userId}`,
+          `[${correlationId}]: Active subscription found for user: ${userId}`,
         );
         return NextResponse.json(
           { error: "You already have an active subscription" },
@@ -383,7 +391,9 @@ export async function POST(request: NextRequest) {
         break;
       case PURCHASE_TYPES.STUDENT_PACKAGE.type:
         if (!origin) {
-          console.error(`[${requestId}]: Missing origin for student package`);
+          console.error(
+            `[${correlationId}]: Missing origin for student package`,
+          );
           return NextResponse.json(
             { error: "Invalid request origin" },
             { status: 400 },
@@ -396,7 +406,9 @@ export async function POST(request: NextRequest) {
         );
         break;
       default:
-        console.error(`[${requestId}]: Invalid purchase type: ${purchaseType}`);
+        console.error(
+          `[${correlationId}]: Invalid purchase type: ${purchaseType}`,
+        );
         return NextResponse.json(
           { error: "Invalid purchase type" },
           { status: 400 },
@@ -413,14 +425,14 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime;
     console.info(
-      `[${requestId}]: Checkout session created successfully: ${session.id} (${duration}ms)`,
+      `[${correlationId}]: Checkout session created successfully: ${session.id} (${duration}ms)`,
     );
 
     return NextResponse.json({ sessionId: session.id });
   } catch (error: any) {
     const duration = Date.now() - startTime;
     console.error(
-      `[${requestId}]: Checkout session error (${duration}ms):`,
+      `[${correlationId}]: Checkout session error (${duration}ms):`,
       error,
     );
 
