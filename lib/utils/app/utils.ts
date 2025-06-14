@@ -306,3 +306,14 @@ export function createIdempotencyKey({
   }
   return `${operation}-${userId}-${purchaseType}-${transactionId}`;
 }
+
+export function parsePositiveInteger(
+  value: string | undefined,
+  defaultValue = 0,
+): number {
+  if (!value) return defaultValue;
+  const parsed = parseInt(value, 10);
+  return isNaN(parsed) || parsed < 0 ? defaultValue : parsed;
+}
+
+

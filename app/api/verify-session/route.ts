@@ -27,7 +27,7 @@ type VerifySessionRequestBody = z.infer<typeof verifySessionRequestBodySchema>;
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  const correlationId = uuidv4();
+  const requestId = uuidv4();
   const supabase = await createClient();
 
   // Handlers for different modes and purchase types
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     if (!validationResult.success) {
       console.error(
-        `[${correlationId}]: Validation failed:`,
+        `[${requestId}]: Validation failed:`,
         validationResult.error.errors,
       );
 
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase.auth.getUser();
 
     if (error) {
-      console.error(`[${correlationId}]: Authentication failed:`, error);
+      console.error(`[${requestId}]: Authentication failed:`, error);
 
       return NextResponse.json(
         {
@@ -99,13 +99,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (!rateLimitResult.allowed) {
-      console.error(`[${correlationId}]: Rate limit exceeded for user: ${userId}`);
+      console.error(`[${requestId}]: Rate limit exceeded for user: ${userId}`);
 
       const resetTime = new Date(rateLimitResult.reset_at);
 
       const retryMessage = `Too many checkout attempts. Please try again in ${formatDistanceToNow(resetTime, { addSuffix: false })}.`;
       console.log(
-        `[${correlationId}]: Time to retry for user ${userId}: ${retryMessage}`,
+        `[${requestId}]: Time to retry for user ${userId}: ${retryMessage}`,
       );
 
       return NextResponse.json(
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
 
     if (!userIdFromSession || userId !== userIdFromSession) {
       console.error(
-        `[${correlationId}]: User ID mismatch. Auth: ${userId}, Session: ${userIdFromSession}`,
+        `[${requestId}]: User ID mismatch. Auth: ${userId}, Session: ${userIdFromSession}`,
       );
 
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
@@ -157,7 +157,7 @@ export async function POST(request: NextRequest) {
 
     const duration = Date.now() - startTime;
     console.info(
-      `[${correlationId}]: Verify session successfully completed: ${session.id} (${duration}ms)`,
+      `[${requestId}]: Verify session successfully completed: ${session.id} (${duration}ms)`,
     );
 
     return NextResponse.json(
@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     const duration = Date.now() - startTime;
     console.error(
-      `[${correlationId}]: Verify session error (${duration}ms):`,
+      `[${requestId}]: Verify session error (${duration}ms):`,
       error,
     );
 

@@ -631,6 +631,33 @@ export type Database = {
           },
         ]
       }
+      webhook_events: {
+        Row: {
+          error: string | null
+          event_id: string
+          event_type: Database["public"]["Enums"]["webhook_event_type_enum"]
+          processed_at: string | null
+          request_id: string
+          status: Database["public"]["Enums"]["webhook_event_status"]
+        }
+        Insert: {
+          error?: string | null
+          event_id: string
+          event_type: Database["public"]["Enums"]["webhook_event_type_enum"]
+          processed_at?: string | null
+          request_id: string
+          status?: Database["public"]["Enums"]["webhook_event_status"]
+        }
+        Update: {
+          error?: string | null
+          event_id?: string
+          event_type?: Database["public"]["Enums"]["webhook_event_type_enum"]
+          processed_at?: string | null
+          request_id?: string
+          status?: Database["public"]["Enums"]["webhook_event_status"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       user_conversations: {
@@ -804,6 +831,25 @@ export type Database = {
         | "paused"
         | "incomplete"
         | "incomplete_expired"
+      webhook_event_status: "pending" | "completed" | "failed"
+      webhook_event_type_enum:
+        | "charge.succeeded"
+        | "charge.updated"
+        | "checkout.session.completed"
+        | "customer.created"
+        | "customer.updated"
+        | "customer.deleted"
+        | "customer.subscription.created"
+        | "customer.subscription.updated"
+        | "customer.subscription.deleted"
+        | "invoice.created"
+        | "invoice.paid"
+        | "invoice.payment_succeeded"
+        | "invoice.finalized"
+        | "invoice.payment_failed"
+        | "payment_intent.created"
+        | "payment_intent.succeeded"
+        | "payment_intent.payment_failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -943,6 +989,26 @@ export const Constants = {
         "paused",
         "incomplete",
         "incomplete_expired",
+      ],
+      webhook_event_status: ["pending", "completed", "failed"],
+      webhook_event_type_enum: [
+        "charge.succeeded",
+        "charge.updated",
+        "checkout.session.completed",
+        "customer.created",
+        "customer.updated",
+        "customer.deleted",
+        "customer.subscription.created",
+        "customer.subscription.updated",
+        "customer.subscription.deleted",
+        "invoice.created",
+        "invoice.paid",
+        "invoice.payment_succeeded",
+        "invoice.finalized",
+        "invoice.payment_failed",
+        "payment_intent.created",
+        "payment_intent.succeeded",
+        "payment_intent.payment_failed",
       ],
     },
   },

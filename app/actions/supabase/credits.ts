@@ -47,7 +47,7 @@ export async function upsertUserCreditRecord({
     }
 
     if (creditCount <= 0) throw new Error("Credit count must be positive");
- 
+
     // TODO: THIS MAY NOT BE COMPLETELY TYPE-SAFE, PLEASE REMEMBER TO REVISIT.
     const { data, error } = await supabase
       .rpc("upsert_credits", {

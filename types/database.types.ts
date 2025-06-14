@@ -31,6 +31,7 @@ declare global {
   type RealMessagesTable = Tables<"messages">;
 
   type RateLimitEndpointEnum = Enums<"rate_limit_endpoint">;
+  type WebhookEventTypeEnum = Enums<"webhook_event_type_enum">;
 
   type Participant = Pick<
     UserPublic,

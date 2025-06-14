@@ -32,6 +32,12 @@ export async function retryWithBackoff<T>({
   throw lastError!;
 }
 
+export function isValidUserId(
+  userId: string | undefined | null,
+): userId is string {
+  return typeof userId === "string" && userId.length > 0;
+}
+
 export function validateRolePermission(
   userRoleId: number,
   purchaseType: PurchaseFormType["purchaseType"],
@@ -45,4 +51,39 @@ export function validateRolePermission(
     default:
       return false;
   }
+}
+
+export function validateCheckoutSessionMetadata(metadata: any): {
+  isValid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  if (
+    metadata?.purchaseType &&
+    !Object.values(PURCHASE_TYPES).some(
+      (pt) => pt.type === metadata.purchaseType,
+    )
+  ) {
+    errors.push(`Invalid purchase type: ${metadata.purchaseType}`);
+  }
+
+  if (
+    metadata?.landLordCreditCount &&
+    isNaN(parseInt(metadata.landLordCreditCount))
+  ) {
+    errors.push("Invalid landLordCreditCount format");
+  }
+
+  if (
+    metadata?.studentInquiryCount &&
+    isNaN(parseInt(metadata.studentInquiryCount))
+  ) {
+    errors.push("Invalid studentInquiryCount format");
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
 }
