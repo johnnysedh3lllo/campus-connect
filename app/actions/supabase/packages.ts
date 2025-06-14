@@ -1,4 +1,5 @@
 "use server";
+import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { createClient, ENVType } from "@/lib/utils/supabase/server";
 
 // SERVER & CLIENT
@@ -33,12 +34,12 @@ export async function getUserPackageRecord(
 export async function upsertUserPackageRecord({
   userId,
   packageName,
-  inquiresCount,
+  inquiryCount,
   SUPABASE_SECRET_KEY,
 }: {
   userId: string | undefined;
   packageName: Packages["package_name"];
-  inquiresCount: number;
+  inquiryCount: number;
   SUPABASE_SECRET_KEY?: ENVType;
 }): Promise<{ success: boolean; data: Packages } | null> {
   const supabase = await createClient(SUPABASE_SECRET_KEY);
@@ -48,10 +49,14 @@ export async function upsertUserPackageRecord({
       throw new Error("User ID is required!");
     }
 
+    if (inquiryCount <= 0) throw new Error("Inquiry count must be positive");
+    if (!["gold", "silver", "bronze"].includes(packageName))
+      throw new Error("Invalid package name");
+
     // TODO: THIS MAY NOT BE COMPLETELY TYPE-SAFE, PLEASE REMEMBER TO REVISIT.
     const { data, error } = await supabase
       .rpc("upsert_packages", {
-        p_inquiry_count: inquiresCount,
+        p_inquiry_count: inquiryCount,
         p_package_name: packageName,
         p_user_id: userId,
       })

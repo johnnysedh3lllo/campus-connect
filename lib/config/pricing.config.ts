@@ -132,4 +132,4 @@ export const PURCHASE_TYPES = {
 
 export type PurchaseTypeKey = keyof typeof PURCHASE_TYPES;
 export type PurchaseType = (typeof PURCHASE_TYPES)[PurchaseTypeKey];
-export type StudentPackagesType = typeof PRICING.student;
+export type StudentPackagesType = keyof typeof PRICING.student;

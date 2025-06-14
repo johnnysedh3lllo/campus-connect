@@ -45,11 +45,13 @@ export async function upsertUserCreditRecord({
     if (!userId) {
       throw new Error("User ID is required!");
     }
+
+    if (creditCount <= 0) throw new Error("Credit count must be positive");
+ 
     // TODO: THIS MAY NOT BE COMPLETELY TYPE-SAFE, PLEASE REMEMBER TO REVISIT.
-    // TODO: ADD AN `updated_at` column and update the rpc function in this regard as well.
     const { data, error } = await supabase
       .rpc("upsert_credits", {
-        p_credit_count: creditCount, // TODO: CONSIDER SWITCHING THE POSITION OF THIS WITH user_id
+        p_credit_count: creditCount,
         p_user_id: userId,
       })
       .single();
