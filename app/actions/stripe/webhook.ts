@@ -72,23 +72,23 @@ export class WebhookLogger {
 }
 
 const relevantEventsArray = [
-  "charge.succeeded",
-  "charge.updated",
-  "checkout.session.completed",
-  "customer.created",
-  "customer.updated",
-  "customer.deleted",
-  "customer.subscription.created",
-  "customer.subscription.updated",
-  "customer.subscription.deleted",
-  "invoice.created",
-  "invoice.paid",
-  "invoice.payment_succeeded",
-  "invoice.finalized",
-  "invoice.payment_failed",
-  "payment_intent.created",
-  "payment_intent.succeeded",
-  "payment_intent.payment_failed",
+  "charge.succeeded", // 🚧
+  "charge.updated", // ❌
+  "checkout.session.completed", // ✔️
+  "customer.created", // ✔️
+  "customer.updated", // ✔️
+  "customer.deleted", // ✔️
+  "customer.subscription.created", // ✔️
+  "customer.subscription.updated", // ✔️
+  "customer.subscription.deleted", // ✔️
+  "invoice.created", // ❌
+  "invoice.paid", // 🚧
+  "invoice.payment_succeeded", // 🚧
+  "invoice.finalized", // ❌
+  "invoice.payment_failed", // 🚧
+  "payment_intent.created", // ❌
+  "payment_intent.succeeded", // 🚧
+  "payment_intent.payment_failed", // 🚧
 ] as const satisfies WebhookEventTypeEnum[];
 
 export const RELEVANT_EVENTS = new Set(relevantEventsArray);
@@ -344,7 +344,6 @@ export async function handleSubscriptionEvents(
           "Could not update payment method for new subscription",
           error,
         );
-        // Continue processing - this is not critical
       }
     }
 

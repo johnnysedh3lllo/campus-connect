@@ -729,6 +729,18 @@ export type Database = {
       }
     }
     Functions: {
+      attempt_insert_webhook_event: {
+        Args: {
+          p_event_id: string
+          p_event_type: Database["public"]["Enums"]["webhook_event_type_enum"]
+          p_request_id: string
+        }
+        Returns: {
+          inserted: boolean
+          status: Database["public"]["Enums"]["webhook_event_status"]
+          error: string
+        }[]
+      }
       check_participant_access: {
         Args: { convo_id: string; pid: string }
         Returns: boolean

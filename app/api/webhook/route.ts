@@ -14,6 +14,7 @@ import {
   WebhookContext,
   WebhookLogger,
 } from "@/app/actions/stripe/webhook";
+import { retryWithBackoff } from "@/lib/utils/api/utils";
 
 // Configuration and validation
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET_KEY;
@@ -66,38 +67,38 @@ export async function POST(req: NextRequest) {
     });
 
     // Idempotency Check: Try to insert into webhook_events table
-    const insertResult = await supabaseAdmin
-      .from("webhook_events")
-      .insert({
-        event_id: context.eventId,
-        event_type: context.eventType,
-        request_id: requestId,
-        status: "pending",
-      })
-      .select();
+    const { data, error } = await retryWithBackoff({
+      fn: async () =>
+        supabaseAdmin
+          .rpc("attempt_insert_webhook_event", {
+            p_event_id: context.eventId,
+            p_event_type: context.eventType,
+            p_request_id: requestId,
+          })
+          .single(),
+    });
 
-    if (insertResult.error) {
-      if (insertResult.error.code === "23505") {
-        logger.info("Duplicate event received, skipping", {
-          eventId: context.eventId,
-        });
-        return NextResponse.json(
-          { status: "duplicate", eventId: context.eventId, requestId },
-          { status: 200 },
-        );
-      } else {
-        logger.error(
-          "Failed to insert webhook event record",
-          insertResult.error,
-        );
-        return NextResponse.json(
-          { error: "Failed to record event", requestId },
-          { status: 500 },
-        );
-      }
+    if (error) {
+      logger.error("RPC insert attempt failed", error);
+      return NextResponse.json(
+        { error: "Failed to check or insert event", requestId },
+        { status: 500 },
+      );
     }
 
-    console.log("insertResult:", insertResult);
+    const { inserted, status } = data;
+
+    if (!inserted && (status === "completed" || status === "failed")) {
+      logger.info("Duplicate event — already handled", {
+        eventId: context.eventId,
+        existingStatus: status,
+      });
+
+      return NextResponse.json(
+        { status: "duplicate", eventId: context.eventId, requestId },
+        { status: 200 },
+      );
+    }
 
     // Check if we should process this event
     if (!RELEVANT_EVENTS.has(eventType)) {

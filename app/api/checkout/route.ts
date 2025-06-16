@@ -239,11 +239,14 @@ export async function POST(request: NextRequest) {
     } = validationResult.data;
 
     // Rate limiting: uses an supabase rpc to handle rate limiting via a rate_limits table
-    const rateLimitResult = await evaluateRateLimit({
-      userId: userId,
-      endpoint: "api/checkout",
-      maxAttempts: SITE_CONFIG.RATE_LIMIT.MAX_ATTEMPTS,
-      windowHours: SITE_CONFIG.RATE_LIMIT.WINDOW_HOURS,
+    const rateLimitResult = await retryWithBackoff({
+      fn: async () =>
+        evaluateRateLimit({
+          userId: userId,
+          endpoint: "api/checkout",
+          maxAttempts: SITE_CONFIG.RATE_LIMIT.MAX_ATTEMPTS,
+          windowHours: SITE_CONFIG.RATE_LIMIT.WINDOW_HOURS,
+        }),
     });
 
     if (!rateLimitResult.allowed) {

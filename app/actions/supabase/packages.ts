@@ -1,5 +1,4 @@
 "use server";
-import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { createClient, ENVType } from "@/lib/utils/supabase/server";
 
 // SERVER & CLIENT

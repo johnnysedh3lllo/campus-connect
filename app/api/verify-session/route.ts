@@ -75,7 +75,9 @@ export async function POST(request: NextRequest) {
     const { sessionId } = validationResult.data;
 
     // authentication user
-    const { data, error } = await supabase.auth.getUser();
+    const { data, error } = await retryWithBackoff({
+      fn: async () => supabase.auth.getUser(),
+    });
 
     if (error) {
       console.error(`[${requestId}]: Authentication failed:`, error);
@@ -91,11 +93,14 @@ export async function POST(request: NextRequest) {
     const userId = data.user?.id;
 
     // Rate limiting: uses an supabase rpc to handle rate limiting via a rate_limits table
-    const rateLimitResult = await evaluateRateLimit({
-      userId: userId,
-      endpoint: "api/verify-session",
-      maxAttempts: SITE_CONFIG.RATE_LIMIT.MAX_ATTEMPTS,
-      windowHours: SITE_CONFIG.RATE_LIMIT.WINDOW_HOURS,
+    const rateLimitResult = await retryWithBackoff({
+      fn: async () =>
+        evaluateRateLimit({
+          userId: userId,
+          endpoint: "api/verify-session",
+          maxAttempts: SITE_CONFIG.RATE_LIMIT.MAX_ATTEMPTS,
+          windowHours: SITE_CONFIG.RATE_LIMIT.WINDOW_HOURS,
+        }),
     });
 
     if (!rateLimitResult.allowed) {
