@@ -1,8 +1,12 @@
 import Stripe from "stripe";
 import { manageSubscriptions } from "../supabase/subscriptions";
-import { isValidUserId, retryWithBackoff, validateCheckoutSessionMetadata } from "@/lib/utils/api/utils";
+import {
+  isValidUserId,
+  retryWithBackoff,
+  validateCheckoutSessionMetadata,
+} from "@/lib/utils/api/utils";
 import { stripe } from "@/lib/utils/stripe/stripe";
-import { deleteCustomer } from "../supabase/customers";
+import { deleteCustomer, fetchCustomer } from "../supabase/customers";
 import { PURCHASE_TYPES } from "@/lib/config/pricing.config";
 import { parsePositiveInteger } from "@/lib/utils/app/utils";
 import { upsertUserCreditRecord } from "../supabase/credits";
@@ -147,6 +151,7 @@ export async function updateCustomerPaymentMethod(
     return { success: false, error: (error as Error).message, retry: true };
   }
 }
+
 export async function handleOneTimePayment(
   session: Stripe.Checkout.Session,
   logger: WebhookLogger,
@@ -222,6 +227,7 @@ export async function handleOneTimePayment(
     return { success: false, error: (error as Error).message, retry: true };
   }
 }
+
 export async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session,
   logger: WebhookLogger,
@@ -266,9 +272,10 @@ export async function handleCheckoutSessionCompleted(
     return { success: false, error: (error as Error).message, retry: true };
   }
 }
+
 export async function handleCustomerEvents(
   customer: Stripe.Customer,
-  eventType: string,
+  eventType: WebhookEventTypeEnum,
   logger: WebhookLogger,
 ): Promise<ProcessingResult> {
   try {
@@ -301,9 +308,10 @@ export async function handleCustomerEvents(
     return { success: false, error: (error as Error).message, retry: true };
   }
 }
+
 export async function handleSubscriptionEvents(
   subscription: Stripe.Subscription,
-  eventType: string,
+  eventType: WebhookEventTypeEnum,
   logger: WebhookLogger,
 ): Promise<ProcessingResult> {
   try {
@@ -366,9 +374,10 @@ export async function handleSubscriptionEvents(
     return { success: false, error: (error as Error).message, retry: true };
   }
 }
+
 export async function handleInvoiceEvents(
   invoice: Stripe.Invoice,
-  eventType: string,
+  eventType: WebhookEventTypeEnum,
   logger: WebhookLogger,
 ): Promise<ProcessingResult> {
   try {
@@ -378,14 +387,36 @@ export async function handleInvoiceEvents(
       invoice,
     });
 
+    const customer = await fetchCustomer({
+      customerId: invoice.customer as string,
+    });
+
+    if (!customer) {
+      logger.error("Customer not found in Supabase for failed invoice", {
+        stripeCustomerId: invoice.customer,
+      });
+      return { success: false, error: "Customer not found", retry: true };
+    }
+
+    if (eventType === "invoice.paid") {
+      logger.info("Invoice payment successful", {
+        invoice,
+      });
+
+      // TODO: maybe notify user
+    }
+
     if (eventType === "invoice.payment_failed") {
-      // TODO: Implement failure handling logic
-      // For now, just log the failure
+      // Log failure
       logger.warn("Invoice payment failed", {
         invoiceId: invoice.id,
+        userId: customer.id,
         customerId: invoice.customer,
         amount: invoice.amount_due,
+        invoice,
       });
+
+      // TODO: send a notification to the user
     }
 
     return { success: true };
@@ -394,9 +425,10 @@ export async function handleInvoiceEvents(
     return { success: false, error: (error as Error).message, retry: true };
   }
 }
+
 export async function handlePaymentIntentEvents(
   paymentIntent: Stripe.PaymentIntent,
-  eventType: string,
+  eventType: WebhookEventTypeEnum,
   logger: WebhookLogger,
 ): Promise<ProcessingResult> {
   try {

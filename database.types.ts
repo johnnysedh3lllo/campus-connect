@@ -833,7 +833,11 @@ export type Database = {
         | "room in family house"
         | "basement unit"
       package_type: "bronze" | "silver" | "gold"
-      rate_limit_endpoint: "api/checkout" | "api/webhook" | "api/verify-session"
+      rate_limit_endpoint:
+        | "api/checkout"
+        | "api/webhook"
+        | "api/verify-session"
+        | "api/billing-portal"
       subscription_status:
         | "active"
         | "canceled"
@@ -991,6 +995,7 @@ export const Constants = {
         "api/checkout",
         "api/webhook",
         "api/verify-session",
+        "api/billing-portal",
       ],
       subscription_status: [
         "active",

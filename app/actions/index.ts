@@ -89,7 +89,7 @@ export async function fetchOrCreateCustomer({
 
   try {
     // STEP 1
-    const customerOnSupabase = await fetchCustomer(userId);
+    const customerOnSupabase = await fetchCustomer({ userId });
 
     // fetches the Customer Object from Stripe if the Stripe Customer ID exists on Supabase.
     const customerIdFromSupabase = customerOnSupabase?.stripe_customer_id;
