@@ -36,6 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# IDE-specific
+/.vscode/
+
 # defined
 /sql-queries
 /case-studies
