@@ -132,7 +132,7 @@ export const redirectRoutes = {
   usersWithoutARole: "/select-role",
 };
 
-const SITE_URL = getBaseUrl()
+// const SITE_URL = getBaseUrl()
 
 export const SITE_CONFIG = {
   MAX_REQUEST_SIZE: parseInt(process.env.MAX_REQUEST_SIZE ?? "10240, 10"),
@@ -148,7 +148,7 @@ export const SITE_CONFIG = {
   // TODO: ENSURE THIS PROPERLY REFERENCES THE ENVIRONMENT VARIABLES OR BASE URL
   // TODO: TO IMPROVE MAINTAINABILITY
   ALLOWED_ORIGINS: [
-    SITE_URL,
+    process.env.SITE_URL,
     ...(process.env.NODE_ENV === "development"
       ? ["http://localhost:3000"]
       : []),
